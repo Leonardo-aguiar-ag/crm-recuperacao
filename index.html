@@ -1419,51 +1419,83 @@ reader.readAsDataURL(file);
 }
 
 /* ===================================================== */
-/* AUTO FILL (CAMPO MÁGICO APRIMORADO) */
+/* AUTO FILL (CAMPO MÁGICO - VERSÃO ROBUSTA) */
 /* ===================================================== */
 
 function autoFill(){
+  const text = document.getElementById('smartPaste').value;
+  
+  // Mapeamento: chave = regex para encontrar o label, valor = id do campo
+  const fieldMap = [
+    { regex: /^Nome\s+do\s+usuário\s*:\s*(.*)$/im, field: 'cNome' },
+    { regex: /^Nome\s+social\s*:\s*(.*)$/im, field: 'cNomeSocial' },
+    { regex: /^CPF\s+do\s+titular\s*:\s*(.*)$/im, field: 'cCPF' },
+    { regex: /^CPF\s*:\s*(.*)$/im, field: 'cCPF' }, // fallback
+    { regex: /^Data\s+de\s+nascimento\s*:\s*(.*)$/im, field: 'cNascimento' },
+    { regex: /^Endereço\s*:\s*(.*)$/im, field: 'cEndereco' },
+    { regex: /^Empresa\s*:\s*(.*)$/im, field: 'cEmpresa' },
+    { regex: /^Ade\s+emp\s*:\s*(.*)$/im, field: 'cAdeEmp' },
+    { regex: /^Rede\/plano\s*:\s*(.*)$/im, field: 'cRedePlano' },
+    { regex: /^Plano\s+atual\s*:\s*(.*)$/im, field: 'cPlanoAtual' },
+    { regex: /^Acomodação\s*:\s*(.*)$/im, field: 'cAcomodacao' },
+    { regex: /^Situação\s*:\s*(.*)$/im, field: 'cSituacao' },
+    { regex: /^Data\s+da\s+adesão\s*:\s*(.*)$/im, field: 'cAdesao' },
+    { regex: /^Data\s+do\s+cancelamento\s*:\s*(.*)$/im, field: 'cCancelamento' },
+    { regex: /^Tempo\s*:\s*(.*)$/im, field: 'cTempo' },
+    { regex: /^Telefones?\s+cadastrados?\s*:\s*(.*)$/im, field: 'cTelefones' },
+    { regex: /^Endereços?\s+eletr[ôo]nicos?\s*:\s*(.*)$/im, field: 'cEmails' }
+  ];
 
-const text = document.getElementById('smartPaste').value;
-
-// Função auxiliar para capturar o valor de uma linha específica (case insensitive, multilinha)
-const getLine = (label) => {
-  const regex = new RegExp(`^${label}:\\s*(.*)$`, 'im');
-  const match = text.match(regex);
-  return match ? match[1].trim() : '';
-};
-
-// Preenche campos simples
-document.getElementById('cNome').value = getLine('Nome do usuário');
-document.getElementById('cNomeSocial').value = getLine('Nome social');
-document.getElementById('cCPF').value = getLine('CPF do titular');
-document.getElementById('cNascimento').value = getLine('Data de nascimento');
-document.getElementById('cEndereco').value = getLine('Endereço');
-document.getElementById('cEmpresa').value = getLine('Empresa');
-document.getElementById('cAdeEmp').value = getLine('Ade emp');
-document.getElementById('cRedePlano').value = getLine('Rede/plano');
-document.getElementById('cPlanoAtual').value = getLine('Plano atual');
-document.getElementById('cAcomodacao').value = getLine('Acomodação');
-document.getElementById('cSituacao').value = getLine('Situação');
-document.getElementById('cAdesao').value = getLine('Data da adesão');
-document.getElementById('cCancelamento').value = getLine('Data do cancelamento');
-document.getElementById('cTempo').value = getLine('Tempo');
-document.getElementById('cTelefones').value = getLine('Telefones cadastrados');
-document.getElementById('cEmails').value = getLine('Endereços eletrônicos');
-
-// Extrai cidade e UF (ex: "CARAPICUIBA | UF: SP")
-const cityLine = getLine('Cidade');
-if (cityLine) {
-  const parts = cityLine.split('|').map(s => s.trim());
-  document.getElementById('cCidade').value = parts[0] || '';
-  const ufPart = parts[1] || '';
-  const ufMatch = ufPart.match(/UF:\s*(.*)/i);
-  document.getElementById('cUF').value = ufMatch ? ufMatch[1].trim() : '';
-} else {
+  // Limpa campos
+  document.getElementById('cNome').value = '';
+  document.getElementById('cNomeSocial').value = '';
+  document.getElementById('cCPF').value = '';
+  document.getElementById('cNascimento').value = '';
+  document.getElementById('cEndereco').value = '';
   document.getElementById('cCidade').value = '';
   document.getElementById('cUF').value = '';
-}
+  document.getElementById('cEmpresa').value = '';
+  document.getElementById('cAdeEmp').value = '';
+  document.getElementById('cRedePlano').value = '';
+  document.getElementById('cPlanoAtual').value = '';
+  document.getElementById('cAcomodacao').value = '';
+  document.getElementById('cSituacao').value = '';
+  document.getElementById('cAdesao').value = '';
+  document.getElementById('cCancelamento').value = '';
+  document.getElementById('cTempo').value = '';
+  document.getElementById('cTelefones').value = '';
+  document.getElementById('cEmails').value = '';
 
+  // Aplica cada mapeamento
+  for (const map of fieldMap) {
+    const match = text.match(map.regex);
+    if (match && match[1]) {
+      document.getElementById(map.field).value = match[1].trim();
+    }
+  }
+
+  // Tratamento especial para Cidade/UF
+  const cityMatch = text.match(/^Cidade\s*:\s*(.*)$/im);
+  if (cityMatch) {
+    const full = cityMatch[1].trim();
+    // Exemplos: "CARAPICUIBA | UF: SP" ou "CARAPICUIBA - SP"
+    const parts = full.split(/[|\-–]/); // separa por | ou hífen
+    const city = (parts[0] || '').trim();
+    let uf = '';
+    if (parts[1]) {
+      const ufMatch = parts[1].match(/UF\s*:\s*(.*)/i);
+      uf = ufMatch ? ufMatch[1].trim() : parts[1].trim();
+    }
+    document.getElementById('cCidade').value = city;
+    document.getElementById('cUF').value = uf;
+  }
+
+  // Depuração (abra o console do navegador com F12 para ver)
+  console.log('=== Campo Mágico preencheu: ===');
+  console.log('Nome:', document.getElementById('cNome').value);
+  console.log('CPF:', document.getElementById('cCPF').value);
+  console.log('Cidade/UF:', document.getElementById('cCidade').value, '/', document.getElementById('cUF').value);
+  // ... pode adicionar mais conforme necessidade
 }
 
 /* ===================================================== */
