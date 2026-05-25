@@ -1,512 +1,276 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>CRM Recuperação | Leonardo Aguiar</title>
+<title>CRM Recuperação Premium</title>
 
-<!-- BOOTSTRAP -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- ICONS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<!-- XLSX -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
 <style>
 
-/* ===========================
-ROOT
-=========================== */
-
 :root{
 
-    --primary:#2563eb;
-    --primary2:#4f46e5;
+--primary:#2563eb;
+--primary2:#4f46e5;
 
-    --success:#22c55e;
-    --danger:#ef4444;
-    --warning:#f59e0b;
+--success:#22c55e;
+--danger:#ef4444;
 
-    --bg:#f1f5f9;
-    --card:#ffffff;
-    --card2:#f8fafc;
+--bg:#f1f5f9;
+--card:#ffffff;
+--text:#0f172a;
+--soft:#64748b;
+--border:#dbe4ee;
 
-    --text:#0f172a;
-    --textSoft:#64748b;
-
-    --border:#dce3ea;
-
-    --input:#ffffff;
-
-    --shadow:
-    0 10px 30px rgba(15,23,42,.06);
-
-    --radius:22px;
+--shadow:
+0 10px 30px rgba(0,0,0,.08);
 }
-
-/* ===========================
-DARK MODE
-=========================== */
 
 body.dark-mode{
 
-    --bg:#0b1120;
-    --card:#111827;
-    --card2:#182131;
-
-    --text:#f1f5f9;
-    --textSoft:#94a3b8;
-
-    --border:#273244;
-
-    --input:#0f172a;
-
-    --shadow:
-    0 20px 40px rgba(0,0,0,.45);
+--bg:#0b1120;
+--card:#111827;
+--text:#f1f5f9;
+--soft:#94a3b8;
+--border:#263244;
 }
-
-/* ===========================
-GLOBAL
-=========================== */
 
 body{
 
-    background:var(--bg);
-    color:var(--text);
+background:var(--bg);
+color:var(--text);
 
-    font-family:
-    Inter,
-    Segoe UI,
-    sans-serif;
+font-family:
+Inter,
+Segoe UI,
+sans-serif;
 
-    transition:.25s;
+transition:.3s;
 }
 
-*{
-    transition:.25s;
-}
-
-/* ===========================
-NAVBAR
-=========================== */
+/* NAVBAR */
 
 .navbar-custom{
 
-    background:
-    linear-gradient(
-    135deg,
-    #0f172a,
-    #1e293b
-    );
-
-    border-bottom:
-    1px solid rgba(255,255,255,.05);
-
-    backdrop-filter:blur(10px);
+background:
+linear-gradient(
+135deg,
+#0f172a,
+#1e293b
+);
 }
 
-.navbar-brand{
-
-    font-weight:800;
-    font-size:1.2rem;
-}
-
-/* ===========================
-CARD
-=========================== */
+/* CARD */
 
 .card-custom{
 
-    background:var(--card);
+background:var(--card);
 
-    border:
-    1px solid var(--border);
+border:
+1px solid var(--border);
 
-    border-radius:var(--radius);
+border-radius:24px;
 
-    box-shadow:var(--shadow);
+box-shadow:var(--shadow);
 }
 
-/* ===========================
-TABS
-=========================== */
+/* TABS */
 
 .nav-tabs{
 
-    border:none;
-    gap:10px;
+border:none;
+gap:10px;
 }
 
 .nav-tabs .nav-link{
 
-    border:none;
+border:none;
 
-    border-radius:14px;
+padding:12px 18px;
 
-    color:var(--textSoft);
+border-radius:14px;
 
-    font-weight:700;
+font-weight:700;
 
-    padding:12px 20px;
+color:var(--soft);
 }
 
 .nav-tabs .nav-link.active{
 
-    background:
-    linear-gradient(
-    135deg,
-    var(--primary),
-    var(--primary2)
-    );
+background:
+linear-gradient(
+135deg,
+var(--primary),
+var(--primary2)
+);
 
-    color:white;
-
-    box-shadow:
-    0 10px 25px rgba(37,99,235,.25);
+color:white;
 }
 
-/* ===========================
-INPUTS
-=========================== */
+/* INPUT */
 
 .form-control,
 .form-select{
 
-    background:var(--input)!important;
+background:var(--card)!important;
 
-    color:var(--text)!important;
+color:var(--text)!important;
 
-    border:
-    1px solid var(--border)!important;
+border:
+1px solid var(--border)!important;
 
-    border-radius:16px;
+border-radius:14px;
 
-    padding:12px 14px;
-}
-
-.form-control::placeholder{
-    color:var(--textSoft);
+padding:12px;
 }
 
 .form-control:focus,
 .form-select:focus{
 
-    border-color:var(--primary)!important;
+box-shadow:
+0 0 0 4px rgba(37,99,235,.15)!important;
 
-    box-shadow:
-    0 0 0 4px rgba(37,99,235,.15)!important;
+border-color:
+var(--primary)!important;
 }
 
-.form-label{
-
-    color:var(--textSoft);
-
-    font-weight:700;
-
-    margin-bottom:6px;
-}
-
-/* ===========================
-BUTTONS
-=========================== */
+/* BUTTON */
 
 .btn{
 
-    border-radius:14px;
+border-radius:14px;
 
-    font-weight:700;
-
-    padding:10px 16px;
+font-weight:700;
 }
 
-.btn-primary{
-
-    background:
-    linear-gradient(
-    135deg,
-    var(--primary),
-    var(--primary2)
-    );
-
-    border:none;
-}
-
-.btn-success{
-
-    background:
-    linear-gradient(
-    135deg,
-    #16a34a,
-    #22c55e
-    );
-
-    border:none;
-}
-
-.btn-whatsapp{
-
-    background:
-    linear-gradient(
-    135deg,
-    #16a34a,
-    #25D366
-    );
-
-    color:white;
-    border:none;
-}
-
-.btn-whatsapp:hover{
-    color:white;
-}
-
-/* ===========================
-DASHBOARD
-=========================== */
+/* DASH */
 
 .dash-card{
 
-    border-radius:24px;
+padding:25px;
 
-    padding:24px;
+border-radius:24px;
 
-    color:white;
+color:white;
 
-    position:relative;
+overflow:hidden;
 
-    overflow:hidden;
-
-    min-height:140px;
-}
-
-.dash-card::before{
-
-    content:'';
-
-    position:absolute;
-
-    width:120px;
-    height:120px;
-
-    background:
-    rgba(255,255,255,.08);
-
-    border-radius:50%;
-
-    right:-20px;
-    top:-20px;
+position:relative;
 }
 
 .dash-card h2{
 
-    font-size:2rem;
-    font-weight:800;
+font-size:2rem;
+font-weight:800;
 }
 
 .dash-icon{
 
-    font-size:2.8rem;
-    opacity:.25;
+font-size:3rem;
+opacity:.2;
 }
 
-/* ===========================
-SECTION
-=========================== */
-
-.section-title{
-
-    color:var(--primary);
-
-    font-weight:800;
-
-    font-size:1rem;
-
-    margin-top:30px;
-
-    margin-bottom:20px;
-
-    padding-bottom:10px;
-
-    border-bottom:
-    1px solid var(--border);
-}
-
-/* ===========================
-TABLE
-=========================== */
+/* TABLE */
 
 .table{
 
-    color:var(--text)!important;
+color:var(--text)!important;
 }
 
-.table thead{
+.table td,
+.table th{
 
-    background:var(--card2)!important;
-}
-
-.table-light th{
-
-    background:var(--card2)!important;
-
-    color:var(--text)!important;
-
-    border-color:var(--border)!important;
-}
-
-.table td{
-
-    border-color:var(--border)!important;
+border-color:
+var(--border)!important;
 }
 
 .table-hover tbody tr:hover{
 
-    background:
-    rgba(37,99,235,.05)!important;
+background:
+rgba(37,99,235,.05);
 }
 
-/* ===========================
-ALERT
-=========================== */
-
-.alert-secondary{
-
-    background:var(--card2)!important;
-
-    color:var(--text)!important;
-
-    border:
-    1px solid var(--border)!important;
-}
-
-/* ===========================
-MODAL
-=========================== */
-
-.modal-content{
-
-    background:var(--card);
-
-    color:var(--text);
-
-    border-radius:20px;
-
-    border:
-    1px solid var(--border);
-}
-
-/* ===========================
-LOGIN
-=========================== */
+/* LOGIN */
 
 #loginOverlay{
 
-    position:fixed;
+position:fixed;
 
-    inset:0;
+inset:0;
 
-    z-index:9999;
+display:flex;
 
-    display:flex;
+justify-content:center;
+align-items:center;
 
-    justify-content:center;
+z-index:9999;
 
-    align-items:center;
-
-    background:
-    linear-gradient(
-    135deg,
-    #0f172a,
-    #111827
-    );
+background:
+linear-gradient(
+135deg,
+#0f172a,
+#111827
+);
 }
 
 .login-box{
 
-    width:100%;
-    max-width:420px;
+background:
+rgba(17,24,39,.96);
 
-    background:
-    rgba(17,24,39,.95);
+padding:40px;
 
-    border:
-    1px solid rgba(255,255,255,.06);
+border-radius:30px;
 
-    padding:35px;
+width:100%;
+max-width:430px;
 
-    border-radius:28px;
-
-    box-shadow:
-    0 20px 50px rgba(0,0,0,.4);
+border:
+1px solid rgba(255,255,255,.06);
 }
 
 .login-box h3{
-    color:white;
+
+color:white;
 }
 
 .login-box .form-control{
 
-    background:#0f172a!important;
-
-    color:white!important;
-
-    border:
-    1px solid #334155!important;
+background:#0f172a!important;
+color:white!important;
 }
 
-.login-box .form-control::placeholder{
-    color:#94a3b8;
-}
+.section-title{
 
-.img-preview{
+font-size:1rem;
 
-    width:100%;
+font-weight:800;
 
-    max-height:260px;
+color:var(--primary);
 
-    object-fit:cover;
+margin-top:35px;
+margin-bottom:20px;
 
-    border-radius:20px;
-}
+padding-bottom:10px;
 
-/* ===========================
-SCROLL
-=========================== */
-
-::-webkit-scrollbar{
-    width:10px;
-}
-
-::-webkit-scrollbar-thumb{
-
-    background:
-    linear-gradient(
-    180deg,
-    #2563eb,
-    #4f46e5
-    );
-
-    border-radius:20px;
-}
-
-@media(max-width:768px){
-
-    .dash-card{
-        min-height:auto;
-    }
-
-    .navbar-brand{
-        font-size:1rem;
-    }
+border-bottom:
+1px solid var(--border);
 }
 
 </style>
@@ -521,32 +285,50 @@ SCROLL
 
 <div class="login-box">
 
-<h3 class="fw-bold mb-4 text-center">
+<h3 class="fw-bold text-center mb-4">
+
 <i class="bi bi-shield-lock-fill me-2"></i>
+
 CRM Login
+
 </h3>
 
-<input type="email" id="emailInput" class="form-control mb-3" placeholder="Seu e-mail">
+<input
+type="email"
+id="emailInput"
+class="form-control mb-3"
+placeholder="Seu e-mail"
+>
 
-<div class="input-group mb-4">
+<input
+type="password"
+id="passwordInput"
+class="form-control mb-4"
+placeholder="Sua senha"
+>
 
-<input type="password" id="passwordInput" class="form-control" placeholder="Sua senha">
+<button
+class="btn btn-primary w-100 mb-2"
+onclick="login()"
+>
 
-<button class="btn btn-outline-light" onclick="togglePassword()">
-<i class="bi bi-eye"></i>
-</button>
-
-</div>
-
-<button class="btn btn-primary w-100 mb-2" onclick="login()">
 Entrar
+
 </button>
 
-<button class="btn btn-outline-light w-100" onclick="register()">
+<button
+class="btn btn-outline-light w-100"
+onclick="register()"
+>
+
 Criar Conta
+
 </button>
 
-<div id="loginError" class="text-danger mt-3 text-center"></div>
+<div
+id="loginError"
+class="text-danger text-center mt-3"
+></div>
 
 </div>
 
@@ -558,21 +340,32 @@ Criar Conta
 
 <div class="container-fluid">
 
-<span class="navbar-brand">
+<span class="navbar-brand fw-bold">
 
 <i class="bi bi-shield-check me-2"></i>
+
 CRM Recuperação
 
 </span>
 
 <div class="d-flex gap-2">
 
-<button class="btn btn-outline-light btn-sm" onclick="toggleTheme()">
+<button
+class="btn btn-outline-light btn-sm"
+onclick="toggleTheme()"
+>
+
 <i class="bi bi-moon-stars-fill"></i>
+
 </button>
 
-<button class="btn btn-danger btn-sm" onclick="logout()">
+<button
+class="btn btn-danger btn-sm"
+onclick="logout()"
+>
+
 <i class="bi bi-box-arrow-right"></i>
+
 </button>
 
 </div>
@@ -591,7 +384,7 @@ CRM Recuperação
 
 <li class="nav-item">
 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboard">
-<i class="bi bi-grid-fill me-2"></i>
+<i class="bi bi-bar-chart-fill me-2"></i>
 Dashboard
 </button>
 </li>
@@ -604,9 +397,23 @@ Clientes
 </li>
 
 <li class="nav-item">
+<button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesquisa">
+<i class="bi bi-search me-2"></i>
+Pesquisar
+</button>
+</li>
+
+<li class="nav-item">
 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#agenda">
 <i class="bi bi-calendar-check-fill me-2"></i>
 Agenda
+</button>
+</li>
+
+<li class="nav-item">
+<button class="nav-link" data-bs-toggle="tab" data-bs-target="#config">
+<i class="bi bi-gear-fill me-2"></i>
+Configurações
 </button>
 </li>
 
@@ -618,21 +425,117 @@ Agenda
 
 <div class="tab-pane fade show active" id="dashboard">
 
-<div class="row g-4">
+<div class="row g-4 mb-4">
 
 <div class="col-md-3">
+
 <div class="dash-card" style="background:linear-gradient(135deg,#2563eb,#4f46e5)">
+
 <div class="d-flex justify-content-between">
+
 <div>
+
 <small>Total Clientes</small>
+
 <h2 id="totalClientes">0</h2>
+
 </div>
+
 <div class="dash-icon">
+
 <i class="bi bi-people-fill"></i>
+
 </div>
+
 </div>
+
 </div>
+
 </div>
+
+<div class="col-md-3">
+
+<div class="dash-card" style="background:linear-gradient(135deg,#16a34a,#22c55e)">
+
+<div class="d-flex justify-content-between">
+
+<div>
+
+<small>Fechados</small>
+
+<h2 id="fechados">0</h2>
+
+</div>
+
+<div class="dash-icon">
+
+<i class="bi bi-check-circle-fill"></i>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="dash-card" style="background:linear-gradient(135deg,#f59e0b,#f97316)">
+
+<div class="d-flex justify-content-between">
+
+<div>
+
+<small>Negociação</small>
+
+<h2 id="negociacao">0</h2>
+
+</div>
+
+<div class="dash-icon">
+
+<i class="bi bi-chat-dots-fill"></i>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="dash-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)">
+
+<div class="d-flex justify-content-between">
+
+<div>
+
+<small>Sem Interesse</small>
+
+<h2 id="semInteresse">0</h2>
+
+</div>
+
+<div class="dash-icon">
+
+<i class="bi bi-x-circle-fill"></i>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="card card-custom p-4">
+
+<canvas id="crmChart" height="100"></canvas>
 
 </div>
 
@@ -644,153 +547,129 @@ Agenda
 
 <div class="card card-custom p-4">
 
-<div class="alert alert-secondary border-0 p-4 mb-4 rounded-4">
-
-<label class="fw-bold mb-3 fs-5 d-flex align-items-center">
-
-<i class="bi bi-lightning-charge-fill text-warning me-2"></i>
-
-Preenchimento Mágico (Copie e Cole do PDF)
-
-</label>
-
-<div class="input-group">
-
-<textarea
-id="smartPasteBox"
-class="form-control"
-rows="3"
-placeholder="Cole aqui o texto inteiro do PDF..."
-></textarea>
-
-<button
-class="btn btn-primary px-4 fw-bold"
-onclick="autoFillForm()"
-type="button"
->
-
-Auto-preencher
-
-</button>
-
-</div>
-
-</div>
-
 <form id="clientForm">
 
 <div class="section-title">
-Dados Pessoais & Contato
+
+Dados do Cliente
+
 </div>
 
 <div class="row g-4">
 
 <div class="col-md-4">
-<label class="form-label">Nome do usuário</label>
+<label>Nome do usuário</label>
 <input type="text" id="cNome" class="form-control">
 </div>
 
 <div class="col-md-4">
-<label class="form-label">Nome social</label>
+<label>Nome social</label>
 <input type="text" id="cNomeSocial" class="form-control">
 </div>
 
 <div class="col-md-4">
-<label class="form-label">CPF do titular</label>
+<label>CPF do titular</label>
 <input type="text" id="cCPF" class="form-control">
 </div>
 
 <div class="col-md-3">
-<label class="form-label">Data de nascimento</label>
+<label>Data de nascimento</label>
 <input type="text" id="cNascimento" class="form-control">
 </div>
 
 <div class="col-md-5">
-<label class="form-label">Endereço</label>
+<label>Endereço</label>
 <input type="text" id="cEndereco" class="form-control">
 </div>
 
 <div class="col-md-3">
-<label class="form-label">Cidade</label>
+<label>Cidade</label>
 <input type="text" id="cCidade" class="form-control">
 </div>
 
 <div class="col-md-1">
-<label class="form-label">UF</label>
+<label>UF</label>
 <input type="text" id="cUF" class="form-control">
 </div>
 
 <div class="col-md-6">
-<label class="form-label">Telefones cadastrados</label>
-<input type="text" id="cTelefones" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label class="form-label">Endereços eletrônicos</label>
-<input type="text" id="cEmails" class="form-control">
-</div>
-
-</div>
-
-<div class="section-title mt-5">
-Dados do Plano & Empresa
-</div>
-
-<div class="row g-4">
-
-<div class="col-md-6">
-<label class="form-label">Empresa</label>
+<label>Empresa</label>
 <input type="text" id="cEmpresa" class="form-control">
 </div>
 
 <div class="col-md-3">
-<label class="form-label">Ade emp</label>
+<label>Ade emp</label>
 <input type="text" id="cAdeEmp" class="form-control">
 </div>
 
 <div class="col-md-3">
-<label class="form-label">Rede/plano</label>
+<label>Rede/plano</label>
 <input type="text" id="cRedePlano" class="form-control">
 </div>
 
 <div class="col-md-4">
-<label class="form-label">Plano atual</label>
+<label>Plano atual</label>
 <input type="text" id="cPlanoAtual" class="form-control">
 </div>
 
 <div class="col-md-4">
-<label class="form-label">Acomodação</label>
+<label>Acomodação</label>
 <input type="text" id="cAcomodacao" class="form-control">
 </div>
 
 <div class="col-md-4">
-<label class="form-label">Situação</label>
+<label>Situação</label>
 <input type="text" id="cSituacao" class="form-control">
 </div>
 
 <div class="col-md-3">
-<label class="form-label">Data da adesão</label>
+<label>Data da adesão</label>
 <input type="text" id="cAdesao" class="form-control">
 </div>
 
 <div class="col-md-3">
-<label class="form-label">Data do cancelamento</label>
+<label>Data do cancelamento</label>
 <input type="text" id="cCancelamento" class="form-control">
 </div>
 
 <div class="col-md-3">
-<label class="form-label">Tempo</label>
+<label>Tempo</label>
 <input type="text" id="cTempo" class="form-control">
 </div>
 
 <div class="col-md-3">
-<label class="form-label">Data para Retorno</label>
+<label>Retorno</label>
 <input type="date" id="cRetorno" class="form-control">
 </div>
 
+<div class="col-md-6">
+<label>Telefones cadastrados</label>
+<input type="text" id="cTelefones" class="form-control">
 </div>
 
-<div class="mt-5 text-end">
+<div class="col-md-6">
+<label>Endereços eletrônicos</label>
+<input type="text" id="cEmails" class="form-control">
+</div>
+
+<div class="col-md-4">
+
+<label>Status</label>
+
+<select id="cStatus" class="form-select">
+
+<option>Em negociação</option>
+<option>Fechou o plano</option>
+<option>Entrou em contato</option>
+<option>Não tem interesse</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="text-end mt-5">
 
 <button
 type="button"
@@ -810,19 +689,32 @@ Salvar Cliente
 
 </div>
 
-<!-- AGENDA -->
+<!-- PESQUISA -->
 
-<div class="tab-pane fade" id="agenda">
+<div class="tab-pane fade" id="pesquisa">
 
 <div class="card card-custom p-4">
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="row g-3 mb-4">
 
-<h4 class="fw-bold">
-Agenda de Retorno
-</h4>
+<div class="col-md-8">
 
-<button class="btn btn-success" onclick="exportToExcel()">
+<input
+type="text"
+id="searchInput"
+class="form-control"
+placeholder="Pesquisar por nome, CPF, telefone..."
+onkeyup="renderPesquisa()"
+>
+
+</div>
+
+<div class="col-md-4 text-end">
+
+<button
+class="btn btn-success"
+onclick="exportExcel()"
+>
 
 <i class="bi bi-file-earmark-excel me-2"></i>
 
@@ -832,15 +724,18 @@ Exportar Excel
 
 </div>
 
+</div>
+
 <div class="table-responsive">
 
 <table class="table table-hover align-middle">
 
-<thead class="table-light">
+<thead>
 
 <tr>
 
 <th>Cliente</th>
+<th>Empresa</th>
 <th>Telefone</th>
 <th>Status</th>
 <th>Retorno</th>
@@ -850,9 +745,97 @@ Exportar Excel
 
 </thead>
 
-<tbody id="agendaTableBody"></tbody>
+<tbody id="pesquisaBody"></tbody>
 
 </table>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- AGENDA -->
+
+<div class="tab-pane fade" id="agenda">
+
+<div class="card card-custom p-4">
+
+<h4 class="fw-bold mb-4">
+
+Agenda de Retorno
+
+</h4>
+
+<div id="agendaLista"></div>
+
+</div>
+
+</div>
+
+<!-- CONFIG -->
+
+<div class="tab-pane fade" id="config">
+
+<div class="card card-custom p-4">
+
+<h4 class="fw-bold mb-4">
+
+Gerenciar Status
+
+</h4>
+
+<div class="input-group mb-4">
+
+<input
+type="text"
+id="novoStatus"
+class="form-control"
+placeholder="Novo status"
+>
+
+<button
+class="btn btn-primary"
+onclick="addStatus()"
+>
+
+Adicionar
+
+</button>
+
+</div>
+
+<ul
+class="list-group mb-4"
+id="statusList"
+></ul>
+
+<div class="d-flex gap-3">
+
+<button
+class="btn btn-success"
+onclick="exportBackup()"
+>
+
+<i class="bi bi-download me-2"></i>
+
+Backup CRM
+
+</button>
+
+<label class="btn btn-primary mb-0">
+
+<i class="bi bi-upload me-2"></i>
+
+Importar Backup
+
+<input
+type="file"
+hidden
+onchange="importBackup(event)"
+>
+
+</label>
 
 </div>
 
@@ -871,224 +854,139 @@ Exportar Excel
 /* FIREBASE */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
-  authDomain: "crm-recuperacao.firebaseapp.com",
-  projectId: "crm-recuperacao",
-  storageBucket: "crm-recuperacao.firebasestorage.app",
-  messagingSenderId: "347011763386",
-  appId: "1:347011763386:web:158c1ca6f512a1cde1c683",
-  measurementId: "G-1XHHFXHN4G"
+
+apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
+
+authDomain: "crm-recuperacao.firebaseapp.com",
+
+projectId: "crm-recuperacao",
+
+storageBucket: "crm-recuperacao.firebasestorage.app",
+
+messagingSenderId: "347011763386",
+
+appId: "1:347011763386:web:158c1ca6f512a1cde1c683"
 };
 
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
+
 const auth = firebase.auth();
 
 let clients = [];
 
-/* AUTH */
+let statuses = [
 
-auth.onAuthStateChanged(user => {
+'Em negociação',
+'Fechou o plano',
+'Entrou em contato',
+'Não tem interesse'
+];
 
-    if(user){
-
-        document.getElementById('loginOverlay').style.display = 'none';
-
-        loadClients();
-
-    }else{
-
-        document.getElementById('loginOverlay').style.display = 'flex';
-    }
-});
+let chart;
 
 /* LOGIN */
 
+auth.onAuthStateChanged(user=>{
+
+if(user){
+
+document.getElementById('loginOverlay').style.display='none';
+
+loadClients();
+
+}else{
+
+document.getElementById('loginOverlay').style.display='flex';
+}
+});
+
 function login(){
 
-    const email =
-    document.getElementById('emailInput').value;
+auth
+.signInWithEmailAndPassword(
 
-    const senha =
-    document.getElementById('passwordInput').value;
+emailInput.value,
+passwordInput.value
 
-    auth.signInWithEmailAndPassword(email, senha)
+)
 
-    .catch((error)=>{
+.catch(err=>{
 
-        document.getElementById('loginError').innerText =
-        error.message;
-    });
+loginError.innerText =
+err.message;
+});
 }
-
-/* REGISTER */
 
 function register(){
 
-    const email =
-    document.getElementById('emailInput').value;
+auth
+.createUserWithEmailAndPassword(
 
-    const senha =
-    document.getElementById('passwordInput').value;
+emailInput.value,
+passwordInput.value
 
-    auth.createUserWithEmailAndPassword(email, senha)
+)
 
-    .catch((error)=>{
+.catch(err=>{
 
-        document.getElementById('loginError').innerText =
-        error.message;
-    });
+loginError.innerText =
+err.message;
+});
 }
-
-/* LOGOUT */
 
 function logout(){
 
-    auth.signOut();
-}
-
-/* PASSWORD */
-
-function togglePassword(){
-
-const input =
-document.getElementById('passwordInput');
-
-input.type =
-input.type === 'password'
-? 'text'
-: 'password';
+auth.signOut();
 }
 
 /* THEME */
 
 function toggleTheme(){
 
-    document.body.classList.toggle('dark-mode');
-
-    localStorage.setItem(
-        'crm-theme',
-        document.body.classList.contains('dark-mode')
-    );
-}
-
-if(localStorage.getItem('crm-theme') === 'true'){
-
-    document.body.classList.add('dark-mode');
-}
-
-/* AUTO FILL */
-
-function autoFillForm(){
-
-const text =
-document.getElementById('smartPasteBox').value;
-
-const extract = (regex)=>{
-
-const match = text.match(regex);
-
-return match ? match[1].trim() : '';
-};
-
-document.getElementById('cNome').value =
-extract(/Nome(?: do usuário)?:\s*([^\n]+)/i);
-
-document.getElementById('cCPF').value =
-extract(/CPF(?: do titular)?:\s*([^\n]+)/i);
-
-document.getElementById('cEmpresa').value =
-extract(/Empresa:\s*([^\n]+)/i);
+document.body.classList.toggle('dark-mode');
 }
 
 /* SAVE */
 
 function saveClient(){
 
-const user = auth.currentUser;
+const client={
 
-if(!user){
-
-alert('Faça login');
-
-return;
-}
-
-const client = {
-
-userId:user.uid,
-
-nome:
-document.getElementById('cNome').value,
-
-nomeSocial:
-document.getElementById('cNomeSocial').value,
-
-cpf:
-document.getElementById('cCPF').value,
-
-nascimento:
-document.getElementById('cNascimento').value,
-
-endereco:
-document.getElementById('cEndereco').value,
-
-cidade:
-document.getElementById('cCidade').value,
-
-uf:
-document.getElementById('cUF').value,
-
-telefones:
-document.getElementById('cTelefones').value,
-
-emails:
-document.getElementById('cEmails').value,
-
-empresa:
-document.getElementById('cEmpresa').value,
-
-adeEmp:
-document.getElementById('cAdeEmp').value,
-
-redePlano:
-document.getElementById('cRedePlano').value,
-
-planoAtual:
-document.getElementById('cPlanoAtual').value,
-
-acomodacao:
-document.getElementById('cAcomodacao').value,
-
-situacao:
-document.getElementById('cSituacao').value,
-
-adesao:
-document.getElementById('cAdesao').value,
-
-cancelamento:
-document.getElementById('cCancelamento').value,
-
-tempo:
-document.getElementById('cTempo').value,
-
-retorno:
-document.getElementById('cRetorno').value,
-
+nome:cNome.value,
+nomeSocial:cNomeSocial.value,
+cpf:cCPF.value,
+nascimento:cNascimento.value,
+endereco:cEndereco.value,
+cidade:cCidade.value,
+uf:cUF.value,
+empresa:cEmpresa.value,
+adeEmp:cAdeEmp.value,
+redePlano:cRedePlano.value,
+planoAtual:cPlanoAtual.value,
+acomodacao:cAcomodacao.value,
+situacao:cSituacao.value,
+adesao:cAdesao.value,
+cancelamento:cCancelamento.value,
+tempo:cTempo.value,
+retorno:cRetorno.value,
+telefones:cTelefones.value,
+emails:cEmails.value,
+status:cStatus.value,
+userId:auth.currentUser.uid,
 createdAt:new Date()
 };
 
-db.collection("clients")
+db.collection('clients')
+
 .add(client)
 
 .then(()=>{
 
-alert('Cliente salvo!');
+alert('Cliente salvo');
 
-document.getElementById('clientForm').reset();
-
-loadClients();
+clientForm.reset();
 });
 }
 
@@ -1096,83 +994,182 @@ loadClients();
 
 function loadClients(){
 
-const user = auth.currentUser;
+db.collection('clients')
 
-db.collection("clients")
-.where("userId","==",user.uid)
+.where(
+'userId',
+'==',
+auth.currentUser.uid
+)
 
 .onSnapshot(snapshot=>{
 
-clients = [];
+clients=[];
 
 snapshot.forEach(doc=>{
 
 clients.push({
+
 id:doc.id,
 ...doc.data()
+
 });
 });
+
+renderPesquisa();
 
 renderAgenda();
 
-document.getElementById('totalClientes').innerText =
-clients.length;
+updateDashboard();
+
+renderStatusList();
 });
 }
 
-/* AGENDA */
+/* DASHBOARD */
 
-function renderAgenda(){
+function updateDashboard(){
+
+totalClientes.innerText =
+clients.length;
+
+fechados.innerText =
+clients.filter(c=>c.status==='Fechou o plano').length;
+
+negociacao.innerText =
+clients.filter(c=>c.status==='Em negociação').length;
+
+semInteresse.innerText =
+clients.filter(c=>c.status==='Não tem interesse').length;
+
+const data = [
+
+clients.filter(c=>c.status==='Em negociação').length,
+
+clients.filter(c=>c.status==='Fechou o plano').length,
+
+clients.filter(c=>c.status==='Entrou em contato').length,
+
+clients.filter(c=>c.status==='Não tem interesse').length
+];
+
+if(chart){
+
+chart.destroy();
+}
+
+chart = new Chart(
+
+document.getElementById('crmChart'),
+
+{
+
+type:'bar',
+
+data:{
+
+labels:[
+
+'Negociação',
+'Fechados',
+'Contato',
+'Sem Interesse'
+
+],
+
+datasets:[{
+
+label:'Clientes',
+
+data:data,
+
+borderWidth:1
+}]
+}
+});
+}
+
+/* PESQUISA */
+
+function renderPesquisa(){
 
 const tbody =
-document.getElementById('agendaTableBody');
+document.getElementById('pesquisaBody');
 
 tbody.innerHTML='';
 
-clients.forEach(c=>{
+const termo =
+searchInput.value.toLowerCase();
+
+clients
+
+.filter(c=>
+
+Object.values(c)
+.join(' ')
+.toLowerCase()
+.includes(termo)
+
+)
+
+.forEach(c=>{
 
 tbody.innerHTML += `
 
 <tr>
 
 <td>
-<strong>${c.nome || '-'}</strong>
+
+<strong>${c.nome}</strong><br>
+
+<small>${c.cpf}</small>
+
 </td>
 
-<td>
-${c.telefones || '-'}
-</td>
+<td>${c.empresa||'-'}</td>
+
+<td>${c.telefones||'-'}</td>
 
 <td>
 
 <span class="badge bg-primary">
 
-Em negociação
+${c.status}
 
 </span>
 
 </td>
 
-<td>
-
-<strong class="text-warning">
-
-${c.retorno || '-'}
-
-</strong>
-
-</td>
+<td>${c.retorno||'-'}</td>
 
 <td>
 
 <div class="d-flex gap-2">
 
 <button
-class="btn btn-whatsapp btn-sm"
-onclick="openWhatsApp('${c.telefones || ''}')"
+class="btn btn-success btn-sm"
+onclick="whats('${c.telefones}')"
 >
 
 <i class="bi bi-whatsapp"></i>
+
+</button>
+
+<button
+class="btn btn-warning btn-sm"
+onclick="editarCliente('${c.id}')"
+>
+
+<i class="bi bi-pencil"></i>
+
+</button>
+
+<button
+class="btn btn-danger btn-sm"
+onclick="deleteClient('${c.id}')"
+>
+
+<i class="bi bi-trash"></i>
 
 </button>
 
@@ -1185,22 +1182,159 @@ onclick="openWhatsApp('${c.telefones || ''}')"
 });
 }
 
-/* WHATSAPP */
+/* EDITAR */
 
-function openWhatsApp(phone){
+function editarCliente(id){
 
-const numero =
-phone.replace(/\D/g,'');
+const c =
+clients.find(x=>x.id===id);
+
+if(!c) return;
+
+cNome.value = c.nome || '';
+cNomeSocial.value = c.nomeSocial || '';
+cCPF.value = c.cpf || '';
+cNascimento.value = c.nascimento || '';
+cEndereco.value = c.endereco || '';
+cCidade.value = c.cidade || '';
+cUF.value = c.uf || '';
+cEmpresa.value = c.empresa || '';
+cAdeEmp.value = c.adeEmp || '';
+cRedePlano.value = c.redePlano || '';
+cPlanoAtual.value = c.planoAtual || '';
+cAcomodacao.value = c.acomodacao || '';
+cSituacao.value = c.situacao || '';
+cAdesao.value = c.adesao || '';
+cCancelamento.value = c.cancelamento || '';
+cTempo.value = c.tempo || '';
+cRetorno.value = c.retorno || '';
+cTelefones.value = c.telefones || '';
+cEmails.value = c.emails || '';
+cStatus.value = c.status || '';
+
+document
+.querySelector('[data-bs-target="#clientes"]')
+.click();
+}
+
+/* DELETE */
+
+function deleteClient(id){
+
+if(confirm('Excluir cliente?')){
+
+db.collection('clients')
+.doc(id)
+.delete();
+}
+}
+
+/* WHATS */
+
+function whats(numero){
 
 window.open(
-`https://wa.me/55${numero}`,
+
+'https://wa.me/55'+
+numero.replace(/\D/g,''),
+
 '_blank'
 );
 }
 
+/* AGENDA */
+
+function renderAgenda(){
+
+agendaLista.innerHTML='';
+
+clients.forEach(c=>{
+
+if(c.retorno){
+
+agendaLista.innerHTML += `
+
+<div class="card p-3 mb-3">
+
+<div class="d-flex justify-content-between align-items-center">
+
+<div>
+
+<strong>${c.nome}</strong><br>
+
+<small>${c.retorno}</small>
+
+</div>
+
+<button
+class="btn btn-success btn-sm"
+onclick="whats('${c.telefones}')"
+>
+
+<i class="bi bi-whatsapp"></i>
+
+</button>
+
+</div>
+
+</div>
+`;
+}
+});
+}
+
+/* STATUS */
+
+function addStatus(){
+
+const novo =
+novoStatus.value.trim();
+
+if(!novo) return;
+
+statuses.push(novo);
+
+renderStatusList();
+
+novoStatus.value='';
+}
+
+function renderStatusList(){
+
+statusList.innerHTML='';
+
+statuses.forEach((s,i)=>{
+
+statusList.innerHTML += `
+
+<li class="list-group-item d-flex justify-content-between align-items-center">
+
+${s}
+
+<button
+class="btn btn-danger btn-sm"
+onclick="removeStatus(${i})"
+>
+
+<i class="bi bi-trash"></i>
+
+</button>
+
+</li>
+`;
+});
+}
+
+function removeStatus(i){
+
+statuses.splice(i,1);
+
+renderStatusList();
+}
+
 /* EXCEL */
 
-function exportToExcel(){
+function exportExcel(){
 
 const ws =
 XLSX.utils.json_to_sheet(clients);
@@ -1218,6 +1352,72 @@ XLSX.writeFile(
 wb,
 'clientes.xlsx'
 );
+}
+
+/* BACKUP */
+
+function exportBackup(){
+
+const data = {
+
+clients,
+statuses
+};
+
+const blob =
+new Blob(
+[JSON.stringify(data)],
+{type:'application/json'}
+);
+
+const a =
+document.createElement('a');
+
+a.href =
+URL.createObjectURL(blob);
+
+a.download =
+'backup_crm.json';
+
+a.click();
+}
+
+function importBackup(event){
+
+const file =
+event.target.files[0];
+
+if(!file) return;
+
+const reader =
+new FileReader();
+
+reader.onload = e=>{
+
+const data =
+JSON.parse(e.target.result);
+
+if(data.clients){
+
+data.clients.forEach(c=>{
+
+db.collection('clients')
+.add(c);
+});
+}
+
+if(data.statuses){
+
+statuses =
+data.statuses;
+
+renderStatusList();
+}
+
+alert('Backup restaurado');
+};
+
+reader.readAsText(file);
 }
 
 </script>
