@@ -14,18 +14,38 @@
 
     <style>
         :root { --bg-body: #f4f7f6; --bg-card: #ffffff; --text-main: #212529; --text-muted: #6c757d; --border-color: #ced4da; --input-bg: #ffffff; --input-text: #212529; --section-title: #0A2463; }
-        body.dark-mode { --bg-body: #121212; --bg-card: #1e1e1e; --text-main: #f8f9fa; --text-muted: #adb5bd; --border-color: #5c636a; --input-bg: #000000; --input-text: #ffffff; --section-title: #66b2ff; }
+        
+        /* Dark Mode Aprimorado */
+        body.dark-mode { 
+            --bg-body: #121212; 
+            --bg-card: #1e1e1e; 
+            --text-main: #e0e0e0; 
+            --text-muted: #a0a0a0; 
+            --border-color: #333333; 
+            --input-bg: #2a2a2a; 
+            --input-text: #ffffff; 
+            --section-title: #66b2ff; 
+        }
+        
         body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: 0.3s; margin: 0; padding: 0;}
         .navbar-custom { background-color: #0A2463; color: white; }
         .card-custom { background-color: var(--bg-card); border-radius: 15px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; }
+        
+        /* Tabelas Dark Mode */
         .table { color: var(--text-main); }
-        .dark-mode .table-light { background-color: #2b2b2b; color: #f8f9fa; }
-        .dark-mode .table-light th { background-color: #2b2b2b; border-color: #444; color: #fff;}
-        .dark-mode .table-hover tbody tr:hover { background-color: #2a2a2a; color: white;}
-        .dark-mode td { border-color: #444; }
+        .dark-mode .table { color: #e0e0e0; }
+        .dark-mode .table-light { background-color: #252525; color: #ffffff; }
+        .dark-mode .table-light th { background-color: #252525; border-color: #333; color: #fff;}
+        .dark-mode .table-hover tbody tr:hover { background-color: #2d2d2d; color: white;}
+        .dark-mode td { border-color: #333; }
+        
+        /* Inputs Dark Mode */
         .form-control, .form-select { background-color: var(--input-bg); color: var(--input-text); border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; padding: 10px 12px; transition: all 0.2s ease-in-out; }
         .dark-mode .form-control::placeholder { color: #8a939b; opacity: 1; }
         .form-control:focus, .form-select:focus { background-color: var(--input-bg); color: var(--input-text); border-color: #FF6B35; box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.25); outline: none; }
+        .dark-mode .alert-secondary { background-color: #2a2a2a; border-color: #444 !important; color: #e0e0e0;}
+        
+        /* Outros estilos */
         .nav-tabs .nav-link { color: var(--text-muted); font-weight: 600; border: none; padding: 12px 20px; }
         .nav-tabs .nav-link.active { color: #FF6B35; background-color: transparent; border-bottom: 3px solid #FF6B35; }
         .nav-tabs { border-bottom: 2px solid var(--border-color); margin-bottom: 20px; }
@@ -35,9 +55,11 @@
         .form-label { font-weight: 600; font-size: 0.85rem; margin-bottom: 0.4rem; margin-top: 0.5rem;}
         .section-title { font-size: 1rem; color: var(--section-title); font-weight: 700; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; margin-top: 20px; margin-bottom: 15px;}
         .img-preview { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px;}
-        .dark-mode .modal-content { background-color: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); }
-        .dark-mode .modal-header, .dark-mode .modal-footer { border-color: var(--border-color); }
-        .dark-mode .input-group-text { background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);}
+        
+        /* Modais */
+        .dark-mode .modal-content { background-color: #1e1e1e; color: #e0e0e0; border: 1px solid #333; }
+        .dark-mode .modal-header, .dark-mode .modal-footer { border-color: #333; }
+        .dark-mode .input-group-text { background-color: #333; border-color: #444; color: #fff;}
 
         /* Tela de Login */
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); z-index: 9999; display: flex; align-items: center; justify-content: center; }
@@ -51,9 +73,17 @@
     <div class="login-box text-center">
         <h3 class="fw-bold mb-4" style="color: var(--section-title);"><i class="bi bi-shield-lock me-2"></i>CRM Login</h3>
         <input type="email" id="emailInput" class="form-control mb-3" placeholder="Seu E-mail">
-        <input type="password" id="passwordInput" class="form-control mb-4" placeholder="Sua Senha">
+        
+        <!-- Campo de Senha com Olho -->
+        <div class="input-group mb-4">
+            <input type="password" id="passwordInput" class="form-control" placeholder="Sua Senha">
+            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()" id="eyeBtn">
+                <i class="bi bi-eye"></i>
+            </button>
+        </div>
+
         <button class="btn btn-primary w-100 mb-2 fw-bold" onclick="login()"><i class="bi bi-box-arrow-in-right me-2"></i>Entrar</button>
-        <button class="btn btn-outline-secondary w-100 btn-sm" onclick="register()">Criar Conta</button>
+        <button class="btn btn-outline-secondary w-100 btn-sm" onclick="register()">Criar Conta (1º Acesso)</button>
         <div id="loginError" class="text-danger mt-3 small fw-bold"></div>
     </div>
 </div>
@@ -63,8 +93,16 @@
         <span class="navbar-brand mb-0 h1 fw-bold"><i class="bi bi-shield-check me-2"></i>CRM de Recuperação</span>
         <div>
             <span class="me-3 small text-light d-none d-md-inline" id="userEmailDisplay"></span>
+            
+            <!-- Botões de Backup e Restaurar -->
+            <button class="btn btn-outline-light btn-sm me-2 d-none d-md-inline-block" onclick="exportBackup()"><i class="bi bi-download"></i> Backup</button>
+            <label class="btn btn-outline-light btn-sm mb-0 me-2 d-none d-md-inline-block" style="cursor: pointer;">
+                <i class="bi bi-upload"></i> Restaurar
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importBackup(event)">
+            </label>
+
             <button class="btn btn-outline-light btn-sm me-2" data-bs-toggle="modal" data-bs-target="#statusModal"><i class="bi bi-tags"></i> Status</button>
-            <button class="btn btn-outline-light btn-sm ms-2" onclick="toggleTheme()" id="themeBtn" title="Alternar Modo"><i class="bi bi-moon-fill"></i></button>
+            <button class="btn btn-outline-light btn-sm ms-1" onclick="toggleTheme()" id="themeBtn" title="Alternar Modo"><i class="bi bi-moon-fill"></i></button>
             <button class="btn btn-danger btn-sm ms-2" onclick="logout()" title="Sair"><i class="bi bi-box-arrow-right"></i></button>
         </div>
     </div>
@@ -242,21 +280,38 @@
     const auth = firebase.auth();
 
     // ----------------------------------------------------
-    // ESTADO
+    // ESTADO E USUÁRIO LOGADO
     // ----------------------------------------------------
     let clients = [];
     let statuses = ['Em negociação', 'Entrou em contato', 'Fechou o plano', 'Não tem interesse'];
     const cardColors = ['#0A2463', '#3E92CC', '#25D366', '#DC3545', '#FFC107', '#6F42C1', '#17A2B8'];
+    let currentUser = null;
 
     // ----------------------------------------------------
-    // AUTENTICAÇÃO
+    // AUTENTICAÇÃO E VISUALIZAÇÃO DE SENHA
     // ----------------------------------------------------
+    function togglePassword() {
+        const pInput = document.getElementById('passwordInput');
+        const icon = document.getElementById('eyeBtn').querySelector('i');
+        if (pInput.type === "password") {
+            pInput.type = "text";
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            pInput.type = "password";
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        }
+    }
+
     auth.onAuthStateChanged(user => {
         if(user) {
+            currentUser = user;
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('userEmailDisplay').innerText = user.email;
-            loadDataFromFirebase(); // Inicia a sincronização
+            loadDataFromFirebase(user.uid); // Carrega APENAS os dados desse usuário
         } else {
+            currentUser = null;
             document.getElementById('loginOverlay').style.display = 'flex';
             document.getElementById('userEmailDisplay').innerText = '';
         }
@@ -284,28 +339,72 @@
     function logout() { auth.signOut(); }
 
     // ----------------------------------------------------
-    // SINCRONIZAÇÃO EM TEMPO REAL (FIRESTORE)
+    // ISOLAMENTO DE DADOS (APENAS O USUÁRIO LOGADO VÊ SEUS DADOS)
     // ----------------------------------------------------
-    function loadDataFromFirebase() {
-        // Escuta os clientes
-        db.collection("clients").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+    function loadDataFromFirebase(uid) {
+        // Escuta apenas os clientes cujo "userId" seja igual ao UID logado
+        db.collection("clients").where("userId", "==", uid).onSnapshot((snapshot) => {
             clients = [];
             snapshot.forEach((doc) => {
                 clients.push({ id: doc.id, ...doc.data() });
             });
+            // Ordena do mais novo pro mais velho no navegador
+            clients.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
             renderTable();
             updateDashboard();
         });
 
-        // Escuta as configurações de status
-        db.collection("config").doc("statuses").onSnapshot((doc) => {
-            if(doc.exists && doc.data().list) {
-                statuses = doc.data().list;
+        // Escuta as configurações de status apenas desse usuário
+        db.collection("config").doc(uid).onSnapshot((doc) => {
+            if(doc.exists && doc.data().statuses) {
+                statuses = doc.data().statuses;
+            } else {
+                statuses = ['Em negociação', 'Entrou em contato', 'Fechou o plano', 'Não tem interesse'];
             }
             updateStatusSelects();
             renderStatusList();
             updateDashboard();
         });
+    }
+
+    // ----------------------------------------------------
+    // BACKUP E RESTAURAÇÃO (LIGADOS À CONTA DO USUÁRIO)
+    // ----------------------------------------------------
+    function exportBackup() {
+        if(!currentUser) return;
+        const data = { clients, statuses };
+        const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `backup_crm_nuvem_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+    }
+
+    function importBackup(event) {
+        if(!currentUser) return;
+        const file = event.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if(data.clients && data.statuses) {
+                    if(confirm("Deseja enviar os dados deste backup para a sua nuvem?")) {
+                        // Atualiza status do usuário logado
+                        db.collection("config").doc(currentUser.uid).set({ statuses: data.statuses }, { merge: true });
+                        // Atualiza clientes, vinculando a este usuário
+                        data.clients.forEach(c => {
+                            c.userId = currentUser.uid; 
+                            db.collection("clients").doc(c.id).set(c);
+                        });
+                        alert("Backup enviado para a nuvem com sucesso!");
+                    }
+                }
+            } catch(err) {
+                alert("Erro ao ler arquivo de backup.");
+            }
+        };
+        reader.readAsText(file);
     }
 
     // ----------------------------------------------------
@@ -378,6 +477,7 @@
             dashContainer.innerHTML += createDashCard(status, count, color, icon);
         });
     }
+    
     function createDashCard(title, count, color, icon) {
         return `<div class="col-md-3 col-sm-6"><div class="dash-card d-flex justify-content-between align-items-center border-0" style="background-color: ${color};">
                 <div><h6 class="text-uppercase mb-1 opacity-75" style="font-size: 0.8rem;">${title}</h6><h2 class="mb-0 fw-bold">${count}</h2></div>
@@ -394,18 +494,20 @@
     }
 
     function addStatus() { 
+        if(!currentUser) return;
         const val = document.getElementById('newStatus').value.trim(); 
         if(val && !statuses.includes(val)) { 
             const newStatuses = [...statuses, val];
-            db.collection("config").doc("statuses").set({ list: newStatuses });
+            db.collection("config").doc(currentUser.uid).set({ statuses: newStatuses }, { merge: true });
             document.getElementById('newStatus').value = ''; 
         } 
     }
     
     function deleteStatus(index) { 
+        if(!currentUser) return;
         const newStatuses = [...statuses];
         newStatuses.splice(index, 1);
-        db.collection("config").doc("statuses").set({ list: newStatuses });
+        db.collection("config").doc(currentUser.uid).set({ statuses: newStatuses }, { merge: true });
     }
     
     function renderStatusList() { 
@@ -458,11 +560,14 @@
     }
 
     function saveClient() {
+        if(!currentUser) return alert("Você precisa estar logado!");
+        
         const id = document.getElementById('clientId').value || db.collection('clients').doc().id;
         const nome = document.getElementById('cNome').value;
         if(!nome) { alert("O Nome do usuário é obrigatório."); return; }
 
         const client = { 
+            userId: currentUser.uid, // <-- VINCULA O CLIENTE AO USUÁRIO LOGADO
             nome, 
             nomeSocial: document.getElementById('cNomeSocial').value, 
             cpf: document.getElementById('cCPF').value, 
@@ -483,16 +588,17 @@
             tempo: document.getElementById('cTempo').value, 
             status: document.getElementById('cStatus').value, 
             foto: document.getElementById('cFotoBase64').value,
-            createdAt: document.getElementById('clientId').value ? firebase.firestore.FieldValue.serverTimestamp() : new Date() // Mantem a ordem
+            createdAt: document.getElementById('clientId').value ? firebase.firestore.FieldValue.serverTimestamp() : new Date()
         };
 
         const btn = document.querySelector('button[onclick="saveClient()"]');
         btn.disabled = true;
-        btn.innerHTML = 'Salvando na Nuvem...';
+        btn.innerHTML = 'Salvando...';
 
         db.collection("clients").doc(id).set(client, { merge: true }).then(() => {
             resetForm();
-            bootstrap.Tab.getOrCreateInstance(document.querySelector('#tab-pesquisa')).show();
+            // Retorna automaticamente para a aba DASHBOARD
+            bootstrap.Tab.getOrCreateInstance(document.querySelector('#tab-dashboard')).show();
         }).catch(err => alert("Erro ao salvar: " + err.message))
         .finally(() => {
             btn.disabled = false;
