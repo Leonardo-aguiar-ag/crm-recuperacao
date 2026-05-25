@@ -13,15 +13,20 @@
         .table-hover tbody tr:hover { background-color: #f8f9fa; }
         .img-preview { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px;}
         
-        /* Estilos das Abas */
+        /* Abas */
         .nav-tabs .nav-link { color: #6c757d; font-weight: 600; border: none; padding: 12px 20px; }
         .nav-tabs .nav-link.active { color: #0A2463; background-color: transparent; border-bottom: 3px solid #FF6B35; }
         .nav-tabs { border-bottom: 2px solid #e9ecef; margin-bottom: 20px; }
         
-        /* Cards do Dashboard */
+        /* Dashboard */
         .dash-card { border-radius: 15px; color: white; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s;}
         .dash-card:hover { transform: translateY(-5px); }
         .dash-icon { font-size: 2.5rem; opacity: 0.5; }
+        
+        /* Formulário */
+        .form-label { font-weight: 600; font-size: 0.85rem; color: #495057; margin-bottom: 0.2rem; margin-top: 0.5rem;}
+        .form-control, .form-select { border-radius: 8px; font-size: 0.9rem;}
+        .section-title { font-size: 1rem; color: #0A2463; font-weight: 700; border-bottom: 2px solid #e9ecef; padding-bottom: 5px; margin-top: 20px; margin-bottom: 15px;}
     </style>
 </head>
 <body>
@@ -43,68 +48,89 @@
 <div class="container-fluid px-4">
     
     <ul class="nav nav-tabs" id="crmTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="tab-dashboard" data-bs-toggle="tab" data-bs-target="#pane-dashboard" type="button" role="tab"><i class="bi bi-bar-chart-fill me-2"></i>Dashboard</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-cadastro" data-bs-toggle="tab" data-bs-target="#pane-cadastro" type="button" role="tab"><i class="bi bi-person-plus-fill me-2"></i>Cadastrar / Editar</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-pesquisa" data-bs-toggle="tab" data-bs-target="#pane-pesquisa" type="button" role="tab"><i class="bi bi-search me-2"></i>Pesquisar Clientes</button>
-        </li>
+        <li class="nav-item"><button class="nav-link active" id="tab-dashboard" data-bs-toggle="tab" data-bs-target="#pane-dashboard" type="button"><i class="bi bi-bar-chart-fill me-2"></i>Dashboard</button></li>
+        <li class="nav-item"><button class="nav-link" id="tab-cadastro" data-bs-toggle="tab" data-bs-target="#pane-cadastro" type="button"><i class="bi bi-person-vcard me-2"></i>Ficha do Cliente</button></li>
+        <li class="nav-item"><button class="nav-link" id="tab-pesquisa" data-bs-toggle="tab" data-bs-target="#pane-pesquisa" type="button"><i class="bi bi-search me-2"></i>Pesquisar</button></li>
     </ul>
 
     <div class="tab-content" id="crmTabsContent">
         
-        <div class="tab-pane fade show active" id="pane-dashboard" role="tabpanel">
-            <h4 class="mb-4 text-secondary fw-bold">Visão Geral dos Clientes</h4>
-            <div class="row g-4" id="dashboardCards">
-                </div>
+        <!-- ABA 1: DASHBOARD -->
+        <div class="tab-pane fade show active" id="pane-dashboard">
+            <h4 class="mb-4 text-secondary fw-bold">Visão Geral</h4>
+            <div class="row g-4" id="dashboardCards"></div>
         </div>
 
-        <div class="tab-pane fade" id="pane-cadastro" role="tabpanel">
+        <!-- ABA 2: CADASTRAR / EDITAR -->
+        <div class="tab-pane fade" id="pane-cadastro">
             <div class="card card-custom p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
                     <h4 class="text-primary fw-bold m-0" id="formTitle">Adicionar Novo Cliente</h4>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="resetForm()"><i class="bi bi-eraser me-1"></i>Limpar Formulário</button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="resetForm()"><i class="bi bi-eraser me-1"></i>Limpar Ficha</button>
                 </div>
+                
                 <form id="clientForm">
                     <input type="hidden" id="clientId">
-                    <div class="row g-3">
-                        <div class="col-md-6"><label class="fw-bold">Nome Completo</label><input type="text" id="cNome" class="form-control" required></div>
-                        <div class="col-md-6"><label class="fw-bold">CPF</label><input type="text" id="cCPF" class="form-control"></div>
-                        <div class="col-md-6"><label class="fw-bold">Empresa (Se houver)</label><input type="text" id="cEmpresa" class="form-control"></div>
-                        <div class="col-md-6"><label class="fw-bold">Cidade/Estado</label><input type="text" id="cCidade" class="form-control"></div>
-                        <div class="col-md-6"><label class="fw-bold">Telefones</label><input type="text" id="cTelefones" class="form-control"></div>
-                        <div class="col-md-6"><label class="fw-bold">E-mails</label><input type="email" id="cEmails" class="form-control"></div>
-                        <div class="col-md-12"><label class="fw-bold">Plano Cancelado</label><input type="text" id="cPlano" class="form-control"></div>
-                        <div class="col-md-4"><label class="fw-bold">Data de Adesão</label><input type="date" id="cAdesao" class="form-control"></div>
-                        <div class="col-md-4"><label class="fw-bold">Data Cancelamento</label><input type="date" id="cCancelamento" class="form-control"></div>
+                    
+                    <div class="section-title">Dados Pessoais & Contato</div>
+                    <div class="row g-2">
+                        <div class="col-md-4"><label class="form-label">Nome do usuário</label><input type="text" id="cNome" class="form-control" required></div>
+                        <div class="col-md-4"><label class="form-label">Nome social</label><input type="text" id="cNomeSocial" class="form-control"></div>
+                        <div class="col-md-4"><label class="form-label">CPF do titular</label><input type="text" id="cCPF" class="form-control"></div>
+                        
+                        <div class="col-md-3"><label class="form-label">Data de nascimento</label><input type="text" id="cNascimento" class="form-control" placeholder="DD/MM/AAAA"></div>
+                        <div class="col-md-5"><label class="form-label">Endereço</label><input type="text" id="cEndereco" class="form-control"></div>
+                        <div class="col-md-3"><label class="form-label">Cidade</label><input type="text" id="cCidade" class="form-control"></div>
+                        <div class="col-md-1"><label class="form-label">UF</label><input type="text" id="cUF" class="form-control" maxlength="2"></div>
+
+                        <div class="col-md-6"><label class="form-label">Telefones cadastrados (Fone)</label><input type="text" id="cTelefones" class="form-control"></div>
+                        <div class="col-md-6"><label class="form-label">Endereços eletrônicos</label><input type="text" id="cEmails" class="form-control"></div>
+                    </div>
+
+                    <div class="section-title">Dados do Plano & Empresa</div>
+                    <div class="row g-2">
+                        <div class="col-md-6"><label class="form-label">Empresa</label><input type="text" id="cEmpresa" class="form-control"></div>
+                        <div class="col-md-6"><label class="form-label">Rede/plano</label><input type="text" id="cRedePlano" class="form-control"></div>
+                        
+                        <div class="col-md-4"><label class="form-label">Plano atual</label><input type="text" id="cPlanoAtual" class="form-control"></div>
+                        <div class="col-md-4"><label class="form-label">Acomodação</label><input type="text" id="cAcomodacao" class="form-control"></div>
+                        <div class="col-md-4"><label class="form-label">Situação (Ex: CANCELADO)</label><input type="text" id="cSituacao" class="form-control"></div>
+                        
+                        <div class="col-md-3"><label class="form-label">Data da adesão</label><input type="text" id="cAdesao" class="form-control" placeholder="DD/MM/AAAA"></div>
+                        <div class="col-md-3"><label class="form-label">Ade emp (Adesão Empresa)</label><input type="text" id="cAdeEmp" class="form-control" placeholder="DD/MM/AAAA"></div>
+                        <div class="col-md-3"><label class="form-label">Data do cancelamento</label><input type="text" id="cCancelamento" class="form-control" placeholder="DD/MM/AAAA"></div>
+                        <div class="col-md-3"><label class="form-label">Tempo</label><input type="text" id="cTempo" class="form-control"></div>
+                    </div>
+
+                    <div class="section-title">CRM & Anexos</div>
+                    <div class="row g-2 align-items-end">
                         <div class="col-md-4">
-                            <label class="fw-bold">Status Atual</label>
-                            <select id="cStatus" class="form-select"></select>
+                            <label class="form-label text-primary">Status de Negociação (CRM)</label>
+                            <select id="cStatus" class="form-select border-primary" style="font-weight: bold;"></select>
                         </div>
-                        <div class="col-md-12">
-                            <label class="fw-bold">Anexar ou Atualizar Foto da Lista</label>
+                        <div class="col-md-8">
+                            <label class="form-label">Anexar Print/Foto da Lista</label>
                             <input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)">
-                            <img id="fotoPreview" class="img-preview">
+                            <img id="fotoPreview" class="img-preview mt-2">
                             <input type="hidden" id="cFotoBase64">
                         </div>
-                        <div class="col-md-12 text-end mt-4">
-                            <button type="button" class="btn btn-success btn-lg px-5" onclick="saveClient()"><i class="bi bi-save me-2"></i>Salvar Ficha</button>
-                        </div>
+                    </div>
+
+                    <div class="text-end mt-4">
+                        <button type="button" class="btn btn-success btn-lg px-5 shadow-sm" onclick="saveClient()"><i class="bi bi-save me-2"></i>Salvar Ficha do Cliente</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div class="tab-pane fade" id="pane-pesquisa" role="tabpanel">
+        <!-- ABA 3: PESQUISA -->
+        <div class="tab-pane fade" id="pane-pesquisa">
             <div class="card card-custom p-3 mb-3">
                 <div class="row g-3 align-items-center">
                     <div class="col-md-6">
                         <div class="input-group">
                             <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-                            <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Buscar por Nome, CPF, Empresa, Telefone..." onkeyup="renderTable()">
+                            <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Buscar por Nome, CPF, Empresa..." onkeyup="renderTable()">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -119,20 +145,18 @@
             </div>
 
             <div class="card card-custom p-0 overflow-auto">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0" style="min-width: 1000px;">
                     <thead class="table-light">
                         <tr>
-                            <th>Nome / Local</th>
-                            <th>Documento / Vínculo</th>
-                            <th>Contatos</th>
-                            <th>Plano Cancelado</th>
+                            <th>Usuário / CPF</th>
+                            <th>Empresa / Contatos</th>
+                            <th>Plano Atual / Acomodação</th>
                             <th>Datas (Adesão/Canc.)</th>
-                            <th>Status</th>
+                            <th>Status CRM</th>
                             <th class="text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="clientTableBody">
-                        </tbody>
+                    <tbody id="clientTableBody"></tbody>
                 </table>
             </div>
         </div>
@@ -140,30 +164,24 @@
     </div>
 </div>
 
+<!-- Modal Visualizar Foto -->
 <div class="modal fade" id="photoModal" tabindex="-1">
     <div class="modal-dialog modal-lg text-center">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Foto Anexada</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <img id="viewPhoto" src="" class="img-fluid rounded">
-            </div>
+            <div class="modal-header"><h5 class="modal-title">Foto Anexada</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body"><img id="viewPhoto" src="" class="img-fluid rounded"></div>
         </div>
     </div>
 </div>
 
+<!-- Modal Gerenciar Status -->
 <div class="modal fade" id="statusModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Gerenciar Status do Sistema</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+            <div class="modal-header"><h5 class="modal-title">Gerenciar Status</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
                 <div class="input-group mb-3">
-                    <input type="text" id="newStatus" class="form-control" placeholder="Digite um novo status...">
+                    <input type="text" id="newStatus" class="form-control" placeholder="Novo status...">
                     <button class="btn btn-primary" onclick="addStatus()">Adicionar</button>
                 </div>
                 <ul class="list-group" id="statusList"></ul>
@@ -174,233 +192,143 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // --- ESTADO DA APLICAÇÃO ---
-    let clients = JSON.parse(localStorage.getItem('crm_clients')) || [];
-    let statuses = JSON.parse(localStorage.getItem('crm_statuses')) || ['Em negociação', 'Entrou em contato', 'Fechou o plano', 'Não tem interesse'];
-
-    // Cores dinâmicas para os cards do dashboard
+    // ESTADO
+    let clients = JSON.parse(localStorage.getItem('crm_clients_v2')) || [];
+    let statuses = JSON.parse(localStorage.getItem('crm_statuses_v2')) || ['Em negociação', 'Entrou em contato', 'Fechou o plano', 'Não tem interesse'];
     const cardColors = ['#0A2463', '#3E92CC', '#25D366', '#DC3545', '#FFC107', '#6F42C1', '#17A2B8'];
 
-    // --- INICIALIZAÇÃO ---
     document.addEventListener("DOMContentLoaded", () => {
         updateStatusSelects();
         renderTable();
         renderStatusList();
         updateDashboard();
-        
-        // Listener para atualizar o dashboard toda vez que abrir a aba
         document.getElementById('tab-dashboard').addEventListener('shown.bs.tab', updateDashboard);
     });
 
-    // --- DASHBOARD ---
+    // DASHBOARD
     function updateDashboard() {
         const dashContainer = document.getElementById('dashboardCards');
-        dashContainer.innerHTML = '';
-
-        // Card Total
-        dashContainer.innerHTML += createDashCard('Total de Clientes', clients.length, '#343A40', 'bi-people-fill');
-
-        // Cards por Status
+        dashContainer.innerHTML = createDashCard('Total de Clientes', clients.length, '#343A40', 'bi-people-fill');
         statuses.forEach((status, index) => {
             const count = clients.filter(c => c.status === status).length;
             const color = cardColors[index % cardColors.length];
-            
-            // Escolhe um ícone genérico dependendo da palavra (apenas visual)
             let icon = 'bi-funnel-fill';
             if(status.toLowerCase().includes('fechou')) icon = 'bi-check-circle-fill';
             if(status.toLowerCase().includes('negociação')) icon = 'bi-chat-dots-fill';
             if(status.toLowerCase().includes('não')) icon = 'bi-x-circle-fill';
-
             dashContainer.innerHTML += createDashCard(status, count, color, icon);
         });
     }
-
     function createDashCard(title, count, color, icon) {
-        return `
-        <div class="col-md-3 col-sm-6">
-            <div class="dash-card d-flex justify-content-between align-items-center" style="background-color: ${color};">
-                <div>
-                    <h6 class="text-uppercase mb-1 opacity-75" style="font-size: 0.8rem;">${title}</h6>
-                    <h2 class="mb-0 fw-bold">${count}</h2>
-                </div>
-                <div class="dash-icon"><i class="bi ${icon}"></i></div>
-            </div>
-        </div>`;
+        return `<div class="col-md-3 col-sm-6"><div class="dash-card d-flex justify-content-between align-items-center" style="background-color: ${color};">
+                <div><h6 class="text-uppercase mb-1 opacity-75" style="font-size: 0.8rem;">${title}</h6><h2 class="mb-0 fw-bold">${count}</h2></div>
+                <div class="dash-icon"><i class="bi ${icon}"></i></div></div></div>`;
     }
 
-    // --- FUNÇÕES DE STATUS ---
+    // STATUS
     function updateStatusSelects() {
         const filterSelect = document.getElementById('filterStatus');
         const formSelect = document.getElementById('cStatus');
-        
         filterSelect.innerHTML = '<option value="ALL">Filtro: Todos os Status</option>';
         statuses.forEach(s => filterSelect.innerHTML += `<option value="${s}">${s}</option>`);
-        
         formSelect.innerHTML = '';
         statuses.forEach(s => formSelect.innerHTML += `<option value="${s}">${s}</option>`);
     }
-
     function addStatus() {
         const val = document.getElementById('newStatus').value.trim();
-        if(val && !statuses.includes(val)) {
-            statuses.push(val);
-            saveData();
-            updateStatusSelects();
-            renderStatusList();
-            updateDashboard();
-            document.getElementById('newStatus').value = '';
-        }
+        if(val && !statuses.includes(val)) { statuses.push(val); saveData(); updateStatusSelects(); renderStatusList(); updateDashboard(); document.getElementById('newStatus').value = ''; }
     }
-
-    function deleteStatus(index) {
-        statuses.splice(index, 1);
-        saveData();
-        updateStatusSelects();
-        renderStatusList();
-        updateDashboard();
-    }
-
+    function deleteStatus(index) { statuses.splice(index, 1); saveData(); updateStatusSelects(); renderStatusList(); updateDashboard(); }
     function renderStatusList() {
-        const list = document.getElementById('statusList');
-        list.innerHTML = '';
-        statuses.forEach((s, i) => {
-            list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">${s} <button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})"><i class="bi bi-trash"></i></button></li>`;
-        });
+        const list = document.getElementById('statusList'); list.innerHTML = '';
+        statuses.forEach((s, i) => { list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">${s} <button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})"><i class="bi bi-trash"></i></button></li>`; });
     }
 
-    // --- FUNÇÕES DO CLIENTE (FORMULÁRIO E EDIÇÃO) ---
+    // FORM & CRUD
     function resetForm() {
         document.getElementById('clientForm').reset();
         document.getElementById('clientId').value = '';
         document.getElementById('fotoPreview').style.display = 'none';
         document.getElementById('cFotoBase64').value = '';
-        document.getElementById('cFoto').value = '';
         document.getElementById('formTitle').innerText = 'Adicionar Novo Cliente';
     }
 
     function editClient(id) {
-        const client = clients.find(c => c.id === id);
-        if (!client) return;
+        const c = clients.find(c => c.id === id);
+        if (!c) return;
+        document.getElementById('clientId').value = c.id;
+        document.getElementById('cNome').value = c.nome || '';
+        document.getElementById('cNomeSocial').value = c.nomeSocial || '';
+        document.getElementById('cCPF').value = c.cpf || '';
+        document.getElementById('cNascimento').value = c.nascimento || '';
+        document.getElementById('cEndereco').value = c.endereco || '';
+        document.getElementById('cCidade').value = c.cidade || '';
+        document.getElementById('cUF').value = c.uf || '';
+        document.getElementById('cTelefones').value = c.telefones || '';
+        document.getElementById('cEmails').value = c.emails || '';
+        document.getElementById('cEmpresa').value = c.empresa || '';
+        document.getElementById('cRedePlano').value = c.redePlano || '';
+        document.getElementById('cPlanoAtual').value = c.planoAtual || '';
+        document.getElementById('cAcomodacao').value = c.acomodacao || '';
+        document.getElementById('cSituacao').value = c.situacao || '';
+        document.getElementById('cAdesao').value = c.adesao || '';
+        document.getElementById('cAdeEmp').value = c.adeEmp || '';
+        document.getElementById('cCancelamento').value = c.cancelamento || '';
+        document.getElementById('cTempo').value = c.tempo || '';
+        document.getElementById('cStatus').value = c.status || statuses[0];
 
-        // Preenche o formulário
-        document.getElementById('clientId').value = client.id;
-        document.getElementById('cNome').value = client.nome || '';
-        document.getElementById('cCPF').value = client.cpf || '';
-        document.getElementById('cEmpresa').value = client.empresa || '';
-        document.getElementById('cCidade').value = client.cidade || '';
-        document.getElementById('cTelefones').value = client.telefones || '';
-        document.getElementById('cEmails').value = client.emails || '';
-        document.getElementById('cPlano').value = client.plano || '';
-        document.getElementById('cAdesao').value = client.adesao || '';
-        document.getElementById('cCancelamento').value = client.cancelamento || '';
-        document.getElementById('cStatus').value = client.status || '';
-
-        // Trata a foto
-        if (client.foto) {
-            document.getElementById('fotoPreview').src = client.foto;
-            document.getElementById('fotoPreview').style.display = 'block';
-            document.getElementById('cFotoBase64').value = client.foto;
-        } else {
-            document.getElementById('fotoPreview').style.display = 'none';
-            document.getElementById('cFotoBase64').value = '';
-        }
-        document.getElementById('cFoto').value = '';
+        if (c.foto) { document.getElementById('fotoPreview').src = c.foto; document.getElementById('fotoPreview').style.display = 'block'; document.getElementById('cFotoBase64').value = c.foto; } 
+        else { document.getElementById('fotoPreview').style.display = 'none'; document.getElementById('cFotoBase64').value = ''; }
+        
         document.getElementById('formTitle').innerText = 'Editando Ficha do Cliente';
-
-        // Muda para a aba de Cadastro/Edição
-        const triggerEl = document.querySelector('#tab-cadastro');
-        bootstrap.Tab.getOrCreateInstance(triggerEl).show();
+        bootstrap.Tab.getOrCreateInstance(document.querySelector('#tab-cadastro')).show();
     }
 
     function previewImage(event) {
         const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('fotoPreview').src = e.target.result;
-                document.getElementById('fotoPreview').style.display = 'block';
-                document.getElementById('cFotoBase64').value = e.target.result;
-            }
-            reader.readAsDataURL(file);
-        }
+        if (file) { const reader = new FileReader(); reader.onload = function(e) { document.getElementById('fotoPreview').src = e.target.result; document.getElementById('fotoPreview').style.display = 'block'; document.getElementById('cFotoBase64').value = e.target.result; }; reader.readAsDataURL(file); }
     }
 
     function saveClient() {
         const id = document.getElementById('clientId').value || Date.now().toString();
         const nome = document.getElementById('cNome').value;
-
-        if(!nome) {
-            alert("O Nome Completo é obrigatório.");
-            return;
-        }
+        if(!nome) { alert("O Nome do usuário é obrigatório."); return; }
 
         const client = {
-            id: id,
-            nome: nome,
-            cpf: document.getElementById('cCPF').value,
-            empresa: document.getElementById('cEmpresa').value,
-            cidade: document.getElementById('cCidade').value,
-            telefones: document.getElementById('cTelefones').value,
-            emails: document.getElementById('cEmails').value,
-            plano: document.getElementById('cPlano').value,
-            adesao: document.getElementById('cAdesao').value,
-            cancelamento: document.getElementById('cCancelamento').value,
-            status: document.getElementById('cStatus').value,
-            foto: document.getElementById('cFotoBase64').value
+            id: id, nome: nome, nomeSocial: document.getElementById('cNomeSocial').value, cpf: document.getElementById('cCPF').value,
+            nascimento: document.getElementById('cNascimento').value, endereco: document.getElementById('cEndereco').value,
+            cidade: document.getElementById('cCidade').value, uf: document.getElementById('cUF').value, telefones: document.getElementById('cTelefones').value,
+            emails: document.getElementById('cEmails').value, empresa: document.getElementById('cEmpresa').value, redePlano: document.getElementById('cRedePlano').value,
+            planoAtual: document.getElementById('cPlanoAtual').value, acomodacao: document.getElementById('cAcomodacao').value, situacao: document.getElementById('cSituacao').value,
+            adesao: document.getElementById('cAdesao').value, adeEmp: document.getElementById('cAdeEmp').value, cancelamento: document.getElementById('cCancelamento').value,
+            tempo: document.getElementById('cTempo').value, status: document.getElementById('cStatus').value, foto: document.getElementById('cFotoBase64').value
         };
 
         const existingIndex = clients.findIndex(c => c.id === id);
-        if(existingIndex >= 0) {
-            clients[existingIndex] = client; 
-        } else {
-            clients.unshift(client); 
-        }
+        if(existingIndex >= 0) clients[existingIndex] = client; else clients.unshift(client);
 
-        saveData();
-        renderTable();
-        updateDashboard();
-        resetForm();
-
-        // Muda para a aba de Pesquisa para ver o cliente salvo
-        const triggerEl = document.querySelector('#tab-pesquisa');
-        bootstrap.Tab.getOrCreateInstance(triggerEl).show();
+        saveData(); renderTable(); updateDashboard(); resetForm();
+        bootstrap.Tab.getOrCreateInstance(document.querySelector('#tab-pesquisa')).show();
     }
 
     function deleteClient(id) {
-        if(confirm("Tem certeza que deseja apagar a ficha deste cliente?")) {
-            clients = clients.filter(c => c.id !== id);
-            saveData();
-            renderTable();
-            updateDashboard();
-        }
+        if(confirm("Tem certeza que deseja apagar a ficha?")) { clients = clients.filter(c => c.id !== id); saveData(); renderTable(); updateDashboard(); }
     }
-
     function changeClientStatus(id, newStatus) {
-        const client = clients.find(c => c.id === id);
-        if(client) {
-            client.status = newStatus;
-            saveData();
-            renderTable();
-            updateDashboard();
-        }
+        const c = clients.find(c => c.id === id); if(c) { c.status = newStatus; saveData(); renderTable(); updateDashboard(); }
     }
+    function showPhoto(base64) { document.getElementById('viewPhoto').src = base64; new bootstrap.Modal(document.getElementById('photoModal')).show(); }
 
-    function showPhoto(base64) {
-        document.getElementById('viewPhoto').src = base64;
-        new bootstrap.Modal(document.getElementById('photoModal')).show();
-    }
-
-    // --- RENDERIZAÇÃO DA TABELA (PESQUISA) ---
+    // TABELA PESQUISA
     function renderTable() {
         const tbody = document.getElementById('clientTableBody');
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const filterStatus = document.getElementById('filterStatus').value;
-        
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const filter = document.getElementById('filterStatus').value;
         tbody.innerHTML = '';
 
         const filtered = clients.filter(c => {
-            const matchesSearch = Object.values(c).join(' ').toLowerCase().includes(searchTerm);
-            const matchesStatus = filterStatus === 'ALL' || c.status === filterStatus;
+            const matchesSearch = Object.values(c).join(' ').toLowerCase().includes(search);
+            const matchesStatus = filter === 'ALL' || c.status === filter;
             return matchesSearch && matchesStatus;
         });
 
@@ -408,75 +336,41 @@
 
         filtered.forEach(c => {
             let statusOptions = statuses.map(s => `<option value="${s}" ${c.status === s ? 'selected' : ''}>${s}</option>`).join('');
-            
-            const dtAdesao = c.adesao ? new Date(c.adesao).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : '-';
-            const dtCanc = c.cancelamento ? new Date(c.cancelamento).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : '-';
-
             let photoBtn = c.foto ? `<button class="btn btn-sm btn-info text-white me-1" onclick="showPhoto('${c.foto}')" title="Ver Anexo"><i class="bi bi-image"></i></button>` : '';
-            let editBtn = `<button class="btn btn-sm btn-warning text-dark me-1" onclick="editClient('${c.id}')" title="Editar Ficha"><i class="bi bi-pencil"></i></button>`;
-
+            
             tbody.innerHTML += `
                 <tr>
-                    <td><strong>${c.nome}</strong><br><small class="text-muted">${c.cidade}</small></td>
-                    <td>${c.cpf}<br><small class="text-muted">${c.empresa}</small></td>
-                    <td>${c.telefones}<br><small class="text-muted">${c.emails}</small></td>
-                    <td><span class="badge bg-secondary">${c.plano}</span></td>
-                    <td>${dtAdesao}<br><span class="text-danger fw-bold">${dtCanc}</span></td>
-                    <td>
-                        <select class="form-select form-select-sm border-0 bg-light" style="font-weight: 600;" onchange="changeClientStatus('${c.id}', this.value)">
-                            ${statusOptions}
-                        </select>
-                    </td>
+                    <td><strong>${c.nome}</strong><br><small class="text-muted">CPF: ${c.cpf || '-'}</small></td>
+                    <td>${c.empresa || '-'}<br><small class="text-muted"><i class="bi bi-telephone"></i> ${c.telefones || '-'}</small></td>
+                    <td><span class="badge bg-secondary">${c.planoAtual || c.redePlano || '-'}</span><br><small class="text-muted">${c.acomodacao || '-'}</small></td>
+                    <td><small>Adesão: ${c.adesao || '-'}</small><br><small class="text-danger fw-bold">Canc: ${c.cancelamento || '-'}</small></td>
+                    <td><select class="form-select form-select-sm border-primary" style="font-weight: 600;" onchange="changeClientStatus('${c.id}', this.value)">${statusOptions}</select></td>
                     <td class="text-center">
                         <div class="d-inline-flex">
                             ${photoBtn}
-                            ${editBtn}
-                            <button class="btn btn-sm btn-danger" onclick="deleteClient('${c.id}')" title="Excluir"><i class="bi bi-trash"></i></button>
+                            <button class="btn btn-sm btn-warning text-dark me-1" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button>
                         </div>
                     </td>
-                </tr>
-            `;
+                </tr>`;
         });
     }
 
-    // --- BACKUP E RESTAURAÇÃO ---
-    function saveData() {
-        localStorage.setItem('crm_clients', JSON.stringify(clients));
-        localStorage.setItem('crm_statuses', JSON.stringify(statuses));
-    }
-
+    // BACKUP
+    function saveData() { localStorage.setItem('crm_clients_v2', JSON.stringify(clients)); localStorage.setItem('crm_statuses_v2', JSON.stringify(statuses)); }
     function exportData() {
-        const data = JSON.stringify({ clients, statuses });
-        const blob = new Blob([data], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `backup_crm_recuperacao_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
+        const blob = new Blob([JSON.stringify({ clients, statuses })], { type: 'application/json' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_crm_v2_${new Date().toISOString().split('T')[0]}.json`; a.click();
     }
-
     function importData(event) {
-        const file = event.target.files[0];
-        if(!file) return;
+        const file = event.target.files[0]; if(!file) return;
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
                 const data = JSON.parse(e.target.result);
-                if(data.clients && data.statuses) {
-                    clients = data.clients;
-                    statuses = data.statuses;
-                    saveData();
-                    updateStatusSelects();
-                    renderTable();
-                    renderStatusList();
-                    updateDashboard();
-                    alert("Backup importado com sucesso!");
-                }
-            } catch (err) {
-                alert("Erro ao importar arquivo. Certifique-se de que é um arquivo JSON válido.");
-            }
-        };
-        reader.readAsText(file);
+                if(data.clients && data.statuses) { clients = data.clients; statuses = data.statuses; saveData(); updateStatusSelects(); renderTable(); renderStatusList(); updateDashboard(); alert("Backup importado!"); }
+            } catch (err) { alert("Erro ao importar. Arquivo inválido."); }
+        }; reader.readAsText(file);
     }
 </script>
 </body>
