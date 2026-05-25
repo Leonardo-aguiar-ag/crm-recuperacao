@@ -1319,46 +1319,78 @@ a.click();
 }
 
 /* ===================================================== */
-/* IMPORTAR BACKUP (NOVO) */
+/* IMPORTAR BACKUP (CORRIGIDO - ACEITA VÁRIOS FORMATOS) */
 /* ===================================================== */
 
 function importBackup() {
-document.getElementById('backupFileInput').click();
+  document.getElementById('backupFileInput').click();
 }
 
 function handleBackupFile(event) {
-const file = event.target.files[0];
-if (!file) return;
+  const file = event.target.files[0];
+  if (!file) return;
 
-const reader = new FileReader();
-reader.onload = function(e) {
-try {
-const data = JSON.parse(e.target.result);
-if (!Array.isArray(data)) throw new Error('Formato inválido: esperado um array.');
-if (!confirm(`Importar ${data.length} clientes? Isso pode sobrescrever dados existentes.`)) return;
-importClients(data);
-} catch (err) {
-alert('Erro ao ler arquivo: ' + err.message);
-}
-};
-reader.readAsText(file);
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      let clientsArray;
+
+      // 1. Se já for um array
+      if (Array.isArray(data)) {
+        clientsArray = data;
+      }
+      // 2. Se for objeto, procura por chaves comuns que contenham array
+      else if (data && typeof data === 'object') {
+        const possibleKeys = ['clientes', 'clients', 'data', 'registros', 'backup', 'items'];
+        for (const key of possibleKeys) {
+          if (Array.isArray(data[key])) {
+            clientsArray = data[key];
+            break;
+          }
+        }
+        // 3. Último recurso: pega o primeiro array que aparecer nos valores
+        if (!clientsArray) {
+          clientsArray = Object.values(data).find(val => Array.isArray(val));
+        }
+      }
+
+      if (!clientsArray || !Array.isArray(clientsArray)) {
+        throw new Error('Não foi possível encontrar um array de clientes no arquivo. Verifique o formato.');
+      }
+
+      if (!confirm(`Importar ${clientsArray.length} clientes? Isso pode sobrescrever dados existentes.`)) {
+        // Limpa o input para permitir selecionar novamente
+        event.target.value = '';
+        return;
+      }
+
+      importClients(clientsArray);
+    } catch (err) {
+      alert('Erro ao ler arquivo: ' + err.message);
+    } finally {
+      // Limpa o campo de arquivo para permitir reimportar o mesmo arquivo se necessário
+      event.target.value = '';
+    }
+  };
+  reader.readAsText(file);
 }
 
 async function importClients(clientsArray) {
-const batch = db.batch();
-for (const client of clientsArray) {
-const { id, ...clientData } = client;
-// Garante que o cliente importado pertença ao usuário atual
-clientData.userId = currentUser.uid;
-const docRef = id ? db.collection('clients').doc(id) : db.collection('clients').doc();
-batch.set(docRef, clientData, { merge: true });
-}
-try {
-await batch.commit();
-alert('Importação concluída!');
-} catch (err) {
-alert('Erro ao importar: ' + err.message);
-}
+  const batch = db.batch();
+  for (const client of clientsArray) {
+    const { id, ...clientData } = client;
+    // Garante que o cliente importado pertença ao usuário atual
+    clientData.userId = currentUser.uid;
+    const docRef = id ? db.collection('clients').doc(id) : db.collection('clients').doc();
+    batch.set(docRef, clientData, { merge: true });
+  }
+  try {
+    await batch.commit();
+    alert('Importação concluída!');
+  } catch (err) {
+    alert('Erro ao importar: ' + err.message);
+  }
 }
 
 /* ===================================================== */
