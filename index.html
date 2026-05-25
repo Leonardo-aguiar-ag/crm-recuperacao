@@ -12,18 +12,28 @@
         .card-custom { border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .table-hover tbody tr:hover { background-color: #f8f9fa; }
         .img-preview { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px;}
-        .status-badge { font-weight: 600; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; }
+        
+        /* Estilos das Abas */
+        .nav-tabs .nav-link { color: #6c757d; font-weight: 600; border: none; padding: 12px 20px; }
+        .nav-tabs .nav-link.active { color: #0A2463; background-color: transparent; border-bottom: 3px solid #FF6B35; }
+        .nav-tabs { border-bottom: 2px solid #e9ecef; margin-bottom: 20px; }
+        
+        /* Cards do Dashboard */
+        .dash-card { border-radius: 15px; color: white; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s;}
+        .dash-card:hover { transform: translateY(-5px); }
+        .dash-icon { font-size: 2.5rem; opacity: 0.5; }
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-custom shadow-sm mb-4">
     <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1 fw-bold"><i class="bi bi-shield-check me-2"></i>CRM Recuperação de Cancelados</span>
+        <span class="navbar-brand mb-0 h1 fw-bold"><i class="bi bi-shield-check me-2"></i>CRM de Recuperação</span>
         <div>
-            <button class="btn btn-outline-light btn-sm" onclick="exportData()"><i class="bi bi-download me-1"></i>Exportar Backup</button>
+            <button class="btn btn-outline-light btn-sm me-2" data-bs-toggle="modal" data-bs-target="#statusModal"><i class="bi bi-tags me-1"></i>Gerenciar Status</button>
+            <button class="btn btn-outline-light btn-sm" onclick="exportData()"><i class="bi bi-download me-1"></i>Backup</button>
             <label class="btn btn-outline-light btn-sm mb-0 ms-2">
-                <i class="bi bi-upload me-1"></i>Importar Backup
+                <i class="bi bi-upload me-1"></i>Importar
                 <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
             </label>
         </div>
@@ -31,90 +41,105 @@
 </nav>
 
 <div class="container-fluid px-4">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card card-custom p-3">
-                <div class="row g-3 align-items-center">
-                    <div class="col-md-4">
-                        <input type="text" id="searchInput" class="form-control" placeholder="🔍 Buscar por Nome, CPF, Empresa..." onkeyup="renderTable()">
-                    </div>
-                    <div class="col-md-3">
-                        <select id="filterStatus" class="form-select" onchange="renderTable()">
-                            <option value="ALL">Todos os Status</option>
-                        </select>
-                    </div>
-                    <div class="col-md-5 text-end">
-                        <button class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#statusModal"><i class="bi bi-tags me-1"></i>Gerenciar Status</button>
-                        <button class="btn btn-primary" onclick="openNewClientModal()"><i class="bi bi-plus-circle me-1"></i>Novo Cliente</button>
-                    </div>
+    
+    <ul class="nav nav-tabs" id="crmTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-dashboard" data-bs-toggle="tab" data-bs-target="#pane-dashboard" type="button" role="tab"><i class="bi bi-bar-chart-fill me-2"></i>Dashboard</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-cadastro" data-bs-toggle="tab" data-bs-target="#pane-cadastro" type="button" role="tab"><i class="bi bi-person-plus-fill me-2"></i>Cadastrar / Editar</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-pesquisa" data-bs-toggle="tab" data-bs-target="#pane-pesquisa" type="button" role="tab"><i class="bi bi-search me-2"></i>Pesquisar Clientes</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="crmTabsContent">
+        
+        <div class="tab-pane fade show active" id="pane-dashboard" role="tabpanel">
+            <h4 class="mb-4 text-secondary fw-bold">Visão Geral dos Clientes</h4>
+            <div class="row g-4" id="dashboardCards">
                 </div>
-            </div>
         </div>
-    </div>
 
-    <div class="card card-custom p-3 overflow-auto">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Nome</th>
-                    <th>CPF/Empresa</th>
-                    <th>Contato</th>
-                    <th>Plano</th>
-                    <th>Datas (Adesão/Cancel.)</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="clientTableBody">
-                <!-- Conteúdo renderizado via JS -->
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Modal Novo/Editar Cliente -->
-<div class="modal fade" id="clientModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="modalTitle">Ficha do Cliente</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
+        <div class="tab-pane fade" id="pane-cadastro" role="tabpanel">
+            <div class="card card-custom p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="text-primary fw-bold m-0" id="formTitle">Adicionar Novo Cliente</h4>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="resetForm()"><i class="bi bi-eraser me-1"></i>Limpar Formulário</button>
+                </div>
                 <form id="clientForm">
                     <input type="hidden" id="clientId">
                     <div class="row g-3">
-                        <div class="col-md-6"><label>Nome Completo</label><input type="text" id="cNome" class="form-control" required></div>
-                        <div class="col-md-6"><label>CPF</label><input type="text" id="cCPF" class="form-control"></div>
-                        <div class="col-md-6"><label>Empresa (Se houver)</label><input type="text" id="cEmpresa" class="form-control"></div>
-                        <div class="col-md-6"><label>Cidade/Estado</label><input type="text" id="cCidade" class="form-control"></div>
-                        <div class="col-md-6"><label>Telefones</label><input type="text" id="cTelefones" class="form-control"></div>
-                        <div class="col-md-6"><label>E-mails</label><input type="email" id="cEmails" class="form-control"></div>
-                        <div class="col-md-12"><label>Plano Cancelado</label><input type="text" id="cPlano" class="form-control"></div>
-                        <div class="col-md-4"><label>Data de Adesão</label><input type="date" id="cAdesao" class="form-control"></div>
-                        <div class="col-md-4"><label>Data Cancelamento</label><input type="date" id="cCancelamento" class="form-control"></div>
+                        <div class="col-md-6"><label class="fw-bold">Nome Completo</label><input type="text" id="cNome" class="form-control" required></div>
+                        <div class="col-md-6"><label class="fw-bold">CPF</label><input type="text" id="cCPF" class="form-control"></div>
+                        <div class="col-md-6"><label class="fw-bold">Empresa (Se houver)</label><input type="text" id="cEmpresa" class="form-control"></div>
+                        <div class="col-md-6"><label class="fw-bold">Cidade/Estado</label><input type="text" id="cCidade" class="form-control"></div>
+                        <div class="col-md-6"><label class="fw-bold">Telefones</label><input type="text" id="cTelefones" class="form-control"></div>
+                        <div class="col-md-6"><label class="fw-bold">E-mails</label><input type="email" id="cEmails" class="form-control"></div>
+                        <div class="col-md-12"><label class="fw-bold">Plano Cancelado</label><input type="text" id="cPlano" class="form-control"></div>
+                        <div class="col-md-4"><label class="fw-bold">Data de Adesão</label><input type="date" id="cAdesao" class="form-control"></div>
+                        <div class="col-md-4"><label class="fw-bold">Data Cancelamento</label><input type="date" id="cCancelamento" class="form-control"></div>
                         <div class="col-md-4">
-                            <label>Status Atual</label>
+                            <label class="fw-bold">Status Atual</label>
                             <select id="cStatus" class="form-select"></select>
                         </div>
                         <div class="col-md-12">
-                            <label>Anexar ou Atualizar Foto da Lista</label>
+                            <label class="fw-bold">Anexar ou Atualizar Foto da Lista</label>
                             <input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)">
                             <img id="fotoPreview" class="img-preview">
                             <input type="hidden" id="cFotoBase64">
                         </div>
+                        <div class="col-md-12 text-end mt-4">
+                            <button type="button" class="btn btn-success btn-lg px-5" onclick="saveClient()"><i class="bi bi-save me-2"></i>Salvar Ficha</button>
+                        </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="saveClient()">Salvar Dados</button>
+        </div>
+
+        <div class="tab-pane fade" id="pane-pesquisa" role="tabpanel">
+            <div class="card card-custom p-3 mb-3">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                            <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Buscar por Nome, CPF, Empresa, Telefone..." onkeyup="renderTable()">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="filterStatus" class="form-select" onchange="renderTable()">
+                            <option value="ALL">Filtro: Todos os Status</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <span class="text-muted fw-bold" id="contadorResultados">0 resultados</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-custom p-0 overflow-auto">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nome / Local</th>
+                            <th>Documento / Vínculo</th>
+                            <th>Contatos</th>
+                            <th>Plano Cancelado</th>
+                            <th>Datas (Adesão/Canc.)</th>
+                            <th>Status</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientTableBody">
+                        </tbody>
+                </table>
             </div>
         </div>
+
     </div>
 </div>
 
-<!-- Modal Visualizar Foto -->
 <div class="modal fade" id="photoModal" tabindex="-1">
     <div class="modal-dialog modal-lg text-center">
         <div class="modal-content">
@@ -129,17 +154,16 @@
     </div>
 </div>
 
-<!-- Modal Gerenciar Status -->
 <div class="modal fade" id="statusModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Gerenciar Status</h5>
+                <h5 class="modal-title">Gerenciar Status do Sistema</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="input-group mb-3">
-                    <input type="text" id="newStatus" class="form-control" placeholder="Novo status...">
+                    <input type="text" id="newStatus" class="form-control" placeholder="Digite um novo status...">
                     <button class="btn btn-primary" onclick="addStatus()">Adicionar</button>
                 </div>
                 <ul class="list-group" id="statusList"></ul>
@@ -154,22 +178,62 @@
     let clients = JSON.parse(localStorage.getItem('crm_clients')) || [];
     let statuses = JSON.parse(localStorage.getItem('crm_statuses')) || ['Em negociação', 'Entrou em contato', 'Fechou o plano', 'Não tem interesse'];
 
-    let clientModalInstance;
+    // Cores dinâmicas para os cards do dashboard
+    const cardColors = ['#0A2463', '#3E92CC', '#25D366', '#DC3545', '#FFC107', '#6F42C1', '#17A2B8'];
 
     // --- INICIALIZAÇÃO ---
     document.addEventListener("DOMContentLoaded", () => {
-        clientModalInstance = new bootstrap.Modal(document.getElementById('clientModal'));
         updateStatusSelects();
         renderTable();
         renderStatusList();
+        updateDashboard();
+        
+        // Listener para atualizar o dashboard toda vez que abrir a aba
+        document.getElementById('tab-dashboard').addEventListener('shown.bs.tab', updateDashboard);
     });
+
+    // --- DASHBOARD ---
+    function updateDashboard() {
+        const dashContainer = document.getElementById('dashboardCards');
+        dashContainer.innerHTML = '';
+
+        // Card Total
+        dashContainer.innerHTML += createDashCard('Total de Clientes', clients.length, '#343A40', 'bi-people-fill');
+
+        // Cards por Status
+        statuses.forEach((status, index) => {
+            const count = clients.filter(c => c.status === status).length;
+            const color = cardColors[index % cardColors.length];
+            
+            // Escolhe um ícone genérico dependendo da palavra (apenas visual)
+            let icon = 'bi-funnel-fill';
+            if(status.toLowerCase().includes('fechou')) icon = 'bi-check-circle-fill';
+            if(status.toLowerCase().includes('negociação')) icon = 'bi-chat-dots-fill';
+            if(status.toLowerCase().includes('não')) icon = 'bi-x-circle-fill';
+
+            dashContainer.innerHTML += createDashCard(status, count, color, icon);
+        });
+    }
+
+    function createDashCard(title, count, color, icon) {
+        return `
+        <div class="col-md-3 col-sm-6">
+            <div class="dash-card d-flex justify-content-between align-items-center" style="background-color: ${color};">
+                <div>
+                    <h6 class="text-uppercase mb-1 opacity-75" style="font-size: 0.8rem;">${title}</h6>
+                    <h2 class="mb-0 fw-bold">${count}</h2>
+                </div>
+                <div class="dash-icon"><i class="bi ${icon}"></i></div>
+            </div>
+        </div>`;
+    }
 
     // --- FUNÇÕES DE STATUS ---
     function updateStatusSelects() {
         const filterSelect = document.getElementById('filterStatus');
         const formSelect = document.getElementById('cStatus');
         
-        filterSelect.innerHTML = '<option value="ALL">Todos os Status</option>';
+        filterSelect.innerHTML = '<option value="ALL">Filtro: Todos os Status</option>';
         statuses.forEach(s => filterSelect.innerHTML += `<option value="${s}">${s}</option>`);
         
         formSelect.innerHTML = '';
@@ -183,6 +247,7 @@
             saveData();
             updateStatusSelects();
             renderStatusList();
+            updateDashboard();
             document.getElementById('newStatus').value = '';
         }
     }
@@ -192,6 +257,7 @@
         saveData();
         updateStatusSelects();
         renderStatusList();
+        updateDashboard();
     }
 
     function renderStatusList() {
@@ -202,15 +268,14 @@
         });
     }
 
-    // --- FUNÇÕES DO CLIENTE (CRIAR E EDITAR) ---
-    function openNewClientModal() {
+    // --- FUNÇÕES DO CLIENTE (FORMULÁRIO E EDIÇÃO) ---
+    function resetForm() {
         document.getElementById('clientForm').reset();
         document.getElementById('clientId').value = '';
         document.getElementById('fotoPreview').style.display = 'none';
         document.getElementById('cFotoBase64').value = '';
         document.getElementById('cFoto').value = '';
-        document.getElementById('modalTitle').innerText = 'Adicionar Novo Cliente';
-        clientModalInstance.show();
+        document.getElementById('formTitle').innerText = 'Adicionar Novo Cliente';
     }
 
     function editClient(id) {
@@ -239,10 +304,12 @@
             document.getElementById('fotoPreview').style.display = 'none';
             document.getElementById('cFotoBase64').value = '';
         }
-        document.getElementById('cFoto').value = ''; // Reseta o input file
+        document.getElementById('cFoto').value = '';
+        document.getElementById('formTitle').innerText = 'Editando Ficha do Cliente';
 
-        document.getElementById('modalTitle').innerText = 'Editar Ficha do Cliente';
-        clientModalInstance.show();
+        // Muda para a aba de Cadastro/Edição
+        const triggerEl = document.querySelector('#tab-cadastro');
+        bootstrap.Tab.getOrCreateInstance(triggerEl).show();
     }
 
     function previewImage(event) {
@@ -260,9 +327,16 @@
 
     function saveClient() {
         const id = document.getElementById('clientId').value || Date.now().toString();
+        const nome = document.getElementById('cNome').value;
+
+        if(!nome) {
+            alert("O Nome Completo é obrigatório.");
+            return;
+        }
+
         const client = {
             id: id,
-            nome: document.getElementById('cNome').value,
+            nome: nome,
             cpf: document.getElementById('cCPF').value,
             empresa: document.getElementById('cEmpresa').value,
             cidade: document.getElementById('cCidade').value,
@@ -277,14 +351,19 @@
 
         const existingIndex = clients.findIndex(c => c.id === id);
         if(existingIndex >= 0) {
-            clients[existingIndex] = client; // Atualiza existente
+            clients[existingIndex] = client; 
         } else {
-            clients.unshift(client); // Adiciona novo no topo
+            clients.unshift(client); 
         }
 
         saveData();
         renderTable();
-        clientModalInstance.hide();
+        updateDashboard();
+        resetForm();
+
+        // Muda para a aba de Pesquisa para ver o cliente salvo
+        const triggerEl = document.querySelector('#tab-pesquisa');
+        bootstrap.Tab.getOrCreateInstance(triggerEl).show();
     }
 
     function deleteClient(id) {
@@ -292,6 +371,7 @@
             clients = clients.filter(c => c.id !== id);
             saveData();
             renderTable();
+            updateDashboard();
         }
     }
 
@@ -301,6 +381,7 @@
             client.status = newStatus;
             saveData();
             renderTable();
+            updateDashboard();
         }
     }
 
@@ -309,7 +390,7 @@
         new bootstrap.Modal(document.getElementById('photoModal')).show();
     }
 
-    // --- RENDERIZAÇÃO DA TABELA ---
+    // --- RENDERIZAÇÃO DA TABELA (PESQUISA) ---
     function renderTable() {
         const tbody = document.getElementById('clientTableBody');
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -323,10 +404,11 @@
             return matchesSearch && matchesStatus;
         });
 
+        document.getElementById('contadorResultados').innerText = `${filtered.length} resultado(s)`;
+
         filtered.forEach(c => {
             let statusOptions = statuses.map(s => `<option value="${s}" ${c.status === s ? 'selected' : ''}>${s}</option>`).join('');
             
-            // Formatando datas
             const dtAdesao = c.adesao ? new Date(c.adesao).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : '-';
             const dtCanc = c.cancelamento ? new Date(c.cancelamento).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : '-';
 
@@ -341,12 +423,12 @@
                     <td><span class="badge bg-secondary">${c.plano}</span></td>
                     <td>${dtAdesao}<br><span class="text-danger fw-bold">${dtCanc}</span></td>
                     <td>
-                        <select class="form-select form-select-sm" onchange="changeClientStatus('${c.id}', this.value)">
+                        <select class="form-select form-select-sm border-0 bg-light" style="font-weight: 600;" onchange="changeClientStatus('${c.id}', this.value)">
                             ${statusOptions}
                         </select>
                     </td>
-                    <td>
-                        <div class="d-flex">
+                    <td class="text-center">
+                        <div class="d-inline-flex">
                             ${photoBtn}
                             ${editBtn}
                             <button class="btn btn-sm btn-danger" onclick="deleteClient('${c.id}')" title="Excluir"><i class="bi bi-trash"></i></button>
@@ -357,7 +439,7 @@
         });
     }
 
-    // --- SALVAR E BACKUP ---
+    // --- BACKUP E RESTAURAÇÃO ---
     function saveData() {
         localStorage.setItem('crm_clients', JSON.stringify(clients));
         localStorage.setItem('crm_statuses', JSON.stringify(statuses));
@@ -387,6 +469,7 @@
                     updateStatusSelects();
                     renderTable();
                     renderStatusList();
+                    updateDashboard();
                     alert("Backup importado com sucesso!");
                 }
             } catch (err) {
