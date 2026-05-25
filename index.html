@@ -7,26 +7,58 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root {
+            --bg-body: #f4f7f6;
+            --bg-card: #ffffff;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --input-bg: #ffffff;
+            --input-text: #212529;
+            --section-title: #0A2463;
+        }
+
+        /* Dark Mode Variables */
+        body.dark-mode {
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #adb5bd;
+            --border-color: #333333;
+            --input-bg: #2b2b2b;
+            --input-text: #e0e0e0;
+            --section-title: #66b2ff;
+        }
+
+        body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: 0.3s; }
         .navbar-custom { background-color: #0A2463; color: white; }
-        .card-custom { border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .table-hover tbody tr:hover { background-color: #f8f9fa; }
-        .img-preview { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px;}
+        .card-custom { background-color: var(--bg-card); border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; }
         
-        /* Abas */
-        .nav-tabs .nav-link { color: #6c757d; font-weight: 600; border: none; padding: 12px 20px; }
-        .nav-tabs .nav-link.active { color: #0A2463; background-color: transparent; border-bottom: 3px solid #FF6B35; }
-        .nav-tabs { border-bottom: 2px solid #e9ecef; margin-bottom: 20px; }
+        .table { color: var(--text-main); }
+        .dark-mode .table-light { background-color: #2b2b2b; color: #e0e0e0; }
+        .dark-mode .table-light th { background-color: #2b2b2b; border-color: #444; color: #fff;}
+        .dark-mode .table-hover tbody tr:hover { background-color: #2a2a2a; color: white;}
+        .dark-mode td { border-color: #444; }
+
+        .form-control, .form-select { background-color: var(--input-bg); color: var(--input-text); border-color: var(--border-color); border-radius: 8px; font-size: 0.9rem;}
+        .form-control:focus, .form-select:focus { background-color: var(--input-bg); color: var(--input-text); }
         
-        /* Dashboard */
+        .nav-tabs .nav-link { color: var(--text-muted); font-weight: 600; border: none; padding: 12px 20px; }
+        .nav-tabs .nav-link.active { color: #FF6B35; background-color: transparent; border-bottom: 3px solid #FF6B35; }
+        .nav-tabs { border-bottom: 2px solid var(--border-color); margin-bottom: 20px; }
+        
         .dash-card { border-radius: 15px; color: white; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s;}
         .dash-card:hover { transform: translateY(-5px); }
         .dash-icon { font-size: 2.5rem; opacity: 0.5; }
         
-        /* Formulário */
-        .form-label { font-weight: 600; font-size: 0.85rem; color: #495057; margin-bottom: 0.2rem; margin-top: 0.5rem;}
-        .form-control, .form-select { border-radius: 8px; font-size: 0.9rem;}
-        .section-title { font-size: 1rem; color: #0A2463; font-weight: 700; border-bottom: 2px solid #e9ecef; padding-bottom: 5px; margin-top: 20px; margin-bottom: 15px;}
+        .form-label { font-weight: 600; font-size: 0.85rem; margin-bottom: 0.2rem; margin-top: 0.5rem;}
+        .section-title { font-size: 1rem; color: var(--section-title); font-weight: 700; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; margin-top: 20px; margin-bottom: 15px;}
+        .img-preview { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px;}
+
+        .dark-mode .modal-content { background-color: var(--bg-card); color: var(--text-main); }
+        .dark-mode .modal-header { border-color: var(--border-color); }
+        .dark-mode .modal-footer { border-color: var(--border-color); }
+        .dark-mode .input-group-text { background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);}
     </style>
 </head>
 <body>
@@ -41,6 +73,7 @@
                 <i class="bi bi-upload me-1"></i>Importar
                 <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
             </label>
+            <button class="btn btn-outline-light btn-sm ms-3" onclick="toggleTheme()" id="themeBtn"><i class="bi bi-moon-fill"></i></button>
         </div>
     </div>
 </nav>
@@ -57,16 +90,26 @@
         
         <!-- ABA 1: DASHBOARD -->
         <div class="tab-pane fade show active" id="pane-dashboard">
-            <h4 class="mb-4 text-secondary fw-bold">Visão Geral</h4>
+            <h4 class="mb-4 fw-bold">Visão Geral</h4>
             <div class="row g-4" id="dashboardCards"></div>
         </div>
 
         <!-- ABA 2: CADASTRAR / EDITAR -->
         <div class="tab-pane fade" id="pane-cadastro">
             <div class="card card-custom p-4">
+                
+                <!-- PREENCHIMENTO INTELIGENTE -->
+                <div class="alert alert-secondary p-3 mb-4" style="border-radius: 10px;">
+                    <label class="fw-bold mb-2"><i class="bi bi-lightning-charge-fill text-warning fs-5 me-1"></i> Preenchimento Mágico (Copie e Cole)</label>
+                    <div class="input-group">
+                        <textarea id="smartPasteBox" class="form-control" rows="2" placeholder="Cole aqui o texto inteiro do PDF do cliente..."></textarea>
+                        <button class="btn btn-primary fw-bold" type="button" onclick="autoFillForm()">Auto-preencher</button>
+                    </div>
+                </div>
+
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h4 class="text-primary fw-bold m-0" id="formTitle">Adicionar Novo Cliente</h4>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="resetForm()"><i class="bi bi-eraser me-1"></i>Limpar Ficha</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="resetForm()"><i class="bi bi-eraser me-1"></i>Limpar Ficha</button>
                 </div>
                 
                 <form id="clientForm">
@@ -78,12 +121,12 @@
                         <div class="col-md-4"><label class="form-label">Nome social</label><input type="text" id="cNomeSocial" class="form-control"></div>
                         <div class="col-md-4"><label class="form-label">CPF do titular</label><input type="text" id="cCPF" class="form-control"></div>
                         
-                        <div class="col-md-3"><label class="form-label">Data de nascimento</label><input type="text" id="cNascimento" class="form-control" placeholder="DD/MM/AAAA"></div>
+                        <div class="col-md-3"><label class="form-label">Data de nascimento</label><input type="text" id="cNascimento" class="form-control"></div>
                         <div class="col-md-5"><label class="form-label">Endereço</label><input type="text" id="cEndereco" class="form-control"></div>
                         <div class="col-md-3"><label class="form-label">Cidade</label><input type="text" id="cCidade" class="form-control"></div>
                         <div class="col-md-1"><label class="form-label">UF</label><input type="text" id="cUF" class="form-control" maxlength="2"></div>
 
-                        <div class="col-md-6"><label class="form-label">Telefones cadastrados (Fone)</label><input type="text" id="cTelefones" class="form-control"></div>
+                        <div class="col-md-6"><label class="form-label">Telefones cadastrados</label><input type="text" id="cTelefones" class="form-control"></div>
                         <div class="col-md-6"><label class="form-label">Endereços eletrônicos</label><input type="text" id="cEmails" class="form-control"></div>
                     </div>
 
@@ -94,11 +137,11 @@
                         
                         <div class="col-md-4"><label class="form-label">Plano atual</label><input type="text" id="cPlanoAtual" class="form-control"></div>
                         <div class="col-md-4"><label class="form-label">Acomodação</label><input type="text" id="cAcomodacao" class="form-control"></div>
-                        <div class="col-md-4"><label class="form-label">Situação (Ex: CANCELADO)</label><input type="text" id="cSituacao" class="form-control"></div>
+                        <div class="col-md-4"><label class="form-label">Situação</label><input type="text" id="cSituacao" class="form-control"></div>
                         
-                        <div class="col-md-3"><label class="form-label">Data da adesão</label><input type="text" id="cAdesao" class="form-control" placeholder="DD/MM/AAAA"></div>
-                        <div class="col-md-3"><label class="form-label">Ade emp (Adesão Empresa)</label><input type="text" id="cAdeEmp" class="form-control" placeholder="DD/MM/AAAA"></div>
-                        <div class="col-md-3"><label class="form-label">Data do cancelamento</label><input type="text" id="cCancelamento" class="form-control" placeholder="DD/MM/AAAA"></div>
+                        <div class="col-md-3"><label class="form-label">Data da adesão</label><input type="text" id="cAdesao" class="form-control"></div>
+                        <div class="col-md-3"><label class="form-label">Ade emp (Adesão Empresa)</label><input type="text" id="cAdeEmp" class="form-control"></div>
+                        <div class="col-md-3"><label class="form-label">Data do cancelamento</label><input type="text" id="cCancelamento" class="form-control"></div>
                         <div class="col-md-3"><label class="form-label">Tempo</label><input type="text" id="cTempo" class="form-control"></div>
                     </div>
 
@@ -129,7 +172,7 @@
                 <div class="row g-3 align-items-center">
                     <div class="col-md-6">
                         <div class="input-group">
-                            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
                             <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Buscar por Nome, CPF, Empresa..." onkeyup="renderTable()">
                         </div>
                     </div>
@@ -192,18 +235,69 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // TEMA (Dark/Light)
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('crm_theme', isDark ? 'dark' : 'light');
+        document.getElementById('themeBtn').innerHTML = isDark ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-fill"></i>';
+    }
+
+    if(localStorage.getItem('crm_theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('themeBtn').innerHTML = '<i class="bi bi-sun-fill"></i>';
+    }
+
     // ESTADO
     let clients = JSON.parse(localStorage.getItem('crm_clients_v2')) || [];
     let statuses = JSON.parse(localStorage.getItem('crm_statuses_v2')) || ['Em negociação', 'Entrou em contato', 'Fechou o plano', 'Não tem interesse'];
     const cardColors = ['#0A2463', '#3E92CC', '#25D366', '#DC3545', '#FFC107', '#6F42C1', '#17A2B8'];
 
     document.addEventListener("DOMContentLoaded", () => {
-        updateStatusSelects();
-        renderTable();
-        renderStatusList();
-        updateDashboard();
+        updateStatusSelects(); renderTable(); renderStatusList(); updateDashboard();
         document.getElementById('tab-dashboard').addEventListener('shown.bs.tab', updateDashboard);
     });
+
+    // AUTO-PREENCHIMENTO (Smart Paste)
+    function autoFillForm() {
+        const text = document.getElementById('smartPasteBox').value;
+        if(!text) return;
+
+        const extract = (regex) => {
+            const match = text.match(regex);
+            return match ? match[1].trim() : '';
+        };
+
+        document.getElementById('cNome').value = extract(/Nome(?: do usuário)?:\s*([^\n]+)/i);
+        document.getElementById('cNomeSocial').value = extract(/Nome social:\s*([^\n]+)/i);
+        document.getElementById('cCPF').value = extract(/CPF(?: do titular)?:\s*([^\n]+)/i);
+        document.getElementById('cNascimento').value = extract(/Data de nascimento:\s*([^\n]+)/i);
+        document.getElementById('cEndereco').value = extract(/Endereço:\s*([^\n]+)/i);
+        
+        let cidadeUf = extract(/Cidade\/Estado:\s*([^\n]+)/i);
+        if (cidadeUf && cidadeUf.includes('-')) {
+            let parts = cidadeUf.split('-');
+            document.getElementById('cCidade').value = parts[0].trim();
+            document.getElementById('cUF').value = parts[1].trim();
+        } else {
+            document.getElementById('cCidade').value = extract(/Cidade:\s*([^|\n]+)/i);
+            document.getElementById('cUF').value = extract(/UF:\s*([^\n]+)/i) || extract(/Estado:\s*([^\n]+)/i);
+        }
+
+        document.getElementById('cEmpresa').value = extract(/Empresa(?: \(Vínculo PJ\))?:\s*([^\n]+)/i);
+        document.getElementById('cTelefones').value = extract(/Telefones(?: cadastrado[s]?)?:\s*([^\n]+)/i) || extract(/Fone(?: \/ Número de telefone)?:\s*([^\n]+)/i);
+        document.getElementById('cEmails').value = extract(/Endereços eletrônicos:\s*([^\n]+)/i) || extract(/E-mails:\s*([^\n]+)/i);
+        document.getElementById('cRedePlano').value = extract(/Rede[\s/]plano:\s*([^\n]+)/i) || extract(/Plano Cancelado:\s*([^\n]+)/i);
+        document.getElementById('cPlanoAtual').value = extract(/(?:Atual|Plano atual):\s*([^\n]+)/i);
+        document.getElementById('cAcomodacao').value = extract(/Acomodação:\s*([^\n]+)/i);
+        document.getElementById('cSituacao').value = extract(/Situação:\s*([^\n]+)/i);
+        document.getElementById('cAdesao').value = extract(/Data da adesão:\s*([^\n]+)/i) || extract(/Adesão:\s*([^\n]+)/i);
+        document.getElementById('cAdeEmp').value = extract(/Ade emp:\s*([^\n]+)/i);
+        document.getElementById('cCancelamento').value = extract(/Data do cancelamento:\s*([^\n]+)/i);
+        document.getElementById('cTempo').value = extract(/Tempo:\s*([^\n]+)/i);
+
+        document.getElementById('smartPasteBox').value = '';
+    }
 
     // DASHBOARD
     function updateDashboard() {
@@ -234,15 +328,9 @@
         formSelect.innerHTML = '';
         statuses.forEach(s => formSelect.innerHTML += `<option value="${s}">${s}</option>`);
     }
-    function addStatus() {
-        const val = document.getElementById('newStatus').value.trim();
-        if(val && !statuses.includes(val)) { statuses.push(val); saveData(); updateStatusSelects(); renderStatusList(); updateDashboard(); document.getElementById('newStatus').value = ''; }
-    }
+    function addStatus() { const val = document.getElementById('newStatus').value.trim(); if(val && !statuses.includes(val)) { statuses.push(val); saveData(); updateStatusSelects(); renderStatusList(); updateDashboard(); document.getElementById('newStatus').value = ''; } }
     function deleteStatus(index) { statuses.splice(index, 1); saveData(); updateStatusSelects(); renderStatusList(); updateDashboard(); }
-    function renderStatusList() {
-        const list = document.getElementById('statusList'); list.innerHTML = '';
-        statuses.forEach((s, i) => { list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">${s} <button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})"><i class="bi bi-trash"></i></button></li>`; });
-    }
+    function renderStatusList() { const list = document.getElementById('statusList'); list.innerHTML = ''; statuses.forEach((s, i) => { list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center bg-transparent text-inherit border-secondary">${s} <button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})"><i class="bi bi-trash"></i></button></li>`; }); }
 
     // FORM & CRUD
     function resetForm() {
@@ -250,12 +338,12 @@
         document.getElementById('clientId').value = '';
         document.getElementById('fotoPreview').style.display = 'none';
         document.getElementById('cFotoBase64').value = '';
+        document.getElementById('smartPasteBox').value = '';
         document.getElementById('formTitle').innerText = 'Adicionar Novo Cliente';
     }
 
     function editClient(id) {
-        const c = clients.find(c => c.id === id);
-        if (!c) return;
+        const c = clients.find(c => c.id === id); if (!c) return;
         document.getElementById('clientId').value = c.id;
         document.getElementById('cNome').value = c.nome || '';
         document.getElementById('cNomeSocial').value = c.nomeSocial || '';
@@ -294,29 +382,14 @@
         const nome = document.getElementById('cNome').value;
         if(!nome) { alert("O Nome do usuário é obrigatório."); return; }
 
-        const client = {
-            id: id, nome: nome, nomeSocial: document.getElementById('cNomeSocial').value, cpf: document.getElementById('cCPF').value,
-            nascimento: document.getElementById('cNascimento').value, endereco: document.getElementById('cEndereco').value,
-            cidade: document.getElementById('cCidade').value, uf: document.getElementById('cUF').value, telefones: document.getElementById('cTelefones').value,
-            emails: document.getElementById('cEmails').value, empresa: document.getElementById('cEmpresa').value, redePlano: document.getElementById('cRedePlano').value,
-            planoAtual: document.getElementById('cPlanoAtual').value, acomodacao: document.getElementById('cAcomodacao').value, situacao: document.getElementById('cSituacao').value,
-            adesao: document.getElementById('cAdesao').value, adeEmp: document.getElementById('cAdeEmp').value, cancelamento: document.getElementById('cCancelamento').value,
-            tempo: document.getElementById('cTempo').value, status: document.getElementById('cStatus').value, foto: document.getElementById('cFotoBase64').value
-        };
-
-        const existingIndex = clients.findIndex(c => c.id === id);
-        if(existingIndex >= 0) clients[existingIndex] = client; else clients.unshift(client);
-
+        const client = { id, nome, nomeSocial: document.getElementById('cNomeSocial').value, cpf: document.getElementById('cCPF').value, nascimento: document.getElementById('cNascimento').value, endereco: document.getElementById('cEndereco').value, cidade: document.getElementById('cCidade').value, uf: document.getElementById('cUF').value, telefones: document.getElementById('cTelefones').value, emails: document.getElementById('cEmails').value, empresa: document.getElementById('cEmpresa').value, redePlano: document.getElementById('cRedePlano').value, planoAtual: document.getElementById('cPlanoAtual').value, acomodacao: document.getElementById('cAcomodacao').value, situacao: document.getElementById('cSituacao').value, adesao: document.getElementById('cAdesao').value, adeEmp: document.getElementById('cAdeEmp').value, cancelamento: document.getElementById('cCancelamento').value, tempo: document.getElementById('cTempo').value, status: document.getElementById('cStatus').value, foto: document.getElementById('cFotoBase64').value };
+        const existingIndex = clients.findIndex(c => c.id === id); if(existingIndex >= 0) clients[existingIndex] = client; else clients.unshift(client);
         saveData(); renderTable(); updateDashboard(); resetForm();
         bootstrap.Tab.getOrCreateInstance(document.querySelector('#tab-pesquisa')).show();
     }
 
-    function deleteClient(id) {
-        if(confirm("Tem certeza que deseja apagar a ficha?")) { clients = clients.filter(c => c.id !== id); saveData(); renderTable(); updateDashboard(); }
-    }
-    function changeClientStatus(id, newStatus) {
-        const c = clients.find(c => c.id === id); if(c) { c.status = newStatus; saveData(); renderTable(); updateDashboard(); }
-    }
+    function deleteClient(id) { if(confirm("Tem certeza que deseja apagar a ficha?")) { clients = clients.filter(c => c.id !== id); saveData(); renderTable(); updateDashboard(); } }
+    function changeClientStatus(id, newStatus) { const c = clients.find(c => c.id === id); if(c) { c.status = newStatus; saveData(); renderTable(); updateDashboard(); } }
     function showPhoto(base64) { document.getElementById('viewPhoto').src = base64; new bootstrap.Modal(document.getElementById('photoModal')).show(); }
 
     // TABELA PESQUISA
@@ -325,53 +398,26 @@
         const search = document.getElementById('searchInput').value.toLowerCase();
         const filter = document.getElementById('filterStatus').value;
         tbody.innerHTML = '';
-
-        const filtered = clients.filter(c => {
-            const matchesSearch = Object.values(c).join(' ').toLowerCase().includes(search);
-            const matchesStatus = filter === 'ALL' || c.status === filter;
-            return matchesSearch && matchesStatus;
-        });
-
+        const filtered = clients.filter(c => { const matchesSearch = Object.values(c).join(' ').toLowerCase().includes(search); const matchesStatus = filter === 'ALL' || c.status === filter; return matchesSearch && matchesStatus; });
         document.getElementById('contadorResultados').innerText = `${filtered.length} resultado(s)`;
-
         filtered.forEach(c => {
             let statusOptions = statuses.map(s => `<option value="${s}" ${c.status === s ? 'selected' : ''}>${s}</option>`).join('');
             let photoBtn = c.foto ? `<button class="btn btn-sm btn-info text-white me-1" onclick="showPhoto('${c.foto}')" title="Ver Anexo"><i class="bi bi-image"></i></button>` : '';
-            
-            tbody.innerHTML += `
-                <tr>
-                    <td><strong>${c.nome}</strong><br><small class="text-muted">CPF: ${c.cpf || '-'}</small></td>
-                    <td>${c.empresa || '-'}<br><small class="text-muted"><i class="bi bi-telephone"></i> ${c.telefones || '-'}</small></td>
-                    <td><span class="badge bg-secondary">${c.planoAtual || c.redePlano || '-'}</span><br><small class="text-muted">${c.acomodacao || '-'}</small></td>
-                    <td><small>Adesão: ${c.adesao || '-'}</small><br><small class="text-danger fw-bold">Canc: ${c.cancelamento || '-'}</small></td>
-                    <td><select class="form-select form-select-sm border-primary" style="font-weight: 600;" onchange="changeClientStatus('${c.id}', this.value)">${statusOptions}</select></td>
-                    <td class="text-center">
-                        <div class="d-inline-flex">
-                            ${photoBtn}
-                            <button class="btn btn-sm btn-warning text-dark me-1" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button>
-                        </div>
-                    </td>
-                </tr>`;
+            tbody.innerHTML += `<tr>
+                <td><strong>${c.nome}</strong><br><small class="text-muted">CPF: ${c.cpf || '-'}</small></td>
+                <td>${c.empresa || '-'}<br><small class="text-muted"><i class="bi bi-telephone"></i> ${c.telefones || '-'}</small></td>
+                <td><span class="badge bg-secondary">${c.planoAtual || c.redePlano || '-'}</span><br><small class="text-muted">${c.acomodacao || '-'}</small></td>
+                <td><small>Adesão: ${c.adesao || '-'}</small><br><small class="text-danger fw-bold">Canc: ${c.cancelamento || '-'}</small></td>
+                <td><select class="form-select form-select-sm border-primary" style="font-weight: 600; background-color: var(--input-bg); color: var(--input-text);" onchange="changeClientStatus('${c.id}', this.value)">${statusOptions}</select></td>
+                <td class="text-center"><div class="d-inline-flex">${photoBtn}<button class="btn btn-sm btn-warning text-dark me-1" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button></div></td>
+            </tr>`;
         });
     }
 
     // BACKUP
     function saveData() { localStorage.setItem('crm_clients_v2', JSON.stringify(clients)); localStorage.setItem('crm_statuses_v2', JSON.stringify(statuses)); }
-    function exportData() {
-        const blob = new Blob([JSON.stringify({ clients, statuses })], { type: 'application/json' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_crm_v2_${new Date().toISOString().split('T')[0]}.json`; a.click();
-    }
-    function importData(event) {
-        const file = event.target.files[0]; if(!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const data = JSON.parse(e.target.result);
-                if(data.clients && data.statuses) { clients = data.clients; statuses = data.statuses; saveData(); updateStatusSelects(); renderTable(); renderStatusList(); updateDashboard(); alert("Backup importado!"); }
-            } catch (err) { alert("Erro ao importar. Arquivo inválido."); }
-        }; reader.readAsText(file);
-    }
+    function exportData() { const blob = new Blob([JSON.stringify({ clients, statuses })], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_crm_v2_${new Date().toISOString().split('T')[0]}.json`; a.click(); }
+    function importData(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); if(data.clients && data.statuses) { clients = data.clients; statuses = data.statuses; saveData(); updateStatusSelects(); renderTable(); renderStatusList(); updateDashboard(); alert("Backup importado!"); } } catch (err) { alert("Erro ao importar. Arquivo inválido."); } }; reader.readAsText(file); }
 </script>
 </body>
 </html>
