@@ -1419,33 +1419,50 @@ reader.readAsDataURL(file);
 }
 
 /* ===================================================== */
-/* AUTO FILL */
+/* AUTO FILL (CAMPO MÁGICO APRIMORADO) */
 /* ===================================================== */
 
 function autoFill(){
 
-const text =
-document.getElementById('smartPaste').value;
+const text = document.getElementById('smartPaste').value;
 
-const extract = regex => {
-
-const match = text.match(regex);
-
-return match ? match[1].trim() : '';
-
+// Função auxiliar para capturar o valor de uma linha específica (case insensitive, multilinha)
+const getLine = (label) => {
+  const regex = new RegExp(`^${label}:\\s*(.*)$`, 'im');
+  const match = text.match(regex);
+  return match ? match[1].trim() : '';
 };
 
-document.getElementById('cNome').value =
-extract(/Nome(?: do usuário)?:\s*(.*)/i);
+// Preenche campos simples
+document.getElementById('cNome').value = getLine('Nome do usuário');
+document.getElementById('cNomeSocial').value = getLine('Nome social');
+document.getElementById('cCPF').value = getLine('CPF do titular');
+document.getElementById('cNascimento').value = getLine('Data de nascimento');
+document.getElementById('cEndereco').value = getLine('Endereço');
+document.getElementById('cEmpresa').value = getLine('Empresa');
+document.getElementById('cAdeEmp').value = getLine('Ade emp');
+document.getElementById('cRedePlano').value = getLine('Rede/plano');
+document.getElementById('cPlanoAtual').value = getLine('Plano atual');
+document.getElementById('cAcomodacao').value = getLine('Acomodação');
+document.getElementById('cSituacao').value = getLine('Situação');
+document.getElementById('cAdesao').value = getLine('Data da adesão');
+document.getElementById('cCancelamento').value = getLine('Data do cancelamento');
+document.getElementById('cTempo').value = getLine('Tempo');
+document.getElementById('cTelefones').value = getLine('Telefones cadastrados');
+document.getElementById('cEmails').value = getLine('Endereços eletrônicos');
 
-document.getElementById('cCPF').value =
-extract(/CPF(?: do titular)?:\s*(.*)/i);
-
-document.getElementById('cEmpresa').value =
-extract(/Empresa:\s*(.*)/i);
-
-document.getElementById('cTelefones').value =
-extract(/Telefone(?:s)?:\s*(.*)/i);
+// Extrai cidade e UF (ex: "CARAPICUIBA | UF: SP")
+const cityLine = getLine('Cidade');
+if (cityLine) {
+  const parts = cityLine.split('|').map(s => s.trim());
+  document.getElementById('cCidade').value = parts[0] || '';
+  const ufPart = parts[1] || '';
+  const ufMatch = ufPart.match(/UF:\s*(.*)/i);
+  document.getElementById('cUF').value = ufMatch ? ufMatch[1].trim() : '';
+} else {
+  document.getElementById('cCidade').value = '';
+  document.getElementById('cUF').value = '';
+}
 
 }
 
