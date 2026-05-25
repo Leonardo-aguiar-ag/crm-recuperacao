@@ -1,4 +1,4 @@
-<!-- ===================================================== -->
+<!-- ===================================================== --> 
 <!-- CRM RECUPERAÇÃO COMPLETO FINAL -->
 <!-- ===================================================== -->
 
@@ -834,7 +834,22 @@ Exportar Backup
 
 </button>
 
+<button
+class="btn btn-outline-primary"
+onclick="importBackup()">
+
+Importar Backup
+
+</button>
+
 </div>
+
+<input
+type="file"
+id="backupFileInput"
+accept=".json"
+style="display:none"
+onchange="handleBackupFile(event)">
 
 </div>
 
@@ -1072,7 +1087,7 @@ clients
 const matchSearch =
 (c.nome || '')
 .toLowerCase()
-includes(search);
+.includes(search);
 
 const matchStatus =
 statusFilter === 'ALL'
@@ -1280,7 +1295,7 @@ renderStatuses();
 }
 
 /* ===================================================== */
-/* BACKUP */
+/* BACKUP - EXPORTAR */
 /* ===================================================== */
 
 function exportBackup(){
@@ -1301,6 +1316,49 @@ a.download='backup-crm.json';
 
 a.click();
 
+}
+
+/* ===================================================== */
+/* IMPORTAR BACKUP (NOVO) */
+/* ===================================================== */
+
+function importBackup() {
+document.getElementById('backupFileInput').click();
+}
+
+function handleBackupFile(event) {
+const file = event.target.files[0];
+if (!file) return;
+
+const reader = new FileReader();
+reader.onload = function(e) {
+try {
+const data = JSON.parse(e.target.result);
+if (!Array.isArray(data)) throw new Error('Formato inválido: esperado um array.');
+if (!confirm(`Importar ${data.length} clientes? Isso pode sobrescrever dados existentes.`)) return;
+importClients(data);
+} catch (err) {
+alert('Erro ao ler arquivo: ' + err.message);
+}
+};
+reader.readAsText(file);
+}
+
+async function importClients(clientsArray) {
+const batch = db.batch();
+for (const client of clientsArray) {
+const { id, ...clientData } = client;
+// Garante que o cliente importado pertença ao usuário atual
+clientData.userId = currentUser.uid;
+const docRef = id ? db.collection('clients').doc(id) : db.collection('clients').doc();
+batch.set(docRef, clientData, { merge: true });
+}
+try {
+await batch.commit();
+alert('Importação concluída!');
+} catch (err) {
+alert('Erro ao importar: ' + err.message);
+}
 }
 
 /* ===================================================== */
