@@ -6,1507 +6,695 @@
 <html lang="pt-br">
 
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>CRM Recuperação</title>
-
-<!-- BOOTSTRAP -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- ICONS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<!-- CHART -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-<style>
-
-/* ===================================================== */
-/* TEMA */
-/* ===================================================== */
-
-:root{
-
---bg:#f1f5f9;
---card:#ffffff;
---border:#dbe4ee;
---text:#0f172a;
---muted:#64748b;
-
---primary:#2563eb;
---primary-hover:#1d4ed8;
-
---success:#16a34a;
---warning:#f59e0b;
---danger:#dc2626;
-
---input:#ffffff;
-
---table-head:#e2e8f0;
-
-}
-
-body.dark-mode{
-
---bg:#020617;
---card:#0f172a;
---border:#1e293b;
---text:#f8fafc;
---muted:#94a3b8;
-
---input:#020617;
-
---table-head:#1e293b;
-
-}
-
-/* ===================================================== */
-/* BODY */
-/* ===================================================== */
-
-body{
-
-background:var(--bg);
-color:var(--text);
-font-family:'Segoe UI';
-transition:.3s;
-
-}
-
-/* ===================================================== */
-/* NAVBAR */
-/* ===================================================== */
-
-.navbar{
-
-background:var(--card);
-border-bottom:1px solid var(--border);
-
-}
-
-/* ===================================================== */
-/* CARDS */
-/* ===================================================== */
-
-.card-custom{
-
-background:var(--card);
-border:1px solid var(--border);
-border-radius:22px;
-box-shadow:0 5px 25px rgba(0,0,0,.06);
-transition:.3s;
-
-}
-
-body.dark-mode .card-custom{
-
-box-shadow:0 10px 35px rgba(0,0,0,.35);
-
-}
-
-/* ===================================================== */
-/* DASHBOARD */
-/* ===================================================== */
-
-.dashboard-card{
-
-padding:25px;
-border-radius:22px;
-color:white;
-box-shadow:0 5px 20px rgba(0,0,0,.12);
-
-}
-
-/* ===================================================== */
-/* FORMULÁRIOS */
-/* ===================================================== */
-
-.form-control,
-.form-select{
-
-background:var(--input);
-border:1px solid var(--border);
-color:var(--text);
-border-radius:14px;
-padding:12px;
-transition:.2s;
-
-}
-
-.form-control:focus,
-.form-select:focus{
-
-background:var(--input);
-color:var(--text);
-border-color:var(--primary);
-box-shadow:0 0 0 4px rgba(37,99,235,.15);
-
-}
-
-.form-control::placeholder{
-
-color:var(--muted);
-
-}
-
-/* ===================================================== */
-/* TABELAS */
-/* ===================================================== */
-
-.table{
-
-color:var(--text);
-margin:0;
-
-}
-
-.table thead{
-
-background:var(--table-head);
-
-}
-
-.table thead th{
-
-padding:16px;
-font-size:.92rem;
-border:none;
-
-}
-
-.table tbody td{
-
-padding:16px;
-vertical-align:middle;
-border-color:var(--border);
-
-}
-
-.table tbody tr{
-
-transition:.2s;
-
-}
-
-.table tbody tr:hover{
-
-background:rgba(37,99,235,.06);
-
-}
-
-body.dark-mode .table tbody tr:hover{
-
-background:#13203a;
-
-}
-
-/* ===================================================== */
-/* TABS */
-/* ===================================================== */
-
-.nav-tabs{
-
-border:none;
-gap:10px;
-
-}
-
-.nav-tabs .nav-link{
-
-background:var(--card);
-border:none;
-color:var(--text);
-padding:14px 22px;
-border-radius:16px;
-font-weight:600;
-transition:.25s;
-
-}
-
-.nav-tabs .nav-link.active{
-
-background:linear-gradient(135deg,#2563eb,#1d4ed8);
-color:white;
-
-}
-
-/* ===================================================== */
-/* BOTÕES */
-/* ===================================================== */
-
-.btn{
-
-border-radius:14px;
-padding:10px 18px;
-font-weight:600;
-
-}
-
-/* ===================================================== */
-/* LOGIN */
-/* ===================================================== */
-
-.login-screen{
-
-position:fixed;
-inset:0;
-display:flex;
-justify-content:center;
-align-items:center;
-background:linear-gradient(135deg,#2563eb,#1e3a8a);
-z-index:9999;
-
-}
-
-.login-box{
-
-width:100%;
-max-width:430px;
-padding:35px;
-background:rgba(255,255,255,.95);
-border-radius:24px;
-box-shadow:0 15px 40px rgba(0,0,0,.2);
-
-}
-
-body.dark-mode .login-box{
-
-background:#0f172a;
-
-}
-
-#preview{
-
-max-width:100%;
-margin-top:10px;
-border-radius:20px;
-display:none;
-
-}
-
-.status-item{
-
-background:var(--bg);
-border:1px solid var(--border);
-border-radius:16px;
-padding:14px;
-margin-bottom:12px;
-
-}
-
-</style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Recuperação</title>
+
+  <!-- BOOTSTRAP -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- ICONS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- CHART -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <style>
+    /* ===================================================== */
+    /* TEMA */
+    /* ===================================================== */
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --border: #dbe4ee;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+      --input: #ffffff;
+      --table-head: #e2e8f0;
+    }
+
+    body.dark-mode {
+      --bg: #020617;
+      --card: #0f172a;
+      --border: #1e293b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --input: #020617;
+      --table-head: #1e293b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI';
+      transition: .3s;
+    }
+
+    .navbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-custom {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, .06);
+      transition: .3s;
+    }
+
+    body.dark-mode .card-custom {
+      box-shadow: 0 10px 35px rgba(0, 0, 0, .35);
+    }
+
+    .dashboard-card {
+      padding: 25px;
+      border-radius: 22px;
+      color: white;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, .12);
+    }
+
+    .form-control,
+    .form-select {
+      background: var(--input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px;
+      transition: .2s;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      background: var(--input);
+      color: var(--text);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, .15);
+    }
+
+    .form-control::placeholder {
+      color: var(--muted);
+    }
+
+    .table {
+      color: var(--text);
+      margin: 0;
+    }
+
+    .table thead {
+      background: var(--table-head);
+    }
+
+    .table thead th {
+      padding: 16px;
+      font-size: .92rem;
+      border: none;
+    }
+
+    .table tbody td {
+      padding: 16px;
+      vertical-align: middle;
+      border-color: var(--border);
+    }
+
+    .table tbody tr {
+      transition: .2s;
+    }
+
+    .table tbody tr:hover {
+      background: rgba(37, 99, 235, .06);
+    }
+
+    body.dark-mode .table tbody tr:hover {
+      background: #13203a;
+    }
+
+    .nav-tabs {
+      border: none;
+      gap: 10px;
+    }
+
+    .nav-tabs .nav-link {
+      background: var(--card);
+      border: none;
+      color: var(--text);
+      padding: 14px 22px;
+      border-radius: 16px;
+      font-weight: 600;
+      transition: .25s;
+    }
+
+    .nav-tabs .nav-link.active {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+    }
+
+    .btn {
+      border-radius: 14px;
+      padding: 10px 18px;
+      font-weight: 600;
+    }
+
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #2563eb, #1e3a8a);
+      z-index: 9999;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 430px;
+      padding: 35px;
+      background: rgba(255, 255, 255, .95);
+      border-radius: 24px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, .2);
+    }
+
+    body.dark-mode .login-box {
+      background: #0f172a;
+    }
+
+    #preview {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 20px;
+      display: none;
+    }
+
+    .status-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- ===================================================== -->
-<!-- LOGIN -->
-<!-- ===================================================== -->
-
-<div class="login-screen" id="loginScreen">
-
-<div class="login-box">
-
-<h3 class="text-center mb-4">
-CRM Recuperação
-</h3>
-
-<input
-type="email"
-id="loginEmail"
-class="form-control mb-3"
-placeholder="Seu email">
-
-<div class="input-group mb-3">
-
-<input
-type="password"
-id="loginPassword"
-class="form-control"
-placeholder="Senha">
-
-<button
-class="btn btn-outline-secondary"
-onclick="togglePassword()">
-
-<i class="bi bi-eye"></i>
-
-</button>
-
-</div>
-
-<button
-class="btn btn-primary w-100 mb-2"
-onclick="login()">
-
-Entrar
-
-</button>
-
-<button
-class="btn btn-danger w-100 mb-2"
-onclick="googleLogin()">
-
-<i class="bi bi-google"></i>
-Entrar com Google
-
-</button>
-
-<button
-class="btn btn-outline-primary w-100 mb-2"
-onclick="register()">
-
-Criar Conta
-
-</button>
-
-<button
-class="btn btn-link w-100"
-onclick="recoverPassword()">
-
-Esqueci minha senha
-
-</button>
-
-<div id="loginError" class="text-danger text-center mt-3"></div>
-
-</div>
-
-</div>
-
-<!-- ===================================================== -->
-<!-- NAVBAR -->
-<!-- ===================================================== -->
-
-<nav class="navbar navbar-expand-lg px-4 py-3">
-
-<div class="container-fluid">
-
-<h4 class="m-0 fw-bold">
-CRM Recuperação
-</h4>
-
-<div class="d-flex gap-2">
-
-<button
-class="btn btn-outline-primary"
-onclick="toggleTheme()"
-id="themeBtn">
-
-<i class="bi bi-moon-stars-fill"></i>
-
-</button>
-
-<button
-class="btn btn-success"
-onclick="exportBackup()">
-
-Backup
-
-</button>
-
-<button
-class="btn btn-danger"
-onclick="logout()">
-
-Sair
-
-</button>
-
-</div>
-
-</div>
-
-</nav>
-
-<!-- ===================================================== -->
-<!-- CONTAINER -->
-<!-- ===================================================== -->
-
-<div class="container-fluid p-4">
-
-<!-- ===================================================== -->
-<!-- ABAS -->
-<!-- ===================================================== -->
-
-<ul class="nav nav-tabs mb-4">
-
-<li class="nav-item">
-<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboardTab">
-Dashboard
-</button>
-</li>
-
-<li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#clientesTab">
-Ficha Cliente
-</button>
-</li>
-
-<li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesquisaTab">
-Pesquisar
-</button>
-</li>
-
-<li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#agendaTab">
-Agenda
-</button>
-</li>
-
-<li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#configTab">
-Configurações
-</button>
-</li>
-
-</ul>
-
-<div class="tab-content">
-
-<!-- ===================================================== -->
-<!-- DASHBOARD -->
-<!-- ===================================================== -->
-
-<div class="tab-pane fade show active" id="dashboardTab">
-
-<div class="row g-4 mb-4">
-
-<div class="col-md-3">
-<div class="dashboard-card bg-primary">
-<h6>Total Clientes</h6>
-<h2 id="dashTotal">0</h2>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="dashboard-card bg-success">
-<h6>Fechados</h6>
-<h2 id="dashFechados">0</h2>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="dashboard-card bg-warning">
-<h6>Negociação</h6>
-<h2 id="dashNegociacao">0</h2>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="dashboard-card bg-danger">
-<h6>Sem Interesse</h6>
-<h2 id="dashSemInteresse">0</h2>
-</div>
-</div>
-
-</div>
-
-<div class="card card-custom p-4">
-
-<canvas id="crmChart"></canvas>
-
-</div>
-
-</div>
-
-<!-- ===================================================== -->
-<!-- CLIENTES -->
-<!-- ===================================================== -->
-
-<div class="tab-pane fade" id="clientesTab">
-
-<div class="card card-custom p-4 mb-4">
-
-<h5 class="mb-3">
-Campo Mágico
-</h5>
-
-<textarea
-id="smartPaste"
-class="form-control mb-3"
-rows="5"
-placeholder="Cole aqui os dados do PDF"></textarea>
-
-<button
-class="btn btn-primary"
-onclick="autoFill()">
-
-Auto preencher
-
-</button>
-
-</div>
-
-<div class="card card-custom p-4">
-
-<input type="hidden" id="clientId">
-
-<div class="row g-3">
-
-<div class="col-md-4">
-<label>Nome do usuário</label>
-<input type="text" id="cNome" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>Nome social</label>
-<input type="text" id="cNomeSocial" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>CPF do titular</label>
-<input type="text" id="cCPF" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>Data nascimento</label>
-<input type="text" id="cNascimento" class="form-control">
-</div>
-
-<div class="col-md-8">
-<label>Endereço</label>
-<input type="text" id="cEndereco" class="form-control">
-</div>
-
-<div class="col-md-5">
-<label>Cidade</label>
-<input type="text" id="cCidade" class="form-control">
-</div>
-
-<div class="col-md-1">
-<label>UF</label>
-<input type="text" id="cUF" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Empresa</label>
-<input type="text" id="cEmpresa" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Ade emp</label>
-<input type="text" id="cAdeEmp" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Rede/plano</label>
-<input type="text" id="cRedePlano" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Plano atual</label>
-<input type="text" id="cPlanoAtual" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>Acomodação</label>
-<input type="text" id="cAcomodacao" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>Situação</label>
-<input type="text" id="cSituacao" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>Status CRM</label>
-<select id="cStatus" class="form-select"></select>
-</div>
-
-<div class="col-md-4">
-<label>Data adesão</label>
-<input type="text" id="cAdesao" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>Cancelamento</label>
-<input type="text" id="cCancelamento" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>Tempo</label>
-<input type="text" id="cTempo" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Telefones</label>
-<input type="text" id="cTelefones" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Emails</label>
-<input type="text" id="cEmails" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Agenda retorno</label>
-<input type="date" id="cRetorno" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Foto</label>
-
-<input
-type="file"
-class="form-control"
-onchange="previewImage(event)">
-
-<input type="hidden" id="fotoBase64">
-
-<img id="preview">
-
-</div>
-
-</div>
-
-<button
-class="btn btn-success mt-4"
-onclick="saveClient()">
-
-Salvar Cliente
-
-</button>
-
-</div>
-
-</div>
-
-<!-- ===================================================== -->
-<!-- PESQUISA -->
-<!-- ===================================================== -->
-
-<div class="tab-pane fade" id="pesquisaTab">
-
-<div class="card card-custom p-4">
-
-<div class="row g-3 mb-4">
-
-<div class="col-lg-6">
-
-<input
-type="text"
-id="search"
-class="form-control"
-placeholder="Pesquisar cliente..."
-onkeyup="renderTable()">
-
-</div>
-
-<div class="col-lg-3">
-
-<select
-id="filterStatus"
-class="form-select"
-onchange="renderTable()">
-
-<option value="ALL">
-Todos status
-</option>
-
-</select>
-
-</div>
-
-</div>
-
-<div class="table-responsive">
-
-<table class="table align-middle">
-
-<thead>
-
-<tr>
-
-<th>Cliente</th>
-<th>Empresa</th>
-<th>Telefone</th>
-<th>Status</th>
-<th>Retorno</th>
-<th>Ações</th>
-
-</tr>
-
-</thead>
-
-<tbody id="tableBody"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- ===================================================== -->
-<!-- AGENDA -->
-<!-- ===================================================== -->
-
-<div class="tab-pane fade" id="agendaTab">
-
-<div class="card card-custom p-4">
-
-<div class="table-responsive">
-
-<table class="table">
-
-<thead>
-
-<tr>
-
-<th>Cliente</th>
-<th>Telefone</th>
-<th>Retorno</th>
-<th>Status</th>
-<th>WhatsApp</th>
-
-</tr>
-
-</thead>
-
-<tbody id="agendaBody"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- ===================================================== -->
-<!-- CONFIG -->
-<!-- ===================================================== -->
-
-<div class="tab-pane fade" id="configTab">
-
-<div class="row g-4">
-
-<div class="col-lg-6">
-
-<div class="card card-custom p-4">
-
-<div class="d-flex justify-content-between mb-4">
-
-<h4>Etiquetas CRM</h4>
-
-<button
-class="btn btn-success"
-onclick="addStatus()">
-
-Adicionar
-
-</button>
-
-</div>
-
-<div id="statusList"></div>
-
-</div>
-
-</div>
-
-<div class="col-lg-6">
-
-<div class="card card-custom p-4">
-
-<h4 class="mb-4">
-Backup
-</h4>
-
-<div class="d-grid gap-3">
-
-<button
-class="btn btn-primary"
-onclick="exportBackup()">
-
-Exportar Backup
-
-</button>
-
-<button
-class="btn btn-outline-primary"
-onclick="importBackup()">
-
-Importar Backup
-
-</button>
-
-</div>
-
-<input
-type="file"
-id="backupFileInput"
-accept=".json"
-style="display:none"
-onchange="handleBackupFile(event)">
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<script>
-
-/* ===================================================== */
-/* FIREBASE */
-/* ===================================================== */
-
-const firebaseConfig = {
-
-apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
-authDomain: "crm-recuperacao.firebaseapp.com",
-projectId: "crm-recuperacao",
-storageBucket: "crm-recuperacao.firebasestorage.app",
-messagingSenderId: "347011763386",
-appId: "1:347011763386:web:62073679ac76ef08e1c683",
-measurementId: "G-XXZFJXHEF6"
-
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-let currentUser = null;
-
-let clients = [];
-
-let statuses = [
-'Em negociação',
-'Fechou o plano',
-'Não tem interesse'
-];
-
-/* ===================================================== */
-/* LOGIN */
-/* ===================================================== */
-
-auth.onAuthStateChanged(user=>{
-
-if(user){
-
-currentUser=user;
-
-document.getElementById('loginScreen').style.display='none';
-
-loadClients();
-
-}
-
-});
-
-function login(){
-
-auth.signInWithEmailAndPassword(
-
-document.getElementById('loginEmail').value,
-document.getElementById('loginPassword').value
-
-).catch(err=>{
-
-document.getElementById('loginError').innerText =
-err.message;
-
-});
-
-}
-
-function register(){
-
-auth.createUserWithEmailAndPassword(
-
-document.getElementById('loginEmail').value,
-document.getElementById('loginPassword').value
-
-);
-
-}
-
-function googleLogin(){
-
-const provider =
-new firebase.auth.GoogleAuthProvider();
-
-auth.signInWithPopup(provider);
-
-}
-
-function logout(){
-
-auth.signOut();
-
-location.reload();
-
-}
-
-function recoverPassword(){
-
-auth.sendPasswordResetEmail(
-
-document.getElementById('loginEmail').value
-
-).then(()=>{
-
-alert('Email enviado');
-
-});
-
-}
-
-function togglePassword(){
-
-const input =
-document.getElementById('loginPassword');
-
-input.type =
-input.type === 'password'
-? 'text'
-: 'password';
-
-}
-
-/* ===================================================== */
-/* DARK MODE */
-/* ===================================================== */
-
-function toggleTheme(){
-
-document.body.classList.toggle('dark-mode');
-
-const isDark =
-document.body.classList.contains('dark-mode');
-
-localStorage.setItem(
-'crm-theme',
-isDark ? 'dark' : 'light'
-);
-
-}
-
-if(localStorage.getItem('crm-theme') === 'dark'){
-
-document.body.classList.add('dark-mode');
-
-}
-
-/* ===================================================== */
-/* CLIENTES */
-/* ===================================================== */
-
-function saveClient(){
-
-const id =
-document.getElementById('clientId').value
-|| db.collection('clients').doc().id;
-
-const client={
-
-userId:currentUser.uid,
-
-nome:document.getElementById('cNome').value,
-empresa:document.getElementById('cEmpresa').value,
-telefones:document.getElementById('cTelefones').value,
-status:document.getElementById('cStatus').value,
-retorno:document.getElementById('cRetorno').value,
-cpf:document.getElementById('cCPF').value
-
-};
-
-db.collection('clients').doc(id).set(client);
-
-alert('Cliente salvo');
-
-}
-
-function loadClients(){
-
-db.collection('clients')
-.where('userId','==',currentUser.uid)
-.onSnapshot(snapshot=>{
-
-clients=[];
-
-snapshot.forEach(doc=>{
-
-clients.push({
-
-id:doc.id,
-...doc.data()
-
-});
-
-});
-
-renderTable();
-renderAgenda();
-updateDashboard();
-
-});
-
-}
-
-/* ===================================================== */
-/* TABELA */
-/* ===================================================== */
-
-function renderTable(){
-
-const tbody =
-document.getElementById('tableBody');
-
-tbody.innerHTML='';
-
-const search =
-document.getElementById('search').value.toLowerCase();
-
-const statusFilter =
-document.getElementById('filterStatus').value;
-
-clients
-.filter(c=>{
-
-const matchSearch =
-(c.nome || '')
-.toLowerCase()
-.includes(search);
-
-const matchStatus =
-statusFilter === 'ALL'
-|| c.status === statusFilter;
-
-return matchSearch && matchStatus;
-
-})
-.forEach(c=>{
-
-tbody.innerHTML += `
-
-<tr>
-
-<td>
-
-<div class="fw-bold">
-${c.nome || '-'}
-</div>
-
-<div class="small text-muted">
-${c.cpf || ''}
-</div>
-
-</td>
-
-<td>${c.empresa || '-'}</td>
-
-<td>${c.telefones || '-'}</td>
-
-<td>
-
-<span class="badge bg-primary">
-
-${c.status || '-'}
-
-</span>
-
-</td>
-
-<td>${c.retorno || '-'}</td>
-
-<td>
-
-<div class="d-flex gap-2">
-
-<button
-class="btn btn-warning btn-sm">
-
-<i class="bi bi-pencil"></i>
-
-</button>
-
-<a
-target="_blank"
-href="https://wa.me/55${(c.telefones||'').replace(/\D/g,'')}"
-
-class="btn btn-success btn-sm">
-
-<i class="bi bi-whatsapp"></i>
-
-</a>
-
-</div>
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-}
-
-/* ===================================================== */
-/* AGENDA */
-/* ===================================================== */
-
-function renderAgenda(){
-
-const tbody =
-document.getElementById('agendaBody');
-
-tbody.innerHTML='';
-
-clients.forEach(c=>{
-
-tbody.innerHTML += `
-
-<tr>
-
-<td>${c.nome}</td>
-<td>${c.telefones}</td>
-<td>${c.retorno}</td>
-<td>${c.status}</td>
-
-<td>
-
-<a
-target="_blank"
-href="https://wa.me/55${(c.telefones||'').replace(/\D/g,'')}"
-
-class="btn btn-success btn-sm">
-
-WhatsApp
-
-</a>
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-}
-
-/* ===================================================== */
-/* DASHBOARD */
-/* ===================================================== */
-
-function updateDashboard(){
-
-document.getElementById('dashTotal').innerText =
-clients.length;
-
-}
-
-/* ===================================================== */
-/* STATUS */
-/* ===================================================== */
-
-function addStatus(){
-
-const novo =
-prompt('Novo status');
-
-if(!novo) return;
-
-statuses.push(novo);
-
-renderStatuses();
-
-}
-
-function renderStatuses(){
-
-const list =
-document.getElementById('statusList');
-
-const select =
-document.getElementById('cStatus');
-
-const filter =
-document.getElementById('filterStatus');
-
-list.innerHTML='';
-select.innerHTML='';
-filter.innerHTML='<option value="ALL">Todos status</option>';
-
-statuses.forEach((status,index)=>{
-
-select.innerHTML += `
-<option>${status}</option>
-`;
-
-filter.innerHTML += `
-<option>${status}</option>
-`;
-
-list.innerHTML += `
-
-<div class="status-item">
-
-<div class="d-flex justify-content-between align-items-center">
-
-<strong>${status}</strong>
-
-<button
-class="btn btn-danger btn-sm"
-onclick="deleteStatus(${index})">
-
-Excluir
-
-</button>
-
-</div>
-
-</div>
-
-`;
-
-});
-
-}
-
-function deleteStatus(index){
-
-statuses.splice(index,1);
-
-renderStatuses();
-
-}
-
-/* ===================================================== */
-/* BACKUP - EXPORTAR */
-/* ===================================================== */
-
-function exportBackup(){
-
-const blob =
-new Blob(
-[JSON.stringify(clients)],
-{type:'application/json'}
-);
-
-const a =
-document.createElement('a');
-
-a.href=
-URL.createObjectURL(blob);
-
-a.download='backup-crm.json';
-
-a.click();
-
-}
-
-/* ===================================================== */
-/* IMPORTAR BACKUP (CORRIGIDO - ACEITA VÁRIOS FORMATOS) */
-/* ===================================================== */
-
-function importBackup() {
-  document.getElementById('backupFileInput').click();
-}
-
-function handleBackupFile(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      let clientsArray;
-
-      // 1. Se já for um array
-      if (Array.isArray(data)) {
-        clientsArray = data;
+  <!-- LOGIN -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <h3 class="text-center mb-4">CRM Recuperação</h3>
+      <input type="email" id="loginEmail" class="form-control mb-3" placeholder="Seu email">
+      <div class="input-group mb-3">
+        <input type="password" id="loginPassword" class="form-control" placeholder="Senha">
+        <button class="btn btn-outline-secondary" onclick="togglePassword()">
+          <i class="bi bi-eye"></i>
+        </button>
+      </div>
+      <button class="btn btn-primary w-100 mb-2" onclick="login()">Entrar</button>
+      <button class="btn btn-danger w-100 mb-2" onclick="googleLogin()">
+        <i class="bi bi-google"></i> Entrar com Google
+      </button>
+      <button class="btn btn-outline-primary w-100 mb-2" onclick="register()">Criar Conta</button>
+      <button class="btn btn-link w-100" onclick="recoverPassword()">Esqueci minha senha</button>
+      <div id="loginError" class="text-danger text-center mt-3"></div>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg px-4 py-3">
+    <div class="container-fluid">
+      <h4 class="m-0 fw-bold">CRM Recuperação</h4>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary" onclick="toggleTheme()" id="themeBtn">
+          <i class="bi bi-moon-stars-fill"></i>
+        </button>
+        <button class="btn btn-success" onclick="exportBackup()">Backup</button>
+        <button class="btn btn-danger" onclick="logout()">Sair</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CONTAINER -->
+  <div class="container-fluid p-4">
+    <!-- ABAS -->
+    <ul class="nav nav-tabs mb-4">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboardTab">Dashboard</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#clientesTab">Ficha Cliente</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesquisaTab">Pesquisar</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#agendaTab">Agenda</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#configTab">Configurações</button></li>
+    </ul>
+
+    <div class="tab-content">
+      <!-- DASHBOARD -->
+      <div class="tab-pane fade show active" id="dashboardTab">
+        <div class="row g-4 mb-4">
+          <div class="col-md-3"><div class="dashboard-card bg-primary"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
+          <div class="col-md-3"><div class="dashboard-card bg-success"><h6>Fechados</h6><h2 id="dashFechados">0</h2></div></div>
+          <div class="col-md-3"><div class="dashboard-card bg-warning"><h6>Negociação</h6><h2 id="dashNegociacao">0</h2></div></div>
+          <div class="col-md-3"><div class="dashboard-card bg-danger"><h6>Sem Interesse</h6><h2 id="dashSemInteresse">0</h2></div></div>
+        </div>
+        <div class="card card-custom p-4"><canvas id="crmChart"></canvas></div>
+      </div>
+
+      <!-- CLIENTES -->
+      <div class="tab-pane fade" id="clientesTab">
+        <div class="card card-custom p-4 mb-4">
+          <h5 class="mb-3">Campo Mágico</h5>
+          <textarea id="smartPaste" class="form-control mb-3" rows="5" placeholder="Cole aqui os dados do PDF"></textarea>
+          <button class="btn btn-primary" onclick="autoFill()">Auto preencher</button>
+        </div>
+        <div class="card card-custom p-4">
+          <input type="hidden" id="clientId">
+          <div class="row g-3">
+            <div class="col-md-4"><label>Nome do usuário</label><input type="text" id="cNome" class="form-control"></div>
+            <div class="col-md-4"><label>Nome social</label><input type="text" id="cNomeSocial" class="form-control"></div>
+            <div class="col-md-4"><label>CPF do titular</label><input type="text" id="cCPF" class="form-control"></div>
+            <div class="col-md-4"><label>Data nascimento</label><input type="text" id="cNascimento" class="form-control"></div>
+            <div class="col-md-8"><label>Endereço</label><input type="text" id="cEndereco" class="form-control"></div>
+            <div class="col-md-5"><label>Cidade</label><input type="text" id="cCidade" class="form-control"></div>
+            <div class="col-md-1"><label>UF</label><input type="text" id="cUF" class="form-control"></div>
+            <div class="col-md-6"><label>Empresa</label><input type="text" id="cEmpresa" class="form-control"></div>
+            <div class="col-md-6"><label>Ade emp</label><input type="text" id="cAdeEmp" class="form-control"></div>
+            <div class="col-md-6"><label>Rede/plano</label><input type="text" id="cRedePlano" class="form-control"></div>
+            <div class="col-md-6"><label>Plano atual</label><input type="text" id="cPlanoAtual" class="form-control"></div>
+            <div class="col-md-4"><label>Acomodação</label><input type="text" id="cAcomodacao" class="form-control"></div>
+            <div class="col-md-4"><label>Situação</label><input type="text" id="cSituacao" class="form-control"></div>
+            <div class="col-md-4"><label>Status CRM</label><select id="cStatus" class="form-select"></select></div>
+            <div class="col-md-4"><label>Data adesão</label><input type="text" id="cAdesao" class="form-control"></div>
+            <div class="col-md-4"><label>Cancelamento</label><input type="text" id="cCancelamento" class="form-control"></div>
+            <div class="col-md-4"><label>Tempo</label><input type="text" id="cTempo" class="form-control"></div>
+            <div class="col-md-6"><label>Telefones</label><input type="text" id="cTelefones" class="form-control"></div>
+            <div class="col-md-6"><label>Emails</label><input type="text" id="cEmails" class="form-control"></div>
+            <div class="col-md-6"><label>Agenda retorno</label><input type="date" id="cRetorno" class="form-control"></div>
+            <div class="col-md-6">
+              <label>Foto</label>
+              <input type="file" class="form-control" onchange="previewImage(event)">
+              <input type="hidden" id="fotoBase64">
+              <img id="preview">
+            </div>
+          </div>
+          <button class="btn btn-success mt-4" onclick="saveClient()">Salvar Cliente</button>
+        </div>
+      </div>
+
+      <!-- PESQUISA -->
+      <div class="tab-pane fade" id="pesquisaTab">
+        <div class="card card-custom p-4">
+          <div class="row g-3 mb-4">
+            <div class="col-lg-6"><input type="text" id="search" class="form-control" placeholder="Pesquisar cliente..." onkeyup="renderTable()"></div>
+            <div class="col-lg-3"><select id="filterStatus" class="form-select" onchange="renderTable()"><option value="ALL">Todos status</option></select></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead><tr><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Retorno</th><th>Ações</th></tr></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- AGENDA -->
+      <div class="tab-pane fade" id="agendaTab">
+        <div class="card card-custom p-4">
+          <div class="table-responsive">
+            <table class="table">
+              <thead><tr><th>Cliente</th><th>Telefone</th><th>Retorno</th><th>Status</th><th>WhatsApp</th></tr></thead>
+              <tbody id="agendaBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONFIG -->
+      <div class="tab-pane fade" id="configTab">
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="card card-custom p-4">
+              <div class="d-flex justify-content-between mb-4">
+                <h4>Etiquetas CRM</h4>
+                <button class="btn btn-success" onclick="addStatus()">Adicionar</button>
+              </div>
+              <div id="statusList"></div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card card-custom p-4">
+              <h4 class="mb-4">Backup</h4>
+              <div class="d-grid gap-3">
+                <button class="btn btn-primary" onclick="exportBackup()">Exportar Backup</button>
+                <button class="btn btn-outline-primary" onclick="importBackup()">Importar Backup</button>
+              </div>
+              <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleBackupFile(event)">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ===================================================== */
+    /* FIREBASE - CONFIGURAÇÃO CORRIGIDA */
+    /* ===================================================== */
+    const firebaseConfig = {
+      apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
+      authDomain: "crm-recuperacao.firebaseapp.com",
+      projectId: "crm-recuperacao",
+      storageBucket: "crm-recuperacao.firebasestorage.app",
+      messagingSenderId: "347011763386",
+      appId: "1:347011763386:web:158c1ca6f512a1cde1c683",
+      measurementId: "G-1XHHFXHN4G"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let clients = [];
+    let statuses = ['Em negociação', 'Fechou o plano', 'Não tem interesse'];
+
+    /* LOGIN */
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('loginScreen').style.display = 'none';
+        loadClients();
       }
-      // 2. Se for objeto, procura por chaves comuns que contenham array
-      else if (data && typeof data === 'object') {
-        const possibleKeys = ['clientes', 'clients', 'data', 'registros', 'backup', 'items'];
-        for (const key of possibleKeys) {
-          if (Array.isArray(data[key])) {
-            clientsArray = data[key];
-            break;
+    });
+
+    function login() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      auth.signInWithEmailAndPassword(email, password)
+        .catch(err => {
+          let msg = '';
+          switch (err.code) {
+            case 'auth/invalid-credential':
+              msg = 'E-mail ou senha inválidos.';
+              break;
+            case 'auth/user-not-found':
+              msg = 'Usuário não encontrado.';
+              break;
+            case 'auth/wrong-password':
+              msg = 'Senha incorreta.';
+              break;
+            case 'auth/invalid-email':
+              msg = 'E-mail em formato inválido.';
+              break;
+            default:
+              msg = 'Erro: ' + err.message;
           }
+          document.getElementById('loginError').innerText = msg;
+        });
+    }
+
+    function register() {
+      auth.createUserWithEmailAndPassword(
+        document.getElementById('loginEmail').value,
+        document.getElementById('loginPassword').value
+      );
+    }
+
+    function googleLogin() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider);
+    }
+
+    function logout() {
+      auth.signOut();
+      location.reload();
+    }
+
+    function recoverPassword() {
+      auth.sendPasswordResetEmail(document.getElementById('loginEmail').value)
+        .then(() => alert('Email enviado'));
+    }
+
+    function togglePassword() {
+      const input = document.getElementById('loginPassword');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    /* DARK MODE */
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('crm-theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+    if (localStorage.getItem('crm-theme') === 'dark') document.body.classList.add('dark-mode');
+
+    /* CLIENTES */
+    function saveClient() {
+      const id = document.getElementById('clientId').value || db.collection('clients').doc().id;
+      const client = {
+        userId: currentUser.uid,
+        nome: document.getElementById('cNome').value,
+        empresa: document.getElementById('cEmpresa').value,
+        telefones: document.getElementById('cTelefones').value,
+        status: document.getElementById('cStatus').value,
+        retorno: document.getElementById('cRetorno').value,
+        cpf: document.getElementById('cCPF').value
+      };
+      db.collection('clients').doc(id).set(client);
+      alert('Cliente salvo');
+    }
+
+    function loadClients() {
+      db.collection('clients').where('userId', '==', currentUser.uid)
+        .onSnapshot(snapshot => {
+          clients = [];
+          snapshot.forEach(doc => clients.push({ id: doc.id, ...doc.data() }));
+          renderTable();
+          renderAgenda();
+          updateDashboard();
+        });
+    }
+
+    /* TABELA */
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      const search = document.getElementById('search').value.toLowerCase();
+      const statusFilter = document.getElementById('filterStatus').value;
+      clients.filter(c => {
+        const matchSearch = (c.nome || '').toLowerCase().includes(search);
+        const matchStatus = statusFilter === 'ALL' || c.status === statusFilter;
+        return matchSearch && matchStatus;
+      }).forEach(c => {
+        tbody.innerHTML += `
+          <tr>
+            <td><div class="fw-bold">${c.nome || '-'}</div><div class="small text-muted">${c.cpf || ''}</div></td>
+            <td>${c.empresa || '-'}</td>
+            <td>${c.telefones || '-'}</td>
+            <td><span class="badge bg-primary">${c.status || '-'}</span></td>
+            <td>${c.retorno || '-'}</td>
+            <td>
+              <div class="d-flex gap-2">
+                <button class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></button>
+                <a target="_blank" href="https://wa.me/55${(c.telefones||'').replace(/\D/g,'')}" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a>
+              </div>
+            </td>
+          </tr>`;
+      });
+    }
+
+    /* AGENDA */
+    function renderAgenda() {
+      const tbody = document.getElementById('agendaBody');
+      tbody.innerHTML = '';
+      clients.forEach(c => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${c.nome}</td>
+            <td>${c.telefones}</td>
+            <td>${c.retorno}</td>
+            <td>${c.status}</td>
+            <td><a target="_blank" href="https://wa.me/55${(c.telefones||'').replace(/\D/g,'')}" class="btn btn-success btn-sm">WhatsApp</a></td>
+          </tr>`;
+      });
+    }
+
+    /* DASHBOARD */
+    function updateDashboard() {
+      document.getElementById('dashTotal').innerText = clients.length;
+      // outros cards podem ser preenchidos conforme regras de status
+    }
+
+    /* STATUS */
+    function addStatus() {
+      const novo = prompt('Novo status');
+      if (!novo) return;
+      statuses.push(novo);
+      renderStatuses();
+    }
+
+    function renderStatuses() {
+      const list = document.getElementById('statusList');
+      const select = document.getElementById('cStatus');
+      const filter = document.getElementById('filterStatus');
+      list.innerHTML = '';
+      select.innerHTML = '';
+      filter.innerHTML = '<option value="ALL">Todos status</option>';
+      statuses.forEach((status, index) => {
+        select.innerHTML += `<option>${status}</option>`;
+        filter.innerHTML += `<option>${status}</option>`;
+        list.innerHTML += `
+          <div class="status-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <strong>${status}</strong>
+              <button class="btn btn-danger btn-sm" onclick="deleteStatus(${index})">Excluir</button>
+            </div>
+          </div>`;
+      });
+    }
+
+    function deleteStatus(index) {
+      statuses.splice(index, 1);
+      renderStatuses();
+    }
+
+    /* BACKUP - EXPORTAR */
+    function exportBackup() {
+      const blob = new Blob([JSON.stringify(clients)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'backup-crm.json';
+      a.click();
+    }
+
+    /* IMPORTAR BACKUP */
+    function importBackup() {
+      document.getElementById('backupFileInput').click();
+    }
+
+    function handleBackupFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          let clientsArray;
+          if (Array.isArray(data)) {
+            clientsArray = data;
+          } else if (data && typeof data === 'object') {
+            const possibleKeys = ['clientes', 'clients', 'data', 'registros', 'backup', 'items'];
+            for (const key of possibleKeys) {
+              if (Array.isArray(data[key])) { clientsArray = data[key]; break; }
+            }
+            if (!clientsArray) clientsArray = Object.values(data).find(val => Array.isArray(val));
+          }
+          if (!clientsArray || !Array.isArray(clientsArray)) {
+            throw new Error('Não foi possível encontrar um array de clientes no arquivo.');
+          }
+          if (!confirm(`Importar ${clientsArray.length} clientes? Isso pode sobrescrever dados existentes.`)) {
+            event.target.value = '';
+            return;
+          }
+          importClients(clientsArray);
+        } catch (err) {
+          alert('Erro ao ler arquivo: ' + err.message);
+        } finally {
+          event.target.value = '';
         }
-        // 3. Último recurso: pega o primeiro array que aparecer nos valores
-        if (!clientsArray) {
-          clientsArray = Object.values(data).find(val => Array.isArray(val));
+      };
+      reader.readAsText(file);
+    }
+
+    async function importClients(clientsArray) {
+      const batch = db.batch();
+      for (const client of clientsArray) {
+        const { id, ...clientData } = client;
+        clientData.userId = currentUser.uid;
+        const docRef = id ? db.collection('clients').doc(id) : db.collection('clients').doc();
+        batch.set(docRef, clientData, { merge: true });
+      }
+      try {
+        await batch.commit();
+        alert('Importação concluída!');
+      } catch (err) {
+        alert('Erro ao importar: ' + err.message);
+      }
+    }
+
+    /* FOTO */
+    function previewImage(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('preview').src = e.target.result;
+        document.getElementById('preview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* CAMPO MÁGICO - ROBUSTO */
+    function autoFill() {
+      const text = document.getElementById('smartPaste').value;
+      const fieldMap = [
+        { regex: /^Nome\s+do\s+usuário\s*:\s*(.*)$/im, field: 'cNome' },
+        { regex: /^Nome\s+social\s*:\s*(.*)$/im, field: 'cNomeSocial' },
+        { regex: /^CPF\s+do\s+titular\s*:\s*(.*)$/im, field: 'cCPF' },
+        { regex: /^CPF\s*:\s*(.*)$/im, field: 'cCPF' },
+        { regex: /^Data\s+de\s+nascimento\s*:\s*(.*)$/im, field: 'cNascimento' },
+        { regex: /^Endereço\s*:\s*(.*)$/im, field: 'cEndereco' },
+        { regex: /^Empresa\s*:\s*(.*)$/im, field: 'cEmpresa' },
+        { regex: /^Ade\s+emp\s*:\s*(.*)$/im, field: 'cAdeEmp' },
+        { regex: /^Rede\/plano\s*:\s*(.*)$/im, field: 'cRedePlano' },
+        { regex: /^Plano\s+atual\s*:\s*(.*)$/im, field: 'cPlanoAtual' },
+        { regex: /^Acomodação\s*:\s*(.*)$/im, field: 'cAcomodacao' },
+        { regex: /^Situação\s*:\s*(.*)$/im, field: 'cSituacao' },
+        { regex: /^Data\s+da\s+adesão\s*:\s*(.*)$/im, field: 'cAdesao' },
+        { regex: /^Data\s+do\s+cancelamento\s*:\s*(.*)$/im, field: 'cCancelamento' },
+        { regex: /^Tempo\s*:\s*(.*)$/im, field: 'cTempo' },
+        { regex: /^Telefones?\s+cadastrados?\s*:\s*(.*)$/im, field: 'cTelefones' },
+        { regex: /^Endereços?\s+eletr[ôo]nicos?\s*:\s*(.*)$/im, field: 'cEmails' }
+      ];
+
+      // Limpa campos
+      const fields = ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails'];
+      fields.forEach(f => document.getElementById(f).value = '');
+
+      for (const map of fieldMap) {
+        const match = text.match(map.regex);
+        if (match && match[1]) document.getElementById(map.field).value = match[1].trim();
+      }
+
+      // Cidade/UF
+      const cityMatch = text.match(/^Cidade\s*:\s*(.*)$/im);
+      if (cityMatch) {
+        const full = cityMatch[1].trim();
+        const parts = full.split(/[|\-–]/);
+        document.getElementById('cCidade').value = (parts[0] || '').trim();
+        let uf = '';
+        if (parts[1]) {
+          const ufMatch = parts[1].match(/UF\s*:\s*(.*)/i);
+          uf = ufMatch ? ufMatch[1].trim() : parts[1].trim();
         }
+        document.getElementById('cUF').value = uf;
       }
 
-      if (!clientsArray || !Array.isArray(clientsArray)) {
-        throw new Error('Não foi possível encontrar um array de clientes no arquivo. Verifique o formato.');
-      }
-
-      if (!confirm(`Importar ${clientsArray.length} clientes? Isso pode sobrescrever dados existentes.`)) {
-        // Limpa o input para permitir selecionar novamente
-        event.target.value = '';
-        return;
-      }
-
-      importClients(clientsArray);
-    } catch (err) {
-      alert('Erro ao ler arquivo: ' + err.message);
-    } finally {
-      // Limpa o campo de arquivo para permitir reimportar o mesmo arquivo se necessário
-      event.target.value = '';
+      console.log('Campo Mágico preencheu:', {
+        nome: document.getElementById('cNome').value,
+        cpf: document.getElementById('cCPF').value,
+        cidade: document.getElementById('cCidade').value,
+        uf: document.getElementById('cUF').value
+      });
     }
-  };
-  reader.readAsText(file);
-}
 
-async function importClients(clientsArray) {
-  const batch = db.batch();
-  for (const client of clientsArray) {
-    const { id, ...clientData } = client;
-    // Garante que o cliente importado pertença ao usuário atual
-    clientData.userId = currentUser.uid;
-    const docRef = id ? db.collection('clients').doc(id) : db.collection('clients').doc();
-    batch.set(docRef, clientData, { merge: true });
-  }
-  try {
-    await batch.commit();
-    alert('Importação concluída!');
-  } catch (err) {
-    alert('Erro ao importar: ' + err.message);
-  }
-}
+    /* INIT */
+    renderStatuses();
+  </script>
 
-/* ===================================================== */
-/* FOTO */
-/* ===================================================== */
-
-function previewImage(event){
-
-const file =
-event.target.files[0];
-
-const reader =
-new FileReader();
-
-reader.onload=function(e){
-
-document.getElementById('preview').src =
-e.target.result;
-
-document.getElementById('preview').style.display='block';
-
-};
-
-reader.readAsDataURL(file);
-
-}
-
-/* ===================================================== */
-/* AUTO FILL (CAMPO MÁGICO - VERSÃO ROBUSTA) */
-/* ===================================================== */
-
-function autoFill(){
-  const text = document.getElementById('smartPaste').value;
-  
-  // Mapeamento: chave = regex para encontrar o label, valor = id do campo
-  const fieldMap = [
-    { regex: /^Nome\s+do\s+usuário\s*:\s*(.*)$/im, field: 'cNome' },
-    { regex: /^Nome\s+social\s*:\s*(.*)$/im, field: 'cNomeSocial' },
-    { regex: /^CPF\s+do\s+titular\s*:\s*(.*)$/im, field: 'cCPF' },
-    { regex: /^CPF\s*:\s*(.*)$/im, field: 'cCPF' }, // fallback
-    { regex: /^Data\s+de\s+nascimento\s*:\s*(.*)$/im, field: 'cNascimento' },
-    { regex: /^Endereço\s*:\s*(.*)$/im, field: 'cEndereco' },
-    { regex: /^Empresa\s*:\s*(.*)$/im, field: 'cEmpresa' },
-    { regex: /^Ade\s+emp\s*:\s*(.*)$/im, field: 'cAdeEmp' },
-    { regex: /^Rede\/plano\s*:\s*(.*)$/im, field: 'cRedePlano' },
-    { regex: /^Plano\s+atual\s*:\s*(.*)$/im, field: 'cPlanoAtual' },
-    { regex: /^Acomodação\s*:\s*(.*)$/im, field: 'cAcomodacao' },
-    { regex: /^Situação\s*:\s*(.*)$/im, field: 'cSituacao' },
-    { regex: /^Data\s+da\s+adesão\s*:\s*(.*)$/im, field: 'cAdesao' },
-    { regex: /^Data\s+do\s+cancelamento\s*:\s*(.*)$/im, field: 'cCancelamento' },
-    { regex: /^Tempo\s*:\s*(.*)$/im, field: 'cTempo' },
-    { regex: /^Telefones?\s+cadastrados?\s*:\s*(.*)$/im, field: 'cTelefones' },
-    { regex: /^Endereços?\s+eletr[ôo]nicos?\s*:\s*(.*)$/im, field: 'cEmails' }
-  ];
-
-  // Limpa campos
-  document.getElementById('cNome').value = '';
-  document.getElementById('cNomeSocial').value = '';
-  document.getElementById('cCPF').value = '';
-  document.getElementById('cNascimento').value = '';
-  document.getElementById('cEndereco').value = '';
-  document.getElementById('cCidade').value = '';
-  document.getElementById('cUF').value = '';
-  document.getElementById('cEmpresa').value = '';
-  document.getElementById('cAdeEmp').value = '';
-  document.getElementById('cRedePlano').value = '';
-  document.getElementById('cPlanoAtual').value = '';
-  document.getElementById('cAcomodacao').value = '';
-  document.getElementById('cSituacao').value = '';
-  document.getElementById('cAdesao').value = '';
-  document.getElementById('cCancelamento').value = '';
-  document.getElementById('cTempo').value = '';
-  document.getElementById('cTelefones').value = '';
-  document.getElementById('cEmails').value = '';
-
-  // Aplica cada mapeamento
-  for (const map of fieldMap) {
-    const match = text.match(map.regex);
-    if (match && match[1]) {
-      document.getElementById(map.field).value = match[1].trim();
-    }
-  }
-
-  // Tratamento especial para Cidade/UF
-  const cityMatch = text.match(/^Cidade\s*:\s*(.*)$/im);
-  if (cityMatch) {
-    const full = cityMatch[1].trim();
-    // Exemplos: "CARAPICUIBA | UF: SP" ou "CARAPICUIBA - SP"
-    const parts = full.split(/[|\-–]/); // separa por | ou hífen
-    const city = (parts[0] || '').trim();
-    let uf = '';
-    if (parts[1]) {
-      const ufMatch = parts[1].match(/UF\s*:\s*(.*)/i);
-      uf = ufMatch ? ufMatch[1].trim() : parts[1].trim();
-    }
-    document.getElementById('cCidade').value = city;
-    document.getElementById('cUF').value = uf;
-  }
-
-  // Depuração (abra o console do navegador com F12 para ver)
-  console.log('=== Campo Mágico preencheu: ===');
-  console.log('Nome:', document.getElementById('cNome').value);
-  console.log('CPF:', document.getElementById('cCPF').value);
-  console.log('Cidade/UF:', document.getElementById('cCidade').value, '/', document.getElementById('cUF').value);
-  // ... pode adicionar mais conforme necessidade
-}
-
-/* ===================================================== */
-/* INIT */
-/* ===================================================== */
-
-renderStatuses();
-
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
