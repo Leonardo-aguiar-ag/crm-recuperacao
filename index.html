@@ -583,7 +583,10 @@
               <img id="preview">
             </div>
           </div>
-          <button class="btn btn-success mt-4" onclick="saveClient()">Salvar Cliente</button>
+          <div class="d-flex gap-2 mt-4">
+            <button class="btn btn-success" onclick="saveClient()">Salvar Cliente</button>
+            <button class="btn btn-outline-danger" onclick="clearForm()">Limpar Campos</button>
+          </div>
         </div>
       </div>
 
@@ -779,7 +782,6 @@
       const snapshot = await db.collection('clients').where('userId', '==', currentUser.uid).get();
       clients = snapshot.docs.map(doc => {
         const data = doc.data();
-        // Garantir que temos uma data de criação para o gráfico de tempo
         if (!data.createdAt) {
           data.createdAt = new Date().toISOString();
         }
@@ -826,12 +828,54 @@
           await db.collection('clients').add(clientData);
         }
         alert('Cliente salvo com sucesso!');
-        document.getElementById('clientId').value = '';
-        document.querySelector('[data-bs-target="#pesquisaTab"]').click();
+        
+        // Limpa o formulário
+        clearForm();
+        
+        // Muda para a aba Dashboard
+        const dashboardTab = document.querySelector('[data-bs-target="#dashboardTab"]');
+        const bsTab = new bootstrap.Tab(dashboardTab);
+        bsTab.show();
+        
+        // Recarrega os clientes
         loadClients();
       } catch (err) {
         alert('Erro ao salvar: ' + err.message);
       }
+    }
+
+    function clearForm() {
+      // Limpa ID do cliente (para criar um novo registro)
+      document.getElementById('clientId').value = '';
+      
+      // Lista de todos os campos de texto e date
+      const campos = [
+        'cNome', 'cNomeSocial', 'cCPF', 'cNascimento', 'cEndereco',
+        'cCidade', 'cUF', 'cEmpresa', 'cAdeEmp', 'cRedePlano',
+        'cPlanoAtual', 'cAcomodacao', 'cSituacao', 'cAdesao',
+        'cCancelamento', 'cTempo', 'cTelefones', 'cEmails', 'cRetorno'
+      ];
+      campos.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      
+      // Limpa o select de status (volta ao primeiro)
+      const statusSelect = document.getElementById('cStatus');
+      if (statusSelect) statusSelect.selectedIndex = 0;
+      
+      // Limpa o preview da foto e o input file
+      const preview = document.getElementById('preview');
+      if (preview) {
+        preview.src = '';
+        preview.style.display = 'none';
+      }
+      const fotoInput = document.querySelector('#clientesTab input[type="file"]');
+      if (fotoInput) fotoInput.value = '';
+      
+      // Também limpa o campo "Campo Mágico"
+      const smartPaste = document.getElementById('smartPaste');
+      if (smartPaste) smartPaste.value = '';
     }
 
     function editClient(id) {
