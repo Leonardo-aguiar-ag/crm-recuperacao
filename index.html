@@ -12,50 +12,73 @@
             --bg-card: #ffffff;
             --text-main: #212529;
             --text-muted: #6c757d;
-            --border-color: #dee2e6;
+            --border-color: #ced4da;
             --input-bg: #ffffff;
             --input-text: #212529;
             --section-title: #0A2463;
         }
 
-        /* Dark Mode Variables */
+        /* Dark Mode Variables - Ajustado para ALTO CONTRASTE nos campos */
         body.dark-mode {
             --bg-body: #121212;
             --bg-card: #1e1e1e;
-            --text-main: #e0e0e0;
+            --text-main: #f8f9fa;
             --text-muted: #adb5bd;
-            --border-color: #333333;
-            --input-bg: #2b2b2b;
-            --input-text: #e0e0e0;
+            --border-color: #5c636a; /* Borda bem visível */
+            --input-bg: #000000;     /* Fundo bem escuro para o campo */
+            --input-text: #ffffff;   /* Texto branco para destacar */
             --section-title: #66b2ff;
         }
 
         body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: 0.3s; }
         .navbar-custom { background-color: #0A2463; color: white; }
-        .card-custom { background-color: var(--bg-card); border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; }
+        .card-custom { background-color: var(--bg-card); border-radius: 15px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; }
         
         .table { color: var(--text-main); }
-        .dark-mode .table-light { background-color: #2b2b2b; color: #e0e0e0; }
+        .dark-mode .table-light { background-color: #2b2b2b; color: #f8f9fa; }
         .dark-mode .table-light th { background-color: #2b2b2b; border-color: #444; color: #fff;}
         .dark-mode .table-hover tbody tr:hover { background-color: #2a2a2a; color: white;}
         .dark-mode td { border-color: #444; }
 
-        .form-control, .form-select { background-color: var(--input-bg); color: var(--input-text); border-color: var(--border-color); border-radius: 8px; font-size: 0.9rem;}
-        .form-control:focus, .form-select:focus { background-color: var(--input-bg); color: var(--input-text); }
+        /* Estilo Base dos Inputs */
+        .form-control, .form-select { 
+            background-color: var(--input-bg); 
+            color: var(--input-text); 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            font-size: 0.95rem;
+            padding: 10px 12px;
+            transition: all 0.2s ease-in-out;
+        }
         
+        /* Ajuste do placeholder no modo escuro */
+        .dark-mode .form-control::placeholder { color: #8a939b; opacity: 1; }
+        
+        /* Foco Laranja (Quando clica no campo) */
+        .form-control:focus, .form-select:focus { 
+            background-color: var(--input-bg); 
+            color: var(--input-text); 
+            border-color: #FF6B35; 
+            box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.25);
+            outline: none;
+        }
+        
+        /* Abas */
         .nav-tabs .nav-link { color: var(--text-muted); font-weight: 600; border: none; padding: 12px 20px; }
         .nav-tabs .nav-link.active { color: #FF6B35; background-color: transparent; border-bottom: 3px solid #FF6B35; }
         .nav-tabs { border-bottom: 2px solid var(--border-color); margin-bottom: 20px; }
         
+        /* Dashboard */
         .dash-card { border-radius: 15px; color: white; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s;}
         .dash-card:hover { transform: translateY(-5px); }
         .dash-icon { font-size: 2.5rem; opacity: 0.5; }
         
-        .form-label { font-weight: 600; font-size: 0.85rem; margin-bottom: 0.2rem; margin-top: 0.5rem;}
+        .form-label { font-weight: 600; font-size: 0.85rem; margin-bottom: 0.4rem; margin-top: 0.5rem;}
         .section-title { font-size: 1rem; color: var(--section-title); font-weight: 700; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; margin-top: 20px; margin-bottom: 15px;}
         .img-preview { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px;}
 
-        .dark-mode .modal-content { background-color: var(--bg-card); color: var(--text-main); }
+        /* Modais */
+        .dark-mode .modal-content { background-color: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); }
         .dark-mode .modal-header { border-color: var(--border-color); }
         .dark-mode .modal-footer { border-color: var(--border-color); }
         .dark-mode .input-group-text { background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);}
@@ -69,11 +92,11 @@
         <div>
             <button class="btn btn-outline-light btn-sm me-2" data-bs-toggle="modal" data-bs-target="#statusModal"><i class="bi bi-tags me-1"></i>Gerenciar Status</button>
             <button class="btn btn-outline-light btn-sm" onclick="exportData()"><i class="bi bi-download me-1"></i>Backup</button>
-            <label class="btn btn-outline-light btn-sm mb-0 ms-2">
+            <label class="btn btn-outline-light btn-sm mb-0 ms-2" style="cursor: pointer;">
                 <i class="bi bi-upload me-1"></i>Importar
                 <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
             </label>
-            <button class="btn btn-outline-light btn-sm ms-3" onclick="toggleTheme()" id="themeBtn"><i class="bi bi-moon-fill"></i></button>
+            <button class="btn btn-outline-light btn-sm ms-3" onclick="toggleTheme()" id="themeBtn" title="Alternar Modo Claro/Escuro"><i class="bi bi-moon-fill"></i></button>
         </div>
     </div>
 </nav>
@@ -99,15 +122,15 @@
             <div class="card card-custom p-4">
                 
                 <!-- PREENCHIMENTO INTELIGENTE -->
-                <div class="alert alert-secondary p-3 mb-4" style="border-radius: 10px;">
-                    <label class="fw-bold mb-2"><i class="bi bi-lightning-charge-fill text-warning fs-5 me-1"></i> Preenchimento Mágico (Copie e Cole)</label>
+                <div class="alert alert-secondary border-0 p-3 mb-4" style="border-radius: 10px; background-color: var(--input-bg); border: 1px solid var(--border-color) !important;">
+                    <label class="fw-bold mb-2"><i class="bi bi-lightning-charge-fill text-warning fs-5 me-1"></i> Preenchimento Mágico (Copie e Cole do PDF)</label>
                     <div class="input-group">
-                        <textarea id="smartPasteBox" class="form-control" rows="2" placeholder="Cole aqui o texto inteiro do PDF do cliente..."></textarea>
-                        <button class="btn btn-primary fw-bold" type="button" onclick="autoFillForm()">Auto-preencher</button>
+                        <textarea id="smartPasteBox" class="form-control" rows="2" placeholder="Cole aqui o texto inteiro do PDF do cliente e clique em Auto-preencher..."></textarea>
+                        <button class="btn btn-primary fw-bold px-4" type="button" onclick="autoFillForm()">Auto-preencher</button>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex justify-content-between align-items-center mb-2 mt-4">
                     <h4 class="text-primary fw-bold m-0" id="formTitle">Adicionar Novo Cliente</h4>
                     <button class="btn btn-sm btn-outline-danger" onclick="resetForm()"><i class="bi bi-eraser me-1"></i>Limpar Ficha</button>
                 </div>
@@ -116,7 +139,7 @@
                     <input type="hidden" id="clientId">
                     
                     <div class="section-title">Dados Pessoais & Contato</div>
-                    <div class="row g-2">
+                    <div class="row g-3">
                         <div class="col-md-4"><label class="form-label">Nome do usuário</label><input type="text" id="cNome" class="form-control" required></div>
                         <div class="col-md-4"><label class="form-label">Nome social</label><input type="text" id="cNomeSocial" class="form-control"></div>
                         <div class="col-md-4"><label class="form-label">CPF do titular</label><input type="text" id="cCPF" class="form-control"></div>
@@ -130,8 +153,8 @@
                         <div class="col-md-6"><label class="form-label">Endereços eletrônicos</label><input type="text" id="cEmails" class="form-control"></div>
                     </div>
 
-                    <div class="section-title">Dados do Plano & Empresa</div>
-                    <div class="row g-2">
+                    <div class="section-title mt-4">Dados do Plano & Empresa</div>
+                    <div class="row g-3">
                         <div class="col-md-6"><label class="form-label">Empresa</label><input type="text" id="cEmpresa" class="form-control"></div>
                         <div class="col-md-6"><label class="form-label">Rede/plano</label><input type="text" id="cRedePlano" class="form-control"></div>
                         
@@ -145,22 +168,22 @@
                         <div class="col-md-3"><label class="form-label">Tempo</label><input type="text" id="cTempo" class="form-control"></div>
                     </div>
 
-                    <div class="section-title">CRM & Anexos</div>
-                    <div class="row g-2 align-items-end">
+                    <div class="section-title mt-4">CRM & Anexos</div>
+                    <div class="row g-3 align-items-end">
                         <div class="col-md-4">
                             <label class="form-label text-primary">Status de Negociação (CRM)</label>
-                            <select id="cStatus" class="form-select border-primary" style="font-weight: bold;"></select>
+                            <select id="cStatus" class="form-select border-primary text-primary" style="font-weight: bold;"></select>
                         </div>
                         <div class="col-md-8">
                             <label class="form-label">Anexar Print/Foto da Lista</label>
                             <input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)">
-                            <img id="fotoPreview" class="img-preview mt-2">
+                            <img id="fotoPreview" class="img-preview mt-2 border">
                             <input type="hidden" id="cFotoBase64">
                         </div>
                     </div>
 
-                    <div class="text-end mt-4">
-                        <button type="button" class="btn btn-success btn-lg px-5 shadow-sm" onclick="saveClient()"><i class="bi bi-save me-2"></i>Salvar Ficha do Cliente</button>
+                    <div class="text-end mt-5">
+                        <button type="button" class="btn btn-success btn-lg px-5 shadow-sm rounded-pill" onclick="saveClient()"><i class="bi bi-save me-2"></i>Salvar Ficha do Cliente</button>
                     </div>
                 </form>
             </div>
@@ -168,7 +191,7 @@
 
         <!-- ABA 3: PESQUISA -->
         <div class="tab-pane fade" id="pane-pesquisa">
-            <div class="card card-custom p-3 mb-3">
+            <div class="card card-custom p-4 mb-4">
                 <div class="row g-3 align-items-center">
                     <div class="col-md-6">
                         <div class="input-group">
@@ -182,7 +205,7 @@
                         </select>
                     </div>
                     <div class="col-md-3 text-end">
-                        <span class="text-muted fw-bold" id="contadorResultados">0 resultados</span>
+                        <span class="badge bg-primary fs-6" id="contadorResultados">0 resultados</span>
                     </div>
                 </div>
             </div>
@@ -191,12 +214,12 @@
                 <table class="table table-hover align-middle mb-0" style="min-width: 1000px;">
                     <thead class="table-light">
                         <tr>
-                            <th>Usuário / CPF</th>
-                            <th>Empresa / Contatos</th>
-                            <th>Plano Atual / Acomodação</th>
-                            <th>Datas (Adesão/Canc.)</th>
-                            <th>Status CRM</th>
-                            <th class="text-center">Ações</th>
+                            <th class="py-3 px-4">Usuário / CPF</th>
+                            <th class="py-3">Empresa / Contatos</th>
+                            <th class="py-3">Plano Atual / Acomodação</th>
+                            <th class="py-3">Datas (Adesão/Canc.)</th>
+                            <th class="py-3">Status CRM</th>
+                            <th class="py-3 text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="clientTableBody"></tbody>
@@ -212,7 +235,7 @@
     <div class="modal-dialog modal-lg text-center">
         <div class="modal-content">
             <div class="modal-header"><h5 class="modal-title">Foto Anexada</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body"><img id="viewPhoto" src="" class="img-fluid rounded"></div>
+            <div class="modal-body"><img id="viewPhoto" src="" class="img-fluid rounded border"></div>
         </div>
     </div>
 </div>
@@ -240,12 +263,12 @@
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
         localStorage.setItem('crm_theme', isDark ? 'dark' : 'light');
-        document.getElementById('themeBtn').innerHTML = isDark ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-fill"></i>';
+        document.getElementById('themeBtn').innerHTML = isDark ? '<i class="bi bi-sun-fill text-warning"></i>' : '<i class="bi bi-moon-fill"></i>';
     }
 
     if(localStorage.getItem('crm_theme') === 'dark') {
         document.body.classList.add('dark-mode');
-        document.getElementById('themeBtn').innerHTML = '<i class="bi bi-sun-fill"></i>';
+        document.getElementById('themeBtn').innerHTML = '<i class="bi bi-sun-fill text-warning"></i>';
     }
 
     // ESTADO
@@ -314,7 +337,7 @@
         });
     }
     function createDashCard(title, count, color, icon) {
-        return `<div class="col-md-3 col-sm-6"><div class="dash-card d-flex justify-content-between align-items-center" style="background-color: ${color};">
+        return `<div class="col-md-3 col-sm-6"><div class="dash-card d-flex justify-content-between align-items-center border-0" style="background-color: ${color};">
                 <div><h6 class="text-uppercase mb-1 opacity-75" style="font-size: 0.8rem;">${title}</h6><h2 class="mb-0 fw-bold">${count}</h2></div>
                 <div class="dash-icon"><i class="bi ${icon}"></i></div></div></div>`;
     }
@@ -404,11 +427,11 @@
             let statusOptions = statuses.map(s => `<option value="${s}" ${c.status === s ? 'selected' : ''}>${s}</option>`).join('');
             let photoBtn = c.foto ? `<button class="btn btn-sm btn-info text-white me-1" onclick="showPhoto('${c.foto}')" title="Ver Anexo"><i class="bi bi-image"></i></button>` : '';
             tbody.innerHTML += `<tr>
-                <td><strong>${c.nome}</strong><br><small class="text-muted">CPF: ${c.cpf || '-'}</small></td>
+                <td class="px-4"><strong>${c.nome}</strong><br><small class="text-muted">CPF: ${c.cpf || '-'}</small></td>
                 <td>${c.empresa || '-'}<br><small class="text-muted"><i class="bi bi-telephone"></i> ${c.telefones || '-'}</small></td>
                 <td><span class="badge bg-secondary">${c.planoAtual || c.redePlano || '-'}</span><br><small class="text-muted">${c.acomodacao || '-'}</small></td>
                 <td><small>Adesão: ${c.adesao || '-'}</small><br><small class="text-danger fw-bold">Canc: ${c.cancelamento || '-'}</small></td>
-                <td><select class="form-select form-select-sm border-primary" style="font-weight: 600; background-color: var(--input-bg); color: var(--input-text);" onchange="changeClientStatus('${c.id}', this.value)">${statusOptions}</select></td>
+                <td><select class="form-select form-select-sm border-primary" style="font-weight: 600;" onchange="changeClientStatus('${c.id}', this.value)">${statusOptions}</select></td>
                 <td class="text-center"><div class="d-inline-flex">${photoBtn}<button class="btn btn-sm btn-warning text-dark me-1" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button></div></td>
             </tr>`;
         });
