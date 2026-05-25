@@ -1,5 +1,5 @@
 <!-- ===================================================== --> 
-<!-- CRM RECUPERAÇÃO COMPLETO FINAL -->
+<!-- CRM RECUPERAÇÃO COMPLETO FINAL - REDESENHO CSS + DASHBOARD ANALÍTICO -->
 <!-- ===================================================== -->
 
 <!DOCTYPE html>
@@ -8,7 +8,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Recuperação</title>
+  <title>CRM Recuperação - Analítico</title>
 
   <!-- BOOTSTRAP -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -26,72 +26,225 @@
 
   <style>
     /* ===================================================== */
-    /* TEMA */
+    /* TEMA MODERNO COM DESIGN SYSTEM */
     /* ===================================================== */
     :root {
-      --bg: #f1f5f9;
+      --bg: #f8fafb;
+      --bg-secondary: #f0f4f8;
       --card: #ffffff;
-      --border: #dbe4ee;
-      --text: #0f172a;
-      --muted: #64748b;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --success: #16a34a;
+      --border: #e5e7eb;
+      --border-light: #f3f4f6;
+      --text: #111827;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-light: #dbeafe;
+      --primary-dark: #1e40af;
+      --success: #10b981;
+      --success-light: #d1fae5;
       --warning: #f59e0b;
-      --danger: #dc2626;
+      --warning-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
       --input: #ffffff;
-      --table-head: #e2e8f0;
+      --table-head: #f9fafb;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
     }
 
     body.dark-mode {
-      --bg: #020617;
-      --card: #0f172a;
-      --border: #1e293b;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --input: #020617;
-      --table-head: #1e293b;
+      --bg: #0f172a;
+      --bg-secondary: #1e293b;
+      --card: #1e293b;
+      --border: #334155;
+      --border-light: #475569;
+      --text: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --input: #0f172a;
+      --table-head: #0f172a;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
     }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Segoe UI';
-      transition: .3s;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
+    /* ===================================================== */
+    /* NAVBAR */
+    /* ===================================================== */
     .navbar {
       background: var(--card);
       border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
+    .navbar h4 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .navbar .btn {
+      border-radius: var(--radius-md);
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .navbar .btn-outline-primary {
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      background: transparent;
+    }
+
+    .navbar .btn-outline-primary:hover {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border-color: var(--primary-dark);
+    }
+
+    /* ===================================================== */
+    /* CARDS */
+    /* ===================================================== */
     .card-custom {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 22px;
-      box-shadow: 0 5px 25px rgba(0, 0, 0, .06);
-      transition: .3s;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+
+    .card-custom:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-light);
     }
 
     body.dark-mode .card-custom {
-      box-shadow: 0 10px 35px rgba(0, 0, 0, .35);
+      box-shadow: var(--shadow-sm);
     }
 
+    /* ===================================================== */
+    /* DASHBOARD CARDS */
+    /* ===================================================== */
     .dashboard-card {
-      padding: 25px;
-      border-radius: 22px;
+      padding: 2rem;
+      border-radius: var(--radius-lg);
       color: white;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, .12);
+      box-shadow: var(--shadow-md);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      height: 100%;
     }
 
+    .dashboard-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+      animation: pulse 15s ease-in-out infinite;
+    }
+
+    .dashboard-card h6 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+
+    .dashboard-card h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-top: 0.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .dashboard-card.bg-success {
+      background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+    }
+
+    .dashboard-card.bg-warning {
+      background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+    }
+
+    .dashboard-card.bg-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    /* ===================================================== */
+    /* FORM CONTROLS */
+    /* ===================================================== */
     .form-control,
     .form-select {
       background: var(--input);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       color: var(--text);
-      border-radius: 14px;
-      padding: 12px;
-      transition: .2s;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .form-control::placeholder {
+      color: var(--text-muted);
     }
 
     .form-control:focus,
@@ -99,108 +252,210 @@
       background: var(--input);
       color: var(--text);
       border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, .15);
+      box-shadow: 0 0 0 3px var(--primary-light);
+      outline: none;
     }
 
-    .form-control::placeholder {
-      color: var(--muted);
-    }
-
-    .table {
+    label {
+      font-size: 0.875rem;
+      font-weight: 600;
       color: var(--text);
-      margin: 0;
+      margin-bottom: 0.5rem;
+      display: block;
     }
 
-    .table thead {
-      background: var(--table-head);
-    }
-
-    .table thead th {
-      padding: 16px;
-      font-size: .92rem;
+    /* ===================================================== */
+    /* BUTTONS */
+    /* ===================================================== */
+    .btn {
+      border-radius: var(--radius-md);
+      padding: 0.625rem 1.25rem;
+      font-weight: 600;
+      font-size: 0.875rem;
       border: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
     }
 
-    .table tbody td {
-      padding: 16px;
-      vertical-align: middle;
-      border-color: var(--border);
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
     }
 
-    .table tbody tr {
-      transition: .2s;
+    .btn-success {
+      background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+      color: white;
     }
 
-    .table tbody tr:hover {
-      background: rgba(37, 99, 235, .06);
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+      color: white;
     }
 
-    body.dark-mode .table tbody tr:hover {
-      background: #13203a;
+    .btn-warning {
+      background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+      color: white;
     }
 
+    .btn-outline-primary {
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      background: transparent;
+    }
+
+    .btn-outline-primary:hover {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border-color: var(--primary-dark);
+    }
+
+    .btn-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.8125rem;
+    }
+
+    /* ===================================================== */
+    /* TABS */
+    /* ===================================================== */
     .nav-tabs {
       border: none;
-      gap: 10px;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap;
     }
 
     .nav-tabs .nav-link {
       background: var(--card);
-      border: none;
-      color: var(--text);
-      padding: 14px 22px;
-      border-radius: 16px;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-md);
       font-weight: 600;
-      transition: .25s;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
     }
 
     .nav-tabs .nav-link.active {
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       color: white;
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
     }
 
-    .btn {
-      border-radius: 14px;
-      padding: 10px 18px;
-      font-weight: 600;
+    /* ===================================================== */
+    /* TABELAS */
+    /* ===================================================== */
+    .table {
+      color: var(--text);
+      margin: 0;
+      border-collapse: collapse;
     }
 
+    .table thead th {
+      padding: 1rem;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: none;
+      color: var(--text-secondary);
+      background: var(--table-head);
+    }
+
+    .table tbody td {
+      padding: 1rem;
+      vertical-align: middle;
+      border-color: var(--border);
+    }
+
+    .table tbody tr:hover {
+      background: var(--bg-secondary);
+    }
+
+    .table-responsive {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    /* ===================================================== */
+    /* LOGIN */
+    /* ===================================================== */
     .login-screen {
       position: fixed;
       inset: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #2563eb, #1e3a8a);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       z-index: 9999;
     }
 
     .login-box {
       width: 100%;
-      max-width: 430px;
-      padding: 35px;
-      background: rgba(255, 255, 255, .95);
-      border-radius: 24px;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, .2);
+      max-width: 420px;
+      padding: 3rem;
+      background: var(--card);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
     }
 
-    body.dark-mode .login-box {
-      background: #0f172a;
+    .login-box h3 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+    }
+
+    /* ===================================================== */
+    /* CHART CONTAINERS */
+    /* ===================================================== */
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+    }
+
+    /* ===================================================== */
+    /* CONTAINER & LAYOUT */
+    /* ===================================================== */
+    .container-fluid {
+      padding: 2rem;
+    }
+
+    .status-item {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     #preview {
       max-width: 100%;
-      margin-top: 10px;
-      border-radius: 20px;
+      height: auto;
+      margin-top: 1rem;
+      border-radius: var(--radius-lg);
       display: none;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
     }
 
-    .status-item {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 12px;
+    @media (max-width: 768px) {
+      .container-fluid { padding: 1rem; }
+      .navbar { padding: 1rem; }
     }
   </style>
 </head>
@@ -210,7 +465,7 @@
   <!-- LOGIN -->
   <div class="login-screen" id="loginScreen">
     <div class="login-box">
-      <h3 class="text-center mb-4">CRM Recuperação</h3>
+      <h3>CRM Recuperação</h3>
       <input type="email" id="loginEmail" class="form-control mb-3" placeholder="Seu email">
       <div class="input-group mb-3">
         <input type="password" id="loginPassword" class="form-control" placeholder="Senha">
@@ -229,7 +484,7 @@
   </div>
 
   <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg px-4 py-3">
+  <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
       <h4 class="m-0 fw-bold">CRM Recuperação</h4>
       <div class="d-flex gap-2">
@@ -243,9 +498,9 @@
   </nav>
 
   <!-- CONTAINER -->
-  <div class="container-fluid p-4">
+  <div class="container-fluid">
     <!-- ABAS -->
-    <ul class="nav nav-tabs mb-4">
+    <ul class="nav nav-tabs">
       <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboardTab">Dashboard</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#clientesTab">Ficha Cliente</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesquisaTab">Pesquisar</button></li>
@@ -262,7 +517,33 @@
           <div class="col-md-3"><div class="dashboard-card bg-warning"><h6>Negociação</h6><h2 id="dashNegociacao">0</h2></div></div>
           <div class="col-md-3"><div class="dashboard-card bg-danger"><h6>Sem Interesse</h6><h2 id="dashSemInteresse">0</h2></div></div>
         </div>
-        <div class="card card-custom p-4"><canvas id="crmChart"></canvas></div>
+        
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="card card-custom p-4">
+              <h5 class="mb-4">Distribuição por Status</h5>
+              <div class="chart-container">
+                <canvas id="statusChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card card-custom p-4">
+              <h5 class="mb-4">Top 5 Empresas</h5>
+              <div class="chart-container">
+                <canvas id="companyChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="card card-custom p-4">
+              <h5 class="mb-4">Evolução de Clientes (Últimos 7 dias)</h5>
+              <div class="chart-container">
+                <canvas id="timeChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- CLIENTES -->
@@ -382,6 +663,13 @@
     let currentUser = null;
     let clients = [];
     let statuses = ['Em negociação', 'Fechou o plano', 'Não tem interesse'];
+    
+    // Gráficos globais
+    let charts = {
+      status: null,
+      company: null,
+      time: null
+    };
 
     /* LOGIN */
     auth.onAuthStateChanged(user => {
@@ -389,55 +677,45 @@
         currentUser = user;
         document.getElementById('loginScreen').style.display = 'none';
         loadClients();
+      } else {
+        document.getElementById('loginScreen').style.display = 'flex';
       }
     });
 
     function login() {
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
-      auth.signInWithEmailAndPassword(email, password)
-        .catch(err => {
-          let msg = '';
-          switch (err.code) {
-            case 'auth/invalid-credential':
-              msg = 'E-mail ou senha inválidos.';
-              break;
-            case 'auth/user-not-found':
-              msg = 'Usuário não encontrado.';
-              break;
-            case 'auth/wrong-password':
-              msg = 'Senha incorreta.';
-              break;
-            case 'auth/invalid-email':
-              msg = 'E-mail em formato inválido.';
-              break;
-            default:
-              msg = 'Erro: ' + err.message;
-          }
-          document.getElementById('loginError').innerText = msg;
-        });
-    }
-
-    function register() {
-      auth.createUserWithEmailAndPassword(
-        document.getElementById('loginEmail').value,
-        document.getElementById('loginPassword').value
-      );
+      auth.signInWithEmailAndPassword(email, password).catch(err => {
+        document.getElementById('loginError').innerText = err.message;
+      });
     }
 
     function googleLogin() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider);
+      auth.signInWithPopup(provider).catch(err => {
+        document.getElementById('loginError').innerText = err.message;
+      });
     }
 
-    function logout() {
-      auth.signOut();
-      location.reload();
+    function register() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      auth.createUserWithEmailAndPassword(email, password).catch(err => {
+        document.getElementById('loginError').innerText = err.message;
+      });
     }
 
     function recoverPassword() {
-      auth.sendPasswordResetEmail(document.getElementById('loginEmail').value)
-        .then(() => alert('Email enviado'));
+      const email = document.getElementById('loginEmail').value;
+      if (!email) {
+        alert('Digite seu email');
+        return;
+      }
+      auth.sendPasswordResetEmail(email).then(() => {
+        alert('Email de recuperação enviado!');
+      }).catch(err => {
+        document.getElementById('loginError').innerText = err.message;
+      });
     }
 
     function togglePassword() {
@@ -445,61 +723,176 @@
       input.type = input.type === 'password' ? 'text' : 'password';
     }
 
-    /* DARK MODE */
+    function logout() {
+      auth.signOut();
+    }
+
+    /* TEMA */
     function toggleTheme() {
       document.body.classList.toggle('dark-mode');
-      localStorage.setItem('crm-theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+      updateThemeButton();
+      updateChartsTheme();
     }
-    if (localStorage.getItem('crm-theme') === 'dark') document.body.classList.add('dark-mode');
+
+    function updateThemeButton() {
+      const btn = document.getElementById('themeBtn');
+      if (document.body.classList.contains('dark-mode')) {
+        btn.innerHTML = '<i class="bi bi-sun-fill"></i>';
+      } else {
+        btn.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+      }
+    }
+
+    function updateChartsTheme() {
+      const isDark = document.body.classList.contains('dark-mode');
+      const textColor = isDark ? '#cbd5e1' : '#6b7280';
+      const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
+
+      Object.values(charts).forEach(chart => {
+        if (chart) {
+          if (chart.options.scales) {
+            if (chart.options.scales.x) {
+              chart.options.scales.x.ticks.color = textColor;
+              chart.options.scales.x.grid.color = gridColor;
+            }
+            if (chart.options.scales.y) {
+              chart.options.scales.y.ticks.color = textColor;
+              chart.options.scales.y.grid.color = gridColor;
+            }
+          }
+          if (chart.options.plugins.legend) {
+            chart.options.plugins.legend.labels.color = textColor;
+          }
+          chart.update();
+        }
+      });
+    }
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      updateThemeButton();
+    }
 
     /* CLIENTES */
-    function saveClient() {
-      const id = document.getElementById('clientId').value || db.collection('clients').doc().id;
-      const client = {
-        userId: currentUser.uid,
-        nome: document.getElementById('cNome').value,
-        empresa: document.getElementById('cEmpresa').value,
-        telefones: document.getElementById('cTelefones').value,
-        status: document.getElementById('cStatus').value,
-        retorno: document.getElementById('cRetorno').value,
-        cpf: document.getElementById('cCPF').value
-      };
-      db.collection('clients').doc(id).set(client);
-      alert('Cliente salvo');
+    async function loadClients() {
+      const snapshot = await db.collection('clients').where('userId', '==', currentUser.uid).get();
+      clients = snapshot.docs.map(doc => {
+        const data = doc.data();
+        // Garantir que temos uma data de criação para o gráfico de tempo
+        if (!data.createdAt) {
+          data.createdAt = new Date().toISOString();
+        }
+        return { id: doc.id, ...data };
+      });
+      renderTable();
+      renderAgenda();
+      updateDashboard();
+      renderStatuses();
     }
 
-    function loadClients() {
-      db.collection('clients').where('userId', '==', currentUser.uid)
-        .onSnapshot(snapshot => {
-          clients = [];
-          snapshot.forEach(doc => clients.push({ id: doc.id, ...doc.data() }));
-          renderTable();
-          renderAgenda();
-          updateDashboard();
-        });
+    async function saveClient() {
+      const clientData = {
+        nome: document.getElementById('cNome').value,
+        nomeSocial: document.getElementById('cNomeSocial').value,
+        cpf: document.getElementById('cCPF').value,
+        nascimento: document.getElementById('cNascimento').value,
+        endereco: document.getElementById('cEndereco').value,
+        cidade: document.getElementById('cCidade').value,
+        uf: document.getElementById('cUF').value,
+        empresa: document.getElementById('cEmpresa').value,
+        adeEmp: document.getElementById('cAdeEmp').value,
+        redePlano: document.getElementById('cRedePlano').value,
+        planoAtual: document.getElementById('cPlanoAtual').value,
+        acomodacao: document.getElementById('cAcomodacao').value,
+        situacao: document.getElementById('cSituacao').value,
+        status: document.getElementById('cStatus').value,
+        adesao: document.getElementById('cAdesao').value,
+        cancelamento: document.getElementById('cCancelamento').value,
+        tempo: document.getElementById('cTempo').value,
+        telefones: document.getElementById('cTelefones').value,
+        emails: document.getElementById('cEmails').value,
+        retorno: document.getElementById('cRetorno').value,
+        userId: currentUser.uid,
+        updatedAt: new Date().toISOString()
+      };
+
+      const clientId = document.getElementById('clientId').value;
+      try {
+        if (clientId) {
+          await db.collection('clients').doc(clientId).update(clientData);
+        } else {
+          clientData.createdAt = new Date().toISOString();
+          await db.collection('clients').add(clientData);
+        }
+        alert('Cliente salvo com sucesso!');
+        document.getElementById('clientId').value = '';
+        document.querySelector('[data-bs-target="#pesquisaTab"]').click();
+        loadClients();
+      } catch (err) {
+        alert('Erro ao salvar: ' + err.message);
+      }
+    }
+
+    function editClient(id) {
+      const client = clients.find(c => c.id === id);
+      if (!client) return;
+      document.getElementById('clientId').value = id;
+      document.getElementById('cNome').value = client.nome || '';
+      document.getElementById('cNomeSocial').value = client.nomeSocial || '';
+      document.getElementById('cCPF').value = client.cpf || '';
+      document.getElementById('cNascimento').value = client.nascimento || '';
+      document.getElementById('cEndereco').value = client.endereco || '';
+      document.getElementById('cCidade').value = client.cidade || '';
+      document.getElementById('cUF').value = client.uf || '';
+      document.getElementById('cEmpresa').value = client.empresa || '';
+      document.getElementById('cAdeEmp').value = client.adeEmp || '';
+      document.getElementById('cRedePlano').value = client.redePlano || '';
+      document.getElementById('cPlanoAtual').value = client.planoAtual || '';
+      document.getElementById('cAcomodacao').value = client.acomodacao || '';
+      document.getElementById('cSituacao').value = client.situacao || '';
+      document.getElementById('cStatus').value = client.status || '';
+      document.getElementById('cAdesao').value = client.adesao || '';
+      document.getElementById('cCancelamento').value = client.cancelamento || '';
+      document.getElementById('cTempo').value = client.tempo || '';
+      document.getElementById('cTelefones').value = client.telefones || '';
+      document.getElementById('cEmails').value = client.emails || '';
+      document.getElementById('cRetorno').value = client.retorno || '';
+      document.querySelector('[data-bs-target="#clientesTab"]').click();
+    }
+
+    async function deleteClient(id) {
+      if (!confirm('Tem certeza?')) return;
+      try {
+        await db.collection('clients').doc(id).delete();
+        loadClients();
+      } catch (err) {
+        alert('Erro ao deletar: ' + err.message);
+      }
     }
 
     /* TABELA */
     function renderTable() {
       const tbody = document.getElementById('tableBody');
-      tbody.innerHTML = '';
       const search = document.getElementById('search').value.toLowerCase();
-      const statusFilter = document.getElementById('filterStatus').value;
+      const filterStatus = document.getElementById('filterStatus').value;
+      tbody.innerHTML = '';
       clients.filter(c => {
-        const matchSearch = (c.nome || '').toLowerCase().includes(search);
-        const matchStatus = statusFilter === 'ALL' || c.status === statusFilter;
+        const matchSearch = (c.nome || '').toLowerCase().includes(search) || (c.empresa || '').toLowerCase().includes(search);
+        const matchStatus = filterStatus === 'ALL' || c.status === filterStatus;
         return matchSearch && matchStatus;
       }).forEach(c => {
         tbody.innerHTML += `
           <tr>
-            <td><div class="fw-bold">${c.nome || '-'}</div><div class="small text-muted">${c.cpf || ''}</div></td>
-            <td>${c.empresa || '-'}</td>
-            <td>${c.telefones || '-'}</td>
-            <td><span class="badge bg-primary">${c.status || '-'}</span></td>
-            <td>${c.retorno || '-'}</td>
+            <td><strong>${c.nome}</strong></td>
+            <td>${c.empresa}</td>
+            <td>${c.telefones}</td>
+            <td><span class="badge bg-primary">${c.status}</span></td>
+            <td>${c.retorno}</td>
             <td>
               <div class="d-flex gap-2">
-                <button class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button>
                 <a target="_blank" href="https://wa.me/55${(c.telefones||'').replace(/\D/g,'')}" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a>
               </div>
             </td>
@@ -525,8 +918,121 @@
 
     /* DASHBOARD */
     function updateDashboard() {
-      document.getElementById('dashTotal').innerText = clients.length;
-      // outros cards podem ser preenchidos conforme regras de status
+      // Atualizar Cards
+      const total = clients.length;
+      const fechados = clients.filter(c => c.status === 'Fechou o plano').length;
+      const negociacao = clients.filter(c => c.status === 'Em negociação').length;
+      const semInteresse = clients.filter(c => c.status === 'Não tem interesse').length;
+
+      document.getElementById('dashTotal').innerText = total;
+      document.getElementById('dashFechados').innerText = fechados;
+      document.getElementById('dashNegociacao').innerText = negociacao;
+      document.getElementById('dashSemInteresse').innerText = semInteresse;
+
+      renderCharts();
+    }
+
+    function renderCharts() {
+      const isDark = document.body.classList.contains('dark-mode');
+      const textColor = isDark ? '#cbd5e1' : '#6b7280';
+      
+      // 1. Gráfico de Status (Doughnut)
+      const statusCounts = {};
+      statuses.forEach(s => statusCounts[s] = 0);
+      clients.forEach(c => {
+        if (statusCounts[c.status] !== undefined) statusCounts[c.status]++;
+      });
+
+      if (charts.status) charts.status.destroy();
+      charts.status = new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(statusCounts),
+          datasets: [{
+            data: Object.values(statusCounts),
+            backgroundColor: ['#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: textColor, padding: 20 } }
+          },
+          cutout: '70%'
+        }
+      });
+
+      // 2. Top 5 Empresas (Bar)
+      const companyCounts = {};
+      clients.forEach(c => {
+        if (c.empresa) companyCounts[c.empresa] = (companyCounts[c.empresa] || 0) + 1;
+      });
+      const topCompanies = Object.entries(companyCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+
+      if (charts.company) charts.company.destroy();
+      charts.company = new Chart(document.getElementById('companyChart'), {
+        type: 'bar',
+        data: {
+          labels: topCompanies.map(t => t[0]),
+          datasets: [{
+            label: 'Clientes',
+            data: topCompanies.map(t => t[1]),
+            backgroundColor: '#3b82f6',
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { color: textColor, stepSize: 1 }, grid: { display: false } },
+            x: { ticks: { color: textColor }, grid: { display: false } }
+          }
+        }
+      });
+
+      // 3. Evolução de Clientes (Line)
+      const last7Days = [...Array(7)].map((_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        return d.toISOString().split('T')[0];
+      }).reverse();
+
+      const timeData = last7Days.map(date => {
+        return clients.filter(c => (c.createdAt || '').split('T')[0] === date).length;
+      });
+
+      if (charts.time) charts.time.destroy();
+      charts.time = new Chart(document.getElementById('timeChart'), {
+        type: 'line',
+        data: {
+          labels: last7Days.map(d => d.split('-').reverse().slice(0,2).join('/')),
+          datasets: [{
+            label: 'Novos Clientes',
+            data: timeData,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: '#3b82f6'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { color: textColor, stepSize: 1 }, grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' } },
+            x: { ticks: { color: textColor }, grid: { display: false } }
+          }
+        }
+      });
     }
 
     /* STATUS */
@@ -549,10 +1055,8 @@
         filter.innerHTML += `<option>${status}</option>`;
         list.innerHTML += `
           <div class="status-item">
-            <div class="d-flex justify-content-between align-items-center">
-              <strong>${status}</strong>
-              <button class="btn btn-danger btn-sm" onclick="deleteStatus(${index})">Excluir</button>
-            </div>
+            <strong>${status}</strong>
+            <button class="btn btn-danger btn-sm" onclick="deleteStatus(${index})">Excluir</button>
           </div>`;
       });
     }
@@ -621,6 +1125,7 @@
       try {
         await batch.commit();
         alert('Importação concluída!');
+        loadClients();
       } catch (err) {
         alert('Erro ao importar: ' + err.message);
       }
@@ -660,7 +1165,6 @@
         { regex: /^Endereços?\s+eletr[ôo]nicos?\s*:\s*(.*)$/im, field: 'cEmails' }
       ];
 
-      // Limpa campos
       const fields = ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails'];
       fields.forEach(f => document.getElementById(f).value = '');
 
@@ -669,7 +1173,6 @@
         if (match && match[1]) document.getElementById(map.field).value = match[1].trim();
       }
 
-      // Cidade/UF
       const cityMatch = text.match(/^Cidade\s*:\s*(.*)$/im);
       if (cityMatch) {
         const full = cityMatch[1].trim();
@@ -682,13 +1185,6 @@
         }
         document.getElementById('cUF').value = uf;
       }
-
-      console.log('Campo Mágico preencheu:', {
-        nome: document.getElementById('cNome').value,
-        cpf: document.getElementById('cCPF').value,
-        cidade: document.getElementById('cCidade').value,
-        uf: document.getElementById('cUF').value
-      });
     }
 
     /* INIT */
