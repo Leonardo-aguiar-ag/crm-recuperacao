@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Recuperação | Leonardo Aguiar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar-custom { background-color: #0A2463; color: white; }
+        .card-custom { border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .table-hover tbody tr:hover { background-color: #f8f9fa; }
+        .img-preview { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px;}
+        .status-badge { font-weight: 600; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-custom shadow-sm mb-4">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1 fw-bold"><i class="bi bi-shield-check me-2"></i>CRM Recuperação de Cancelados</span>
+        <div>
+            <button class="btn btn-outline-light btn-sm" onclick="exportData()"><i class="bi bi-download me-1"></i>Exportar Backup</button>
+            <label class="btn btn-outline-light btn-sm mb-0 ms-2">
+                <i class="bi bi-upload me-1"></i>Importar Backup
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+            </label>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card card-custom p-3">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-4">
+                        <input type="text" id="searchInput" class="form-control" placeholder="🔍 Buscar por Nome, CPF, Empresa..." onkeyup="renderTable()">
+                    </div>
+                    <div class="col-md-3">
+                        <select id="filterStatus" class="form-select" onchange="renderTable()">
+                            <option value="ALL">Todos os Status</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5 text-end">
+                        <button class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#statusModal"><i class="bi bi-tags me-1"></i>Gerenciar Status</button>
+                        <button class="btn btn-primary" onclick="openNewClientModal()"><i class="bi bi-plus-circle me-1"></i>Novo Cliente</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-custom p-3 overflow-auto">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome</th>
+                    <th>CPF/Empresa</th>
+                    <th>Contato</th>
+                    <th>Plano</th>
+                    <th>Datas (Adesão/Cancel.)</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="clientTableBody">
+                <!-- Conteúdo renderizado via JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Novo/Editar Cliente -->
+<div class="modal fade" id="clientModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalTitle">Ficha do Cliente</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="clientForm">
+                    <input type="hidden" id="clientId">
+                    <div class="row g-3">
+                        <div class="col-md-6"><label>Nome Completo</label><input type="text" id="cNome" class="form-control" required></div>
+                        <div class="col-md-6"><label>CPF</label><input type="text" id="cCPF" class="form-control"></div>
+                        <div class="col-md-6"><label>Empresa (Se houver)</label><input type="text" id="cEmpresa" class="form-control"></div>
+                        <div class="col-md-6"><label>Cidade/Estado</label><input type="text" id="cCidade" class="form-control"></div>
+                        <div class="col-md-6"><label>Telefones</label><input type="text" id="cTelefones" class="form-control"></div>
+                        <div class="col-md-6"><label>E-mails</label><input type="email" id="cEmails" class="form-control"></div>
+                        <div class="col-md-12"><label>Plano Cancelado</label><input type="text" id="cPlano" class="form-control"></div>
+                        <div class="col-md-4"><label>Data de Adesão</label><input type="date" id="cAdesao" class="form-control"></div>
+                        <div class="col-md-4"><label>Data Cancelamento</label><input type="date" id="cCancelamento" class="form-control"></div>
+                        <div class="col-md-4">
+                            <label>Status Atual</label>
+                            <select id="cStatus" class="form-select"></select>
+                        </div>
+                        <div class="col-md-12">
+                            <label>Anexar ou Atualizar Foto da Lista</label>
+                            <input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)">
+                            <img id="fotoPreview" class="img-preview">
+                            <input type="hidden" id="cFotoBase64">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveClient()">Salvar Dados</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Visualizar Foto -->
+<div class="modal fade" id="photoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg text-center">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Foto Anexada</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <img id="viewPhoto" src="" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Gerenciar Status -->
+<div class="modal fade" id="statusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Gerenciar Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" id="newStatus" class="form-control" placeholder="Novo status...">
+                    <button class="btn btn-primary" onclick="addStatus()">Adicionar</button>
+                </div>
+                <ul class="list-group" id="statusList"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // --- ESTADO DA APLICAÇÃO ---
+    let clients = JSON.parse(localStorage.getItem('crm_clients')) || [];
+    let statuses = JSON.parse(localStorage.getItem('crm_statuses')) || ['Em negociação', 'Entrou em contato', 'Fechou o plano', 'Não tem interesse'];
+
+    let clientModalInstance;
+
+    // --- INICIALIZAÇÃO ---
+    document.addEventListener("DOMContentLoaded", () => {
+        clientModalInstance = new bootstrap.Modal(document.getElementById('clientModal'));
+        updateStatusSelects();
+        renderTable();
+        renderStatusList();
+    });
+
+    // --- FUNÇÕES DE STATUS ---
+    function updateStatusSelects() {
+        const filterSelect = document.getElementById('filterStatus');
+        const formSelect = document.getElementById('cStatus');
+        
+        filterSelect.innerHTML = '<option value="ALL">Todos os Status</option>';
+        statuses.forEach(s => filterSelect.innerHTML += `<option value="${s}">${s}</option>`);
+        
+        formSelect.innerHTML = '';
+        statuses.forEach(s => formSelect.innerHTML += `<option value="${s}">${s}</option>`);
+    }
+
+    function addStatus() {
+        const val = document.getElementById('newStatus').value.trim();
+        if(val && !statuses.includes(val)) {
+            statuses.push(val);
+            saveData();
+            updateStatusSelects();
+            renderStatusList();
+            document.getElementById('newStatus').value = '';
+        }
+    }
+
+    function deleteStatus(index) {
+        statuses.splice(index, 1);
+        saveData();
+        updateStatusSelects();
+        renderStatusList();
+    }
+
+    function renderStatusList() {
+        const list = document.getElementById('statusList');
+        list.innerHTML = '';
+        statuses.forEach((s, i) => {
+            list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">${s} <button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})"><i class="bi bi-trash"></i></button></li>`;
+        });
+    }
+
+    // --- FUNÇÕES DO CLIENTE (CRIAR E EDITAR) ---
+    function openNewClientModal() {
+        document.getElementById('clientForm').reset();
+        document.getElementById('clientId').value = '';
+        document.getElementById('fotoPreview').style.display = 'none';
+        document.getElementById('cFotoBase64').value = '';
+        document.getElementById('cFoto').value = '';
+        document.getElementById('modalTitle').innerText = 'Adicionar Novo Cliente';
+        clientModalInstance.show();
+    }
+
+    function editClient(id) {
+        const client = clients.find(c => c.id === id);
+        if (!client) return;
+
+        // Preenche o formulário
+        document.getElementById('clientId').value = client.id;
+        document.getElementById('cNome').value = client.nome || '';
+        document.getElementById('cCPF').value = client.cpf || '';
+        document.getElementById('cEmpresa').value = client.empresa || '';
+        document.getElementById('cCidade').value = client.cidade || '';
+        document.getElementById('cTelefones').value = client.telefones || '';
+        document.getElementById('cEmails').value = client.emails || '';
+        document.getElementById('cPlano').value = client.plano || '';
+        document.getElementById('cAdesao').value = client.adesao || '';
+        document.getElementById('cCancelamento').value = client.cancelamento || '';
+        document.getElementById('cStatus').value = client.status || '';
+
+        // Trata a foto
+        if (client.foto) {
+            document.getElementById('fotoPreview').src = client.foto;
+            document.getElementById('fotoPreview').style.display = 'block';
+            document.getElementById('cFotoBase64').value = client.foto;
+        } else {
+            document.getElementById('fotoPreview').style.display = 'none';
+            document.getElementById('cFotoBase64').value = '';
+        }
+        document.getElementById('cFoto').value = ''; // Reseta o input file
+
+        document.getElementById('modalTitle').innerText = 'Editar Ficha do Cliente';
+        clientModalInstance.show();
+    }
+
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('fotoPreview').src = e.target.result;
+                document.getElementById('fotoPreview').style.display = 'block';
+                document.getElementById('cFotoBase64').value = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function saveClient() {
+        const id = document.getElementById('clientId').value || Date.now().toString();
+        const client = {
+            id: id,
+            nome: document.getElementById('cNome').value,
+            cpf: document.getElementById('cCPF').value,
+            empresa: document.getElementById('cEmpresa').value,
+            cidade: document.getElementById('cCidade').value,
+            telefones: document.getElementById('cTelefones').value,
+            emails: document.getElementById('cEmails').value,
+            plano: document.getElementById('cPlano').value,
+            adesao: document.getElementById('cAdesao').value,
+            cancelamento: document.getElementById('cCancelamento').value,
+            status: document.getElementById('cStatus').value,
+            foto: document.getElementById('cFotoBase64').value
+        };
+
+        const existingIndex = clients.findIndex(c => c.id === id);
+        if(existingIndex >= 0) {
+            clients[existingIndex] = client; // Atualiza existente
+        } else {
+            clients.unshift(client); // Adiciona novo no topo
+        }
+
+        saveData();
+        renderTable();
+        clientModalInstance.hide();
+    }
+
+    function deleteClient(id) {
+        if(confirm("Tem certeza que deseja apagar a ficha deste cliente?")) {
+            clients = clients.filter(c => c.id !== id);
+            saveData();
+            renderTable();
+        }
+    }
+
+    function changeClientStatus(id, newStatus) {
+        const client = clients.find(c => c.id === id);
+        if(client) {
+            client.status = newStatus;
+            saveData();
+            renderTable();
+        }
+    }
+
+    function showPhoto(base64) {
+        document.getElementById('viewPhoto').src = base64;
+        new bootstrap.Modal(document.getElementById('photoModal')).show();
+    }
+
+    // --- RENDERIZAÇÃO DA TABELA ---
+    function renderTable() {
+        const tbody = document.getElementById('clientTableBody');
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const filterStatus = document.getElementById('filterStatus').value;
+        
+        tbody.innerHTML = '';
+
+        const filtered = clients.filter(c => {
+            const matchesSearch = Object.values(c).join(' ').toLowerCase().includes(searchTerm);
+            const matchesStatus = filterStatus === 'ALL' || c.status === filterStatus;
+            return matchesSearch && matchesStatus;
+        });
+
+        filtered.forEach(c => {
+            let statusOptions = statuses.map(s => `<option value="${s}" ${c.status === s ? 'selected' : ''}>${s}</option>`).join('');
+            
+            // Formatando datas
+            const dtAdesao = c.adesao ? new Date(c.adesao).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : '-';
+            const dtCanc = c.cancelamento ? new Date(c.cancelamento).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : '-';
+
+            let photoBtn = c.foto ? `<button class="btn btn-sm btn-info text-white me-1" onclick="showPhoto('${c.foto}')" title="Ver Anexo"><i class="bi bi-image"></i></button>` : '';
+            let editBtn = `<button class="btn btn-sm btn-warning text-dark me-1" onclick="editClient('${c.id}')" title="Editar Ficha"><i class="bi bi-pencil"></i></button>`;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${c.nome}</strong><br><small class="text-muted">${c.cidade}</small></td>
+                    <td>${c.cpf}<br><small class="text-muted">${c.empresa}</small></td>
+                    <td>${c.telefones}<br><small class="text-muted">${c.emails}</small></td>
+                    <td><span class="badge bg-secondary">${c.plano}</span></td>
+                    <td>${dtAdesao}<br><span class="text-danger fw-bold">${dtCanc}</span></td>
+                    <td>
+                        <select class="form-select form-select-sm" onchange="changeClientStatus('${c.id}', this.value)">
+                            ${statusOptions}
+                        </select>
+                    </td>
+                    <td>
+                        <div class="d-flex">
+                            ${photoBtn}
+                            ${editBtn}
+                            <button class="btn btn-sm btn-danger" onclick="deleteClient('${c.id}')" title="Excluir"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // --- SALVAR E BACKUP ---
+    function saveData() {
+        localStorage.setItem('crm_clients', JSON.stringify(clients));
+        localStorage.setItem('crm_statuses', JSON.stringify(statuses));
+    }
+
+    function exportData() {
+        const data = JSON.stringify({ clients, statuses });
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup_crm_recuperacao_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+    }
+
+    function importData(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if(data.clients && data.statuses) {
+                    clients = data.clients;
+                    statuses = data.statuses;
+                    saveData();
+                    updateStatusSelects();
+                    renderTable();
+                    renderStatusList();
+                    alert("Backup importado com sucesso!");
+                }
+            } catch (err) {
+                alert("Erro ao importar arquivo. Certifique-se de que é um arquivo JSON válido.");
+            }
+        };
+        reader.readAsText(file);
+    }
+</script>
+</body>
+</html>
