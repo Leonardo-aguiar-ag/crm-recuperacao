@@ -441,88 +441,41 @@ onclick="logout()"
 
 <div class="container-fluid px-4 pb-5">
 
-<!-- TABS -->
-
 <ul class="nav nav-tabs mb-4">
 
 <li class="nav-item">
-
-<button
-class="nav-link active"
-data-bs-toggle="tab"
-data-bs-target="#dashboard"
->
-
+<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboard">
 <i class="bi bi-bar-chart-fill me-2"></i>
-
 Dashboard
-
 </button>
-
 </li>
 
 <li class="nav-item">
-
-<button
-class="nav-link"
-data-bs-toggle="tab"
-data-bs-target="#clientes"
->
-
+<button class="nav-link" data-bs-toggle="tab" data-bs-target="#clientes">
 <i class="bi bi-person-vcard-fill me-2"></i>
-
 Clientes
-
 </button>
-
 </li>
 
 <li class="nav-item">
-
-<button
-class="nav-link"
-data-bs-toggle="tab"
-data-bs-target="#pesquisa"
->
-
+<button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesquisa">
 <i class="bi bi-search me-2"></i>
-
 Pesquisar
-
 </button>
-
 </li>
 
 <li class="nav-item">
-
-<button
-class="nav-link"
-data-bs-toggle="tab"
-data-bs-target="#agenda"
->
-
+<button class="nav-link" data-bs-toggle="tab" data-bs-target="#agenda">
 <i class="bi bi-calendar-check-fill me-2"></i>
-
 Agenda
-
 </button>
-
 </li>
 
 <li class="nav-item">
-
-<button
-class="nav-link"
-data-bs-toggle="tab"
-data-bs-target="#config"
->
-
+<button class="nav-link" data-bs-toggle="tab" data-bs-target="#config">
 <i class="bi bi-gear-fill me-2"></i>
-
 Configurações
-
 </button>
-
 </li>
 
 </ul>
@@ -536,115 +489,65 @@ Configurações
 <div class="row g-4 mb-4">
 
 <div class="col-md-3">
-
 <div class="dash-card" style="background:linear-gradient(135deg,#2563eb,#4f46e5)">
-
 <div class="d-flex justify-content-between">
-
 <div>
-
 <small>Total Clientes</small>
-
 <h2 id="totalClientes">0</h2>
-
 </div>
-
 <div class="dash-icon">
-
 <i class="bi bi-people-fill"></i>
-
 </div>
-
 </div>
-
 </div>
-
 </div>
 
 <div class="col-md-3">
-
 <div class="dash-card" style="background:linear-gradient(135deg,#16a34a,#22c55e)">
-
 <div class="d-flex justify-content-between">
-
 <div>
-
 <small>Fechados</small>
-
 <h2 id="fechados">0</h2>
-
 </div>
-
 <div class="dash-icon">
-
 <i class="bi bi-check-circle-fill"></i>
-
 </div>
-
 </div>
-
 </div>
-
 </div>
 
 <div class="col-md-3">
-
 <div class="dash-card" style="background:linear-gradient(135deg,#f59e0b,#f97316)">
-
 <div class="d-flex justify-content-between">
-
 <div>
-
 <small>Negociação</small>
-
 <h2 id="negociacao">0</h2>
-
 </div>
-
 <div class="dash-icon">
-
 <i class="bi bi-chat-dots-fill"></i>
-
 </div>
-
 </div>
-
 </div>
-
 </div>
 
 <div class="col-md-3">
-
 <div class="dash-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)">
-
 <div class="d-flex justify-content-between">
-
 <div>
-
 <small>Sem Interesse</small>
-
 <h2 id="semInteresse">0</h2>
-
 </div>
-
 <div class="dash-icon">
-
 <i class="bi bi-x-circle-fill"></i>
-
 </div>
-
 </div>
-
 </div>
-
 </div>
 
 </div>
 
 <div class="card card-custom p-4">
-
 <canvas id="crmChart" height="100"></canvas>
-
 </div>
 
 </div>
@@ -654,6 +557,87 @@ Configurações
 <div class="tab-pane fade" id="clientes">
 
 <div class="card card-custom p-4">
+
+<!-- PREENCHIMENTO MÁGICO -->
+
+<div class="card card-custom p-4 mb-4">
+
+<div class="d-flex align-items-center mb-3">
+
+<div
+class="me-3 d-flex align-items-center justify-content-center"
+style="
+width:55px;
+height:55px;
+border-radius:18px;
+background:linear-gradient(135deg,#f59e0b,#f97316);
+color:white;
+font-size:24px;
+box-shadow:0 10px 25px rgba(245,158,11,.25);
+"
+>
+<i class="bi bi-lightning-charge-fill"></i>
+</div>
+
+<div>
+
+<h5 class="fw-bold mb-1">
+Preenchimento Mágico
+</h5>
+
+<small style="color:var(--muted);">
+Cole o texto do PDF para preencher automaticamente a ficha
+</small>
+
+</div>
+
+</div>
+
+<div class="row g-3">
+
+<div class="col-lg-10">
+
+<textarea
+id="smartPasteBox"
+class="form-control"
+rows="4"
+placeholder="Cole aqui o texto inteiro do PDF do cliente..."
+style="
+resize:none;
+font-size:15px;
+border-radius:18px;
+padding:18px;
+"
+></textarea>
+
+</div>
+
+<div class="col-lg-2 d-grid">
+
+<button
+type="button"
+class="btn btn-primary fw-bold"
+onclick="autoFillForm()"
+style="
+border-radius:18px;
+font-size:18px;
+background:linear-gradient(135deg,#2563eb,#4f46e5);
+border:none;
+box-shadow:0 10px 25px rgba(37,99,235,.25);
+"
+>
+
+<i class="bi bi-stars me-2"></i>
+
+Auto-preencher
+
+</button>
+
+</div>
+
+</div>
+
+</div>
 
 <form id="clientForm">
 
@@ -795,774 +779,105 @@ Salvar Cliente
 
 </div>
 
-<!-- PESQUISA -->
-
-<div class="tab-pane fade" id="pesquisa">
-
-<div class="card card-custom p-4">
-
-<div class="row g-3 mb-4">
-
-<div class="col-md-8">
-
-<input
-type="text"
-id="searchInput"
-class="form-control"
-placeholder="Pesquisar por nome, CPF, telefone..."
-onkeyup="renderPesquisa()"
->
-
-</div>
-
-<div class="col-md-4 text-end">
-
-<button
-class="btn btn-success"
-onclick="exportExcel()"
->
-
-<i class="bi bi-file-earmark-excel me-2"></i>
-
-Exportar Excel
-
-</button>
-
 </div>
 
 </div>
-
-<div class="table-responsive">
-
-<table class="table table-hover align-middle">
-
-<thead>
-
-<tr>
-
-<th>Cliente</th>
-<th>Empresa</th>
-<th>Telefone</th>
-<th>Status</th>
-<th>Retorno</th>
-<th>Ações</th>
-
-</tr>
-
-</thead>
-
-<tbody id="pesquisaBody"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- AGENDA -->
-
-<div class="tab-pane fade" id="agenda">
-
-<div class="card card-custom p-4">
-
-<h4 class="fw-bold mb-4">
-
-Agenda de Retorno
-
-</h4>
-
-<div id="agendaLista"></div>
-
-</div>
-
-</div>
-
-<!-- CONFIG -->
-
-<div class="tab-pane fade" id="config">
-
-<div class="card card-custom p-4">
-
-<h4 class="fw-bold mb-4">
-
-Gerenciar Status
-
-</h4>
-
-<div class="input-group mb-4">
-
-<input
-type="text"
-id="novoStatus"
-class="form-control"
-placeholder="Novo status"
->
-
-<button
-class="btn btn-primary"
-onclick="addStatus()"
->
-
-Adicionar
-
-</button>
-
-</div>
-
-<ul
-class="list-group mb-4"
-id="statusList"
-></ul>
-
-<div class="d-flex gap-3">
-
-<button
-class="btn btn-success"
-onclick="exportBackup()"
->
-
-<i class="bi bi-download me-2"></i>
-
-Backup CRM
-
-</button>
-
-<label class="btn btn-primary mb-0">
-
-<i class="bi bi-upload me-2"></i>
-
-Importar Backup
-
-<input
-type="file"
-hidden
-onchange="importBackup(event)"
->
-
-</label>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 
-/* FIREBASE */
+function autoFillForm(){
 
-const firebaseConfig = {
+const text =
+document
+.getElementById('smartPasteBox')
+.value;
 
-apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
+if(!text){
 
-authDomain: "crm-recuperacao.firebaseapp.com",
-
-projectId: "crm-recuperacao",
-
-storageBucket: "crm-recuperacao.firebasestorage.app",
-
-messagingSenderId: "347011763386",
-
-appId: "1:347011763386:web:158c1ca6f512a1cde1c683"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const db = firebase.firestore();
-
-const auth = firebase.auth();
-
-let clients = [];
-
-let statuses = [
-
-'Em negociação',
-'Fechou o plano',
-'Entrou em contato',
-'Não tem interesse'
-];
-
-let chart;
-
-/* TOGGLE PASSWORD */
-
-function togglePassword(){
-
-const input =
-document.getElementById('passwordInput');
-
-const icon =
-document.getElementById('eyeIcon');
-
-if(input.type === 'password'){
-
-input.type = 'text';
-
-icon.classList.replace(
-'bi-eye-fill',
-'bi-eye-slash-fill'
+alert(
+'Cole o texto do PDF primeiro.'
 );
-
-}else{
-
-input.type = 'password';
-
-icon.classList.replace(
-'bi-eye-slash-fill',
-'bi-eye-fill'
-);
-}
-}
-
-/* LOGIN */
-
-function login(){
-
-auth
-.signInWithEmailAndPassword(
-emailInput.value,
-passwordInput.value
-)
-
-.catch(err=>{
-
-loginError.innerText =
-'Erro ao fazer login';
-});
-}
-
-/* REGISTER */
-
-function register(){
-
-auth
-.createUserWithEmailAndPassword(
-emailInput.value,
-passwordInput.value
-)
-
-.catch(err=>{
-
-loginError.innerText =
-err.message;
-});
-}
-
-/* RECUPERAR SENHA */
-
-function recoverPassword(){
-
-const email =
-document.getElementById('emailInput').value.trim();
-
-if(!email){
-
-loginError.innerText =
-'Digite seu e-mail';
-
-loginError.style.color =
-'#f59e0b';
 
 return;
 }
 
-auth
-.sendPasswordResetEmail(email)
+const extract = (regex)=>{
 
-.then(()=>{
+const match =
+text.match(regex);
 
-loginError.innerText =
-'Link enviado para seu e-mail';
+return match ?
+match[1].trim() :
+'';
+};
 
-loginError.style.color =
-'#22c55e';
+cNome.value =
+extract(/Nome(?: do usuário)?:\s*([^\n]+)/i);
+
+cNomeSocial.value =
+extract(/Nome social:\s*([^\n]+)/i);
+
+cCPF.value =
+extract(/CPF(?: do titular)?:\s*([^\n]+)/i);
+
+cNascimento.value =
+extract(/Data de nascimento:\s*([^\n]+)/i);
+
+cEndereco.value =
+extract(/Endereço:\s*([^\n]+)/i);
+
+cCidade.value =
+extract(/Cidade:\s*([^\n]+)/i);
+
+cUF.value =
+extract(/UF:\s*([^\n]+)/i);
+
+cEmpresa.value =
+extract(/Empresa:\s*([^\n]+)/i);
+
+cAdeEmp.value =
+extract(/Ade emp:\s*([^\n]+)/i);
+
+cRedePlano.value =
+extract(/Rede\/plano:\s*([^\n]+)/i);
+
+cPlanoAtual.value =
+extract(/Plano atual:\s*([^\n]+)/i);
+
+cAcomodacao.value =
+extract(/Acomodação:\s*([^\n]+)/i);
+
+cSituacao.value =
+extract(/Situação:\s*([^\n]+)/i);
+
+cAdesao.value =
+extract(/Data da adesão:\s*([^\n]+)/i);
+
+cCancelamento.value =
+extract(/Data do cancelamento:\s*([^\n]+)/i);
+
+cTempo.value =
+extract(/Tempo:\s*([^\n]+)/i);
+
+cTelefones.value =
+extract(/Telefones cadastrados:\s*([^\n]+)/i);
+
+cEmails.value =
+extract(/Endereços eletrônicos:\s*([^\n]+)/i);
+
+document
+.getElementById('smartPasteBox')
+.value = '';
 
 alert(
-'Verifique sua caixa de entrada e spam.'
-);
-})
-
-.catch(()=>{
-
-loginError.innerText =
-'Erro ao enviar redefinição';
-
-loginError.style.color =
-'#ef4444';
-});
-}
-
-/* LOGOUT */
-
-function logout(){
-
-auth.signOut();
-}
-
-/* OBS LOGIN */
-
-auth.onAuthStateChanged(user=>{
-
-if(user){
-
-loginOverlay.style.display='none';
-
-loadClients();
-
-}else{
-
-loginOverlay.style.display='flex';
-}
-});
-
-/* THEME */
-
-function toggleTheme(){
-
-document.body.classList.toggle(
-'dark-mode'
-);
-}
-
-/* SAVE */
-
-function saveClient(){
-
-const client={
-
-nome:cNome.value,
-nomeSocial:cNomeSocial.value,
-cpf:cCPF.value,
-nascimento:cNascimento.value,
-endereco:cEndereco.value,
-cidade:cCidade.value,
-uf:cUF.value,
-empresa:cEmpresa.value,
-adeEmp:cAdeEmp.value,
-redePlano:cRedePlano.value,
-planoAtual:cPlanoAtual.value,
-acomodacao:cAcomodacao.value,
-situacao:cSituacao.value,
-adesao:cAdesao.value,
-cancelamento:cCancelamento.value,
-tempo:cTempo.value,
-retorno:cRetorno.value,
-telefones:cTelefones.value,
-emails:cEmails.value,
-status:cStatus.value,
-userId:auth.currentUser.uid,
-createdAt:new Date()
-};
-
-db.collection('clients')
-
-.add(client)
-
-.then(()=>{
-
-alert('Cliente salvo');
-
-clientForm.reset();
-});
-}
-
-/* LOAD */
-
-function loadClients(){
-
-db.collection('clients')
-
-.where(
-'userId',
-'==',
-auth.currentUser.uid
-)
-
-.onSnapshot(snapshot=>{
-
-clients=[];
-
-snapshot.forEach(doc=>{
-
-clients.push({
-
-id:doc.id,
-...doc.data()
-
-});
-});
-
-renderPesquisa();
-
-renderAgenda();
-
-updateDashboard();
-
-renderStatusList();
-});
-}
-
-/* DASHBOARD */
-
-function updateDashboard(){
-
-totalClientes.innerText =
-clients.length;
-
-fechados.innerText =
-clients.filter(
-c=>c.status==='Fechou o plano'
-).length;
-
-negociacao.innerText =
-clients.filter(
-c=>c.status==='Em negociação'
-).length;
-
-semInteresse.innerText =
-clients.filter(
-c=>c.status==='Não tem interesse'
-).length;
-
-const data=[
-
-clients.filter(c=>c.status==='Em negociação').length,
-
-clients.filter(c=>c.status==='Fechou o plano').length,
-
-clients.filter(c=>c.status==='Entrou em contato').length,
-
-clients.filter(c=>c.status==='Não tem interesse').length
-];
-
-if(chart){
-
-chart.destroy();
-}
-
-chart = new Chart(
-
-document.getElementById('crmChart'),
-
-{
-
-type:'bar',
-
-data:{
-
-labels:[
-
-'Negociação',
-'Fechados',
-'Contato',
-'Sem Interesse'
-
-],
-
-datasets:[{
-
-label:'Clientes',
-
-data:data,
-
-borderWidth:1
-}]
-}
-});
-}
-
-/* PESQUISA */
-
-function renderPesquisa(){
-
-pesquisaBody.innerHTML='';
-
-const termo =
-searchInput.value.toLowerCase();
-
-clients
-
-.filter(c=>
-
-Object.values(c)
-.join(' ')
-.toLowerCase()
-.includes(termo)
-
-)
-
-.forEach(c=>{
-
-pesquisaBody.innerHTML += `
-
-<tr>
-
-<td>
-
-<strong>${c.nome}</strong><br>
-
-<small>${c.cpf}</small>
-
-</td>
-
-<td>${c.empresa||'-'}</td>
-
-<td>${c.telefones||'-'}</td>
-
-<td>
-
-<span class="badge bg-primary">
-
-${c.status}
-
-</span>
-
-</td>
-
-<td>${c.retorno||'-'}</td>
-
-<td>
-
-<div class="d-flex gap-2">
-
-<button
-class="btn btn-success btn-sm"
-onclick="whats('${c.telefones}')"
->
-
-<i class="bi bi-whatsapp"></i>
-
-</button>
-
-<button
-class="btn btn-danger btn-sm"
-onclick="deleteClient('${c.id}')"
->
-
-<i class="bi bi-trash"></i>
-
-</button>
-
-</div>
-
-</td>
-
-</tr>
-`;
-});
-}
-
-/* WHATS */
-
-function whats(numero){
-
-window.open(
-
-'https://wa.me/55'+
-numero.replace(/\D/g,''),
-
-'_blank'
-);
-}
-
-/* DELETE */
-
-function deleteClient(id){
-
-if(confirm('Excluir cliente?')){
-
-db.collection('clients')
-.doc(id)
-.delete();
-}
-}
-
-/* AGENDA */
-
-function renderAgenda(){
-
-agendaLista.innerHTML='';
-
-clients.forEach(c=>{
-
-if(c.retorno){
-
-agendaLista.innerHTML += `
-
-<div class="card p-3 mb-3">
-
-<div class="d-flex justify-content-between align-items-center">
-
-<div>
-
-<strong>${c.nome}</strong><br>
-
-<small>${c.retorno}</small>
-
-</div>
-
-<button
-class="btn btn-success btn-sm"
-onclick="whats('${c.telefones}')"
->
-
-<i class="bi bi-whatsapp"></i>
-
-</button>
-
-</div>
-
-</div>
-`;
-}
-});
-}
-
-/* STATUS */
-
-function addStatus(){
-
-const novo =
-novoStatus.value.trim();
-
-if(!novo) return;
-
-statuses.push(novo);
-
-renderStatusList();
-
-novoStatus.value='';
-}
-
-function renderStatusList(){
-
-statusList.innerHTML='';
-
-statuses.forEach((s,i)=>{
-
-statusList.innerHTML += `
-
-<li class="list-group-item d-flex justify-content-between align-items-center">
-
-${s}
-
-<button
-class="btn btn-danger btn-sm"
-onclick="removeStatus(${i})"
->
-
-<i class="bi bi-trash"></i>
-
-</button>
-
-</li>
-`;
-});
-}
-
-function removeStatus(i){
-
-statuses.splice(i,1);
-
-renderStatusList();
-}
-
-/* EXCEL */
-
-function exportExcel(){
-
-const ws =
-XLSX.utils.json_to_sheet(clients);
-
-const wb =
-XLSX.utils.book_new();
-
-XLSX.utils.book_append_sheet(
-wb,
-ws,
-'Clientes'
+'Ficha preenchida automaticamente!'
 );
 
-XLSX.writeFile(
-wb,
-'clientes.xlsx'
-);
-}
-
-/* BACKUP */
-
-function exportBackup(){
-
-const data={
-
-clients,
-statuses
-};
-
-const blob =
-new Blob(
-[JSON.stringify(data)],
-{type:'application/json'}
-);
-
-const a =
-document.createElement('a');
-
-a.href =
-URL.createObjectURL(blob);
-
-a.download =
-'backup_crm.json';
-
-a.click();
-}
-
-function importBackup(event){
-
-const file =
-event.target.files[0];
-
-if(!file) return;
-
-const reader =
-new FileReader();
-
-reader.onload=e=>{
-
-const data =
-JSON.parse(e.target.result);
-
-if(data.clients){
-
-data.clients.forEach(c=>{
-
-db.collection('clients')
-.add(c);
-});
-}
-
-if(data.statuses){
-
-statuses=data.statuses;
-
-renderStatusList();
-}
-
-alert('Backup restaurado');
-};
-
-reader.readAsText(file);
 }
 
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
