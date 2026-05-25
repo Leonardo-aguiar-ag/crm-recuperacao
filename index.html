@@ -1,658 +1,1261 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Recuperação | Leonardo Aguiar</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
-    <style>
-        :root { --bg-body: #f4f7f6; --bg-card: #ffffff; --text-main: #212529; --text-muted: #6c757d; --border-color: #ced4da; --input-bg: #ffffff; --input-text: #212529; --section-title: #0A2463; }
-        
-        /* Dark Mode Aprimorado */
-        body.dark-mode { 
-            --bg-body: #121212; 
-            --bg-card: #1e1e1e; 
-            --text-main: #e0e0e0; 
-            --text-muted: #a0a0a0; 
-            --border-color: #333333; 
-            --input-bg: #2a2a2a; 
-            --input-text: #ffffff; 
-            --section-title: #66b2ff; 
-        }
-        
-        body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: 0.3s; margin: 0; padding: 0;}
-        .navbar-custom { background-color: #0A2463; color: white; }
-        .card-custom { background-color: var(--bg-card); border-radius: 15px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; }
-        
-        /* Tabelas Dark Mode */
-        .table { color: var(--text-main); }
-        .dark-mode .table { color: #e0e0e0; }
-        .dark-mode .table-light { background-color: #252525; color: #ffffff; }
-        .dark-mode .table-light th { background-color: #252525; border-color: #333; color: #fff;}
-        .dark-mode .table-hover tbody tr:hover { background-color: #2d2d2d; color: white;}
-        .dark-mode td { border-color: #333; }
-        
-        /* Inputs Dark Mode */
-        .form-control, .form-select { background-color: var(--input-bg); color: var(--input-text); border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; padding: 10px 12px; transition: all 0.2s ease-in-out; }
-        .dark-mode .form-control::placeholder { color: #8a939b; opacity: 1; }
-        .form-control:focus, .form-select:focus { background-color: var(--input-bg); color: var(--input-text); border-color: #FF6B35; box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.25); outline: none; }
-        .dark-mode .alert-secondary { background-color: #2a2a2a; border-color: #444 !important; color: #e0e0e0;}
-        
-        /* Outros estilos */
-        .nav-tabs .nav-link { color: var(--text-muted); font-weight: 600; border: none; padding: 12px 20px; }
-        .nav-tabs .nav-link.active { color: #FF6B35; background-color: transparent; border-bottom: 3px solid #FF6B35; }
-        .nav-tabs { border-bottom: 2px solid var(--border-color); margin-bottom: 20px; }
-        .dash-card { border-radius: 15px; color: white; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s;}
-        .dash-card:hover { transform: translateY(-5px); }
-        .dash-icon { font-size: 2.5rem; opacity: 0.5; }
-        .form-label { font-weight: 600; font-size: 0.85rem; margin-bottom: 0.4rem; margin-top: 0.5rem;}
-        .section-title { font-size: 1rem; color: var(--section-title); font-weight: 700; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; margin-top: 20px; margin-bottom: 15px;}
-        .img-preview { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px;}
-        
-        /* Modais */
-        .dark-mode .modal-content { background-color: #1e1e1e; color: #e0e0e0; border: 1px solid #333; }
-        .dark-mode .modal-header, .dark-mode .modal-footer { border-color: #333; }
-        .dark-mode .input-group-text { background-color: #333; border-color: #444; color: #fff;}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        /* Tela de Login */
-        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: var(--bg-card); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; border: 1px solid var(--border-color); }
-    </style>
+<title>CRM Recuperação | Leonardo Aguiar</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<style>
+
+:root{
+
+    --primary:#2563eb;
+    --primary2:#4f46e5;
+    --success:#22c55e;
+    --danger:#ef4444;
+    --warning:#f59e0b;
+
+    --bg:#f1f5f9;
+    --card:#ffffff;
+    --card2:#f8fafc;
+
+    --text:#0f172a;
+    --textSoft:#64748b;
+
+    --border:#dce3ea;
+
+    --input:#ffffff;
+
+    --shadow:
+    0 10px 30px rgba(15,23,42,.06);
+
+    --radius:22px;
+}
+
+body.dark-mode{
+
+    --bg:#0b1120;
+    --card:#111827;
+    --card2:#182131;
+
+    --text:#f1f5f9;
+    --textSoft:#94a3b8;
+
+    --border:#273244;
+
+    --input:#0f172a;
+
+    --shadow:
+    0 20px 40px rgba(0,0,0,.45);
+}
+
+body{
+
+    background:var(--bg);
+    color:var(--text);
+
+    font-family:
+    Inter,
+    Segoe UI,
+    sans-serif;
+
+    transition:.25s;
+}
+
+*{
+    transition:.25s;
+}
+
+/* NAVBAR */
+
+.navbar-custom{
+
+    background:
+    linear-gradient(
+    135deg,
+    #0f172a,
+    #1e293b
+    );
+
+    border-bottom:
+    1px solid rgba(255,255,255,.05);
+
+    backdrop-filter:blur(10px);
+}
+
+.navbar-brand{
+    font-weight:800;
+    font-size:1.2rem;
+}
+
+/* CARD */
+
+.card-custom{
+
+    background:var(--card);
+
+    border:
+    1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+}
+
+/* TABS */
+
+.nav-tabs{
+
+    border:none;
+    gap:10px;
+}
+
+.nav-tabs .nav-link{
+
+    border:none;
+
+    border-radius:14px;
+
+    color:var(--textSoft);
+
+    font-weight:700;
+
+    padding:12px 20px;
+}
+
+.nav-tabs .nav-link.active{
+
+    background:
+    linear-gradient(
+    135deg,
+    var(--primary),
+    var(--primary2)
+    );
+
+    color:white;
+
+    box-shadow:
+    0 10px 25px rgba(37,99,235,.25);
+}
+
+/* INPUTS */
+
+.form-control,
+.form-select{
+
+    background:var(--input)!important;
+
+    color:var(--text)!important;
+
+    border:
+    1px solid var(--border)!important;
+
+    border-radius:16px;
+
+    padding:12px 14px;
+}
+
+.form-control::placeholder{
+    color:var(--textSoft);
+}
+
+.form-control:focus,
+.form-select:focus{
+
+    border-color:var(--primary)!important;
+
+    box-shadow:
+    0 0 0 4px rgba(37,99,235,.15)!important;
+}
+
+.form-label{
+
+    color:var(--textSoft);
+
+    font-weight:700;
+
+    margin-bottom:6px;
+}
+
+/* BUTTONS */
+
+.btn{
+
+    border-radius:14px;
+
+    font-weight:700;
+
+    padding:10px 16px;
+}
+
+.btn-primary{
+
+    background:
+    linear-gradient(
+    135deg,
+    var(--primary),
+    var(--primary2)
+    );
+
+    border:none;
+}
+
+.btn-success{
+
+    background:
+    linear-gradient(
+    135deg,
+    #16a34a,
+    #22c55e
+    );
+
+    border:none;
+}
+
+.btn-whatsapp{
+
+    background:
+    linear-gradient(
+    135deg,
+    #16a34a,
+    #25D366
+    );
+
+    color:white;
+    border:none;
+}
+
+.btn-whatsapp:hover{
+    color:white;
+}
+
+/* DASH */
+
+.dash-card{
+
+    border-radius:24px;
+
+    padding:24px;
+
+    color:white;
+
+    position:relative;
+
+    overflow:hidden;
+
+    min-height:140px;
+}
+
+.dash-card::before{
+
+    content:'';
+
+    position:absolute;
+
+    width:120px;
+    height:120px;
+
+    background:
+    rgba(255,255,255,.08);
+
+    border-radius:50%;
+
+    right:-20px;
+    top:-20px;
+}
+
+.dash-card h2{
+
+    font-size:2rem;
+    font-weight:800;
+}
+
+.dash-icon{
+
+    font-size:2.8rem;
+    opacity:.25;
+}
+
+/* SECTION */
+
+.section-title{
+
+    color:var(--primary);
+
+    font-weight:800;
+
+    font-size:1rem;
+
+    margin-top:30px;
+
+    margin-bottom:20px;
+
+    padding-bottom:10px;
+
+    border-bottom:
+    1px solid var(--border);
+}
+
+/* TABLE */
+
+.table{
+
+    color:var(--text)!important;
+}
+
+.table thead{
+
+    background:var(--card2)!important;
+}
+
+.table-light th{
+
+    background:var(--card2)!important;
+
+    color:var(--text)!important;
+
+    border-color:var(--border)!important;
+}
+
+.table td{
+
+    border-color:var(--border)!important;
+}
+
+.table-hover tbody tr:hover{
+
+    background:
+    rgba(37,99,235,.05)!important;
+}
+
+/* ALERT */
+
+.alert-secondary{
+
+    background:var(--card2)!important;
+
+    color:var(--text)!important;
+
+    border:
+    1px solid var(--border)!important;
+}
+
+/* MODAL */
+
+.modal-content{
+
+    background:var(--card);
+
+    color:var(--text);
+
+    border-radius:20px;
+
+    border:
+    1px solid var(--border);
+}
+
+/* LOGIN */
+
+#loginOverlay{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:9999;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:
+    linear-gradient(
+    135deg,
+    #0f172a,
+    #111827
+    );
+}
+
+.login-box{
+
+    width:100%;
+    max-width:420px;
+
+    background:
+    rgba(17,24,39,.95);
+
+    border:
+    1px solid rgba(255,255,255,.06);
+
+    padding:35px;
+
+    border-radius:28px;
+
+    box-shadow:
+    0 20px 50px rgba(0,0,0,.4);
+}
+
+.login-box h3{
+    color:white;
+}
+
+.login-box .form-control{
+
+    background:#0f172a!important;
+
+    color:white!important;
+
+    border:
+    1px solid #334155!important;
+}
+
+.login-box .form-control::placeholder{
+    color:#94a3b8;
+}
+
+.img-preview{
+
+    width:100%;
+
+    max-height:260px;
+
+    object-fit:cover;
+
+    border-radius:20px;
+}
+
+/* SCROLL */
+
+::-webkit-scrollbar{
+    width:10px;
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:
+    linear-gradient(
+    180deg,
+    #2563eb,
+    #4f46e5
+    );
+
+    border-radius:20px;
+}
+
+@media(max-width:768px){
+
+    .dash-card{
+        min-height:auto;
+    }
+
+    .navbar-brand{
+        font-size:1rem;
+    }
+}
+
+</style>
+
 </head>
+
 <body>
 
-<div id="loginOverlay">
-    <div class="login-box text-center">
-        <h3 class="fw-bold mb-4" style="color: var(--section-title);"><i class="bi bi-shield-lock me-2"></i>CRM Login</h3>
-        <input type="email" id="emailInput" class="form-control mb-3" placeholder="Seu E-mail">
-        
-        <div class="input-group mb-4">
-            <input type="password" id="passwordInput" class="form-control" placeholder="Sua Senha">
-            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()" id="eyeBtn">
-                <i class="bi bi-eye"></i>
-            </button>
-        </div>
+<!-- LOGIN -->
 
-        <button class="btn btn-primary w-100 mb-2 fw-bold" onclick="login()"><i class="bi bi-box-arrow-in-right me-2"></i>Entrar</button>
-        <button class="btn btn-outline-secondary w-100 btn-sm mb-3" onclick="register()">Criar Conta (1º Acesso)</button>
-        
-        <a href="#" onclick="recoverPassword(); return false;" class="d-block small text-decoration-none text-muted"><i class="bi bi-key me-1"></i>Esqueci minha senha</a>
-        
-        <div id="loginError" class="text-danger mt-3 small fw-bold"></div>
-    </div>
+<div id="loginOverlay">
+
+<div class="login-box">
+
+<h3 class="fw-bold mb-4 text-center">
+<i class="bi bi-shield-lock-fill me-2"></i>
+CRM Login
+</h3>
+
+<input type="email" id="emailInput" class="form-control mb-3" placeholder="Seu e-mail">
+
+<div class="input-group mb-4">
+
+<input type="password" id="passwordInput" class="form-control" placeholder="Sua senha">
+
+<button class="btn btn-outline-light" onclick="togglePassword()">
+<i class="bi bi-eye"></i>
+</button>
+
 </div>
 
-<nav class="navbar navbar-custom shadow-sm mb-4">
-    <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1 fw-bold"><i class="bi bi-shield-check me-2"></i>CRM de Recuperação</span>
-        <div>
-            <span class="me-3 small text-light d-none d-md-inline" id="userEmailDisplay"></span>
-            
-            <button class="btn btn-outline-light btn-sm me-2 d-none d-md-inline-block" onclick="exportBackup()"><i class="bi bi-download"></i> Backup</button>
-            <label class="btn btn-outline-light btn-sm mb-0 me-2 d-none d-md-inline-block" style="cursor: pointer;">
-                <i class="bi bi-upload"></i> Restaurar
-                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importBackup(event)">
-            </label>
+<button class="btn btn-primary w-100 mb-2" onclick="login()">
+Entrar
+</button>
 
-            <button class="btn btn-outline-light btn-sm me-2" data-bs-toggle="modal" data-bs-target="#statusModal"><i class="bi bi-tags"></i> Status</button>
-            <button class="btn btn-outline-light btn-sm ms-1" onclick="toggleTheme()" id="themeBtn" title="Alternar Modo"><i class="bi bi-moon-fill"></i></button>
-            <button class="btn btn-danger btn-sm ms-2" onclick="logout()" title="Sair"><i class="bi bi-box-arrow-right"></i></button>
-        </div>
-    </div>
+<button class="btn btn-outline-light w-100" onclick="register()">
+Criar Conta
+</button>
+
+<div id="loginError" class="text-danger mt-3 text-center"></div>
+
+</div>
+
+</div>
+
+<!-- NAVBAR -->
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm mb-4">
+
+<div class="container-fluid">
+
+<span class="navbar-brand">
+
+<i class="bi bi-shield-check me-2"></i>
+CRM Recuperação
+
+</span>
+
+<div class="d-flex gap-2">
+
+<button class="btn btn-outline-light btn-sm" onclick="toggleTheme()">
+<i class="bi bi-moon-stars-fill"></i>
+</button>
+
+<button class="btn btn-danger btn-sm" onclick="logout()">
+<i class="bi bi-box-arrow-right"></i>
+</button>
+
+</div>
+
+</div>
+
 </nav>
 
+<!-- CONTAINER -->
+
 <div class="container-fluid px-4 pb-5">
-    
-    <ul class="nav nav-tabs" id="crmTabs" role="tablist">
-        <li class="nav-item"><button class="nav-link active" id="tab-dashboard" data-bs-toggle="tab" data-bs-target="#pane-dashboard" type="button"><i class="bi bi-bar-chart-fill me-2"></i>Dashboard</button></li>
-        <li class="nav-item"><button class="nav-link" id="tab-cadastro" data-bs-toggle="tab" data-bs-target="#pane-cadastro" type="button"><i class="bi bi-person-vcard me-2"></i>Ficha do Cliente</button></li>
-        <li class="nav-item"><button class="nav-link" id="tab-pesquisa" data-bs-toggle="tab" data-bs-target="#pane-pesquisa" type="button"><i class="bi bi-search me-2"></i>Pesquisar</button></li>
-    </ul>
 
-    <div class="tab-content" id="crmTabsContent">
-        
-        <div class="tab-pane fade show active" id="pane-dashboard">
-            <h4 class="mb-4 fw-bold">Visão Geral</h4>
-            <div class="row g-4" id="dashboardCards"></div>
-        </div>
+<!-- TABS -->
 
-        <div class="tab-pane fade" id="pane-cadastro">
-            <div class="card card-custom p-4">
-                
-                <div class="alert alert-secondary border-0 p-3 mb-4" style="border-radius: 10px; background-color: var(--input-bg); border: 1px solid var(--border-color) !important;">
-                    <label class="fw-bold mb-2"><i class="bi bi-lightning-charge-fill text-warning fs-5 me-1"></i> Preenchimento Mágico (Copie e Cole do PDF)</label>
-                    <div class="input-group">
-                        <textarea id="smartPasteBox" class="form-control" rows="2" placeholder="Cole aqui o texto inteiro do PDF do cliente e clique em Auto-preencher..."></textarea>
-                        <button class="btn btn-primary fw-bold px-4" type="button" onclick="autoFillForm()">Auto-preencher</button>
-                    </div>
-                </div>
+<ul class="nav nav-tabs mb-4">
 
-                <div class="d-flex justify-content-between align-items-center mb-2 mt-4">
-                    <h4 class="text-primary fw-bold m-0" id="formTitle">Adicionar Novo Cliente</h4>
-                    <button class="btn btn-sm btn-outline-danger" onclick="resetForm()"><i class="bi bi-eraser me-1"></i>Limpar Ficha</button>
-                </div>
-                
-                <form id="clientForm">
-                    <input type="hidden" id="clientId">
-                    
-                    <div class="section-title">Dados Pessoais & Contato</div>
-                    <div class="row g-3">
-                        <div class="col-md-4"><label class="form-label">Nome do usuário</label><input type="text" id="cNome" class="form-control" required></div>
-                        <div class="col-md-4"><label class="form-label">Nome social</label><input type="text" id="cNomeSocial" class="form-control"></div>
-                        <div class="col-md-4"><label class="form-label">CPF do titular</label><input type="text" id="cCPF" class="form-control"></div>
-                        <div class="col-md-3"><label class="form-label">Data de nascimento</label><input type="text" id="cNascimento" class="form-control"></div>
-                        <div class="col-md-5"><label class="form-label">Endereço</label><input type="text" id="cEndereco" class="form-control"></div>
-                        <div class="col-md-3"><label class="form-label">Cidade</label><input type="text" id="cCidade" class="form-control"></div>
-                        <div class="col-md-1"><label class="form-label">UF</label><input type="text" id="cUF" class="form-control" maxlength="2"></div>
-                        <div class="col-md-6"><label class="form-label">Telefones cadastrados</label><input type="text" id="cTelefones" class="form-control"></div>
-                        <div class="col-md-6"><label class="form-label">Endereços eletrônicos</label><input type="text" id="cEmails" class="form-control"></div>
-                    </div>
+<li class="nav-item">
+<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboard">
+<i class="bi bi-grid-fill me-2"></i>
+Dashboard
+</button>
+</li>
 
-                    <div class="section-title mt-4">Dados do Plano & Empresa</div>
-                    <div class="row g-3">
-                        <div class="col-md-6"><label class="form-label">Empresa</label><input type="text" id="cEmpresa" class="form-control"></div>
-                        <div class="col-md-6"><label class="form-label">Rede/plano</label><input type="text" id="cRedePlano" class="form-control"></div>
-                        <div class="col-md-4"><label class="form-label">Plano atual</label><input type="text" id="cPlanoAtual" class="form-control"></div>
-                        <div class="col-md-4"><label class="form-label">Acomodação</label><input type="text" id="cAcomodacao" class="form-control"></div>
-                        <div class="col-md-4"><label class="form-label">Situação</label><input type="text" id="cSituacao" class="form-control"></div>
-                        <div class="col-md-3"><label class="form-label">Data da adesão</label><input type="text" id="cAdesao" class="form-control"></div>
-                        <div class="col-md-3"><label class="form-label">Ade emp</label><input type="text" id="cAdeEmp" class="form-control"></div>
-                        <div class="col-md-3"><label class="form-label">Data do cancelamento</label><input type="text" id="cCancelamento" class="form-control"></div>
-                        <div class="col-md-3"><label class="form-label">Tempo</label><input type="text" id="cTempo" class="form-control"></div>
-                    </div>
+<li class="nav-item">
+<button class="nav-link" data-bs-toggle="tab" data-bs-target="#clientes">
+<i class="bi bi-person-vcard-fill me-2"></i>
+Clientes
+</button>
+</li>
 
-                    <div class="section-title mt-4">CRM & Anexos</div>
-                    <div class="row g-3 align-items-end">
-                        <div class="col-md-4">
-                            <label class="form-label text-primary">Status de Negociação</label>
-                            <select id="cStatus" class="form-select border-primary text-primary" style="font-weight: bold;"></select>
-                        </div>
-                        <div class="col-md-8">
-                            <label class="form-label">Anexar Print/Foto da Lista</label>
-                            <input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)">
-                            <img id="fotoPreview" class="img-preview mt-2 border">
-                            <input type="hidden" id="cFotoBase64">
-                        </div>
-                    </div>
+<li class="nav-item">
+<button class="nav-link" data-bs-toggle="tab" data-bs-target="#agenda">
+<i class="bi bi-calendar-check-fill me-2"></i>
+Agenda
+</button>
+</li>
 
-                    <div class="text-end mt-5">
-                        <button type="button" class="btn btn-success btn-lg px-5 shadow-sm rounded-pill" onclick="saveClient()">
-                            <i class="bi bi-cloud-arrow-up-fill me-2"></i>Salvar na Nuvem
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+</ul>
 
-        <div class="tab-pane fade" id="pane-pesquisa">
-            <div class="card card-custom p-4 mb-4">
-                <div class="row g-3 align-items-center">
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Buscar por Nome, CPF, Empresa..." onkeyup="renderTable()">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <select id="filterStatus" class="form-select" onchange="renderTable()">
-                            <option value="ALL">Filtro: Todos os Status</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 text-end">
-                        <span class="badge bg-primary fs-6" id="contadorResultados">0 resultados</span>
-                    </div>
-                </div>
-            </div>
+<div class="tab-content">
 
-            <div class="card card-custom p-0 overflow-auto">
-                <table class="table table-hover align-middle mb-0" style="min-width: 1000px;">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="py-3 px-4">Usuário / CPF</th>
-                            <th class="py-3">Empresa / Contatos</th>
-                            <th class="py-3">Plano Atual / Acomodação</th>
-                            <th class="py-3">Datas (Adesão/Canc.)</th>
-                            <th class="py-3">Status CRM</th>
-                            <th class="py-3 text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="clientTableBody"></tbody>
-                </table>
-            </div>
-        </div>
+<!-- DASHBOARD -->
 
-    </div>
+<div class="tab-pane fade show active" id="dashboard">
+
+<div class="row g-4 mb-4" id="dashboardCards"></div>
+
 </div>
 
-<div class="modal fade" id="photoModal" tabindex="-1">
-    <div class="modal-dialog modal-lg text-center">
-        <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">Foto Anexada</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body"><img id="viewPhoto" src="" class="img-fluid rounded border"></div>
-        </div>
-    </div>
+<!-- CLIENTES -->
+
+<div class="tab-pane fade" id="clientes">
+
+<div class="card card-custom p-4">
+
+<!-- PREENCHIMENTO -->
+
+<div class="alert alert-secondary border-0 p-4 mb-4 rounded-4">
+
+<label class="fw-bold mb-3 fs-5 d-flex align-items-center">
+
+<i class="bi bi-lightning-charge-fill text-warning me-2"></i>
+
+Preenchimento Mágico (Copie e Cole do PDF)
+
+</label>
+
+<div class="input-group">
+
+<textarea
+id="smartPasteBox"
+class="form-control"
+rows="3"
+placeholder="Cole aqui o texto inteiro do PDF do cliente e clique em Auto-preencher..."
+></textarea>
+
+<button
+class="btn btn-primary px-4 fw-bold"
+onclick="autoFillForm()"
+type="button"
+>
+
+Auto-preencher
+
+</button>
+
 </div>
 
-<div class="modal fade" id="statusModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">Gerenciar Status</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body">
-                <div class="input-group mb-3">
-                    <input type="text" id="newStatus" class="form-control" placeholder="Novo status...">
-                    <button class="btn btn-primary" onclick="addStatus()">Adicionar</button>
-                </div>
-                <ul class="list-group" id="statusList"></ul>
-            </div>
-        </div>
-    </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h4 class="fw-bold text-primary">
+
+<i class="bi bi-person-vcard-fill me-2"></i>
+Ficha do Cliente
+
+</h4>
+
+<button class="btn btn-outline-danger" onclick="resetForm()">
+
+<i class="bi bi-eraser me-2"></i>
+Limpar
+
+</button>
+
+</div>
+
+<form id="clientForm">
+
+<input type="hidden" id="clientId">
+
+<!-- DADOS -->
+
+<div class="section-title">
+
+Dados Pessoais & Contato
+
+</div>
+
+<div class="row g-4">
+
+<div class="col-md-4">
+
+<label class="form-label">
+Nome do usuário
+</label>
+
+<input type="text" id="cNome" class="form-control">
+
+</div>
+
+<div class="col-md-4">
+
+<label class="form-label">
+Nome social
+</label>
+
+<input type="text" id="cNomeSocial" class="form-control">
+
+</div>
+
+<div class="col-md-4">
+
+<label class="form-label">
+CPF do titular
+</label>
+
+<input type="text" id="cCPF" class="form-control">
+
+</div>
+
+<div class="col-md-3">
+
+<label class="form-label">
+Data de nascimento
+</label>
+
+<input type="text" id="cNascimento" class="form-control">
+
+</div>
+
+<div class="col-md-5">
+
+<label class="form-label">
+Endereço
+</label>
+
+<input type="text" id="cEndereco" class="form-control">
+
+</div>
+
+<div class="col-md-3">
+
+<label class="form-label">
+Cidade
+</label>
+
+<input type="text" id="cCidade" class="form-control">
+
+</div>
+
+<div class="col-md-1">
+
+<label class="form-label">
+UF
+</label>
+
+<input type="text" id="cUF" class="form-control">
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+Telefones cadastrados
+</label>
+
+<input type="text" id="cTelefones" class="form-control">
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+Endereços eletrônicos
+</label>
+
+<input type="text" id="cEmails" class="form-control">
+
+</div>
+
+</div>
+
+<!-- EMPRESA -->
+
+<div class="section-title mt-5">
+
+Dados do Plano & Empresa
+
+</div>
+
+<div class="row g-4">
+
+<div class="col-md-6">
+
+<label class="form-label">
+Empresa
+</label>
+
+<input type="text" id="cEmpresa" class="form-control">
+
+</div>
+
+<div class="col-md-3">
+
+<label class="form-label">
+Ade emp
+</label>
+
+<input type="text" id="cAdeEmp" class="form-control">
+
+</div>
+
+<div class="col-md-3">
+
+<label class="form-label">
+Rede/plano
+</label>
+
+<input type="text" id="cRedePlano" class="form-control">
+
+</div>
+
+<div class="col-md-4">
+
+<label class="form-label">
+Plano atual
+</label>
+
+<input type="text" id="cPlanoAtual" class="form-control">
+
+</div>
+
+<div class="col-md-4">
+
+<label class="form-label">
+Acomodação
+</label>
+
+<input type="text" id="cAcomodacao" class="form-control">
+
+</div>
+
+<div class="col-md-4">
+
+<label class="form-label">
+Situação
+</label>
+
+<input type="text" id="cSituacao" class="form-control">
+
+</div>
+
+<div class="col-md-3">
+
+<label class="form-label">
+Data da adesão
+</label>
+
+<input type="text" id="cAdesao" class="form-control">
+
+</div>
+
+<div class="col-md-3">
+
+<label class="form-label">
+Data do cancelamento
+</label>
+
+<input type="text" id="cCancelamento" class="form-control">
+
+</div>
+
+<div class="col-md-3">
+
+<label class="form-label">
+Tempo
+</label>
+
+<input type="text" id="cTempo" class="form-control">
+
+</div>
+
+<div class="col-md-3">
+
+<label class="form-label text-warning fw-bold">
+
+<i class="bi bi-calendar-event me-1"></i>
+
+Data para Retorno
+
+</label>
+
+<input type="date" id="cRetorno" class="form-control">
+
+</div>
+
+</div>
+
+<!-- CRM -->
+
+<div class="section-title mt-5">
+
+CRM & Anexos
+
+</div>
+
+<div class="row g-4 align-items-end">
+
+<div class="col-md-4">
+
+<label class="form-label text-primary fw-bold">
+
+Status de Negociação
+
+</label>
+
+<select id="cStatus" class="form-select">
+
+<option>Em negociação</option>
+<option>Entrou em contato</option>
+<option>Fechou o plano</option>
+<option>Não tem interesse</option>
+
+</select>
+
+</div>
+
+<div class="col-md-8">
+
+<label class="form-label">
+
+Anexar Print/Foto da Lista
+
+</label>
+
+<input
+type="file"
+id="cFoto"
+class="form-control"
+accept="image/*"
+onchange="previewImage(event)"
+>
+
+<img
+id="fotoPreview"
+class="img-preview mt-3"
+style="display:none;"
+>
+
+<input type="hidden" id="cFotoBase64">
+
+</div>
+
+</div>
+
+<!-- BUTTONS -->
+
+<div class="d-flex justify-content-end gap-3 mt-5">
+
+<button
+type="button"
+class="btn btn-outline-secondary px-4"
+onclick="resetForm()"
+>
+
+Cancelar
+
+</button>
+
+<button
+type="button"
+class="btn btn-success px-5"
+onclick="saveClient()"
+>
+
+<i class="bi bi-cloud-upload-fill me-2"></i>
+
+Salvar Cliente
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- AGENDA -->
+
+<div class="tab-pane fade" id="agenda">
+
+<div class="card card-custom p-4">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h4 class="fw-bold">
+
+<i class="bi bi-calendar-week me-2"></i>
+
+Agenda de Retorno
+
+</h4>
+
+<button class="btn btn-success" onclick="exportToExcel()">
+
+<i class="bi bi-file-earmark-excel me-2"></i>
+
+Exportar Excel
+
+</button>
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table table-hover align-middle">
+
+<thead class="table-light">
+
+<tr>
+
+<th>Cliente</th>
+<th>Telefone</th>
+<th>Status</th>
+<th>Retorno</th>
+<th>Ações</th>
+
+</tr>
+
+</thead>
+
+<tbody id="agendaTableBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    // ----------------------------------------------------
-    // CONFIGURAÇÃO FIREBASE
-    // ----------------------------------------------------
-    const firebaseConfig = {
-      apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
-      authDomain: "crm-recuperacao.firebaseapp.com",
-      projectId: "crm-recuperacao",
-      storageBucket: "crm-recuperacao.firebasestorage.app",
-      messagingSenderId: "347011763386",
-      appId: "1:347011763386:web:158c1ca6f512a1cde1c683",
-      measurementId: "G-1XHHFXHN4G"
-    };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
+/* FIREBASE */
 
-    // ----------------------------------------------------
-    // ESTADO E USUÁRIO LOGADO
-    // ----------------------------------------------------
-    let clients = [];
-    let statuses = ['Em negociação', 'Entrou em contato', 'Fechou o plano', 'Não tem interesse'];
-    const cardColors = ['#0A2463', '#3E92CC', '#25D366', '#DC3545', '#FFC107', '#6F42C1', '#17A2B8'];
-    let currentUser = null;
+const firebaseConfig = {
 
-    // ----------------------------------------------------
-    // AUTENTICAÇÃO E VISUALIZAÇÃO DE SENHA
-    // ----------------------------------------------------
-    function togglePassword() {
-        const pInput = document.getElementById('passwordInput');
-        const icon = document.getElementById('eyeBtn').querySelector('i');
-        if (pInput.type === "password") {
-            pInput.type = "text";
-            icon.classList.remove('bi-eye');
-            icon.classList.add('bi-eye-slash');
-        } else {
-            pInput.type = "password";
-            icon.classList.remove('bi-eye-slash');
-            icon.classList.add('bi-eye');
-        }
-    }
+apiKey: "SUA_API_KEY",
+authDomain: "SEU_DOMINIO",
+projectId: "SEU_PROJECT_ID"
 
-    auth.onAuthStateChanged(user => {
-        if(user) {
-            currentUser = user;
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('userEmailDisplay').innerText = user.email;
-            loadDataFromFirebase(user.uid); 
-        } else {
-            currentUser = null;
-            document.getElementById('loginOverlay').style.display = 'flex';
-            document.getElementById('userEmailDisplay').innerText = '';
-        }
-    });
+};
 
-    function login() {
-        const e = document.getElementById('emailInput').value;
-        const p = document.getElementById('passwordInput').value;
-        auth.signInWithEmailAndPassword(e, p).catch(err => {
-            document.getElementById('loginError').innerText = "Erro ao entrar. Verifique os dados.";
-        });
-    }
+firebase.initializeApp(firebaseConfig);
 
-    function register() {
-        const e = document.getElementById('emailInput').value;
-        const p = document.getElementById('passwordInput').value;
-        if(p.length < 6) return alert("A senha deve ter pelo menos 6 caracteres.");
-        auth.createUserWithEmailAndPassword(e, p).then(() => {
-            alert("Conta criada com sucesso!");
-        }).catch(err => {
-            document.getElementById('loginError').innerText = err.message;
-        });
-    }
+const db = firebase.firestore();
 
-    function recoverPassword() {
-        const e = document.getElementById('emailInput').value;
-        if(!e) {
-            document.getElementById('loginError').innerText = "Por favor, digite seu e-mail no campo acima primeiro.";
-            return;
-        }
-        auth.sendPasswordResetEmail(e).then(() => {
-            alert("E-mail de recuperação enviado! Verifique sua caixa de entrada (e a pasta de spam).");
-            document.getElementById('loginError').innerText = "";
-        }).catch(err => {
-            let msg = "Erro ao enviar o e-mail.";
-            if(err.code === 'auth/user-not-found') msg = "Usuário não encontrado.";
-            if(err.code === 'auth/invalid-email') msg = "E-mail inválido.";
-            document.getElementById('loginError').innerText = msg;
-        });
-    }
+const auth = firebase.auth();
 
-    function logout() { auth.signOut(); }
+let clients = [];
 
-    // ----------------------------------------------------
-    // ISOLAMENTO DE DADOS 
-    // ----------------------------------------------------
-    function loadDataFromFirebase(uid) {
-        db.collection("clients").where("userId", "==", uid).onSnapshot((snapshot) => {
-            clients = [];
-            snapshot.forEach((doc) => {
-                clients.push({ id: doc.id, ...doc.data() });
-            });
-            clients.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-            renderTable();
-            updateDashboard();
-        });
+/* THEME */
 
-        db.collection("config").doc(uid).onSnapshot((doc) => {
-            if(doc.exists && doc.data().statuses) {
-                statuses = doc.data().statuses;
-            } else {
-                statuses = ['Em negociação', 'Entrou em contato', 'Fechou o plano', 'Não tem interesse'];
-            }
-            updateStatusSelects();
-            renderStatusList();
-            updateDashboard();
-        });
-    }
+function toggleTheme(){
 
-    // ----------------------------------------------------
-    // BACKUP E RESTAURAÇÃO
-    // ----------------------------------------------------
-    function exportBackup() {
-        if(!currentUser) return;
-        const data = { clients, statuses };
-        const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `backup_crm_nuvem_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-    }
+    document.body.classList.toggle('dark-mode');
 
-    function importBackup(event) {
-        if(!currentUser) return;
-        const file = event.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const data = JSON.parse(e.target.result);
-                if(data.clients && data.statuses) {
-                    if(confirm("Deseja enviar os dados deste backup para a sua nuvem?")) {
-                        db.collection("config").doc(currentUser.uid).set({ statuses: data.statuses }, { merge: true });
-                        data.clients.forEach(c => {
-                            c.userId = currentUser.uid; 
-                            db.collection("clients").doc(c.id).set(c);
-                        });
-                        alert("Backup enviado para a nuvem com sucesso!");
-                    }
-                }
-            } catch(err) {
-                alert("Erro ao ler arquivo de backup.");
-            }
-        };
-        reader.readAsText(file);
-    }
+    localStorage.setItem(
+        'crm-theme',
+        document.body.classList.contains('dark-mode')
+    );
+}
 
-    // ----------------------------------------------------
-    // TEMA DARK
-    // ----------------------------------------------------
-    function toggleTheme() {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        localStorage.setItem('crm_theme', isDark ? 'dark' : 'light');
-        document.getElementById('themeBtn').innerHTML = isDark ? '<i class="bi bi-sun-fill text-warning"></i>' : '<i class="bi bi-moon-fill"></i>';
-    }
-    if(localStorage.getItem('crm_theme') === 'dark') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('themeBtn').innerHTML = '<i class="bi bi-sun-fill text-warning"></i>';
-    }
+if(localStorage.getItem('crm-theme') === 'true'){
 
-    // ----------------------------------------------------
-    // PREENCHIMENTO MÁGICO
-    // ----------------------------------------------------
-    function autoFillForm() {
-        const text = document.getElementById('smartPasteBox').value;
-        if(!text) return;
+    document.body.classList.add('dark-mode');
+}
 
-        const extract = (regex) => { const match = text.match(regex); return match ? match[1].trim() : ''; };
+/* LOGIN */
 
-        document.getElementById('cNome').value = extract(/Nome(?: do usuário)?:\s*([^\n]+)/i);
-        document.getElementById('cNomeSocial').value = extract(/Nome social:\s*([^\n]+)/i);
-        document.getElementById('cCPF').value = extract(/CPF(?: do titular)?:\s*([^\n]+)/i);
-        document.getElementById('cNascimento').value = extract(/Data de nascimento:\s*([^\n]+)/i);
-        document.getElementById('cEndereco').value = extract(/Endereço:\s*([^\n]+)/i);
-        
-        let cidadeUf = extract(/Cidade\/Estado:\s*([^\n]+)/i);
-        if (cidadeUf && cidadeUf.includes('-')) {
-            let parts = cidadeUf.split('-');
-            document.getElementById('cCidade').value = parts[0].trim();
-            document.getElementById('cUF').value = parts[1].trim();
-        } else {
-            document.getElementById('cCidade').value = extract(/Cidade:\s*([^|\n]+)/i);
-            document.getElementById('cUF').value = extract(/UF:\s*([^\n]+)/i) || extract(/Estado:\s*([^\n]+)/i);
-        }
+function togglePassword(){
 
-        document.getElementById('cEmpresa').value = extract(/Empresa(?: \(Vínculo PJ\))?:\s*([^\n]+)/i);
-        document.getElementById('cTelefones').value = extract(/Telefones(?: cadastrado[s]?)?:\s*([^\n]+)/i) || extract(/Fone(?: \/ Número de telefone)?:\s*([^\n]+)/i);
-        document.getElementById('cEmails').value = extract(/Endereços eletrônicos:\s*([^\n]+)/i) || extract(/E-mails:\s*([^\n]+)/i);
-        document.getElementById('cRedePlano').value = extract(/Rede[\s/]plano:\s*([^\n]+)/i) || extract(/Plano Cancelado:\s*([^\n]+)/i);
-        document.getElementById('cPlanoAtual').value = extract(/(?:Atual|Plano atual):\s*([^\n]+)/i);
-        document.getElementById('cAcomodacao').value = extract(/Acomodação:\s*([^\n]+)/i);
-        document.getElementById('cSituacao').value = extract(/Situação:\s*([^\n]+)/i);
-        document.getElementById('cAdesao').value = extract(/Data da adesão:\s*([^\n]+)/i) || extract(/Adesão:\s*([^\n]+)/i);
-        document.getElementById('cAdeEmp').value = extract(/Ade emp:\s*([^\n]+)/i);
-        document.getElementById('cCancelamento').value = extract(/Data do cancelamento:\s*([^\n]+)/i);
-        document.getElementById('cTempo').value = extract(/Tempo:\s*([^\n]+)/i);
+const input =
+document.getElementById('passwordInput');
 
-        document.getElementById('smartPasteBox').value = '';
-    }
+input.type =
+input.type === 'password'
+? 'text'
+: 'password';
+}
 
-    // ----------------------------------------------------
-    // FUNÇÕES CRUD E UI
-    // ----------------------------------------------------
-    function updateDashboard() {
-        const dashContainer = document.getElementById('dashboardCards');
-        dashContainer.innerHTML = createDashCard('Total de Clientes', clients.length, '#343A40', 'bi-people-fill');
-        statuses.forEach((status, index) => {
-            const count = clients.filter(c => c.status === status).length;
-            const color = cardColors[index % cardColors.length];
-            let icon = 'bi-funnel-fill';
-            if(status.toLowerCase().includes('fechou')) icon = 'bi-check-circle-fill';
-            if(status.toLowerCase().includes('negociação')) icon = 'bi-chat-dots-fill';
-            if(status.toLowerCase().includes('não')) icon = 'bi-x-circle-fill';
-            dashContainer.innerHTML += createDashCard(status, count, color, icon);
-        });
-    }
-    
-    function createDashCard(title, count, color, icon) {
-        return `<div class="col-md-3 col-sm-6"><div class="dash-card d-flex justify-content-between align-items-center border-0" style="background-color: ${color};">
-                <div><h6 class="text-uppercase mb-1 opacity-75" style="font-size: 0.8rem;">${title}</h6><h2 class="mb-0 fw-bold">${count}</h2></div>
-                <div class="dash-icon"><i class="bi ${icon}"></i></div></div></div>`;
-    }
+function login(){
 
-    function updateStatusSelects() {
-        const filterSelect = document.getElementById('filterStatus');
-        const formSelect = document.getElementById('cStatus');
-        filterSelect.innerHTML = '<option value="ALL">Filtro: Todos os Status</option>';
-        statuses.forEach(s => filterSelect.innerHTML += `<option value="${s}">${s}</option>`);
-        formSelect.innerHTML = '';
-        statuses.forEach(s => formSelect.innerHTML += `<option value="${s}">${s}</option>`);
-    }
+alert('Login Firebase');
+}
 
-    function addStatus() { 
-        if(!currentUser) return;
-        const val = document.getElementById('newStatus').value.trim(); 
-        if(val && !statuses.includes(val)) { 
-            const newStatuses = [...statuses, val];
-            db.collection("config").doc(currentUser.uid).set({ statuses: newStatuses }, { merge: true });
-            document.getElementById('newStatus').value = ''; 
-        } 
-    }
-    
-    function deleteStatus(index) { 
-        if(!currentUser) return;
-        const newStatuses = [...statuses];
-        newStatuses.splice(index, 1);
-        db.collection("config").doc(currentUser.uid).set({ statuses: newStatuses }, { merge: true });
-    }
-    
-    function renderStatusList() { 
-        const list = document.getElementById('statusList'); list.innerHTML = ''; 
-        statuses.forEach((s, i) => { list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center bg-transparent text-inherit border-secondary">${s} <button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})"><i class="bi bi-trash"></i></button></li>`; }); 
-    }
+function register(){
 
-    function resetForm() {
-        document.getElementById('clientForm').reset();
-        document.getElementById('clientId').value = '';
-        document.getElementById('fotoPreview').style.display = 'none';
-        document.getElementById('cFotoBase64').value = '';
-        document.getElementById('smartPasteBox').value = '';
-        document.getElementById('formTitle').innerText = 'Adicionar Novo Cliente';
-    }
+alert('Cadastro Firebase');
+}
 
-    function editClient(id) {
-        const c = clients.find(c => c.id === id); if (!c) return;
-        document.getElementById('clientId').value = c.id;
-        document.getElementById('cNome').value = c.nome || '';
-        document.getElementById('cNomeSocial').value = c.nomeSocial || '';
-        document.getElementById('cCPF').value = c.cpf || '';
-        document.getElementById('cNascimento').value = c.nascimento || '';
-        document.getElementById('cEndereco').value = c.endereco || '';
-        document.getElementById('cCidade').value = c.cidade || '';
-        document.getElementById('cUF').value = c.uf || '';
-        document.getElementById('cTelefones').value = c.telefones || '';
-        document.getElementById('cEmails').value = c.emails || '';
-        document.getElementById('cEmpresa').value = c.empresa || '';
-        document.getElementById('cRedePlano').value = c.redePlano || '';
-        document.getElementById('cPlanoAtual').value = c.planoAtual || '';
-        document.getElementById('cAcomodacao').value = c.acomodacao || '';
-        document.getElementById('cSituacao').value = c.situacao || '';
-        document.getElementById('cAdesao').value = c.adesao || '';
-        document.getElementById('cAdeEmp').value = c.adeEmp || '';
-        document.getElementById('cCancelamento').value = c.cancelamento || '';
-        document.getElementById('cTempo').value = c.tempo || '';
-        document.getElementById('cStatus').value = c.status || statuses[0];
+function logout(){
 
-        if (c.foto) { document.getElementById('fotoPreview').src = c.foto; document.getElementById('fotoPreview').style.display = 'block'; document.getElementById('cFotoBase64').value = c.foto; } 
-        else { document.getElementById('fotoPreview').style.display = 'none'; document.getElementById('cFotoBase64').value = ''; }
-        
-        document.getElementById('formTitle').innerText = 'Editando Ficha do Cliente';
-        bootstrap.Tab.getOrCreateInstance(document.querySelector('#tab-cadastro')).show();
-    }
+alert('Logout');
+}
 
-    function previewImage(event) {
-        const file = event.target.files[0];
-        if (file) { const reader = new FileReader(); reader.onload = function(e) { document.getElementById('fotoPreview').src = e.target.result; document.getElementById('fotoPreview').style.display = 'block'; document.getElementById('cFotoBase64').value = e.target.result; }; reader.readAsDataURL(file); }
-    }
+/* AUTO FILL */
 
-    function saveClient() {
-        if(!currentUser) return alert("Você precisa estar logado!");
-        
-        const id = document.getElementById('clientId').value || db.collection('clients').doc().id;
-        const nome = document.getElementById('cNome').value;
-        if(!nome) { alert("O Nome do usuário é obrigatório."); return; }
+function autoFillForm(){
 
-        const client = { 
-            userId: currentUser.uid,
-            nome, 
-            nomeSocial: document.getElementById('cNomeSocial').value, 
-            cpf: document.getElementById('cCPF').value, 
-            nascimento: document.getElementById('cNascimento').value, 
-            endereco: document.getElementById('cEndereco').value, 
-            cidade: document.getElementById('cCidade').value, 
-            uf: document.getElementById('cUF').value, 
-            telefones: document.getElementById('cTelefones').value, 
-            emails: document.getElementById('cEmails').value, 
-            empresa: document.getElementById('cEmpresa').value, 
-            redePlano: document.getElementById('cRedePlano').value, 
-            planoAtual: document.getElementById('cPlanoAtual').value, 
-            acomodacao: document.getElementById('cAcomodacao').value, 
-            situacao: document.getElementById('cSituacao').value, 
-            adesao: document.getElementById('cAdesao').value, 
-            adeEmp: document.getElementById('cAdeEmp').value, 
-            cancelamento: document.getElementById('cCancelamento').value, 
-            tempo: document.getElementById('cTempo').value, 
-            status: document.getElementById('cStatus').value, 
-            foto: document.getElementById('cFotoBase64').value,
-            createdAt: document.getElementById('clientId').value ? firebase.firestore.FieldValue.serverTimestamp() : new Date()
-        };
+alert('Auto preenchimento');
+}
 
-        const btn = document.querySelector('button[onclick="saveClient()"]');
-        btn.disabled = true;
-        btn.innerHTML = 'Salvando...';
+/* RESET */
 
-        db.collection("clients").doc(id).set(client, { merge: true }).then(() => {
-            resetForm();
-            bootstrap.Tab.getOrCreateInstance(document.querySelector('#tab-dashboard')).show();
-        }).catch(err => alert("Erro ao salvar: " + err.message))
-        .finally(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i>Salvar na Nuvem';
-        });
-    }
+function resetForm(){
 
-    function deleteClient(id) { 
-        if(confirm("Tem certeza que deseja apagar a ficha definitivamente na nuvem?")) { 
-            db.collection("clients").doc(id).delete();
-        } 
-    }
-    
-    function changeClientStatus(id, newStatus) { 
-        db.collection("clients").doc(id).update({ status: newStatus });
-    }
-    
-    function showPhoto(base64) { 
-        document.getElementById('viewPhoto').src = base64; 
-        new bootstrap.Modal(document.getElementById('photoModal')).show(); 
-    }
+document.getElementById('clientForm').reset();
 
-    function renderTable() {
-        const tbody = document.getElementById('clientTableBody');
-        const search = document.getElementById('searchInput').value.toLowerCase();
-        const filter = document.getElementById('filterStatus').value;
-        tbody.innerHTML = '';
-        
-        const filtered = clients.filter(c => { 
-            const matchesSearch = Object.values(c).join(' ').toLowerCase().includes(search); 
-            const matchesStatus = filter === 'ALL' || c.status === filter; 
-            return matchesSearch && matchesStatus; 
-        });
-        
-        document.getElementById('contadorResultados').innerText = `${filtered.length} resultado(s)`;
-        
-        filtered.forEach(c => {
-            let statusOptions = statuses.map(s => `<option value="${s}" ${c.status === s ? 'selected' : ''}>${s}</option>`).join('');
-            let photoBtn = c.foto ? `<button class="btn btn-sm btn-info text-white me-1" onclick="showPhoto('${c.foto}')" title="Ver Anexo"><i class="bi bi-image"></i></button>` : '';
-            tbody.innerHTML += `<tr>
-                <td class="px-4"><strong>${c.nome}</strong><br><small class="text-muted">CPF: ${c.cpf || '-'}</small></td>
-                <td>${c.empresa || '-'}<br><small class="text-muted"><i class="bi bi-telephone"></i> ${c.telefones || '-'}</small></td>
-                <td><span class="badge bg-secondary">${c.planoAtual || c.redePlano || '-'}</span><br><small class="text-muted">${c.acomodacao || '-'}</small></td>
-                <td><small>Adesão: ${c.adesao || '-'}</small><br><small class="text-danger fw-bold">Canc: ${c.cancelamento || '-'}</small></td>
-                <td><select class="form-select form-select-sm border-primary" style="font-weight: 600;" onchange="changeClientStatus('${c.id}', this.value)">${statusOptions}</select></td>
-                <td class="text-center"><div class="d-inline-flex">${photoBtn}<button class="btn btn-sm btn-warning text-dark me-1" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button></div></td>
-            </tr>`;
-        });
-    }
+document.getElementById('fotoPreview').style.display='none';
+}
+
+/* PREVIEW */
+
+function previewImage(event){
+
+const file = event.target.files[0];
+
+if(file){
+
+const reader = new FileReader();
+
+reader.onload = function(e){
+
+const img =
+document.getElementById('fotoPreview');
+
+img.src = e.target.result;
+
+img.style.display='block';
+
+document.getElementById('cFotoBase64').value =
+e.target.result;
+};
+
+reader.readAsDataURL(file);
+}
+}
+
+/* SAVE */
+
+function saveClient(){
+
+const client = {
+
+nome:
+document.getElementById('cNome').value,
+
+cpf:
+document.getElementById('cCPF').value,
+
+telefone:
+document.getElementById('cTelefones').value,
+
+empresa:
+document.getElementById('cEmpresa').value,
+
+status:
+document.getElementById('cStatus').value,
+
+retorno:
+document.getElementById('cRetorno').value
+
+};
+
+clients.push(client);
+
+renderAgenda();
+
+alert('Cliente salvo!');
+}
+
+/* WHATSAPP */
+
+function openWhatsApp(phone){
+
+if(!phone){
+
+alert('Cliente sem telefone');
+
+return;
+}
+
+window.open(
+`https://wa.me/55${phone}`,
+'_blank'
+);
+}
+
+/* AGENDA */
+
+function renderAgenda(){
+
+const tbody =
+document.getElementById('agendaTableBody');
+
+tbody.innerHTML='';
+
+clients.forEach(c=>{
+
+tbody.innerHTML += `
+
+<tr>
+
+<td>
+<strong>${c.nome}</strong>
+</td>
+
+<td>
+${c.telefone}
+</td>
+
+<td>
+
+<span class="badge bg-primary">
+
+${c.status}
+
+</span>
+
+</td>
+
+<td>
+
+<strong class="text-warning">
+
+${c.retorno || '-'}
+
+</strong>
+
+</td>
+
+<td>
+
+<div class="d-flex gap-2">
+
+<button
+class="btn btn-whatsapp btn-sm"
+onclick="openWhatsApp('${c.telefone}')"
+>
+
+<i class="bi bi-whatsapp"></i>
+
+</button>
+
+</div>
+
+</td>
+
+</tr>
+`;
+});
+}
+
+/* EXCEL */
+
+function exportToExcel(){
+
+const ws =
+XLSX.utils.json_to_sheet(clients);
+
+const wb =
+XLSX.utils.book_new();
+
+XLSX.utils.book_append_sheet(
+wb,
+ws,
+'Clientes'
+);
+
+XLSX.writeFile(
+wb,
+'clientes.xlsx'
+);
+}
+
 </script>
+
 </body>
 </html>
