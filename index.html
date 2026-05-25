@@ -97,9 +97,6 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* ===================================================== */
-    /* NAVBAR */
-    /* ===================================================== */
     .navbar {
       background: var(--card);
       border-bottom: 1px solid var(--border);
@@ -129,21 +126,6 @@
       border: none;
     }
 
-    .navbar .btn-outline-primary {
-      color: var(--primary);
-      border: 1.5px solid var(--primary);
-      background: transparent;
-    }
-
-    .navbar .btn-outline-primary:hover {
-      background: var(--primary-light);
-      color: var(--primary-dark);
-      border-color: var(--primary-dark);
-    }
-
-    /* ===================================================== */
-    /* CARDS */
-    /* ===================================================== */
     .card-custom {
       background: var(--card);
       border: 1px solid var(--border);
@@ -158,13 +140,6 @@
       border-color: var(--primary-light);
     }
 
-    body.dark-mode .card-custom {
-      box-shadow: var(--shadow-sm);
-    }
-
-    /* ===================================================== */
-    /* DASHBOARD CARDS */
-    /* ===================================================== */
     .dashboard-card {
       padding: 2rem;
       border-radius: var(--radius-lg);
@@ -228,9 +203,6 @@
       50% { transform: scale(1.1); }
     }
 
-    /* ===================================================== */
-    /* FORM CONTROLS */
-    /* ===================================================== */
     .form-control,
     .form-select {
       background: var(--input);
@@ -264,9 +236,6 @@
       display: block;
     }
 
-    /* ===================================================== */
-    /* BUTTONS */
-    /* ===================================================== */
     .btn {
       border-radius: var(--radius-md);
       padding: 0.625rem 1.25rem;
@@ -318,9 +287,6 @@
       font-size: 0.8125rem;
     }
 
-    /* ===================================================== */
-    /* TABS */
-    /* ===================================================== */
     .nav-tabs {
       border: none;
       gap: 0.75rem;
@@ -348,9 +314,6 @@
       box-shadow: var(--shadow-md);
     }
 
-    /* ===================================================== */
-    /* TABELAS */
-    /* ===================================================== */
     .table {
       color: var(--text);
       margin: 0;
@@ -383,9 +346,6 @@
       overflow: hidden;
     }
 
-    /* ===================================================== */
-    /* LOGIN */
-    /* ===================================================== */
     .login-screen {
       position: fixed;
       inset: 0;
@@ -416,18 +376,12 @@
       text-align: center;
     }
 
-    /* ===================================================== */
-    /* CHART CONTAINERS */
-    /* ===================================================== */
     .chart-container {
       position: relative;
       height: 300px;
       width: 100%;
     }
 
-    /* ===================================================== */
-    /* CONTAINER & LAYOUT */
-    /* ===================================================== */
     .container-fluid {
       padding: 2rem;
     }
@@ -594,12 +548,23 @@
       <div class="tab-pane fade" id="pesquisaTab">
         <div class="card card-custom p-4">
           <div class="row g-3 mb-4">
-            <div class="col-lg-6"><input type="text" id="search" class="form-control" placeholder="Pesquisar cliente..." onkeyup="renderTable()"></div>
-            <div class="col-lg-3"><select id="filterStatus" class="form-select" onchange="renderTable()"><option value="ALL">Todos status</option></select></div>
+            <div class="col-lg-4">
+              <input type="text" id="search" class="form-control" placeholder="Pesquisar cliente..." onkeyup="renderTable()">
+            </div>
+            <div class="col-lg-3">
+              <select id="filterStatus" class="form-select" onchange="renderTable()">
+                <option value="ALL">Todos status</option>
+              </select>
+            </div>
+            <div class="col-lg-3">
+              <select id="filterPlano" class="form-select" onchange="renderTable()">
+                <option value="ALL">Todos os planos</option>
+              </select>
+            </div>
           </div>
           <div class="table-responsive">
             <table class="table align-middle">
-              <thead><tr><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Retorno</th><th>Ações</th></tr></thead>
+              <thead><tr><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Plano</th><th>Status</th><th>Retorno</th><th>Ações</th></tr></thead>
               <tbody id="tableBody"></tbody>
             </table>
           </div>
@@ -790,19 +755,42 @@
       renderTable();
       renderAgenda();
       updateDashboard();
+      updatePlanosFilter(); // Atualiza o filtro de planos
       renderStatuses();
     }
 
     async function saveClient() {
+      const nome = document.getElementById('cNome').value.trim();
+      const cpf = document.getElementById('cCPF').value.trim();
+      const empresa = document.getElementById('cEmpresa').value.trim();
+
+      // Verificação de duplicidade (apenas para novos clientes)
+      const clientId = document.getElementById('clientId').value;
+      if (!clientId) {
+        const duplicadoCPF = clients.find(c => c.cpf && cpf && c.cpf.replace(/\D/g,'') === cpf.replace(/\D/g,''));
+        const duplicadoNomeEmpresa = clients.find(c => 
+          c.nome && nome && c.nome.toLowerCase() === nome.toLowerCase() &&
+          c.empresa && empresa && c.empresa.toLowerCase() === empresa.toLowerCase()
+        );
+        
+        if (duplicadoCPF) {
+          const confirmar = confirm(`Já existe um cliente com o CPF ${cpf} (${duplicadoCPF.nome}). Deseja cadastrar mesmo assim?`);
+          if (!confirmar) return;
+        } else if (duplicadoNomeEmpresa) {
+          const confirmar = confirm(`Já existe um cliente com o mesmo Nome e Empresa: "${nome}" na empresa "${empresa}". Deseja cadastrar mesmo assim?`);
+          if (!confirmar) return;
+        }
+      }
+
       const clientData = {
-        nome: document.getElementById('cNome').value,
+        nome,
         nomeSocial: document.getElementById('cNomeSocial').value,
-        cpf: document.getElementById('cCPF').value,
+        cpf,
         nascimento: document.getElementById('cNascimento').value,
         endereco: document.getElementById('cEndereco').value,
         cidade: document.getElementById('cCidade').value,
         uf: document.getElementById('cUF').value,
-        empresa: document.getElementById('cEmpresa').value,
+        empresa,
         adeEmp: document.getElementById('cAdeEmp').value,
         redePlano: document.getElementById('cRedePlano').value,
         planoAtual: document.getElementById('cPlanoAtual').value,
@@ -819,7 +807,6 @@
         updatedAt: new Date().toISOString()
       };
 
-      const clientId = document.getElementById('clientId').value;
       try {
         if (clientId) {
           await db.collection('clients').doc(clientId).update(clientData);
@@ -845,10 +832,8 @@
     }
 
     function clearForm() {
-      // Limpa ID do cliente (para criar um novo registro)
       document.getElementById('clientId').value = '';
       
-      // Lista de todos os campos de texto e date
       const campos = [
         'cNome', 'cNomeSocial', 'cCPF', 'cNascimento', 'cEndereco',
         'cCidade', 'cUF', 'cEmpresa', 'cAdeEmp', 'cRedePlano',
@@ -860,11 +845,9 @@
         if (el) el.value = '';
       });
       
-      // Limpa o select de status (volta ao primeiro)
       const statusSelect = document.getElementById('cStatus');
       if (statusSelect) statusSelect.selectedIndex = 0;
       
-      // Limpa o preview da foto e o input file
       const preview = document.getElementById('preview');
       if (preview) {
         preview.src = '';
@@ -873,7 +856,6 @@
       const fotoInput = document.querySelector('#clientesTab input[type="file"]');
       if (fotoInput) fotoInput.value = '';
       
-      // Também limpa o campo "Campo Mágico"
       const smartPaste = document.getElementById('smartPaste');
       if (smartPaste) smartPaste.value = '';
     }
@@ -915,22 +897,32 @@
       }
     }
 
-    /* TABELA */
+    /* TABELA - agora com filtro por plano */
     function renderTable() {
       const tbody = document.getElementById('tableBody');
       const search = document.getElementById('search').value.toLowerCase();
       const filterStatus = document.getElementById('filterStatus').value;
+      const filterPlano = document.getElementById('filterPlano').value;
+      
       tbody.innerHTML = '';
       clients.filter(c => {
-        const matchSearch = (c.nome || '').toLowerCase().includes(search) || (c.empresa || '').toLowerCase().includes(search);
+        const matchSearch = (c.nome || '').toLowerCase().includes(search) || 
+                           (c.empresa || '').toLowerCase().includes(search) ||
+                           (c.planoAtual || '').toLowerCase().includes(search) ||
+                           (c.redePlano || '').toLowerCase().includes(search);
         const matchStatus = filterStatus === 'ALL' || c.status === filterStatus;
-        return matchSearch && matchStatus;
+        const matchPlano = filterPlano === 'ALL' || 
+                          (c.planoAtual || '') === filterPlano || 
+                          (c.redePlano || '') === filterPlano;
+        return matchSearch && matchStatus && matchPlano;
       }).forEach(c => {
+        const plano = c.planoAtual || c.redePlano || '-';
         tbody.innerHTML += `
           <tr>
             <td><strong>${c.nome}</strong></td>
             <td>${c.empresa}</td>
             <td>${c.telefones}</td>
+            <td>${plano}</td>
             <td><span class="badge bg-primary">${c.status}</span></td>
             <td>${c.retorno}</td>
             <td>
@@ -942,6 +934,31 @@
             </td>
           </tr>`;
       });
+    }
+
+    /* Atualiza o select de planos baseado nos clientes atuais */
+    function updatePlanosFilter() {
+      const select = document.getElementById('filterPlano');
+      const currentValue = select.value;
+      // Coleta todos os planos únicos (planoAtual ou redePlano)
+      const planosSet = new Set();
+      clients.forEach(c => {
+        if (c.planoAtual) planosSet.add(c.planoAtual);
+        if (c.redePlano) planosSet.add(c.redePlano);
+      });
+      const planos = Array.from(planosSet).sort();
+      
+      select.innerHTML = '<option value="ALL">Todos os planos</option>';
+      planos.forEach(plano => {
+        select.innerHTML += `<option value="${plano}">${plano}</option>`;
+      });
+      
+      // Tenta manter o valor selecionado anteriormente
+      if (planos.includes(currentValue)) {
+        select.value = currentValue;
+      } else {
+        select.value = 'ALL';
+      }
     }
 
     /* AGENDA */
@@ -962,7 +979,6 @@
 
     /* DASHBOARD */
     function updateDashboard() {
-      // Atualizar Cards
       const total = clients.length;
       const fechados = clients.filter(c => c.status === 'Fechou o plano').length;
       const negociacao = clients.filter(c => c.status === 'Em negociação').length;
@@ -980,7 +996,6 @@
       const isDark = document.body.classList.contains('dark-mode');
       const textColor = isDark ? '#cbd5e1' : '#6b7280';
       
-      // 1. Gráfico de Status (Doughnut)
       const statusCounts = {};
       statuses.forEach(s => statusCounts[s] = 0);
       clients.forEach(c => {
@@ -1008,7 +1023,6 @@
         }
       });
 
-      // 2. Top 5 Empresas (Bar)
       const companyCounts = {};
       clients.forEach(c => {
         if (c.empresa) companyCounts[c.empresa] = (companyCounts[c.empresa] || 0) + 1;
@@ -1040,7 +1054,6 @@
         }
       });
 
-      // 3. Evolução de Clientes (Line)
       const last7Days = [...Array(7)].map((_, i) => {
         const d = new Date();
         d.setDate(d.getDate() - i);
