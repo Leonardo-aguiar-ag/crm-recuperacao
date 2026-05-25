@@ -1,871 +1,148 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>CRM Recuperação Premium</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
-<style>
-
-:root{
-
---primary:#2563eb;
---primary2:#4f46e5;
-
---success:#22c55e;
---danger:#ef4444;
-
---bg:#f1f5f9;
---card:#ffffff;
---text:#0f172a;
---soft:#64748b;
---border:#dbe4ee;
-
---shadow:
-0 10px 30px rgba(0,0,0,.08);
-}
-
-body.dark-mode{
-
---bg:#0b1120;
---card:#111827;
---text:#f1f5f9;
---soft:#94a3b8;
---border:#263244;
-}
-
-body{
-
-background:var(--bg);
-color:var(--text);
-
-font-family:
-Inter,
-Segoe UI,
-sans-serif;
-
-transition:.3s;
-}
-
-/* NAVBAR */
-
-.navbar-custom{
-
-background:
-linear-gradient(
-135deg,
-#0f172a,
-#1e293b
-);
-}
-
-/* CARD */
-
-.card-custom{
-
-background:var(--card);
-
-border:
-1px solid var(--border);
-
-border-radius:24px;
-
-box-shadow:var(--shadow);
-}
-
-/* TABS */
-
-.nav-tabs{
-
-border:none;
-gap:10px;
-}
-
-.nav-tabs .nav-link{
-
-border:none;
-
-padding:12px 18px;
-
-border-radius:14px;
-
-font-weight:700;
-
-color:var(--soft);
-}
-
-.nav-tabs .nav-link.active{
-
-background:
-linear-gradient(
-135deg,
-var(--primary),
-var(--primary2)
-);
-
-color:white;
-}
-
-/* INPUT */
-
-.form-control,
-.form-select{
-
-background:var(--card)!important;
-
-color:var(--text)!important;
-
-border:
-1px solid var(--border)!important;
-
-border-radius:14px;
-
-padding:12px;
-}
-
-.form-control:focus,
-.form-select:focus{
-
-box-shadow:
-0 0 0 4px rgba(37,99,235,.15)!important;
-
-border-color:
-var(--primary)!important;
-}
-
-/* BUTTON */
-
-.btn{
-
-border-radius:14px;
-
-font-weight:700;
-}
-
-/* DASH */
-
-.dash-card{
-
-padding:25px;
-
-border-radius:24px;
-
-color:white;
-
-overflow:hidden;
-
-position:relative;
-}
-
-.dash-card h2{
-
-font-size:2rem;
-font-weight:800;
-}
-
-.dash-icon{
-
-font-size:3rem;
-opacity:.2;
-}
-
-/* TABLE */
-
-.table{
-
-color:var(--text)!important;
-}
-
-.table td,
-.table th{
-
-border-color:
-var(--border)!important;
-}
-
-.table-hover tbody tr:hover{
-
-background:
-rgba(37,99,235,.05);
-}
-
-/* LOGIN */
-
-#loginOverlay{
-
-position:fixed;
-
-inset:0;
-
-display:flex;
-
-justify-content:center;
-align-items:center;
-
-z-index:9999;
-
-background:
-linear-gradient(
-135deg,
-#0f172a,
-#111827
-);
-}
-
-.login-box{
-
-background:
-rgba(17,24,39,.96);
-
-padding:40px;
-
-border-radius:30px;
-
-width:100%;
-max-width:430px;
-
-border:
-1px solid rgba(255,255,255,.06);
-}
-
-.login-box h3{
-
-color:white;
-}
-
-.login-box .form-control{
-
-background:#0f172a!important;
-color:white!important;
-}
-
-.section-title{
-
-font-size:1rem;
-
-font-weight:800;
-
-color:var(--primary);
-
-margin-top:35px;
-margin-bottom:20px;
-
-padding-bottom:10px;
-
-border-bottom:
-1px solid var(--border);
-}
-
-</style>
-
-</head>
-
-<body>
-
-<!-- LOGIN -->
+<!-- ===================================================== -->
+<!-- SISTEMA COMPLETO LOGIN + REDEFINIÇÃO DE SENHA -->
+<!-- SUBSTITUA TODO O BLOCO LOGIN + SCRIPT AUTH -->
+<!-- ===================================================== -->
+
+<!-- LOGIN OVERLAY -->
 
 <div id="loginOverlay">
 
-<div class="login-box">
+    <div class="login-box">
 
-<h3 class="fw-bold text-center mb-4">
+        <h3 class="fw-bold text-center mb-4">
+            <i class="bi bi-shield-lock-fill me-2"></i>
+            CRM Login
+        </h3>
 
-<i class="bi bi-shield-lock-fill me-2"></i>
+        <!-- EMAIL -->
 
-CRM Login
+        <div class="mb-3">
 
-</h3>
+            <label class="form-label text-light">
+                E-mail
+            </label>
 
-<input
-type="email"
-id="emailInput"
-class="form-control mb-3"
-placeholder="Seu e-mail"
->
+            <input
+                type="email"
+                id="emailInput"
+                class="form-control"
+                placeholder="Digite seu e-mail"
+            >
 
-<input
-type="password"
-id="passwordInput"
-class="form-control mb-4"
-placeholder="Sua senha"
->
+        </div>
 
-<button
-class="btn btn-primary w-100 mb-2"
-onclick="login()"
->
+        <!-- SENHA -->
 
-Entrar
+        <div class="mb-2">
 
-</button>
+            <label class="form-label text-light">
+                Senha
+            </label>
 
-<button
-class="btn btn-outline-light w-100"
-onclick="register()"
->
+            <div class="input-group">
 
-Criar Conta
+                <input
+                    type="password"
+                    id="passwordInput"
+                    class="form-control"
+                    placeholder="Digite sua senha"
+                >
 
-</button>
+                <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    onclick="togglePassword()"
+                >
 
-<div
-id="loginError"
-class="text-danger text-center mt-3"
-></div>
+                    <i
+                        class="bi bi-eye-fill"
+                        id="eyeIcon"
+                    ></i>
 
-</div>
-
-</div>
-
-<!-- NAVBAR -->
-
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm mb-4">
-
-<div class="container-fluid">
-
-<span class="navbar-brand fw-bold">
-
-<i class="bi bi-shield-check me-2"></i>
-
-CRM Recuperação
-
-</span>
-
-<div class="d-flex gap-2">
-
-<button
-class="btn btn-outline-light btn-sm"
-onclick="toggleTheme()"
->
-
-<i class="bi bi-moon-stars-fill"></i>
-
-</button>
-
-<button
-class="btn btn-danger btn-sm"
-onclick="logout()"
->
-
-<i class="bi bi-box-arrow-right"></i>
-
-</button>
-
-</div>
-
-</div>
-
-</nav>
-
-<!-- CONTAINER -->
-
-<div class="container-fluid px-4 pb-5">
-
-<!-- TABS -->
-
-<ul class="nav nav-tabs mb-4">
-
-<li class="nav-item">
-<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboard">
-<i class="bi bi-bar-chart-fill me-2"></i>
-Dashboard
-</button>
-</li>
-
-<li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#clientes">
-<i class="bi bi-person-vcard-fill me-2"></i>
-Clientes
-</button>
-</li>
-
-<li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesquisa">
-<i class="bi bi-search me-2"></i>
-Pesquisar
-</button>
-</li>
-
-<li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#agenda">
-<i class="bi bi-calendar-check-fill me-2"></i>
-Agenda
-</button>
-</li>
-
-<li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#config">
-<i class="bi bi-gear-fill me-2"></i>
-Configurações
-</button>
-</li>
-
-</ul>
-
-<div class="tab-content">
-
-<!-- DASHBOARD -->
-
-<div class="tab-pane fade show active" id="dashboard">
-
-<div class="row g-4 mb-4">
-
-<div class="col-md-3">
-
-<div class="dash-card" style="background:linear-gradient(135deg,#2563eb,#4f46e5)">
-
-<div class="d-flex justify-content-between">
-
-<div>
-
-<small>Total Clientes</small>
-
-<h2 id="totalClientes">0</h2>
-
-</div>
-
-<div class="dash-icon">
-
-<i class="bi bi-people-fill"></i>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="col-md-3">
-
-<div class="dash-card" style="background:linear-gradient(135deg,#16a34a,#22c55e)">
-
-<div class="d-flex justify-content-between">
-
-<div>
-
-<small>Fechados</small>
-
-<h2 id="fechados">0</h2>
-
-</div>
-
-<div class="dash-icon">
-
-<i class="bi bi-check-circle-fill"></i>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="col-md-3">
-
-<div class="dash-card" style="background:linear-gradient(135deg,#f59e0b,#f97316)">
-
-<div class="d-flex justify-content-between">
-
-<div>
-
-<small>Negociação</small>
-
-<h2 id="negociacao">0</h2>
-
-</div>
-
-<div class="dash-icon">
-
-<i class="bi bi-chat-dots-fill"></i>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="col-md-3">
-
-<div class="dash-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)">
-
-<div class="d-flex justify-content-between">
-
-<div>
-
-<small>Sem Interesse</small>
-
-<h2 id="semInteresse">0</h2>
-
-</div>
-
-<div class="dash-icon">
-
-<i class="bi bi-x-circle-fill"></i>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="card card-custom p-4">
-
-<canvas id="crmChart" height="100"></canvas>
-
-</div>
-
-</div>
-
-<!-- CLIENTES -->
-
-<div class="tab-pane fade" id="clientes">
-
-<div class="card card-custom p-4">
-
-<form id="clientForm">
+                </button>
 
-<div class="section-title">
+            </div>
 
-Dados do Cliente
+        </div>
 
-</div>
-
-<div class="row g-4">
-
-<div class="col-md-4">
-<label>Nome do usuário</label>
-<input type="text" id="cNome" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>Nome social</label>
-<input type="text" id="cNomeSocial" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>CPF do titular</label>
-<input type="text" id="cCPF" class="form-control">
-</div>
-
-<div class="col-md-3">
-<label>Data de nascimento</label>
-<input type="text" id="cNascimento" class="form-control">
-</div>
-
-<div class="col-md-5">
-<label>Endereço</label>
-<input type="text" id="cEndereco" class="form-control">
-</div>
-
-<div class="col-md-3">
-<label>Cidade</label>
-<input type="text" id="cCidade" class="form-control">
-</div>
-
-<div class="col-md-1">
-<label>UF</label>
-<input type="text" id="cUF" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Empresa</label>
-<input type="text" id="cEmpresa" class="form-control">
-</div>
-
-<div class="col-md-3">
-<label>Ade emp</label>
-<input type="text" id="cAdeEmp" class="form-control">
-</div>
-
-<div class="col-md-3">
-<label>Rede/plano</label>
-<input type="text" id="cRedePlano" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>Plano atual</label>
-<input type="text" id="cPlanoAtual" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>Acomodação</label>
-<input type="text" id="cAcomodacao" class="form-control">
-</div>
-
-<div class="col-md-4">
-<label>Situação</label>
-<input type="text" id="cSituacao" class="form-control">
-</div>
-
-<div class="col-md-3">
-<label>Data da adesão</label>
-<input type="text" id="cAdesao" class="form-control">
-</div>
-
-<div class="col-md-3">
-<label>Data do cancelamento</label>
-<input type="text" id="cCancelamento" class="form-control">
-</div>
-
-<div class="col-md-3">
-<label>Tempo</label>
-<input type="text" id="cTempo" class="form-control">
-</div>
-
-<div class="col-md-3">
-<label>Retorno</label>
-<input type="date" id="cRetorno" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Telefones cadastrados</label>
-<input type="text" id="cTelefones" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Endereços eletrônicos</label>
-<input type="text" id="cEmails" class="form-control">
-</div>
-
-<div class="col-md-4">
-
-<label>Status</label>
-
-<select id="cStatus" class="form-select">
-
-<option>Em negociação</option>
-<option>Fechou o plano</option>
-<option>Entrou em contato</option>
-<option>Não tem interesse</option>
-
-</select>
-
-</div>
-
-</div>
-
-<div class="text-end mt-5">
-
-<button
-type="button"
-class="btn btn-success px-5"
-onclick="saveClient()"
->
-
-Salvar Cliente
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-</div>
+        <!-- ESQUECI SENHA -->
 
-<!-- PESQUISA -->
+        <div class="text-end mb-4">
 
-<div class="tab-pane fade" id="pesquisa">
+            <a
+                href="#"
+                onclick="recoverPassword()"
+                style="
+                    color:#60a5fa;
+                    text-decoration:none;
+                    font-size:.9rem;
+                "
+            >
+                Esqueci minha senha
+            </a>
 
-<div class="card card-custom p-4">
+        </div>
 
-<div class="row g-3 mb-4">
+        <!-- BOTÕES -->
 
-<div class="col-md-8">
+        <button
+            class="btn btn-primary w-100 mb-3 fw-bold"
+            onclick="login()"
+        >
 
-<input
-type="text"
-id="searchInput"
-class="form-control"
-placeholder="Pesquisar por nome, CPF, telefone..."
-onkeyup="renderPesquisa()"
->
+            <i class="bi bi-box-arrow-in-right me-2"></i>
 
-</div>
-
-<div class="col-md-4 text-end">
-
-<button
-class="btn btn-success"
-onclick="exportExcel()"
->
-
-<i class="bi bi-file-earmark-excel me-2"></i>
-
-Exportar Excel
-
-</button>
-
-</div>
-
-</div>
-
-<div class="table-responsive">
-
-<table class="table table-hover align-middle">
-
-<thead>
-
-<tr>
-
-<th>Cliente</th>
-<th>Empresa</th>
-<th>Telefone</th>
-<th>Status</th>
-<th>Retorno</th>
-<th>Ações</th>
-
-</tr>
-
-</thead>
-
-<tbody id="pesquisaBody"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- AGENDA -->
-
-<div class="tab-pane fade" id="agenda">
-
-<div class="card card-custom p-4">
-
-<h4 class="fw-bold mb-4">
-
-Agenda de Retorno
+            Entrar
 
-</h4>
+        </button>
 
-<div id="agendaLista"></div>
+        <button
+            class="btn btn-outline-light w-100 fw-bold"
+            onclick="register()"
+        >
 
-</div>
-
-</div>
-
-<!-- CONFIG -->
-
-<div class="tab-pane fade" id="config">
-
-<div class="card card-custom p-4">
-
-<h4 class="fw-bold mb-4">
-
-Gerenciar Status
-
-</h4>
-
-<div class="input-group mb-4">
-
-<input
-type="text"
-id="novoStatus"
-class="form-control"
-placeholder="Novo status"
->
-
-<button
-class="btn btn-primary"
-onclick="addStatus()"
->
-
-Adicionar
-
-</button>
-
-</div>
-
-<ul
-class="list-group mb-4"
-id="statusList"
-></ul>
-
-<div class="d-flex gap-3">
-
-<button
-class="btn btn-success"
-onclick="exportBackup()"
->
-
-<i class="bi bi-download me-2"></i>
-
-Backup CRM
-
-</button>
+            <i class="bi bi-person-plus-fill me-2"></i>
 
-<label class="btn btn-primary mb-0">
+            Criar Conta
 
-<i class="bi bi-upload me-2"></i>
+        </button>
 
-Importar Backup
+        <!-- MENSAGEM -->
 
-<input
-type="file"
-hidden
-onchange="importBackup(event)"
->
+        <div
+            id="loginError"
+            class="mt-4 text-center fw-bold"
+            style="min-height:20px;"
+        ></div>
 
-</label>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
+    </div>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- ===================================================== -->
+<!-- SCRIPT AUTH COMPLETO -->
+<!-- SUBSTITUA O SCRIPT ANTIGO POR ESSE -->
+<!-- ===================================================== -->
 
 <script>
 
+/* ===================================================== */
 /* FIREBASE */
+/* ===================================================== */
 
 const firebaseConfig = {
 
-apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
+    apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
 
-authDomain: "crm-recuperacao.firebaseapp.com",
+    authDomain: "crm-recuperacao.firebaseapp.com",
 
-projectId: "crm-recuperacao",
+    projectId: "crm-recuperacao",
 
-storageBucket: "crm-recuperacao.firebasestorage.app",
+    storageBucket: "crm-recuperacao.firebasestorage.app",
 
-messagingSenderId: "347011763386",
+    messagingSenderId: "347011763386",
 
-appId: "1:347011763386:web:158c1ca6f512a1cde1c683"
+    appId: "1:347011763386:web:158c1ca6f512a1cde1c683"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -874,553 +151,274 @@ const db = firebase.firestore();
 
 const auth = firebase.auth();
 
-let clients = [];
+/* ===================================================== */
+/* TOGGLE PASSWORD */
+/* ===================================================== */
 
-let statuses = [
+function togglePassword(){
 
-'Em negociação',
-'Fechou o plano',
-'Entrou em contato',
-'Não tem interesse'
-];
+    const input =
+    document.getElementById('passwordInput');
 
-let chart;
+    const icon =
+    document.getElementById('eyeIcon');
 
-/* LOGIN */
+    if(input.type === 'password'){
 
-auth.onAuthStateChanged(user=>{
+        input.type = 'text';
 
-if(user){
+        icon.classList.remove('bi-eye-fill');
 
-document.getElementById('loginOverlay').style.display='none';
+        icon.classList.add('bi-eye-slash-fill');
 
-loadClients();
+    }else{
 
-}else{
+        input.type = 'password';
 
-document.getElementById('loginOverlay').style.display='flex';
+        icon.classList.remove('bi-eye-slash-fill');
+
+        icon.classList.add('bi-eye-fill');
+    }
 }
-});
+
+/* ===================================================== */
+/* LOGIN */
+/* ===================================================== */
 
 function login(){
 
-auth
-.signInWithEmailAndPassword(
+    const email =
+    document.getElementById('emailInput').value.trim();
 
-emailInput.value,
-passwordInput.value
+    const password =
+    document.getElementById('passwordInput').value;
 
-)
+    const error =
+    document.getElementById('loginError');
 
-.catch(err=>{
+    error.style.color = '#ef4444';
 
-loginError.innerText =
-err.message;
-});
+    if(!email || !password){
+
+        error.innerText =
+        'Preencha e-mail e senha';
+
+        return;
+    }
+
+    auth
+    .signInWithEmailAndPassword(
+        email,
+        password
+    )
+
+    .then(()=>{
+
+        error.style.color = '#22c55e';
+
+        error.innerText =
+        'Login realizado com sucesso';
+
+    })
+
+    .catch((err)=>{
+
+        let msg =
+        'Erro ao fazer login';
+
+        if(err.code === 'auth/user-not-found'){
+
+            msg =
+            'Usuário não encontrado';
+        }
+
+        if(err.code === 'auth/wrong-password'){
+
+            msg =
+            'Senha incorreta';
+        }
+
+        if(err.code === 'auth/invalid-email'){
+
+            msg =
+            'E-mail inválido';
+        }
+
+        if(err.code === 'auth/too-many-requests'){
+
+            msg =
+            'Muitas tentativas. Tente mais tarde';
+        }
+
+        error.innerText = msg;
+    });
 }
+
+/* ===================================================== */
+/* REGISTER */
+/* ===================================================== */
 
 function register(){
 
-auth
-.createUserWithEmailAndPassword(
+    const email =
+    document.getElementById('emailInput').value.trim();
 
-emailInput.value,
-passwordInput.value
+    const password =
+    document.getElementById('passwordInput').value;
 
-)
+    const error =
+    document.getElementById('loginError');
 
-.catch(err=>{
+    error.style.color = '#ef4444';
 
-loginError.innerText =
-err.message;
-});
+    if(!email || !password){
+
+        error.innerText =
+        'Preencha todos os campos';
+
+        return;
+    }
+
+    if(password.length < 6){
+
+        error.innerText =
+        'A senha deve ter no mínimo 6 caracteres';
+
+        return;
+    }
+
+    auth
+    .createUserWithEmailAndPassword(
+        email,
+        password
+    )
+
+    .then(()=>{
+
+        error.style.color = '#22c55e';
+
+        error.innerText =
+        'Conta criada com sucesso';
+
+    })
+
+    .catch((err)=>{
+
+        let msg =
+        'Erro ao criar conta';
+
+        if(err.code === 'auth/email-already-in-use'){
+
+            msg =
+            'Este e-mail já está cadastrado';
+        }
+
+        if(err.code === 'auth/invalid-email'){
+
+            msg =
+            'E-mail inválido';
+        }
+
+        if(err.code === 'auth/weak-password'){
+
+            msg =
+            'Senha muito fraca';
+        }
+
+        error.innerText = msg;
+    });
 }
+
+/* ===================================================== */
+/* RECUPERAR SENHA */
+/* ===================================================== */
+
+function recoverPassword(){
+
+    const email =
+    document.getElementById('emailInput').value.trim();
+
+    const error =
+    document.getElementById('loginError');
+
+    if(!email){
+
+        error.style.color = '#f59e0b';
+
+        error.innerText =
+        'Digite seu e-mail para recuperar a senha';
+
+        return;
+    }
+
+    auth
+    .sendPasswordResetEmail(email)
+
+    .then(()=>{
+
+        error.style.color = '#22c55e';
+
+        error.innerText =
+        'E-mail de redefinição enviado';
+
+        alert(
+            'Foi enviado um link para redefinir sua senha no e-mail informado.'
+        );
+    })
+
+    .catch((err)=>{
+
+        error.style.color = '#ef4444';
+
+        let msg =
+        'Erro ao enviar e-mail';
+
+        if(err.code === 'auth/user-not-found'){
+
+            msg =
+            'Nenhum usuário encontrado com esse e-mail';
+        }
+
+        if(err.code === 'auth/invalid-email'){
+
+            msg =
+            'E-mail inválido';
+        }
+
+        error.innerText = msg;
+    });
+}
+
+/* ===================================================== */
+/* LOGOUT */
+/* ===================================================== */
 
 function logout(){
 
-auth.signOut();
+    auth.signOut();
 }
 
-/* THEME */
+/* ===================================================== */
+/* OBSERVADOR LOGIN */
+/* ===================================================== */
 
-function toggleTheme(){
+auth.onAuthStateChanged(user=>{
 
-document.body.classList.toggle('dark-mode');
-}
+    if(user){
 
-/* SAVE */
+        document.getElementById('loginOverlay')
+        .style.display = 'none';
 
-function saveClient(){
+        console.log(
+            'Usuário logado:',
+            user.email
+        );
 
-const client={
+    }else{
 
-nome:cNome.value,
-nomeSocial:cNomeSocial.value,
-cpf:cCPF.value,
-nascimento:cNascimento.value,
-endereco:cEndereco.value,
-cidade:cCidade.value,
-uf:cUF.value,
-empresa:cEmpresa.value,
-adeEmp:cAdeEmp.value,
-redePlano:cRedePlano.value,
-planoAtual:cPlanoAtual.value,
-acomodacao:cAcomodacao.value,
-situacao:cSituacao.value,
-adesao:cAdesao.value,
-cancelamento:cCancelamento.value,
-tempo:cTempo.value,
-retorno:cRetorno.value,
-telefones:cTelefones.value,
-emails:cEmails.value,
-status:cStatus.value,
-userId:auth.currentUser.uid,
-createdAt:new Date()
-};
-
-db.collection('clients')
-
-.add(client)
-
-.then(()=>{
-
-alert('Cliente salvo');
-
-clientForm.reset();
+        document.getElementById('loginOverlay')
+        .style.display = 'flex';
+    }
 });
-}
-
-/* LOAD */
-
-function loadClients(){
-
-db.collection('clients')
-
-.where(
-'userId',
-'==',
-auth.currentUser.uid
-)
-
-.onSnapshot(snapshot=>{
-
-clients=[];
-
-snapshot.forEach(doc=>{
-
-clients.push({
-
-id:doc.id,
-...doc.data()
-
-});
-});
-
-renderPesquisa();
-
-renderAgenda();
-
-updateDashboard();
-
-renderStatusList();
-});
-}
-
-/* DASHBOARD */
-
-function updateDashboard(){
-
-totalClientes.innerText =
-clients.length;
-
-fechados.innerText =
-clients.filter(c=>c.status==='Fechou o plano').length;
-
-negociacao.innerText =
-clients.filter(c=>c.status==='Em negociação').length;
-
-semInteresse.innerText =
-clients.filter(c=>c.status==='Não tem interesse').length;
-
-const data = [
-
-clients.filter(c=>c.status==='Em negociação').length,
-
-clients.filter(c=>c.status==='Fechou o plano').length,
-
-clients.filter(c=>c.status==='Entrou em contato').length,
-
-clients.filter(c=>c.status==='Não tem interesse').length
-];
-
-if(chart){
-
-chart.destroy();
-}
-
-chart = new Chart(
-
-document.getElementById('crmChart'),
-
-{
-
-type:'bar',
-
-data:{
-
-labels:[
-
-'Negociação',
-'Fechados',
-'Contato',
-'Sem Interesse'
-
-],
-
-datasets:[{
-
-label:'Clientes',
-
-data:data,
-
-borderWidth:1
-}]
-}
-});
-}
-
-/* PESQUISA */
-
-function renderPesquisa(){
-
-const tbody =
-document.getElementById('pesquisaBody');
-
-tbody.innerHTML='';
-
-const termo =
-searchInput.value.toLowerCase();
-
-clients
-
-.filter(c=>
-
-Object.values(c)
-.join(' ')
-.toLowerCase()
-.includes(termo)
-
-)
-
-.forEach(c=>{
-
-tbody.innerHTML += `
-
-<tr>
-
-<td>
-
-<strong>${c.nome}</strong><br>
-
-<small>${c.cpf}</small>
-
-</td>
-
-<td>${c.empresa||'-'}</td>
-
-<td>${c.telefones||'-'}</td>
-
-<td>
-
-<span class="badge bg-primary">
-
-${c.status}
-
-</span>
-
-</td>
-
-<td>${c.retorno||'-'}</td>
-
-<td>
-
-<div class="d-flex gap-2">
-
-<button
-class="btn btn-success btn-sm"
-onclick="whats('${c.telefones}')"
->
-
-<i class="bi bi-whatsapp"></i>
-
-</button>
-
-<button
-class="btn btn-warning btn-sm"
-onclick="editarCliente('${c.id}')"
->
-
-<i class="bi bi-pencil"></i>
-
-</button>
-
-<button
-class="btn btn-danger btn-sm"
-onclick="deleteClient('${c.id}')"
->
-
-<i class="bi bi-trash"></i>
-
-</button>
-
-</div>
-
-</td>
-
-</tr>
-`;
-});
-}
-
-/* EDITAR */
-
-function editarCliente(id){
-
-const c =
-clients.find(x=>x.id===id);
-
-if(!c) return;
-
-cNome.value = c.nome || '';
-cNomeSocial.value = c.nomeSocial || '';
-cCPF.value = c.cpf || '';
-cNascimento.value = c.nascimento || '';
-cEndereco.value = c.endereco || '';
-cCidade.value = c.cidade || '';
-cUF.value = c.uf || '';
-cEmpresa.value = c.empresa || '';
-cAdeEmp.value = c.adeEmp || '';
-cRedePlano.value = c.redePlano || '';
-cPlanoAtual.value = c.planoAtual || '';
-cAcomodacao.value = c.acomodacao || '';
-cSituacao.value = c.situacao || '';
-cAdesao.value = c.adesao || '';
-cCancelamento.value = c.cancelamento || '';
-cTempo.value = c.tempo || '';
-cRetorno.value = c.retorno || '';
-cTelefones.value = c.telefones || '';
-cEmails.value = c.emails || '';
-cStatus.value = c.status || '';
-
-document
-.querySelector('[data-bs-target="#clientes"]')
-.click();
-}
-
-/* DELETE */
-
-function deleteClient(id){
-
-if(confirm('Excluir cliente?')){
-
-db.collection('clients')
-.doc(id)
-.delete();
-}
-}
-
-/* WHATS */
-
-function whats(numero){
-
-window.open(
-
-'https://wa.me/55'+
-numero.replace(/\D/g,''),
-
-'_blank'
-);
-}
-
-/* AGENDA */
-
-function renderAgenda(){
-
-agendaLista.innerHTML='';
-
-clients.forEach(c=>{
-
-if(c.retorno){
-
-agendaLista.innerHTML += `
-
-<div class="card p-3 mb-3">
-
-<div class="d-flex justify-content-between align-items-center">
-
-<div>
-
-<strong>${c.nome}</strong><br>
-
-<small>${c.retorno}</small>
-
-</div>
-
-<button
-class="btn btn-success btn-sm"
-onclick="whats('${c.telefones}')"
->
-
-<i class="bi bi-whatsapp"></i>
-
-</button>
-
-</div>
-
-</div>
-`;
-}
-});
-}
-
-/* STATUS */
-
-function addStatus(){
-
-const novo =
-novoStatus.value.trim();
-
-if(!novo) return;
-
-statuses.push(novo);
-
-renderStatusList();
-
-novoStatus.value='';
-}
-
-function renderStatusList(){
-
-statusList.innerHTML='';
-
-statuses.forEach((s,i)=>{
-
-statusList.innerHTML += `
-
-<li class="list-group-item d-flex justify-content-between align-items-center">
-
-${s}
-
-<button
-class="btn btn-danger btn-sm"
-onclick="removeStatus(${i})"
->
-
-<i class="bi bi-trash"></i>
-
-</button>
-
-</li>
-`;
-});
-}
-
-function removeStatus(i){
-
-statuses.splice(i,1);
-
-renderStatusList();
-}
-
-/* EXCEL */
-
-function exportExcel(){
-
-const ws =
-XLSX.utils.json_to_sheet(clients);
-
-const wb =
-XLSX.utils.book_new();
-
-XLSX.utils.book_append_sheet(
-wb,
-ws,
-'Clientes'
-);
-
-XLSX.writeFile(
-wb,
-'clientes.xlsx'
-);
-}
-
-/* BACKUP */
-
-function exportBackup(){
-
-const data = {
-
-clients,
-statuses
-};
-
-const blob =
-new Blob(
-[JSON.stringify(data)],
-{type:'application/json'}
-);
-
-const a =
-document.createElement('a');
-
-a.href =
-URL.createObjectURL(blob);
-
-a.download =
-'backup_crm.json';
-
-a.click();
-}
-
-function importBackup(event){
-
-const file =
-event.target.files[0];
-
-if(!file) return;
-
-const reader =
-new FileReader();
-
-reader.onload = e=>{
-
-const data =
-JSON.parse(e.target.result);
-
-if(data.clients){
-
-data.clients.forEach(c=>{
-
-db.collection('clients')
-.add(c);
-});
-}
-
-if(data.statuses){
-
-statuses =
-data.statuses;
-
-renderStatusList();
-}
-
-alert('Backup restaurado');
-};
-
-reader.readAsText(file);
-}
 
 </script>
-
-</body>
-</html>
