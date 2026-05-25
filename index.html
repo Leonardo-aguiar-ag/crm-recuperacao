@@ -6,102 +6,71 @@
     <title>CRM Recuperação | Leonardo Aguiar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
     <style>
-        :root {
-            --bg-body: #f4f7f6;
-            --bg-card: #ffffff;
-            --text-main: #212529;
-            --text-muted: #6c757d;
-            --border-color: #ced4da;
-            --input-bg: #ffffff;
-            --input-text: #212529;
-            --section-title: #0A2463;
-        }
-
-        /* Dark Mode Variables - Ajustado para ALTO CONTRASTE nos campos */
-        body.dark-mode {
-            --bg-body: #121212;
-            --bg-card: #1e1e1e;
-            --text-main: #f8f9fa;
-            --text-muted: #adb5bd;
-            --border-color: #5c636a; /* Borda bem visível */
-            --input-bg: #000000;     /* Fundo bem escuro para o campo */
-            --input-text: #ffffff;   /* Texto branco para destacar */
-            --section-title: #66b2ff;
-        }
-
-        body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: 0.3s; }
+        :root { --bg-body: #f4f7f6; --bg-card: #ffffff; --text-main: #212529; --text-muted: #6c757d; --border-color: #ced4da; --input-bg: #ffffff; --input-text: #212529; --section-title: #0A2463; }
+        body.dark-mode { --bg-body: #121212; --bg-card: #1e1e1e; --text-main: #f8f9fa; --text-muted: #adb5bd; --border-color: #5c636a; --input-bg: #000000; --input-text: #ffffff; --section-title: #66b2ff; }
+        body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: 0.3s; margin: 0; padding: 0;}
         .navbar-custom { background-color: #0A2463; color: white; }
         .card-custom { background-color: var(--bg-card); border-radius: 15px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; }
-        
         .table { color: var(--text-main); }
         .dark-mode .table-light { background-color: #2b2b2b; color: #f8f9fa; }
         .dark-mode .table-light th { background-color: #2b2b2b; border-color: #444; color: #fff;}
         .dark-mode .table-hover tbody tr:hover { background-color: #2a2a2a; color: white;}
         .dark-mode td { border-color: #444; }
-
-        /* Estilo Base dos Inputs */
-        .form-control, .form-select { 
-            background-color: var(--input-bg); 
-            color: var(--input-text); 
-            border: 1px solid var(--border-color); 
-            border-radius: 8px; 
-            font-size: 0.95rem;
-            padding: 10px 12px;
-            transition: all 0.2s ease-in-out;
-        }
-        
-        /* Ajuste do placeholder no modo escuro */
+        .form-control, .form-select { background-color: var(--input-bg); color: var(--input-text); border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; padding: 10px 12px; transition: all 0.2s ease-in-out; }
         .dark-mode .form-control::placeholder { color: #8a939b; opacity: 1; }
-        
-        /* Foco Laranja (Quando clica no campo) */
-        .form-control:focus, .form-select:focus { 
-            background-color: var(--input-bg); 
-            color: var(--input-text); 
-            border-color: #FF6B35; 
-            box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.25);
-            outline: none;
-        }
-        
-        /* Abas */
+        .form-control:focus, .form-select:focus { background-color: var(--input-bg); color: var(--input-text); border-color: #FF6B35; box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.25); outline: none; }
         .nav-tabs .nav-link { color: var(--text-muted); font-weight: 600; border: none; padding: 12px 20px; }
         .nav-tabs .nav-link.active { color: #FF6B35; background-color: transparent; border-bottom: 3px solid #FF6B35; }
         .nav-tabs { border-bottom: 2px solid var(--border-color); margin-bottom: 20px; }
-        
-        /* Dashboard */
         .dash-card { border-radius: 15px; color: white; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s;}
         .dash-card:hover { transform: translateY(-5px); }
         .dash-icon { font-size: 2.5rem; opacity: 0.5; }
-        
         .form-label { font-weight: 600; font-size: 0.85rem; margin-bottom: 0.4rem; margin-top: 0.5rem;}
         .section-title { font-size: 1rem; color: var(--section-title); font-weight: 700; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; margin-top: 20px; margin-bottom: 15px;}
         .img-preview { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px;}
-
-        /* Modais */
         .dark-mode .modal-content { background-color: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); }
-        .dark-mode .modal-header { border-color: var(--border-color); }
-        .dark-mode .modal-footer { border-color: var(--border-color); }
+        .dark-mode .modal-header, .dark-mode .modal-footer { border-color: var(--border-color); }
         .dark-mode .input-group-text { background-color: var(--input-bg); border-color: var(--border-color); color: var(--text-main);}
+
+        /* Tela de Login */
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: var(--bg-card); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; border: 1px solid var(--border-color); }
     </style>
 </head>
 <body>
+
+<!-- TELA DE LOGIN -->
+<div id="loginOverlay">
+    <div class="login-box text-center">
+        <h3 class="fw-bold mb-4" style="color: var(--section-title);"><i class="bi bi-shield-lock me-2"></i>CRM Login</h3>
+        <input type="email" id="emailInput" class="form-control mb-3" placeholder="Seu E-mail">
+        <input type="password" id="passwordInput" class="form-control mb-4" placeholder="Sua Senha">
+        <button class="btn btn-primary w-100 mb-2 fw-bold" onclick="login()"><i class="bi bi-box-arrow-in-right me-2"></i>Entrar</button>
+        <button class="btn btn-outline-secondary w-100 btn-sm" onclick="register()">Criar Conta</button>
+        <div id="loginError" class="text-danger mt-3 small fw-bold"></div>
+    </div>
+</div>
 
 <nav class="navbar navbar-custom shadow-sm mb-4">
     <div class="container-fluid">
         <span class="navbar-brand mb-0 h1 fw-bold"><i class="bi bi-shield-check me-2"></i>CRM de Recuperação</span>
         <div>
-            <button class="btn btn-outline-light btn-sm me-2" data-bs-toggle="modal" data-bs-target="#statusModal"><i class="bi bi-tags me-1"></i>Gerenciar Status</button>
-            <button class="btn btn-outline-light btn-sm" onclick="exportData()"><i class="bi bi-download me-1"></i>Backup</button>
-            <label class="btn btn-outline-light btn-sm mb-0 ms-2" style="cursor: pointer;">
-                <i class="bi bi-upload me-1"></i>Importar
-                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
-            </label>
-            <button class="btn btn-outline-light btn-sm ms-3" onclick="toggleTheme()" id="themeBtn" title="Alternar Modo Claro/Escuro"><i class="bi bi-moon-fill"></i></button>
+            <span class="me-3 small text-light d-none d-md-inline" id="userEmailDisplay"></span>
+            <button class="btn btn-outline-light btn-sm me-2" data-bs-toggle="modal" data-bs-target="#statusModal"><i class="bi bi-tags"></i> Status</button>
+            <button class="btn btn-outline-light btn-sm ms-2" onclick="toggleTheme()" id="themeBtn" title="Alternar Modo"><i class="bi bi-moon-fill"></i></button>
+            <button class="btn btn-danger btn-sm ms-2" onclick="logout()" title="Sair"><i class="bi bi-box-arrow-right"></i></button>
         </div>
     </div>
 </nav>
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 pb-5">
     
     <ul class="nav nav-tabs" id="crmTabs" role="tablist">
         <li class="nav-item"><button class="nav-link active" id="tab-dashboard" data-bs-toggle="tab" data-bs-target="#pane-dashboard" type="button"><i class="bi bi-bar-chart-fill me-2"></i>Dashboard</button></li>
@@ -121,7 +90,6 @@
         <div class="tab-pane fade" id="pane-cadastro">
             <div class="card card-custom p-4">
                 
-                <!-- PREENCHIMENTO INTELIGENTE -->
                 <div class="alert alert-secondary border-0 p-3 mb-4" style="border-radius: 10px; background-color: var(--input-bg); border: 1px solid var(--border-color) !important;">
                     <label class="fw-bold mb-2"><i class="bi bi-lightning-charge-fill text-warning fs-5 me-1"></i> Preenchimento Mágico (Copie e Cole do PDF)</label>
                     <div class="input-group">
@@ -143,12 +111,10 @@
                         <div class="col-md-4"><label class="form-label">Nome do usuário</label><input type="text" id="cNome" class="form-control" required></div>
                         <div class="col-md-4"><label class="form-label">Nome social</label><input type="text" id="cNomeSocial" class="form-control"></div>
                         <div class="col-md-4"><label class="form-label">CPF do titular</label><input type="text" id="cCPF" class="form-control"></div>
-                        
                         <div class="col-md-3"><label class="form-label">Data de nascimento</label><input type="text" id="cNascimento" class="form-control"></div>
                         <div class="col-md-5"><label class="form-label">Endereço</label><input type="text" id="cEndereco" class="form-control"></div>
                         <div class="col-md-3"><label class="form-label">Cidade</label><input type="text" id="cCidade" class="form-control"></div>
                         <div class="col-md-1"><label class="form-label">UF</label><input type="text" id="cUF" class="form-control" maxlength="2"></div>
-
                         <div class="col-md-6"><label class="form-label">Telefones cadastrados</label><input type="text" id="cTelefones" class="form-control"></div>
                         <div class="col-md-6"><label class="form-label">Endereços eletrônicos</label><input type="text" id="cEmails" class="form-control"></div>
                     </div>
@@ -157,13 +123,11 @@
                     <div class="row g-3">
                         <div class="col-md-6"><label class="form-label">Empresa</label><input type="text" id="cEmpresa" class="form-control"></div>
                         <div class="col-md-6"><label class="form-label">Rede/plano</label><input type="text" id="cRedePlano" class="form-control"></div>
-                        
                         <div class="col-md-4"><label class="form-label">Plano atual</label><input type="text" id="cPlanoAtual" class="form-control"></div>
                         <div class="col-md-4"><label class="form-label">Acomodação</label><input type="text" id="cAcomodacao" class="form-control"></div>
                         <div class="col-md-4"><label class="form-label">Situação</label><input type="text" id="cSituacao" class="form-control"></div>
-                        
                         <div class="col-md-3"><label class="form-label">Data da adesão</label><input type="text" id="cAdesao" class="form-control"></div>
-                        <div class="col-md-3"><label class="form-label">Ade emp (Adesão Empresa)</label><input type="text" id="cAdeEmp" class="form-control"></div>
+                        <div class="col-md-3"><label class="form-label">Ade emp</label><input type="text" id="cAdeEmp" class="form-control"></div>
                         <div class="col-md-3"><label class="form-label">Data do cancelamento</label><input type="text" id="cCancelamento" class="form-control"></div>
                         <div class="col-md-3"><label class="form-label">Tempo</label><input type="text" id="cTempo" class="form-control"></div>
                     </div>
@@ -171,7 +135,7 @@
                     <div class="section-title mt-4">CRM & Anexos</div>
                     <div class="row g-3 align-items-end">
                         <div class="col-md-4">
-                            <label class="form-label text-primary">Status de Negociação (CRM)</label>
+                            <label class="form-label text-primary">Status de Negociação</label>
                             <select id="cStatus" class="form-select border-primary text-primary" style="font-weight: bold;"></select>
                         </div>
                         <div class="col-md-8">
@@ -183,7 +147,9 @@
                     </div>
 
                     <div class="text-end mt-5">
-                        <button type="button" class="btn btn-success btn-lg px-5 shadow-sm rounded-pill" onclick="saveClient()"><i class="bi bi-save me-2"></i>Salvar Ficha do Cliente</button>
+                        <button type="button" class="btn btn-success btn-lg px-5 shadow-sm rounded-pill" onclick="saveClient()">
+                            <i class="bi bi-cloud-arrow-up-fill me-2"></i>Salvar na Nuvem
+                        </button>
                     </div>
                 </form>
             </div>
@@ -230,7 +196,7 @@
     </div>
 </div>
 
-<!-- Modal Visualizar Foto -->
+<!-- Modal Foto -->
 <div class="modal fade" id="photoModal" tabindex="-1">
     <div class="modal-dialog modal-lg text-center">
         <div class="modal-content">
@@ -240,7 +206,7 @@
     </div>
 </div>
 
-<!-- Modal Gerenciar Status -->
+<!-- Modal Status -->
 <div class="modal fade" id="statusModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -258,38 +224,112 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // TEMA (Dark/Light)
+    // ----------------------------------------------------
+    // CONFIGURAÇÃO FIREBASE
+    // ----------------------------------------------------
+    const firebaseConfig = {
+      apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
+      authDomain: "crm-recuperacao.firebaseapp.com",
+      projectId: "crm-recuperacao",
+      storageBucket: "crm-recuperacao.firebasestorage.app",
+      messagingSenderId: "347011763386",
+      appId: "1:347011763386:web:158c1ca6f512a1cde1c683",
+      measurementId: "G-1XHHFXHN4G"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // ----------------------------------------------------
+    // ESTADO
+    // ----------------------------------------------------
+    let clients = [];
+    let statuses = ['Em negociação', 'Entrou em contato', 'Fechou o plano', 'Não tem interesse'];
+    const cardColors = ['#0A2463', '#3E92CC', '#25D366', '#DC3545', '#FFC107', '#6F42C1', '#17A2B8'];
+
+    // ----------------------------------------------------
+    // AUTENTICAÇÃO
+    // ----------------------------------------------------
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('userEmailDisplay').innerText = user.email;
+            loadDataFromFirebase(); // Inicia a sincronização
+        } else {
+            document.getElementById('loginOverlay').style.display = 'flex';
+            document.getElementById('userEmailDisplay').innerText = '';
+        }
+    });
+
+    function login() {
+        const e = document.getElementById('emailInput').value;
+        const p = document.getElementById('passwordInput').value;
+        auth.signInWithEmailAndPassword(e, p).catch(err => {
+            document.getElementById('loginError').innerText = "Erro ao entrar. Verifique os dados.";
+        });
+    }
+
+    function register() {
+        const e = document.getElementById('emailInput').value;
+        const p = document.getElementById('passwordInput').value;
+        if(p.length < 6) return alert("A senha deve ter pelo menos 6 caracteres.");
+        auth.createUserWithEmailAndPassword(e, p).then(() => {
+            alert("Conta criada com sucesso!");
+        }).catch(err => {
+            document.getElementById('loginError').innerText = err.message;
+        });
+    }
+
+    function logout() { auth.signOut(); }
+
+    // ----------------------------------------------------
+    // SINCRONIZAÇÃO EM TEMPO REAL (FIRESTORE)
+    // ----------------------------------------------------
+    function loadDataFromFirebase() {
+        // Escuta os clientes
+        db.collection("clients").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            clients = [];
+            snapshot.forEach((doc) => {
+                clients.push({ id: doc.id, ...doc.data() });
+            });
+            renderTable();
+            updateDashboard();
+        });
+
+        // Escuta as configurações de status
+        db.collection("config").doc("statuses").onSnapshot((doc) => {
+            if(doc.exists && doc.data().list) {
+                statuses = doc.data().list;
+            }
+            updateStatusSelects();
+            renderStatusList();
+            updateDashboard();
+        });
+    }
+
+    // ----------------------------------------------------
+    // TEMA DARK
+    // ----------------------------------------------------
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
         localStorage.setItem('crm_theme', isDark ? 'dark' : 'light');
         document.getElementById('themeBtn').innerHTML = isDark ? '<i class="bi bi-sun-fill text-warning"></i>' : '<i class="bi bi-moon-fill"></i>';
     }
-
     if(localStorage.getItem('crm_theme') === 'dark') {
         document.body.classList.add('dark-mode');
         document.getElementById('themeBtn').innerHTML = '<i class="bi bi-sun-fill text-warning"></i>';
     }
 
-    // ESTADO
-    let clients = JSON.parse(localStorage.getItem('crm_clients_v2')) || [];
-    let statuses = JSON.parse(localStorage.getItem('crm_statuses_v2')) || ['Em negociação', 'Entrou em contato', 'Fechou o plano', 'Não tem interesse'];
-    const cardColors = ['#0A2463', '#3E92CC', '#25D366', '#DC3545', '#FFC107', '#6F42C1', '#17A2B8'];
-
-    document.addEventListener("DOMContentLoaded", () => {
-        updateStatusSelects(); renderTable(); renderStatusList(); updateDashboard();
-        document.getElementById('tab-dashboard').addEventListener('shown.bs.tab', updateDashboard);
-    });
-
-    // AUTO-PREENCHIMENTO (Smart Paste)
+    // ----------------------------------------------------
+    // PREENCHIMENTO MÁGICO
+    // ----------------------------------------------------
     function autoFillForm() {
         const text = document.getElementById('smartPasteBox').value;
         if(!text) return;
 
-        const extract = (regex) => {
-            const match = text.match(regex);
-            return match ? match[1].trim() : '';
-        };
+        const extract = (regex) => { const match = text.match(regex); return match ? match[1].trim() : ''; };
 
         document.getElementById('cNome').value = extract(/Nome(?: do usuário)?:\s*([^\n]+)/i);
         document.getElementById('cNomeSocial').value = extract(/Nome social:\s*([^\n]+)/i);
@@ -322,7 +362,9 @@
         document.getElementById('smartPasteBox').value = '';
     }
 
-    // DASHBOARD
+    // ----------------------------------------------------
+    // FUNÇÕES CRUD E UI
+    // ----------------------------------------------------
     function updateDashboard() {
         const dashContainer = document.getElementById('dashboardCards');
         dashContainer.innerHTML = createDashCard('Total de Clientes', clients.length, '#343A40', 'bi-people-fill');
@@ -342,7 +384,6 @@
                 <div class="dash-icon"><i class="bi ${icon}"></i></div></div></div>`;
     }
 
-    // STATUS
     function updateStatusSelects() {
         const filterSelect = document.getElementById('filterStatus');
         const formSelect = document.getElementById('cStatus');
@@ -351,11 +392,27 @@
         formSelect.innerHTML = '';
         statuses.forEach(s => formSelect.innerHTML += `<option value="${s}">${s}</option>`);
     }
-    function addStatus() { const val = document.getElementById('newStatus').value.trim(); if(val && !statuses.includes(val)) { statuses.push(val); saveData(); updateStatusSelects(); renderStatusList(); updateDashboard(); document.getElementById('newStatus').value = ''; } }
-    function deleteStatus(index) { statuses.splice(index, 1); saveData(); updateStatusSelects(); renderStatusList(); updateDashboard(); }
-    function renderStatusList() { const list = document.getElementById('statusList'); list.innerHTML = ''; statuses.forEach((s, i) => { list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center bg-transparent text-inherit border-secondary">${s} <button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})"><i class="bi bi-trash"></i></button></li>`; }); }
 
-    // FORM & CRUD
+    function addStatus() { 
+        const val = document.getElementById('newStatus').value.trim(); 
+        if(val && !statuses.includes(val)) { 
+            const newStatuses = [...statuses, val];
+            db.collection("config").doc("statuses").set({ list: newStatuses });
+            document.getElementById('newStatus').value = ''; 
+        } 
+    }
+    
+    function deleteStatus(index) { 
+        const newStatuses = [...statuses];
+        newStatuses.splice(index, 1);
+        db.collection("config").doc("statuses").set({ list: newStatuses });
+    }
+    
+    function renderStatusList() { 
+        const list = document.getElementById('statusList'); list.innerHTML = ''; 
+        statuses.forEach((s, i) => { list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center bg-transparent text-inherit border-secondary">${s} <button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})"><i class="bi bi-trash"></i></button></li>`; }); 
+    }
+
     function resetForm() {
         document.getElementById('clientForm').reset();
         document.getElementById('clientId').value = '';
@@ -401,28 +458,77 @@
     }
 
     function saveClient() {
-        const id = document.getElementById('clientId').value || Date.now().toString();
+        const id = document.getElementById('clientId').value || db.collection('clients').doc().id;
         const nome = document.getElementById('cNome').value;
         if(!nome) { alert("O Nome do usuário é obrigatório."); return; }
 
-        const client = { id, nome, nomeSocial: document.getElementById('cNomeSocial').value, cpf: document.getElementById('cCPF').value, nascimento: document.getElementById('cNascimento').value, endereco: document.getElementById('cEndereco').value, cidade: document.getElementById('cCidade').value, uf: document.getElementById('cUF').value, telefones: document.getElementById('cTelefones').value, emails: document.getElementById('cEmails').value, empresa: document.getElementById('cEmpresa').value, redePlano: document.getElementById('cRedePlano').value, planoAtual: document.getElementById('cPlanoAtual').value, acomodacao: document.getElementById('cAcomodacao').value, situacao: document.getElementById('cSituacao').value, adesao: document.getElementById('cAdesao').value, adeEmp: document.getElementById('cAdeEmp').value, cancelamento: document.getElementById('cCancelamento').value, tempo: document.getElementById('cTempo').value, status: document.getElementById('cStatus').value, foto: document.getElementById('cFotoBase64').value };
-        const existingIndex = clients.findIndex(c => c.id === id); if(existingIndex >= 0) clients[existingIndex] = client; else clients.unshift(client);
-        saveData(); renderTable(); updateDashboard(); resetForm();
-        bootstrap.Tab.getOrCreateInstance(document.querySelector('#tab-pesquisa')).show();
+        const client = { 
+            nome, 
+            nomeSocial: document.getElementById('cNomeSocial').value, 
+            cpf: document.getElementById('cCPF').value, 
+            nascimento: document.getElementById('cNascimento').value, 
+            endereco: document.getElementById('cEndereco').value, 
+            cidade: document.getElementById('cCidade').value, 
+            uf: document.getElementById('cUF').value, 
+            telefones: document.getElementById('cTelefones').value, 
+            emails: document.getElementById('cEmails').value, 
+            empresa: document.getElementById('cEmpresa').value, 
+            redePlano: document.getElementById('cRedePlano').value, 
+            planoAtual: document.getElementById('cPlanoAtual').value, 
+            acomodacao: document.getElementById('cAcomodacao').value, 
+            situacao: document.getElementById('cSituacao').value, 
+            adesao: document.getElementById('cAdesao').value, 
+            adeEmp: document.getElementById('cAdeEmp').value, 
+            cancelamento: document.getElementById('cCancelamento').value, 
+            tempo: document.getElementById('cTempo').value, 
+            status: document.getElementById('cStatus').value, 
+            foto: document.getElementById('cFotoBase64').value,
+            createdAt: document.getElementById('clientId').value ? firebase.firestore.FieldValue.serverTimestamp() : new Date() // Mantem a ordem
+        };
+
+        const btn = document.querySelector('button[onclick="saveClient()"]');
+        btn.disabled = true;
+        btn.innerHTML = 'Salvando na Nuvem...';
+
+        db.collection("clients").doc(id).set(client, { merge: true }).then(() => {
+            resetForm();
+            bootstrap.Tab.getOrCreateInstance(document.querySelector('#tab-pesquisa')).show();
+        }).catch(err => alert("Erro ao salvar: " + err.message))
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i>Salvar na Nuvem';
+        });
     }
 
-    function deleteClient(id) { if(confirm("Tem certeza que deseja apagar a ficha?")) { clients = clients.filter(c => c.id !== id); saveData(); renderTable(); updateDashboard(); } }
-    function changeClientStatus(id, newStatus) { const c = clients.find(c => c.id === id); if(c) { c.status = newStatus; saveData(); renderTable(); updateDashboard(); } }
-    function showPhoto(base64) { document.getElementById('viewPhoto').src = base64; new bootstrap.Modal(document.getElementById('photoModal')).show(); }
+    function deleteClient(id) { 
+        if(confirm("Tem certeza que deseja apagar a ficha definitivamente na nuvem?")) { 
+            db.collection("clients").doc(id).delete();
+        } 
+    }
+    
+    function changeClientStatus(id, newStatus) { 
+        db.collection("clients").doc(id).update({ status: newStatus });
+    }
+    
+    function showPhoto(base64) { 
+        document.getElementById('viewPhoto').src = base64; 
+        new bootstrap.Modal(document.getElementById('photoModal')).show(); 
+    }
 
-    // TABELA PESQUISA
     function renderTable() {
         const tbody = document.getElementById('clientTableBody');
         const search = document.getElementById('searchInput').value.toLowerCase();
         const filter = document.getElementById('filterStatus').value;
         tbody.innerHTML = '';
-        const filtered = clients.filter(c => { const matchesSearch = Object.values(c).join(' ').toLowerCase().includes(search); const matchesStatus = filter === 'ALL' || c.status === filter; return matchesSearch && matchesStatus; });
+        
+        const filtered = clients.filter(c => { 
+            const matchesSearch = Object.values(c).join(' ').toLowerCase().includes(search); 
+            const matchesStatus = filter === 'ALL' || c.status === filter; 
+            return matchesSearch && matchesStatus; 
+        });
+        
         document.getElementById('contadorResultados').innerText = `${filtered.length} resultado(s)`;
+        
         filtered.forEach(c => {
             let statusOptions = statuses.map(s => `<option value="${s}" ${c.status === s ? 'selected' : ''}>${s}</option>`).join('');
             let photoBtn = c.foto ? `<button class="btn btn-sm btn-info text-white me-1" onclick="showPhoto('${c.foto}')" title="Ver Anexo"><i class="bi bi-image"></i></button>` : '';
@@ -436,11 +542,6 @@
             </tr>`;
         });
     }
-
-    // BACKUP
-    function saveData() { localStorage.setItem('crm_clients_v2', JSON.stringify(clients)); localStorage.setItem('crm_statuses_v2', JSON.stringify(statuses)); }
-    function exportData() { const blob = new Blob([JSON.stringify({ clients, statuses })], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_crm_v2_${new Date().toISOString().split('T')[0]}.json`; a.click(); }
-    function importData(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); if(data.clients && data.statuses) { clients = data.clients; statuses = data.statuses; saveData(); updateStatusSelects(); renderTable(); renderStatusList(); updateDashboard(); alert("Backup importado!"); } } catch (err) { alert("Erro ao importar. Arquivo inválido."); } }; reader.readAsText(file); }
 </script>
 </body>
 </html>
