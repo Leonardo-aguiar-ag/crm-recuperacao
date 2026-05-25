@@ -1,126 +1,164 @@
+<!-- ===================================================== -->
+<!-- CRM RECUPERAÇÃO COMPLETO -->
+<!-- ===================================================== -->
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
 
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>CRM Recuperação</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+<!-- BOOTSTRAP -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+<!-- ICONS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<!-- CHART -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
 
 :root{
---bg:#0f172a;
---card:#111827;
---card2:#1e293b;
---border:#334155;
+
+--bg:#020617;
+--card:#0f172a;
+--border:#1e293b;
 --primary:#2563eb;
 --text:#f8fafc;
 --muted:#94a3b8;
+
 }
 
 body{
+
 background:var(--bg);
 color:var(--text);
 font-family:Segoe UI;
+
 }
 
 .navbar{
-background:#020617;
-border-bottom:1px solid #1e293b;
+
+background:#000;
+border-bottom:1px solid var(--border);
+
 }
 
 .card-custom{
+
 background:var(--card);
 border:1px solid var(--border);
 border-radius:20px;
-box-shadow:0 10px 30px rgba(0,0,0,.3);
+box-shadow:0 10px 30px rgba(0,0,0,.4);
+
 }
 
 .dashboard-card{
+
 padding:25px;
 border-radius:20px;
 color:white;
+
 }
 
 .form-control,
 .form-select{
-background:#0f172a;
+
+background:#020617;
 border:1px solid #334155;
 color:white;
-border-radius:12px;
+border-radius:14px;
 padding:12px;
+
 }
 
 .form-control:focus,
 .form-select:focus{
-background:#0f172a;
+
+background:#020617;
 color:white;
-border-color:var(--primary);
+border-color:#2563eb;
 box-shadow:none;
+
 }
 
 .table{
+
 color:white;
+
 }
 
 .table thead{
+
 background:#1e293b;
+
 }
 
 .nav-tabs{
+
 border:none;
+
 }
 
 .nav-tabs .nav-link{
-background:#1e293b;
+
+background:#0f172a;
 border:none;
 color:#cbd5e1;
-padding:14px 22px;
-margin-right:10px;
+padding:14px 20px;
 border-radius:14px;
+margin-right:10px;
 font-weight:600;
+
 }
 
 .nav-tabs .nav-link.active{
+
 background:linear-gradient(135deg,#2563eb,#1d4ed8);
 color:white;
+
 }
 
 .login-screen{
+
 position:fixed;
 inset:0;
 background:#020617;
 display:flex;
 justify-content:center;
 align-items:center;
-z-index:99999;
+z-index:9999;
+
 }
 
 .login-box{
+
 width:100%;
 max-width:420px;
 background:#111827;
 padding:35px;
 border-radius:20px;
 border:1px solid #334155;
+
 }
 
 #preview{
+
 max-width:100%;
-border-radius:15px;
+border-radius:20px;
 margin-top:10px;
 display:none;
+
 }
 
 </style>
@@ -129,22 +167,25 @@ display:none;
 
 <body>
 
+<!-- ===================================================== -->
 <!-- LOGIN -->
+<!-- ===================================================== -->
 
 <div class="login-screen" id="loginScreen">
 
 <div class="login-box">
 
-<h3 class="mb-4 text-center">
+<h3 class="text-center mb-4">
+
 CRM Recuperação
+
 </h3>
 
 <input
 type="email"
 id="loginEmail"
 class="form-control mb-3"
-placeholder="Seu email"
-/>
+placeholder="Seu email">
 
 <div class="input-group mb-3">
 
@@ -152,8 +193,7 @@ placeholder="Seu email"
 type="password"
 id="loginPassword"
 class="form-control"
-placeholder="Senha"
-/>
+placeholder="Senha">
 
 <button
 class="btn btn-outline-light"
@@ -178,7 +218,7 @@ class="btn btn-danger w-100 mb-2"
 onclick="googleLogin()">
 
 <i class="bi bi-google"></i>
-Entrar com Google
+Google
 
 </button>
 
@@ -186,7 +226,7 @@ Entrar com Google
 class="btn btn-outline-light w-100 mb-2"
 onclick="register()">
 
-Criar Conta
+Criar conta
 
 </button>
 
@@ -198,18 +238,24 @@ Esqueci minha senha
 
 </button>
 
-<div id="loginError" class="text-danger text-center mt-2"></div>
+<div
+id="loginError"
+class="text-danger text-center mt-2"></div>
 
 </div>
 
 </div>
 
+<!-- ===================================================== -->
 <!-- NAVBAR -->
+<!-- ===================================================== -->
 
 <nav class="navbar navbar-dark px-4 py-3">
 
 <h4 class="m-0">
+
 CRM Recuperação
+
 </h4>
 
 <div>
@@ -226,51 +272,96 @@ Backup
 
 </nav>
 
+<!-- ===================================================== -->
 <!-- CONTAINER -->
+<!-- ===================================================== -->
 
 <div class="container-fluid p-4">
 
-<!-- TABS -->
+<!-- ===================================================== -->
+<!-- NAV TABS -->
+<!-- ===================================================== -->
 
 <ul class="nav nav-tabs mb-4">
 
 <li class="nav-item">
-<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboardTab">
+
+<button
+class="nav-link active"
+data-bs-toggle="tab"
+data-bs-target="#dashboardTab">
+
 Dashboard
+
 </button>
+
 </li>
 
 <li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#clientesTab">
+
+<button
+class="nav-link"
+data-bs-toggle="tab"
+data-bs-target="#clientesTab">
+
 Ficha Cliente
+
 </button>
+
 </li>
 
 <li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesquisaTab">
-Pesquisar
+
+<button
+class="nav-link"
+data-bs-toggle="tab"
+data-bs-target="#pesquisaTab">
+
+Pesquisa
+
 </button>
+
 </li>
 
 <li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#agendaTab">
+
+<button
+class="nav-link"
+data-bs-toggle="tab"
+data-bs-target="#agendaTab">
+
 Agenda
+
 </button>
+
 </li>
 
 <li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#configTab">
-Configuração
+
+<button
+class="nav-link"
+data-bs-toggle="tab"
+data-bs-target="#configTab">
+
+Configurações
+
 </button>
+
 </li>
 
 </ul>
+
+<!-- ===================================================== -->
+<!-- TAB CONTENT -->
+<!-- ===================================================== -->
 
 <div class="tab-content">
 
 <!-- DASHBOARD -->
 
-<div class="tab-pane fade show active" id="dashboardTab">
+<div
+class="tab-pane fade show active"
+id="dashboardTab">
 
 <div class="row g-4 mb-4">
 
@@ -305,19 +396,25 @@ Configuração
 </div>
 
 <div class="card card-custom p-4">
+
 <canvas id="crmChart"></canvas>
-</div>
 
 </div>
 
-<!-- CLIENTE -->
+</div>
 
-<div class="tab-pane fade" id="clientesTab">
+<!-- CLIENTES -->
+
+<div
+class="tab-pane fade"
+id="clientesTab">
 
 <div class="card card-custom p-4 mb-4">
 
 <h5 class="mb-3">
+
 Campo mágico
+
 </h5>
 
 <textarea
@@ -339,115 +436,82 @@ Auto preencher
 
 <form>
 
-<input type="hidden" id="clientId"/>
+<input type="hidden" id="clientId">
 
 <div class="row g-3">
 
 <div class="col-md-4">
-<label>Nome do usuário</label>
-<input type="text" id="cNome" class="form-control"/>
+<label>Nome usuário</label>
+<input type="text" id="cNome" class="form-control">
 </div>
 
 <div class="col-md-4">
 <label>Nome social</label>
-<input type="text" id="cNomeSocial" class="form-control"/>
+<input type="text" id="cNomeSocial" class="form-control">
 </div>
 
 <div class="col-md-4">
 <label>CPF</label>
-<input type="text" id="cCPF" class="form-control"/>
+<input type="text" id="cCPF" class="form-control">
 </div>
 
 <div class="col-md-4">
-<label>Data nascimento</label>
-<input type="text" id="cNascimento" class="form-control"/>
+<label>Nascimento</label>
+<input type="text" id="cNascimento" class="form-control">
 </div>
 
 <div class="col-md-8">
 <label>Endereço</label>
-<input type="text" id="cEndereco" class="form-control"/>
+<input type="text" id="cEndereco" class="form-control">
 </div>
 
 <div class="col-md-5">
 <label>Cidade</label>
-<input type="text" id="cCidade" class="form-control"/>
+<input type="text" id="cCidade" class="form-control">
 </div>
 
 <div class="col-md-1">
 <label>UF</label>
-<input type="text" id="cUF" class="form-control"/>
+<input type="text" id="cUF" class="form-control">
 </div>
 
 <div class="col-md-6">
 <label>Empresa</label>
-<input type="text" id="cEmpresa" class="form-control"/>
-</div>
-
-<div class="col-md-6">
-<label>Ade emp</label>
-<input type="text" id="cAdeEmp" class="form-control"/>
-</div>
-
-<div class="col-md-6">
-<label>Rede/plano</label>
-<input type="text" id="cRedePlano" class="form-control"/>
-</div>
-
-<div class="col-md-6">
-<label>Plano atual</label>
-<input type="text" id="cPlanoAtual" class="form-control"/>
-</div>
-
-<div class="col-md-4">
-<label>Acomodação</label>
-<input type="text" id="cAcomodacao" class="form-control"/>
-</div>
-
-<div class="col-md-4">
-<label>Situação</label>
-<input type="text" id="cSituacao" class="form-control"/>
-</div>
-
-<div class="col-md-4">
-<label>Status</label>
-<select id="cStatus" class="form-select"></select>
-</div>
-
-<div class="col-md-4">
-<label>Data adesão</label>
-<input type="text" id="cAdesao" class="form-control"/>
-</div>
-
-<div class="col-md-4">
-<label>Cancelamento</label>
-<input type="text" id="cCancelamento" class="form-control"/>
-</div>
-
-<div class="col-md-4">
-<label>Tempo</label>
-<input type="text" id="cTempo" class="form-control"/>
+<input type="text" id="cEmpresa" class="form-control">
 </div>
 
 <div class="col-md-6">
 <label>Telefones</label>
-<input type="text" id="cTelefones" class="form-control"/>
+<input type="text" id="cTelefones" class="form-control">
 </div>
 
 <div class="col-md-6">
-<label>E-mails</label>
-<input type="text" id="cEmails" class="form-control"/>
+<label>Email</label>
+<input type="text" id="cEmails" class="form-control">
 </div>
 
 <div class="col-md-6">
-<label>Agenda retorno</label>
-<input type="date" id="cRetorno" class="form-control"/>
+<label>Status</label>
+<select id="cStatus" class="form-select"></select>
+</div>
+
+<div class="col-md-6">
+<label>Retorno</label>
+<input type="date" id="cRetorno" class="form-control">
 </div>
 
 <div class="col-md-6">
 <label>Foto</label>
-<input type="file" class="form-control" onchange="previewImage(event)"/>
-<input type="hidden" id="fotoBase64"/>
-<img id="preview"/>
+
+<input
+type="file"
+class="form-control"
+onchange="previewImage(event)">
+
+<input type="hidden" id="fotoBase64">
+
+<img id="preview">
+
 </div>
 
 </div>
@@ -469,25 +533,18 @@ Salvar Cliente
 
 <!-- PESQUISA -->
 
-<div class="tab-pane fade" id="pesquisaTab">
+<div
+class="tab-pane fade"
+id="pesquisaTab">
 
 <div class="card card-custom p-4">
-
-<div class="row mb-3">
-
-<div class="col-md-8">
 
 <input
 type="text"
 id="search"
-class="form-control"
-placeholder="Pesquisar"
-onkeyup="renderTable()"
-/>
-
-</div>
-
-</div>
+class="form-control mb-4"
+placeholder="Pesquisar..."
+onkeyup="renderTable()">
 
 <div class="table-responsive">
 
@@ -496,12 +553,14 @@ onkeyup="renderTable()"
 <thead>
 
 <tr>
+
 <th>Cliente</th>
 <th>Empresa</th>
 <th>Telefone</th>
 <th>Status</th>
 <th>Agenda</th>
 <th>Ações</th>
+
 </tr>
 
 </thead>
@@ -518,7 +577,9 @@ onkeyup="renderTable()"
 
 <!-- AGENDA -->
 
-<div class="tab-pane fade" id="agendaTab">
+<div
+class="tab-pane fade"
+id="agendaTab">
 
 <div class="card card-custom p-4">
 
@@ -527,10 +588,12 @@ onkeyup="renderTable()"
 <thead>
 
 <tr>
+
 <th>Cliente</th>
 <th>Telefone</th>
 <th>Retorno</th>
 <th>WhatsApp</th>
+
 </tr>
 
 </thead>
@@ -545,13 +608,19 @@ onkeyup="renderTable()"
 
 <!-- CONFIG -->
 
-<div class="tab-pane fade" id="configTab">
+<div
+class="tab-pane fade"
+id="configTab">
 
-<div class="card card-custom p-4">
+<div class="row g-4">
+
+<div class="col-lg-6">
+
+<div class="card card-custom p-4 h-100">
 
 <div class="d-flex justify-content-between mb-4">
 
-<h4>Status</h4>
+<h4>Etiquetas CRM</h4>
 
 <button
 class="btn btn-success"
@@ -564,6 +633,44 @@ Adicionar
 </div>
 
 <div id="statusList"></div>
+
+</div>
+
+</div>
+
+<div class="col-lg-6">
+
+<div class="card card-custom p-4 h-100">
+
+<h4 class="mb-4">
+
+Backup
+
+</h4>
+
+<div class="d-grid gap-3">
+
+<button
+class="btn btn-primary"
+onclick="exportBackup()">
+
+Exportar Backup
+
+</button>
+
+<button
+class="btn btn-success"
+onclick="exportExcel()">
+
+Exportar Excel
+
+</button>
+
+</div>
+
+</div>
+
+</div>
 
 </div>
 
@@ -606,7 +713,7 @@ auth.onAuthStateChanged(user=>{
 
 if(user){
 
-currentUser = user;
+currentUser=user;
 
 document.getElementById('loginScreen').style.display='none';
 
@@ -630,14 +737,12 @@ input.type === 'password'
 
 function login(){
 
-const email =
-document.getElementById('loginEmail').value;
+auth.signInWithEmailAndPassword(
 
-const password =
-document.getElementById('loginPassword').value;
+document.getElementById('loginEmail').value,
+document.getElementById('loginPassword').value
 
-auth.signInWithEmailAndPassword(email,password)
-.catch(err=>{
+).catch(err=>{
 
 document.getElementById('loginError').innerText =
 err.message;
@@ -648,13 +753,12 @@ err.message;
 
 function register(){
 
-const email =
-document.getElementById('loginEmail').value;
+auth.createUserWithEmailAndPassword(
 
-const password =
-document.getElementById('loginPassword').value;
+document.getElementById('loginEmail').value,
+document.getElementById('loginPassword').value
 
-auth.createUserWithEmailAndPassword(email,password);
+);
 
 }
 
@@ -669,11 +773,11 @@ auth.signInWithPopup(provider);
 
 function recoverPassword(){
 
-const email =
-document.getElementById('loginEmail').value;
+auth.sendPasswordResetEmail(
 
-auth.sendPasswordResetEmail(email)
-.then(()=>{
+document.getElementById('loginEmail').value
+
+).then(()=>{
 
 alert('Email enviado');
 
@@ -687,30 +791,19 @@ const id =
 document.getElementById('clientId').value
 || db.collection('clients').doc().id;
 
-const client = {
+const client={
 
-userId: currentUser.uid,
+userId:currentUser.uid,
 
-nome:
-document.getElementById('cNome').value,
-
-empresa:
-document.getElementById('cEmpresa').value,
-
-telefones:
-document.getElementById('cTelefones').value,
-
-status:
-document.getElementById('cStatus').value,
-
-retorno:
-document.getElementById('cRetorno').value
+nome:document.getElementById('cNome').value,
+empresa:document.getElementById('cEmpresa').value,
+telefones:document.getElementById('cTelefones').value,
+status:document.getElementById('cStatus').value,
+retorno:document.getElementById('cRetorno').value
 
 };
 
-db.collection('clients')
-.doc(id)
-.set(client);
+db.collection('clients').doc(id).set(client);
 
 }
 
@@ -725,8 +818,10 @@ clients=[];
 snapshot.forEach(doc=>{
 
 clients.push({
+
 id:doc.id,
 ...doc.data()
+
 });
 
 });
@@ -791,17 +886,16 @@ tbody.innerHTML += `
 
 <tr>
 
-<td>${c.nome||'-'}</td>
-
-<td>${c.telefones||'-'}</td>
-
-<td>${c.retorno||'-'}</td>
+<td>${c.nome}</td>
+<td>${c.telefones}</td>
+<td>${c.retorno}</td>
 
 <td>
 
 <a
-href="https://wa.me/55${(c.telefones||'').replace(/\D/g,'')}"
 target="_blank"
+href="https://wa.me/55${(c.telefones||'').replace(/\D/g,'')}"
+
 class="btn btn-success btn-sm">
 
 WhatsApp
@@ -822,15 +916,6 @@ function updateDashboard(){
 
 document.getElementById('dashTotal').innerText =
 clients.length;
-
-document.getElementById('dashFechados').innerText =
-clients.filter(c=>c.status==='Fechou o plano').length;
-
-document.getElementById('dashNegociacao').innerText =
-clients.filter(c=>c.status==='Em negociação').length;
-
-document.getElementById('dashSemInteresse').innerText =
-clients.filter(c=>c.status==='Não tem interesse').length;
 
 }
 
@@ -870,8 +955,6 @@ list.innerHTML += `
 
 <div>${status}</div>
 
-<div>
-
 <button
 class="btn btn-danger btn-sm"
 onclick="deleteStatus(${index})">
@@ -879,8 +962,6 @@ onclick="deleteStatus(${index})">
 Excluir
 
 </button>
-
-</div>
 
 </div>
 
@@ -898,19 +979,6 @@ renderStatuses();
 
 }
 
-function editClient(id){
-
-const c =
-clients.find(x=>x.id===id);
-
-document.getElementById('clientId').value=c.id;
-document.getElementById('cNome').value=c.nome||'';
-document.getElementById('cEmpresa').value=c.empresa||'';
-document.getElementById('cTelefones').value=c.telefones||'';
-document.getElementById('cRetorno').value=c.retorno||'';
-
-}
-
 function exportBackup(){
 
 const blob =
@@ -922,13 +990,18 @@ new Blob(
 const a =
 document.createElement('a');
 
-a.href =
+a.href=
 URL.createObjectURL(blob);
 
-a.download =
-'backup-crm.json';
+a.download='backup-crm.json';
 
 a.click();
+
+}
+
+function exportExcel(){
+
+alert('Implementar SheetJS');
 
 }
 
