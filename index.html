@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Recuperação - Campo Mágico Aprimorado</title>
+  <title>CRM Recuperação - Campo Mágico Exato</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -14,7 +14,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <style>
-    /* (mesmo CSS anterior, sem alterações) */
     :root {
       --bg: #f8fafb;
       --card: #ffffff;
@@ -124,7 +123,7 @@
   </div>
 </nav>
 
-<!-- CONTEÚDO PRINCIPAL (MESMO HTML) -->
+<!-- CONTEÚDO PRINCIPAL -->
 <div class="container-fluid">
   <ul class="nav nav-tabs" id="mainTab">
     <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboardTab">Dashboard</button></li>
@@ -154,7 +153,7 @@
 
     <!-- FICHA CLIENTE -->
     <div class="tab-pane fade" id="clientesTab">
-      <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4" placeholder="Cole aqui os dados (ex: Nome: João, CPF: 123..., Telefone: ...)"></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
+      <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4" placeholder="Cole aqui os dados com os rótulos exatos:&#10;Nome do usuário: ...&#10;CPF do titular: ...&#10;Data de nascimento: ...&#10;Endereço: ...&#10;Cidade: ...&#10;UF: ...&#10;Empresa: ...&#10;Ade emp: ...&#10;Rede/plano: ...&#10;Plano atual: ...&#10;Acomodação: ...&#10;Situação: ...&#10;Data da adesão: ...&#10;Data do cancelamento: ...&#10;Tempo: ...&#10;Telefones cadastrados: ...&#10;Endereços eletrônicos: ..."></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
       <div class="card-custom">
         <input type="hidden" id="clientId">
         <div class="row g-3">
@@ -198,7 +197,7 @@
       </div>
     </div>
 
-    <!-- PESQUISAR (igual) -->
+    <!-- PESQUISAR -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card-custom">
         <div class="row g-3 mb-3">
@@ -221,7 +220,7 @@
 
     <!-- AGENDA -->
     <div class="tab-pane fade" id="agendaTab">
-      <div class="card-custom"><div class="table-responsive"><table class="table"><thead><tr><th>Cliente</th><th>Telefone</th><th>Retorno</th><th>Status</th><th>WhatsApp</th></tr></thead><tbody id="agendaBody"></tbody></tr></div></div>
+      <div class="card-custom"><div class="table-responsive"><table class="table"><thead><tr><th>Cliente</th><th>Telefone</th><th>Retorno</th><th>Status</th><th>WhatsApp</th></tr></thead><tbody id="agendaBody"></tbody></table></div></div>
     </div>
 
     <!-- CONFIGURAÇÕES -->
@@ -627,7 +626,7 @@
     });
 
     const tbody = document.getElementById('tableBody');
-    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum cliente encontrado.��</td></tr>'; return; }
+    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum cliente encontrado.��</table>'; return; }
     let html = '';
     for (const c of filtered) {
       const telefoneRaw = c.telefones || '';
@@ -635,14 +634,14 @@
       html += `<tr>
         <td><input type="checkbox" class="client-checkbox" value="${c.id}"></td>
         <td><strong>${escapeHtml(c.nome)}</strong></td>
-        <td>${escapeHtml(c.empresa)}</td>
-        <td>${escapeHtml(telefoneRaw)}</td>
-        <td><span class="badge bg-primary">${escapeHtml(c.status || '')}</span></td>
-        <td>${c.retorno || ''}</td>
+        <td>${escapeHtml(c.empresa)}</td
+        <td>${escapeHtml(telefoneRaw)}</td
+        <td><span class="badge bg-primary">${escapeHtml(c.status || '')}</span></td
+        <td>${c.retorno || ''}</td
         <td>
           <button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
           <a target="_blank" href="${whatsLink}" class="btn btn-success btn-sm" onclick="addLog('${c.id}','whatsapp','Clique no WhatsApp')"><i class="bi bi-whatsapp"></i></a>
-        </td>
+         </td
       </tr>`;
     }
     tbody.innerHTML = html;
@@ -656,11 +655,11 @@
       const telefoneRaw = c.telefones || '';
       const whatsLink = `https://wa.me/${formatPhoneForWhatsApp(telefoneRaw)}`;
       html += `<tr>
-        <td>${escapeHtml(c.nome)}</td>
-        <td>${escapeHtml(telefoneRaw)}</td>
-        <td>${c.retorno || ''}</td>
-        <td>${c.status || ''}</td>
-        <td><a target="_blank" href="${whatsLink}" class="btn btn-success btn-sm">WhatsApp</a></td>
+        <td>${escapeHtml(c.nome)}</td
+        <td>${escapeHtml(telefoneRaw)}</td
+        <td>${c.retorno || ''}</td
+        <td>${c.status || ''}</td
+        <td><a target="_blank" href="${whatsLink}" class="btn btn-success btn-sm">WhatsApp</a></td
       </tr>`;
     }
     tbody.innerHTML = html;
@@ -791,144 +790,61 @@
     } else alert('Nenhum filtro salvo.');
   }
 
-  // ==================== CAMPO MÁGICO (MUITO ROBUSTO) ====================
+  // ==================== CAMPO MÁGICO (EXATO) ====================
   function autoFill() {
-    const rawText = document.getElementById('smartPaste').value;
-    if (!rawText.trim()) {
-      alert('Cole algum texto no campo mágico primeiro.');
-      return;
-    }
+    const text = document.getElementById('smartPaste').value;
+    if (!text.trim()) return alert('Cole algum texto no campo mágico.');
 
-    // Normaliza o texto: remove quebras de linha excessivas, espaços duplicados, converte para string única
-    const text = rawText.replace(/\r\n/g, '\n').replace(/\s+/g, ' ').trim();
-    console.log('Texto normalizado:', text); // DEBUG
+    // Mapeamento exato: rótulo -> ID do campo
+    const mappings = [
+      { label: 'Nome do usuário:', fieldId: 'cNome' },
+      { label: 'CPF do titular:', fieldId: 'cCPF' },
+      { label: 'Data de nascimento:', fieldId: 'cNascimento' },
+      { label: 'Endereço:', fieldId: 'cEndereco' },
+      { label: 'Cidade:', fieldId: 'cCidade' },
+      { label: 'UF:', fieldId: 'cUF' },
+      { label: 'Empresa:', fieldId: 'cEmpresa' },
+      { label: 'Ade emp:', fieldId: 'cAdeEmp' },
+      { label: 'Rede/plano:', fieldId: 'cRedePlano' },
+      { label: 'Plano atual:', fieldId: 'cPlanoAtual' },
+      { label: 'Acomodação:', fieldId: 'cAcomodacao' },
+      { label: 'Situação:', fieldId: 'cSituacao' },
+      { label: 'Data da adesão:', fieldId: 'cAdesao' },
+      { label: 'Data do cancelamento:', fieldId: 'cCancelamento' },
+      { label: 'Tempo:', fieldId: 'cTempo' },
+      { label: 'Telefones cadastrados:', fieldId: 'cTelefones' },
+      { label: 'Endereços eletrônicos:', fieldId: 'cEmails' }
+    ];
 
-    // Mapeamento de padrões (ordem importa: mais específico primeiro)
-    const patterns = {
-      cNome: [
-        /Nome\s+do\s+usu[áa]rio\s*:\s*([^\n]+)/i,
-        /Nome\s+completo\s*:\s*([^\n]+)/i,
-        /Nome\s*:\s*([^\n]+)/i
-      ],
-      cNomeSocial: [ /Nome\s+social\s*:\s*([^\n]+)/i ],
-      cCPF: [
-        /CPF\s+do\s+titular\s*:\s*([\d\.\-]+)/i,
-        /CPF\s*:\s*([\d\.\-]+)/i
-      ],
-      cNascimento: [
-        /Data\s+de\s+nascimento\s*:\s*([\d\/]+)/i,
-        /Nascimento\s*:\s*([\d\/]+)/i,
-        /Nasc[^:]*:\s*([\d\/]+)/i
-      ],
-      cEndereco: [ /Endere[çc]o\s*:\s*([^\n]+)/i ],
-      cCidade: [
-        /Cidade\s*:\s*([^\n\-]+?)(?:\s*[-–]\s*|\s*$)/i,
-        /Munic[íi]pio\s*:\s*([^\n\-]+)/i
-      ],
-      cUF: [
-        /[-–]\s*([A-Z]{2})\s*(?:\||$)/i,
-        /UF\s*:\s*([A-Z]{2})/i,
-        /Estado\s*:\s*([A-Z]{2})/i
-      ],
-      cEmpresa: [ /Empresa\s*:\s*([^\n]+)/i ],
-      cAdeEmp: [
-        /Ade\s+emp\s*:\s*([^\n]+)/i,
-        /Ad[eê]s[ãa]o\s+empresa\s*:\s*([^\n]+)/i
-      ],
-      cRedePlano: [
-        /Rede\/plano\s*:\s*([^\n]+)/i,
-        /Rede\s*:\s*([^\n]+)/i,
-        /Plano\s*:\s*([^\n]+)/i
-      ],
-      cPlanoAtual: [ /Plano\s+atual\s*:\s*([^\n]+)/i ],
-      cAcomodacao: [ /Acomoda[çc][ãa]o\s*:\s*([^\n]+)/i ],
-      cSituacao: [ /Situa[çc][ãa]o\s*:\s*([^\n]+)/i ],
-      cAdesao: [
-        /Data\s+da\s+ades[ãa]o\s*:\s*([\d\/]+)/i,
-        /Ades[ãa]o\s*:\s*([\d\/]+)/i
-      ],
-      cCancelamento: [
-        /Cancelamento\s*:\s*([\d\/]+)/i,
-        /Data\s+do\s+cancelamento\s*:\s*([\d\/]+)/i
-      ],
-      cTempo: [ /Tempo\s*:\s*([\dA-Za-z\s]+?)(?:\n|$)/i ],
-      cTelefones: [
-        /Telefones?\s+cadastrados?\s*:\s*([^\n]+)/i,
-        /Telefone\s*:\s*([\d\s\(\)\-]+)/i,
-        /Fone\s*:\s*([\d\s\(\)\-]+)/i
-      ],
-      cEmails: [
-        /Endere[çc]os?\s+eletr[ôo]nicos?\s*:\s*([^\n]+)/i,
-        /E-mail\s*:\s*([^\n]+)/i,
-        /Email\s*:\s*([^\n]+)/i
-      ]
-    };
+    let anyFilled = false;
 
-    let filledCount = 0;
-    // 1) Tenta extrair pelos padrões com rótulo
-    for (const [fieldId, regexList] of Object.entries(patterns)) {
-      const element = document.getElementById(fieldId);
-      if (!element) continue;
-      for (const regex of regexList) {
-        const match = text.match(regex);
-        if (match && match[1]) {
-          let value = match[1].trim();
-          // Limpeza específica
-          if (fieldId === 'cCPF') value = value.replace(/\D/g, '');
-          if (fieldId === 'cTelefones') {
-            // Pega apenas o primeiro número (separado por vírgula, ponto e vírgula ou espaço)
-            const firstPhone = value.split(/[,;]/)[0].trim();
-            value = firstPhone;
-          }
-          if (fieldId === 'cEmails') {
-            const emailMatch = value.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-            if (emailMatch) value = emailMatch[0];
-          }
-          element.value = value;
-          filledCount++;
-          console.log(`Preenchido ${fieldId} com: ${value}`); // DEBUG
-          break;
+    for (const mapping of mappings) {
+      const regex = new RegExp(`${mapping.label}\\s*(.*?)(?=\\n|\\r|$)`, 'i');
+      const match = text.match(regex);
+      if (match && match[1]) {
+        let value = match[1].trim();
+        // Limpeza especial para CPF e telefone
+        if (mapping.fieldId === 'cCPF') value = value.replace(/\D/g, '');
+        if (mapping.fieldId === 'cTelefones') {
+          // Pega o primeiro número se houver múltiplos
+          const firstPhone = value.split(/[,;]/)[0].trim();
+          value = firstPhone;
         }
+        if (mapping.fieldId === 'cEmails') {
+          // Extrai o primeiro email válido
+          const emailMatch = value.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+          if (emailMatch) value = emailMatch[0];
+        }
+        document.getElementById(mapping.fieldId).value = value;
+        anyFilled = true;
       }
     }
 
-    // 2) Fallback para campos sem rótulo (CPF, telefone, email) no texto bruto
-    const cpfElement = document.getElementById('cCPF');
-    if (cpfElement && !cpfElement.value) {
-      const cpfMatch = rawText.match(/\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/);
-      if (cpfMatch) {
-        cpfElement.value = cpfMatch[0].replace(/\D/g, '');
-        filledCount++;
-      }
+    if (anyFilled) {
+      alert('Campos preenchidos com sucesso! Verifique os dados.');
+    } else {
+      alert('Nenhum campo foi preenchido. Certifique-se de que o texto contenha os rótulos exatos (ex: "Nome do usuário:", "CPF do titular:", etc.).');
     }
-    const phoneElement = document.getElementById('cTelefones');
-    if (phoneElement && !phoneElement.value) {
-      const phoneMatch = rawText.match(/\b\(?\d{2}\)?\s?\d{4,5}-?\d{4}\b/);
-      if (phoneMatch) phoneElement.value = phoneMatch[0];
-    }
-    const emailElement = document.getElementById('cEmails');
-    if (emailElement && !emailElement.value) {
-      const emailMatch = rawText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-      if (emailMatch) emailElement.value = emailMatch[0];
-    }
-
-    // 3) Tratamento especial para cidade e UF quando juntos
-    const cidadeElem = document.getElementById('cCidade');
-    const ufElem = document.getElementById('cUF');
-    if (cidadeElem && !cidadeElem.value) {
-      const cidadeUfMatch = rawText.match(/Cidade\s*:\s*([^\n\-]+?)\s*[-–]\s*([A-Z]{2})/i);
-      if (cidadeUfMatch) {
-        cidadeElem.value = cidadeUfMatch[1].trim();
-        if (ufElem && !ufElem.value) ufElem.value = cidadeUfMatch[2].trim();
-        filledCount += 2;
-      }
-    }
-    if (ufElem && !ufElem.value) {
-      const ufMatch = rawText.match(/\b([A-Z]{2})\b(?=\s*(?:\||$|,))/);
-      if (ufMatch) ufElem.value = ufMatch[1];
-    }
-
-    alert(`Auto preenchimento concluído. ${filledCount} campo(s) preenchido(s). Verifique os dados e complete manualmente se necessário.`);
   }
 
   function previewImage(e) {
