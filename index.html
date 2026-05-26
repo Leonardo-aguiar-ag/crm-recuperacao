@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Recuperação - Versão Estável</title>
+  <title>CRM Recuperação - Versão Final com Tags Globais</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -14,22 +14,92 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <style>
-    :root { --bg: #f8fafb; --card: #fff; --border: #e5e7eb; --text: #111; --primary: #3b82f6; }
-    body.dark-mode { --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #f1f5f9; --primary: #3b82f6; }
+    :root {
+      --bg: #f8fafb;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --primary: #3b82f6;
+    }
+    body.dark-mode {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; transition: background 0.3s; }
-    .navbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; }
-    .card-custom { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
-    .dashboard-card { padding: 2rem; border-radius: 16px; color: white; background: linear-gradient(135deg, var(--primary), #1e40af); }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', sans-serif;
+      transition: background 0.3s;
+    }
+    .navbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .card-custom {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .dashboard-card {
+      padding: 2rem;
+      border-radius: 16px;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), #1e40af);
+    }
     .btn { border-radius: 12px; font-weight: 600; }
     .nav-tabs { gap: 0.75rem; border: none; flex-wrap: wrap; }
-    .nav-tabs .nav-link { background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
-    .nav-tabs .nav-link.active { background: var(--primary); color: white; }
-    .tag-badge { background: #e2e8f0; color: #1e293b; display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; margin-right: 0.5rem; margin-bottom: 0.25rem; }
+    .nav-tabs .nav-link {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+    }
+    .nav-tabs .nav-link.active {
+      background: var(--primary);
+      color: white;
+    }
+    .tag-badge {
+      background: #e2e8f0;
+      color: #1e293b;
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
     .tag-badge i { cursor: pointer; margin-left: 0.5rem; }
-    .history-log { border-left: 3px solid var(--primary); padding-left: 0.75rem; margin-bottom: 0.75rem; font-size: 0.85rem; }
-    .login-screen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--primary), #1e40af); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-    .login-box { background: white; border-radius: 20px; padding: 2rem; width: 100%; max-width: 400px; }
+    .history-log {
+      border-left: 3px solid var(--primary);
+      padding-left: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+    }
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary), #1e40af);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .login-box {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+    }
     .container-fluid { padding: 2rem; }
     @media (max-width: 768px) { .container-fluid { padding: 1rem; } }
   </style>
@@ -119,7 +189,7 @@
           <div class="col-md-6"><label>Emails</label><input id="cEmails" class="form-control"></div>
           <div class="col-md-6"><label>Retorno</label><input type="date" id="cRetorno" class="form-control"></div>
           <div class="col-md-6"><label>Foto</label><input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)"><img id="preview" style="max-width:100%; margin-top:0.5rem; display:none;"></div>
-          <div class="col-md-12"><label>Tags (digite e pressione Enter)</label><input type="text" id="cTagsInput" class="form-control"><div id="cTagsContainer" class="mt-2"></div></div>
+          <div class="col-md-12"><label>Tags (digite e pressione Enter)</label><input type="text" id="cTagsInput" class="form-control" list="tagSuggestions"><datalist id="tagSuggestions"></datalist><div id="cTagsContainer" class="mt-2"></div></div>
         </div>
         <div class="mt-3"><label><strong>📝 Anotações</strong></label><textarea id="cAnotacoes" class="form-control" rows="3"></textarea></div>
         <ul class="nav nav-tabs mt-3">
@@ -143,10 +213,10 @@
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card-custom">
         <div class="row g-3 mb-3">
-          <div class="col-md-3"><input type="text" id="globalSearch" class="form-control" placeholder="Busca global"></div>
-          <div class="col-md-2"><select id="filterStatus" class="form-select"><option value="ALL">Status</option></select></div>
-          <div class="col-md-2"><select id="filterPlano" class="form-select"><option value="ALL">Plano</option></select></div>
-          <div class="col-md-2"><select id="filterTags" class="form-select"><option value="ALL">Tag</option></select></div>
+          <div class="col-md-3"><input type="text" id="globalSearch" class="form-control" placeholder="Busca global" oninput="applyFiltersAndRender()"></div>
+          <div class="col-md-2"><select id="filterStatus" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Status</option></select></div>
+          <div class="col-md-2"><select id="filterPlano" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Plano</option></select></div>
+          <div class="col-md-2"><select id="filterTags" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Tag</option></select></div>
           <div class="col-md-3"><button class="btn btn-outline-primary btn-sm" onclick="saveCurrentFilter()">Salvar filtro</button> <button class="btn btn-outline-secondary btn-sm" onclick="loadSavedFilters()">Meus filtros</button></div>
         </div>
         <div class="row g-2 mb-3">
@@ -177,7 +247,7 @@
 </div>
 
 <script>
-  // ==================== CONFIGURAÇÕES INICIAIS ====================
+  // ==================== FIREBASE CONFIG ====================
   const firebaseConfig = {
     apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
     authDomain: "crm-recuperacao.firebaseapp.com",
@@ -238,7 +308,7 @@
   const toggleTheme = () => { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light'); };
   if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
 
-  // ==================== STATUS E TAGS GLOBAIS (Firestore) ====================
+  // ==================== STATUS (ETIQUETAS DE STATUS) ====================
   async function loadStatuses() {
     const doc = await db.collection('customStatuses').doc(currentUser.uid).get();
     if (doc.exists && doc.data().statuses) statuses = doc.data().statuses;
@@ -253,18 +323,73 @@
     document.getElementById('bulkStatus').innerHTML = '<option value="">Selecionar...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
   }
 
+  // ==================== TAGS GLOBAIS (CORRIGIDO) ====================
   async function loadGlobalTags() {
     const doc = await db.collection('globalTags').doc(currentUser.uid).get();
     if (doc.exists && doc.data().tags) globalTags = doc.data().tags;
     renderGlobalTags();
   }
   async function saveGlobalTags() { await db.collection('globalTags').doc(currentUser.uid).set({ tags: globalTags }); }
-  function addGlobalTag() { let tag = document.getElementById('newGlobalTag').value.trim(); if (tag && !globalTags.includes(tag)) { globalTags.push(tag); renderGlobalTags(); saveGlobalTags(); document.getElementById('newGlobalTag').value = ''; } }
-  function deleteGlobalTag(i) { globalTags.splice(i, 1); renderGlobalTags(); saveGlobalTags(); }
+
+  async function addGlobalTag() {
+    const tag = document.getElementById('newGlobalTag').value.trim();
+    if (!tag) return;
+    if (globalTags.includes(tag)) return alert('Tag já existe.');
+    globalTags.push(tag);
+    await saveGlobalTags();
+    renderGlobalTags();
+    document.getElementById('newGlobalTag').value = '';
+  }
+
+  async function deleteGlobalTag(index) {
+    if (!confirm('Remover esta tag de todos os clientes?')) return;
+    const tagToRemove = globalTags[index];
+    globalTags.splice(index, 1);
+    await saveGlobalTags();
+    renderGlobalTags();
+    // Remove a tag de todos os clientes que a possuem
+    for (const client of clients) {
+      if (client.tags && client.tags.includes(tagToRemove)) {
+        const newTags = client.tags.filter(t => t !== tagToRemove);
+        await db.collection('clients').doc(client.id).update({ tags: newTags });
+      }
+    }
+    await loadClients();
+  }
+
   function renderGlobalTags() {
-    document.getElementById('globalTagsList').innerHTML = globalTags.map((t, i) => `<div class="d-flex justify-content-between"><span class="tag-badge">${t}</span><button class="btn btn-sm btn-danger" onclick="deleteGlobalTag(${i})">✖</button></div>`).join('');
-    document.getElementById('filterTags').innerHTML = '<option value="ALL">Todas tags</option>' + globalTags.map(t => `<option>${t}</option>`).join('');
-    document.getElementById('bulkTag').innerHTML = '<option value="">Adicionar tag...</option>' + globalTags.map(t => `<option>${t}</option>`).join('');
+    // Atualiza lista na aba Configurações
+    const container = document.getElementById('globalTagsList');
+    if (container) {
+      container.innerHTML = globalTags.map((t, i) => `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="tag-badge">${escapeHtml(t)}</span>
+          <button class="btn btn-sm btn-danger" onclick="deleteGlobalTag(${i})">✖</button>
+        </div>
+      `).join('');
+    }
+    // Atualiza filtro de tags na pesquisa
+    const filterTags = document.getElementById('filterTags');
+    if (filterTags) {
+      filterTags.innerHTML = '<option value="ALL">Todas tags</option>' +
+        globalTags.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+    }
+    // Atualiza seletor de tags em ações em massa
+    const bulkTag = document.getElementById('bulkTag');
+    if (bulkTag) {
+      bulkTag.innerHTML = '<option value="">Adicionar tag...</option>' +
+        globalTags.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+    }
+    // Atualiza datalist de sugestões no campo de tags da ficha
+    const datalist = document.getElementById('tagSuggestions');
+    if (datalist) {
+      datalist.innerHTML = globalTags.map(t => `<option value="${escapeHtml(t)}">`).join('');
+    }
+    // Atualiza placeholder
+    const tagsInput = document.getElementById('cTagsInput');
+    if (tagsInput && globalTags.length) {
+      tagsInput.placeholder = `Ex: ${globalTags.slice(0, 3).join(', ')}...`;
+    }
   }
 
   // ==================== CLIENTES (CRUD) ====================
@@ -435,7 +560,7 @@
     div.innerHTML = logs.map(l => `<div class="history-log"><small>${l.timestamp ? new Date(l.timestamp.toDate()).toLocaleString() : ''}</small><br><strong>${l.action}</strong><br>${l.details}</div>`).join('');
   }
 
-  // ==================== LEMBRETES (único intervalo) ====================
+  // ==================== LEMBRETES ====================
   function startReminderChecker() {
     if (reminderInterval) clearInterval(reminderInterval);
     reminderInterval = setInterval(() => {
@@ -451,7 +576,7 @@
     if (Notification.permission === 'default') Notification.requestPermission();
   }
 
-  // ==================== BACKUP E IMPORTAÇÃO (corrigidos) ====================
+  // ==================== BACKUP E IMPORTAÇÃO ====================
   function exportBackup() {
     const dataToExport = clients.map(c => {
       const { updatedAt, createdAt, ...rest } = c;
@@ -508,7 +633,6 @@
     URL.revokeObjectURL(a.href);
   }
 
-  // Backup automático (único intervalo)
   function setAutoBackup() {
     const hours = parseInt(document.getElementById('backupIntervalHours').value);
     if (autoBackupInterval) clearInterval(autoBackupInterval);
@@ -517,7 +641,7 @@
   }
   function stopAutoBackup() { if (autoBackupInterval) { clearInterval(autoBackupInterval); autoBackupInterval = null; alert('Backup desligado.'); } }
 
-  // ==================== RENDERIZAÇÃO DAS TABELAS (performance com join) ====================
+  // ==================== RENDERIZAÇÃO DAS TABELAS ====================
   function renderTable() {
     const search = document.getElementById('globalSearch').value.toLowerCase();
     const status = document.getElementById('filterStatus').value;
@@ -634,7 +758,7 @@
     await loadClients();
   }
 
-  // ==================== DASHBOARD COM GRÁFICOS (destruição correta) ====================
+  // ==================== DASHBOARD ====================
   function updateDashboard() {
     document.getElementById('dashTotal').innerText = clients.length;
     document.getElementById('dashFechados').innerText = clients.filter(c => c.status === 'Fechou o plano').length;
@@ -646,7 +770,7 @@
     const media = tempos.length ? Math.round(tempos.reduce((a, b) => a + b, 0) / tempos.length) : 0;
     document.getElementById('dashTempoCancel').innerText = media;
 
-    // Gráfico recuperados por mês (últimos 6 meses)
+    // Gráfico recuperados por mês
     const meses = [];
     const counts = new Array(6).fill(0);
     for (let i = 5; i >= 0; i--) { const d = new Date(); d.setMonth(d.getMonth() - i); meses.push(d.toLocaleString('default', { month: 'short' })); }
