@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recupera Health CRM - Dashboard com Filtro por Mês</title>
+  <title>Recupera Health CRM - Completo</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -99,7 +99,7 @@
     <!-- DASHBOARD -->
     <div class="tab-pane fade show active" id="dashboardTab" role="tabpanel">
       <div class="row g-4 mb-4">
-        <div class="col-md-3"><div class="dashboard-card"><h6>Total Clientes (filtrado)</h6><h2 id="dashTotal">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card"><h6>Total Clientes (filtro)</h6><h2 id="dashTotal">0</h2></div></div>
         <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#10b981,#059669)"><h6>Vidas Implantadas</h6><h2 id="dashVidas">0</h2></div></div>
         <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><h6>Valor Processado</h6><h2 id="dashValor">R$ 0,00</h2></div></div>
         <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)"><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
@@ -117,7 +117,7 @@
       </div>
     </div>
 
-    <!-- FICHA CLIENTE (mantida) -->
+    <!-- FICHA CLIENTE -->
     <div class="tab-pane fade" id="clientesTab" role="tabpanel">
       <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4"></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
       <div class="card-custom">
@@ -172,7 +172,7 @@
       </div>
     </div>
 
-    <!-- PESQUISAR (resumido) -->
+    <!-- PESQUISAR -->
     <div class="tab-pane fade" id="pesquisaTab" role="tabpanel">
       <div class="card-custom">
         <div class="row g-3 mb-3">
@@ -268,7 +268,7 @@
       renderCalendar();
       populateSpecificYear();
       populateFilters();
-      setTimeout(() => { updateDashboard(); }, 100); // força atualização inicial
+      setTimeout(() => updateDashboard(), 100);
     } else {
       document.getElementById('loginScreen').style.display = 'flex';
     }
@@ -325,22 +325,174 @@
     updatePlanosFilter();
     renderCalendar();
     populateFilters();
-    updateDashboard(); // já atualiza os dados do dashboard
+    updateDashboard();
   }
 
-  async function saveClient() { /* (mantido do código anterior, igual) */ }
-  async function addLog(clientId, action, details) { if (!currentUser) return; await db.collection('interactionLogs').add({ clientId, userId: currentUser.uid, action, details, timestamp: firebase.firestore.FieldValue.serverTimestamp(), userEmail: currentUser.email }); }
-  async function loadHistorico(clientId) { /* manter */ }
-  async function loadStatusHistory(clientId) { /* manter */ }
-  function editClient(id) { /* manter */ }
-  function clearForm() { /* manter */ }
-  function autoFill() { /* manter */ }
-  function previewImage(e) { /* manter */ }
+  async function saveClient() {
+    const id = document.getElementById('clientId').value;
+    let vidasRaw = parseInt(document.getElementById('cVidas').value) || 0;
+    const vidas = Math.max(0, vidasRaw);
+    const data = {
+      nome: document.getElementById('cNome').value.trim(),
+      nomeSocial: document.getElementById('cNomeSocial').value.trim(),
+      cpf: document.getElementById('cCPF').value.trim(),
+      nascimento: document.getElementById('cNascimento').value.trim(),
+      endereco: document.getElementById('cEndereco').value.trim(),
+      cidade: document.getElementById('cCidade').value.trim(),
+      uf: document.getElementById('cUF').value.trim(),
+      empresa: document.getElementById('cEmpresa').value.trim(),
+      adeEmp: document.getElementById('cAdeEmp').value.trim(),
+      redePlano: document.getElementById('cRedePlano').value.trim(),
+      planoAtual: document.getElementById('cPlanoAtual').value.trim(),
+      acomodacao: document.getElementById('cAcomodacao').value.trim(),
+      situacao: document.getElementById('cSituacao').value.trim(),
+      status: document.getElementById('cStatus').value,
+      adesao: document.getElementById('cAdesao').value.trim(),
+      cancelamento: document.getElementById('cCancelamento').value.trim(),
+      tempo: document.getElementById('cTempo').value.trim(),
+      telefones: document.getElementById('cTelefones').value.trim(),
+      emails: document.getElementById('cEmails').value.trim(),
+      retorno: document.getElementById('cRetorno').value,
+      anotacoes: document.getElementById('cAnotacoes').value.trim(),
+      valorSemDesconto: parseFloat(document.getElementById('cValorSemDesconto').value) || 0,
+      valorComDesconto: parseFloat(document.getElementById('cValorComDesconto').value) || 0,
+      vidas: vidas,
+      dataImplantacao: document.getElementById('cDataImplantacao').value || null,
+      dataPagamento: document.getElementById('cDataPagamento').value || null,
+      origem: document.getElementById('cOrigem').value.trim(),
+      campanha: document.getElementById('cCampanha').value.trim(),
+      userId: currentUser.uid,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (!id) data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    if (!data.nome) return alert('Nome obrigatório.');
+
+    try {
+      if (id) {
+        await db.collection('clients').doc(id).update(data);
+        await addLog(id, 'edit', 'Cliente atualizado');
+        alert('Cliente atualizado!');
+      } else {
+        await db.collection('clients').add(data);
+        await addLog('new', 'create', 'Novo cliente cadastrado');
+        alert('Cliente cadastrado!');
+      }
+      clearForm();
+      document.querySelector('[data-bs-target="#dashboardTab"]').click();
+      await loadClients();
+    } catch (e) { alert('Erro: ' + e.message); }
+  }
+
+  async function addLog(clientId, action, details) {
+    if (!currentUser) return;
+    await db.collection('interactionLogs').add({ clientId, userId: currentUser.uid, action, details, timestamp: firebase.firestore.FieldValue.serverTimestamp(), userEmail: currentUser.email });
+  }
+
+  async function loadHistorico(clientId) {
+    const snap = await db.collection('interactionLogs').where('clientId', '==', clientId).orderBy('timestamp', 'desc').limit(50).get();
+    const logs = snap.docs.map(d => d.data());
+    const div = document.getElementById('historicoList');
+    if (logs.length === 0) { div.innerHTML = '<p class="text-muted">Nenhuma interação.</p>'; return; }
+    div.innerHTML = logs.map(l => `<div class="history-log"><small>${l.timestamp ? new Date(l.timestamp.toDate()).toLocaleString() : ''}</small><br><strong>${l.action}</strong><br>${l.details}</div>`).join('');
+  }
+
+  async function loadStatusHistory(clientId) {
+    const snap = await db.collection('interactionLogs').where('clientId', '==', clientId).get();
+    const logs = snap.docs.map(d => d.data()).filter(l => l.action === 'edit' && l.details.includes('Status alterado'));
+    const div = document.getElementById('statusHistoryList');
+    if (logs.length === 0) { div.innerHTML = '<p class="text-muted">Nenhuma alteração de status.</p>'; return; }
+    div.innerHTML = logs.map(l => `<div class="history-log"><small>${new Date(l.timestamp.toDate()).toLocaleString()}</small><br>${l.details}</div>`).join('');
+  }
+
+  function editClient(id) {
+    const c = clients.find(c => c.id === id);
+    if (!c) return;
+    document.getElementById('clientId').value = id;
+    for (let k of ['nome','nomeSocial','cpf','nascimento','endereco','cidade','uf','empresa','adeEmp','redePlano','planoAtual','acomodacao','situacao','status','adesao','cancelamento','tempo','telefones','emails','retorno','anotacoes','valorSemDesconto','valorComDesconto','vidas','dataImplantacao','dataPagamento','origem','campanha']) {
+      const val = c[k] || '';
+      document.getElementById(`c${k.charAt(0).toUpperCase() + k.slice(1)}`).value = val;
+    }
+    loadAnexos(id);
+    loadHistorico(id);
+    loadStatusHistory(id);
+    document.querySelector('[data-bs-target="#clientesTab"]').click();
+  }
+
+  function clearForm() {
+    if (!confirm('Limpar todos os campos?')) return;
+    document.getElementById('clientId').value = '';
+    ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes','cValorSemDesconto','cValorComDesconto','cVidas','cDataImplantacao','cDataPagamento','cOrigem','cCampanha'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('cStatus').selectedIndex = 0;
+    document.getElementById('preview').style.display = 'none';
+    document.getElementById('anexosList').innerHTML = '';
+    document.getElementById('historicoList').innerHTML = '';
+    document.getElementById('smartPaste').value = '';
+  }
+
+  function autoFill() {
+    const text = document.getElementById('smartPaste').value;
+    if (!text.trim()) return;
+    const mappings = [
+      { label: 'Nome do usuário:', fieldId: 'cNome' }, { label: 'Nome social:', fieldId: 'cNomeSocial' },
+      { label: 'CPF do titular:', fieldId: 'cCPF' }, { label: 'Data de nascimento:', fieldId: 'cNascimento' },
+      { label: 'Endereço:', fieldId: 'cEndereco' }, { label: 'Cidade:', fieldId: 'cCidade' },
+      { label: 'UF:', fieldId: 'cUF' }, { label: 'Empresa:', fieldId: 'cEmpresa' },
+      { label: 'Ade emp:', fieldId: 'cAdeEmp' }, { label: 'Rede/plano:', fieldId: 'cRedePlano' },
+      { label: 'Plano atual:', fieldId: 'cPlanoAtual' }, { label: 'Acomodação:', fieldId: 'cAcomodacao' },
+      { label: 'Situação:', fieldId: 'cSituacao' }, { label: 'Data da adesão:', fieldId: 'cAdesao' },
+      { label: 'Data do cancelamento:', fieldId: 'cCancelamento' }, { label: 'Tempo:', fieldId: 'cTempo' },
+      { label: 'Telefones cadastrados:', fieldId: 'cTelefones' }, { label: 'Endereços eletrônicos:', fieldId: 'cEmails' }
+    ];
+    for (const m of mappings) {
+      const regex = new RegExp(`${m.label}\\s*(.*?)$`, 'im');
+      const match = text.match(regex);
+      if (match && match[1].trim()) {
+        let val = match[1].trim();
+        if (m.fieldId === 'cCPF') val = val.replace(/\D/g, '');
+        if (m.fieldId === 'cTelefones') val = val.split(/[,;]/)[0].trim();
+        if (m.fieldId === 'cEmails') { const emailMatch = val.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/); if (emailMatch) val = emailMatch[0]; else continue; }
+        document.getElementById(m.fieldId).value = val;
+      }
+    }
+    alert('Campos preenchidos automaticamente!');
+  }
+
+  function previewImage(e) { const reader = new FileReader(); reader.onload = ev => { document.getElementById('preview').src = ev.target.result; document.getElementById('preview').style.display = 'block'; }; reader.readAsDataURL(e.target.files[0]); }
 
   // ==================== ANEXOS ====================
-  async function loadAnexos(clientId) { /* manter */ }
-  async function uploadAnexos() { /* manter */ }
-  async function deleteAnexo(clientId, fileName) { /* manter */ }
+  async function loadAnexos(clientId) {
+    const listDiv = document.getElementById('anexosList');
+    listDiv.innerHTML = 'Carregando...';
+    const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}`);
+    let items = [];
+    try { const res = await ref.listAll(); items = res.items; } catch(e) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
+    if (items.length === 0) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
+    let html = '';
+    for (const item of items) {
+      const url = await item.getDownloadURL();
+      html += `<div class="d-flex justify-content-between align-items-center mb-2"><a href="${url}" target="_blank">${item.name}</a><button class="btn btn-sm btn-danger" onclick="deleteAnexo('${clientId}','${item.name}')">Excluir</button></div>`;
+    }
+    listDiv.innerHTML = html;
+  }
+  async function uploadAnexos() {
+    const clientId = document.getElementById('clientId').value;
+    if (!clientId) return alert('Salve o cliente primeiro!');
+    const files = document.getElementById('uploadAnexo').files;
+    if (!files.length) return;
+    for (const file of files) {
+      if (!file.type.match(/image.*|application\/pdf/)) { alert(`Tipo inválido: ${file.name}`); continue; }
+      const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}/${Date.now()}_${file.name}`);
+      await ref.put(file);
+    }
+    alert('Arquivos enviados!');
+    loadAnexos(clientId);
+  }
+  async function deleteAnexo(clientId, fileName) {
+    if (!confirm('Excluir anexo?')) return;
+    const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}/${fileName}`);
+    await ref.delete();
+    loadAnexos(clientId);
+  }
 
   // ==================== PESQUISA ====================
   function populateFilters() {
@@ -395,7 +547,7 @@
     tbody.innerHTML = html;
   }
 
-  // ==================== DASHBOARD COM FILTRO (KPIs também filtrados) ====================
+  // ==================== DASHBOARD ====================
   function populateSpecificYear() {
     const yearSelect = document.getElementById('specificYear');
     const currentYear = new Date().getFullYear();
@@ -419,17 +571,16 @@
 
   function updateDashboard() {
     const filterType = document.getElementById('filterType').value;
-    let mesesLabels = [];
+    let labels = [];
     let recoveryCounts = [];
     let monthlyValues = [];
-    let filteredClientsForKPI = [];
 
     if (filterType === 'period') {
       const period = parseInt(document.getElementById('chartPeriod').value);
       const now = new Date();
       for (let i = period - 1; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        mesesLabels.push(d.toLocaleString('default', { month: 'short', year: '2-digit' }));
+        labels.push(d.toLocaleString('default', { month: 'short', year: '2-digit' }));
       }
       recoveryCounts = new Array(period).fill(0);
       monthlyValues = new Array(period).fill(0);
@@ -443,72 +594,60 @@
           }
         }
       });
-      // Para os KPIs, consideramos todos os clientes que são implantados (sem filtro de data? Vamos usar os mesmos do período)
-      // Mas para KPI de "Total Clientes" (filtrado) usamos os implantados? O usuário provavelmente quer os totais dos clientes que se enquadram no período (todos os status)
-      filteredClientsForKPI = clients.filter(c => {
+      // Para KPIs, consideramos os implantados no período
+      const filteredImplantados = clients.filter(c => {
         if (c.status !== 'Implantado') return false;
         let implantDate = c.dataImplantacao ? new Date(c.dataImplantacao) : (c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt));
         let monthIndex = (now.getFullYear() - implantDate.getFullYear()) * 12 + (now.getMonth() - implantDate.getMonth());
         return monthIndex >= 0 && monthIndex < period;
       });
+      const totalVidas = filteredImplantados.reduce((acc, c) => acc + Math.max(0, c.vidas || 0), 0);
+      const valorTotal = filteredImplantados.reduce((acc, c) => acc + getEffectiveValue(c), 0);
+      document.getElementById('dashTotal').innerText = filteredImplantados.length;
+      document.getElementById('dashVidas').innerText = totalVidas;
+      document.getElementById('dashValor').innerHTML = formatMoney(valorTotal);
+      // Taxa de conversão: implantados / total clientes com adesão no período
+      const totalClientesPeriodo = clients.filter(c => {
+        if (!c.adesao) return false;
+        let adesaoDate = new Date(c.adesao);
+        let monthIndex = (now.getFullYear() - adesaoDate.getFullYear()) * 12 + (now.getMonth() - adesaoDate.getMonth());
+        return monthIndex >= 0 && monthIndex < period;
+      }).length;
+      const taxa = totalClientesPeriodo > 0 ? ((filteredImplantados.length / totalClientesPeriodo) * 100).toFixed(1) : 0;
+      document.getElementById('dashConversao').innerText = `${taxa}%`;
     } else {
       // mês específico
       const month = parseInt(document.getElementById('specificMonth').value);
       const year = parseInt(document.getElementById('specificYear').value);
-      const monthName = new Date(year, month-1, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
-      mesesLabels = [monthName];
-      let totalRec = 0;
-      let totalVal = 0;
-      const filteredImpl = clients.filter(c => {
+      labels = [new Date(year, month-1, 1).toLocaleString('default', { month: 'long', year: 'numeric' })];
+      let totalRec = 0, totalVal = 0;
+      const filteredImplantados = clients.filter(c => {
         if (c.status !== 'Implantado') return false;
         let implantDate = c.dataImplantacao ? new Date(c.dataImplantacao) : (c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt));
         return implantDate.getMonth() + 1 === month && implantDate.getFullYear() === year;
       });
-      filteredClientsForKPI = filteredImpl;
-      totalRec = filteredImpl.length;
-      totalVal = filteredImpl.reduce((s, c) => s + getEffectiveValue(c), 0);
+      totalRec = filteredImplantados.length;
+      totalVal = filteredImplantados.reduce((s, c) => s + getEffectiveValue(c), 0);
       recoveryCounts = [totalRec];
       monthlyValues = [totalVal];
+      document.getElementById('dashTotal').innerText = totalRec;
+      document.getElementById('dashVidas').innerText = filteredImplantados.reduce((acc, c) => acc + Math.max(0, c.vidas || 0), 0);
+      document.getElementById('dashValor').innerHTML = formatMoney(totalVal);
+      // Taxa de conversão: implantados no mês / clientes com adesão no mês
+      const totalClientesPeriodo = clients.filter(c => {
+        if (!c.adesao) return false;
+        let adesaoDate = new Date(c.adesao);
+        return adesaoDate.getMonth() + 1 === month && adesaoDate.getFullYear() === year;
+      }).length;
+      const taxa = totalClientesPeriodo > 0 ? ((totalRec / totalClientesPeriodo) * 100).toFixed(1) : 0;
+      document.getElementById('dashConversao').innerText = `${taxa}%`;
     }
 
-    // Atualizar gráficos
     if (recoveryChart) recoveryChart.destroy();
-    recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels: mesesLabels, datasets: [{ label: 'Implantados', data: recoveryCounts, backgroundColor: '#10b981' }] } });
+    recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels, datasets: [{ label: 'Implantados', data: recoveryCounts, backgroundColor: '#10b981' }] } });
     if (valueChart) valueChart.destroy();
-    valueChart = new Chart(document.getElementById('valueChart'), { type: 'line', data: { labels: mesesLabels, datasets: [{ label: 'Valor Processado (R$)', data: monthlyValues, borderColor: '#f59e0b', fill: false }] } });
+    valueChart = new Chart(document.getElementById('valueChart'), { type: 'line', data: { labels, datasets: [{ label: 'Valor Processado (R$)', data: monthlyValues, borderColor: '#f59e0b', fill: false }] } });
 
-    // Atualizar KPIs com base nos clientes filtrados (apenas implantados no período)
-    const totalClientesFiltrados = filteredClientsForKPI.length;
-    const totalVidas = filteredClientsForKPI.reduce((acc, c) => acc + Math.max(0, c.vidas || 0), 0);
-    const valorTotal = filteredClientsForKPI.reduce((acc, c) => acc + getEffectiveValue(c), 0);
-    const taxaConversao = totalClientesFiltrados > 0 ? ((totalClientesFiltrados / totalClientesFiltrados) * 100).toFixed(1) : 0; // taxa de conversão dentro do filtro (mas como só temos implantados, dá 100% – melhor mostrar outro dado? O usuário quer a taxa de conversão do período? Vou ajustar para mostrar a proporção de implantados sobre o total de clientes no período (todos os status).
-    // Melhor: mostrar o total de clientes no período (todos status) e a taxa de conversão = implantados / total clientes no período.
-    // Vamos recalcular totalClientesPeriodo (todos status com dataImplantacao? não, data de criação? Vamos usar data de adesão ou data de implantação? 
-    // Para simplificar, vamos manter a taxa de conversão como (implantados no período) / (total de clientes criados no período) ou (todos os clientes)? 
-    // O usuário não especificou; vou usar a mesma lógica antiga: taxa de conversão global (implantados / total geral) para não confundir.
-    // Mas nos cards, "Total Clientes (filtrado)" mostra quantos clientes (implantados) estão no filtro. Vou manter assim.
-    document.getElementById('dashTotal').innerText = totalClientesFiltrados;
-    document.getElementById('dashVidas').innerText = totalVidas;
-    document.getElementById('dashValor').innerHTML = formatMoney(valorTotal);
-    // Taxa de conversão: percentual de implantados sobre o total de clientes no período (todos os status, considerando data de criação ou adesão). Para não complicar, vou deixar a taxa como 100% (já que só consideramos implantados) ou exibir "N/A". Mas o usuário espera a taxa de conversão. Vou calcular com base em todos os clientes que têm data de adesão no período.
-    const totalClientesPeriodo = clients.filter(c => {
-      if (!c.adesao) return false;
-      let adesaoDate = new Date(c.adesao);
-      if (filterType === 'period') {
-        const period = parseInt(document.getElementById('chartPeriod').value);
-        const now = new Date();
-        let diff = (now.getFullYear() - adesaoDate.getFullYear()) * 12 + (now.getMonth() - adesaoDate.getMonth());
-        return diff >= 0 && diff < period;
-      } else {
-        const month = parseInt(document.getElementById('specificMonth').value);
-        const year = parseInt(document.getElementById('specificYear').value);
-        return adesaoDate.getMonth() + 1 === month && adesaoDate.getFullYear() === year;
-      }
-    }).length;
-    const taxa = totalClientesPeriodo > 0 ? ((totalClientesFiltrados / totalClientesPeriodo) * 100).toFixed(1) : 0;
-    document.getElementById('dashConversao').innerText = `${taxa}%`;
-
-    // Gráfico de distribuição de status (global, sem filtro)
     const statusData = statuses.map(s => clients.filter(c => c.status === s).length);
     if (statusChart) statusChart.destroy();
     statusChart = new Chart(document.getElementById('statusChart'), { type: 'doughnut', data: { labels: statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] } });
@@ -526,31 +665,209 @@
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); URL.revokeObjectURL(a.href);
   }
   function importBackup() { document.getElementById('backupFileInput').click(); }
-  async function handleBackupFile(e) { /* manter */ }
+  async function handleBackupFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        let arr = Array.isArray(parsed) ? parsed : (parsed.clients && Array.isArray(parsed.clients) ? parsed.clients : null);
+        if (!arr) throw new Error('Formato inválido');
+        if (!confirm(`Importar ${arr.length} clientes?`)) return;
+        let adicionados = 0, ignorados = 0;
+        for (const c of arr) {
+          const { id, ...d } = c;
+          d.userId = currentUser.uid;
+          if (!d.createdAt) d.createdAt = new Date().toISOString();
+          if (!d.nome) { ignorados++; continue; }
+          try {
+            await db.collection('clients').add(d);
+            adicionados++;
+          } catch (err) { ignorados++; }
+        }
+        alert(`Importação: ${adicionados} adicionados, ${ignorados} ignorados.`);
+        await loadClients();
+      } catch (er) { alert('Erro: ' + er.message); }
+    };
+    reader.readAsText(file);
+  }
   document.getElementById('backupFileInput').addEventListener('change', handleBackupFile);
-  function exportAllToCSV() { /* manter */ }
-  function exportSelectedToCSV() { /* manter */ }
+
+  function exportAllToCSV() {
+    const rows = [['Nome', 'Telefone', 'Email', 'Status', 'Empresa', 'Origem', 'Campanha', 'Vidas', 'Valor Pago']];
+    for (const c of clients) {
+      const esc = (s) => `"${(s || '').replace(/"/g, '""')}"`;
+      const valorPago = getEffectiveValue(c);
+      rows.push([
+        esc(c.nome || ''), esc(c.telefones || ''), esc(c.emails || ''), esc(c.status || ''),
+        esc(c.empresa || ''), esc(c.origem || ''), esc(c.campanha || ''), esc(c.vidas || 0), esc(valorPago)
+      ]);
+    }
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `contatos_${new Date().toISOString().slice(0,19)}.csv`; a.click(); URL.revokeObjectURL(a.href);
+  }
+
+  function exportSelectedToCSV() {
+    const checkboxes = document.querySelectorAll('.client-checkbox:checked');
+    if (checkboxes.length === 0) { alert('Nenhum cliente selecionado.'); return; }
+    const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+    const selectedClients = clients.filter(c => selectedIds.includes(c.id));
+    const rows = [['Nome', 'Telefone']];
+    for (const c of selectedClients) {
+      const nome = (c.nome || '').replace(/,/g, ' ');
+      const telefone = formatPhoneForWhatsApp(c.telefones);
+      if (telefone) rows.push([`"${nome}"`, telefone]);
+    }
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `selecionados_${new Date().toISOString().slice(0,19)}.csv`; a.click(); URL.revokeObjectURL(a.href);
+  }
+
   function importExcel() { document.getElementById('excelInput').click(); }
-  async function handleExcelUpload(e) { /* manter */ }
+  async function handleExcelUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data);
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet);
+    if (!rows.length) return alert('Nenhum dado encontrado.');
+    let imported = 0, errors = 0;
+    for (const row of rows) {
+      const nome = row['Nome'] || row['nome'] || row['Cliente'];
+      if (!nome) continue;
+      const cliente = {
+        nome, nomeSocial: row['Nome social'] || '', cpf: row['CPF'] || '', nascimento: row['Nascimento'] || '',
+        endereco: row['Endereço'] || '', cidade: row['Cidade'] || '', uf: row['UF'] || '', empresa: row['Empresa'] || '',
+        adeEmp: row['Ade emp'] || '', redePlano: row['Rede/plano'] || '', planoAtual: row['Plano atual'] || '',
+        acomodacao: row['Acomodação'] || '', situacao: row['Situação'] || '', status: row['Status'] || 'Em Negociação',
+        adesao: row['Adesão'] || '', cancelamento: row['Cancelamento'] || '', tempo: row['Tempo'] || '',
+        telefones: row['Telefones'] || '', emails: row['Emails'] || '', retorno: row['Retorno'] || '',
+        anotacoes: row['Anotações'] || '', valorSemDesconto: parseFloat(row['Valor sem desconto']) || 0,
+        valorComDesconto: parseFloat(row['Valor com desconto']) || 0, vidas: parseInt(row['Vidas']) || 0,
+        dataImplantacao: row['Data implantação'] || null, dataPagamento: row['Data pagamento'] || null,
+        origem: row['Origem'] || '', campanha: row['Campanha'] || '',
+        userId: currentUser.uid, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+      };
+      try {
+        await db.collection('clients').add(cliente);
+        imported++;
+      } catch (err) { errors++; }
+    }
+    alert(`Importação concluída: ${imported} adicionados, ${errors} erros.`);
+    await loadClients();
+  }
 
   // ==================== AÇÕES EM MASSA ====================
   function getSelectedIds() { return Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value); }
   function toggleSelectAll() { const all = document.getElementById('selectAllCheckbox').checked; document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = all); }
-  async function bulkWhatsApp() { /* manter */ }
-  async function bulkDelete() { /* manter */ }
-  async function bulkChangeStatus() { /* manter */ }
-  async function bulkScheduleReturn() { /* manter */ }
+
+  async function bulkWhatsApp() {
+    const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
+    for (const id of ids) {
+      const c = clients.find(c => c.id === id);
+      if (c?.telefones) window.open(`https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`, '_blank');
+      await addLog(id, 'bulk_whatsapp', 'Disparo em massa');
+    }
+  }
+  async function bulkDelete() {
+    const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
+    if (!confirm(`Excluir permanentemente ${ids.length} cliente(s)?`)) return;
+    for (const id of ids) await db.collection('clients').doc(id).delete();
+    await loadClients();
+    alert(`${ids.length} cliente(s) removido(s).`);
+  }
+  async function bulkChangeStatus() {
+    const newStatus = document.getElementById('bulkStatus').value;
+    if (!newStatus) return alert('Selecione um status');
+    const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
+    if (!confirm(`Alterar status de ${ids.length} cliente(s) para "${newStatus}"?`)) return;
+    for (const id of ids) await db.collection('clients').doc(id).update({ status: newStatus });
+    await loadClients();
+    alert(`${ids.length} cliente(s) atualizado(s).`);
+  }
+  async function bulkScheduleReturn() {
+    const date = document.getElementById('bulkRetorno').value;
+    if (!date) return alert('Selecione uma data');
+    const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
+    if (!confirm(`Agendar retorno para ${ids.length} cliente(s) na data ${date}?`)) return;
+    for (const id of ids) await db.collection('clients').doc(id).update({ retorno: date });
+    await loadClients();
+    alert(`${ids.length} cliente(s) com retorno agendado.`);
+  }
 
   // ==================== CALENDÁRIO ====================
-  function renderCalendar() { /* manter */ }
-  function selectDay(dateStr) { /* manter */ }
+  function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthSelect = document.getElementById('monthSelect');
+    const yearSelect = document.getElementById('yearSelect');
+    if (monthSelect.children.length === 0) {
+      for (let i = 0; i < 12; i++) { const opt = document.createElement('option'); opt.value = i; opt.text = new Date(year, i, 1).toLocaleString('default', { month: 'long' }); monthSelect.appendChild(opt); }
+    }
+    monthSelect.value = month;
+    if (yearSelect.children.length === 0) {
+      const cy = new Date().getFullYear();
+      for (let i = cy - 5; i <= cy + 5; i++) { const opt = document.createElement('option'); opt.value = i; opt.text = i; yearSelect.appendChild(opt); }
+    }
+    yearSelect.value = year;
+    const daysContainer = document.getElementById('calendarDays');
+    daysContainer.innerHTML = '';
+    for (let i = 0; i < firstDay; i++) { const empty = document.createElement('div'); empty.className = 'calendar-day empty'; daysContainer.appendChild(empty); }
+    const todayStr = new Date().toISOString().split('T')[0];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const hasReturn = clients.some(c => c.retorno === dateStr);
+      const dayDiv = document.createElement('div'); dayDiv.className = 'calendar-day'; if (hasReturn) dayDiv.classList.add('has-return'); if (dateStr === todayStr) dayDiv.style.border = '2px solid var(--primary)'; dayDiv.innerText = d; dayDiv.onclick = () => selectDay(dateStr); daysContainer.appendChild(dayDiv);
+    }
+  }
+  function selectDay(dateStr) {
+    document.querySelectorAll('.calendar-day').forEach(day => day.classList.remove('selected'));
+    const dayDivs = document.querySelectorAll('.calendar-day');
+    const dayNum = parseInt(dateStr.split('-')[2]);
+    for (let div of dayDivs) { if (div.innerText == dayNum && !div.classList.contains('empty')) { div.classList.add('selected'); break; } }
+    const clientsOnDay = clients.filter(c => c.retorno === dateStr);
+    const container = document.getElementById('selectedDayClients');
+    if (clientsOnDay.length === 0) { container.innerHTML = '<div class="alert alert-info">Nenhum cliente com retorno nesta data.</div>'; return; }
+    let html = '';
+    for (const c of clientsOnDay) {
+      const whatsLink = `https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`;
+      html += `<div class="list-group-item d-flex justify-content-between align-items-center"><div><strong>${escapeHtml(c.nome)}</strong><br><small>${escapeHtml(c.telefones)}</small></div><a target="_blank" href="${whatsLink}" class="btn btn-sm btn-success"><i class="bi bi-whatsapp"></i> WhatsApp</a></div>`;
+    }
+    container.innerHTML = html;
+  }
   function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); renderCalendar(); document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>'; }
   function goToMonth() { const newMonth = parseInt(document.getElementById('monthSelect').value); const newYear = parseInt(document.getElementById('yearSelect').value); currentDate = new Date(newYear, newMonth, 1); renderCalendar(); document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>'; }
 
-  function updatePlanosFilter() { /* manter */ }
-  function startReminderChecker() { /* manter */ }
+  function updatePlanosFilter() {
+    const planos = new Set();
+    clients.forEach(c => { if (c.planoAtual) planos.add(c.planoAtual); if (c.redePlano) planos.add(c.redePlano); });
+    const select = document.getElementById('filterPlano');
+    if (select) select.innerHTML = '<option value="ALL">Todos os planos</option>' + [...planos].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
+  }
+  function startReminderChecker() {
+    if (reminderInterval) clearInterval(reminderInterval);
+    reminderInterval = setInterval(() => {
+      const today = new Date().toISOString().split('T')[0];
+      clients.forEach(async c => {
+        if (c.retorno === today) {
+          if (Notification.permission === 'granted') new Notification(`Lembrete: ${c.nome}`, { body: `Retorno hoje. Tel: ${c.telefones}` });
+          if (c.emails) window.open(`mailto:${c.emails}?subject=Lembrete%20de%20retorno&body=Olá ${c.nome}, seu retorno está agendado para hoje.`);
+          await addLog(c.id, 'lembrete', `Lembrete enviado (${today})`);
+        }
+      });
+    }, 3600000);
+    if (Notification.permission === 'default') Notification.requestPermission();
+  }
 
-  // ==================== INICIALIZAÇÃO ====================
   window.applyFiltersAndRender = renderTable;
   window.renderTable = renderTable;
   window.updateDashboard = updateDashboard;
