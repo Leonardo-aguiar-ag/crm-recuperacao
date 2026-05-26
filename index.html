@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Recuperação - Versão Final Corrigida</title>
+  <title>CRM Recuperação - Status Unificados</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -67,23 +67,6 @@
       background: var(--primary);
       color: white;
     }
-    .tag-badge {
-      background: #e2e8f0;
-      color: #1e293b;
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      margin-right: 0.5rem;
-      margin-bottom: 0.25rem;
-    }
-    .tag-badge i { cursor: pointer; margin-left: 0.5rem; }
-    .history-log {
-      border-left: 3px solid var(--primary);
-      padding-left: 0.75rem;
-      margin-bottom: 0.75rem;
-      font-size: 0.85rem;
-    }
     .login-screen {
       position: fixed;
       inset: 0;
@@ -102,6 +85,12 @@
     }
     .container-fluid { padding: 2rem; }
     @media (max-width: 768px) { .container-fluid { padding: 1rem; } }
+    .history-log {
+      border-left: 3px solid var(--primary);
+      padding-left: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
@@ -149,16 +138,16 @@
     <div class="tab-pane fade show active" id="dashboardTab">
       <div class="row g-4 mb-4">
         <div class="col-md-3"><div class="dashboard-card"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
-        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#10b981,#059669)"><h6>Fechados</h6><h2 id="dashFechados">0</h2></div></div>
-        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><h6>Recuperados (30d)</h6><h2 id="dashRecuperados">0</h2></div></div>
-        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)"><h6>Tempo médio cancel.</h6><h2 id="dashTempoCancel">0</h2><small>dias</small></div></div>
+        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#10b981,#059669)"><h6>Implantados (Recuperados)</h6><h2 id="dashImplantados">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)"><h6>Sem Interesse</h6><h2 id="dashSemInteresse">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><h6>Taxa de Conversão</h6><h2 id="dashConversao">0%</h2><small>Implantados / Total</small></div></div>
       </div>
       <div class="row g-3 mb-4">
-        <div class="col-auto"><label>Período</label><select id="periodSelect" class="form-select"><option value="30">30 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="all">Todo período</option></select></div>
+        <div class="col-auto"><label>Período para recuperados</label><select id="periodSelect" class="form-select"><option value="30">30 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="all">Todo período</option></select></div>
       </div>
       <div class="row g-4">
-        <div class="col-lg-6"><div class="card-custom"><h5>Recuperados por Mês</h5><canvas id="recoveryChart"></canvas></div></div>
-        <div class="col-lg-6"><div class="card-custom"><h5>Taxa de Conversão</h5><canvas id="conversionChart"></canvas></div></div>
+        <div class="col-lg-6"><div class="card-custom"><h5>Recuperados por Mês (Implantados)</h5><canvas id="recoveryChart"></canvas></div></div>
+        <div class="col-lg-6"><div class="card-custom"><h5>Distribuição por Status</h5><canvas id="statusChart"></canvas></div></div>
       </div>
     </div>
 
@@ -189,7 +178,6 @@
           <div class="col-md-6"><label>Emails</label><input id="cEmails" class="form-control"></div>
           <div class="col-md-6"><label>Retorno</label><input type="date" id="cRetorno" class="form-control"></div>
           <div class="col-md-6"><label>Foto</label><input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)"><img id="preview" style="max-width:100%; margin-top:0.5rem; display:none;"></div>
-          <div class="col-md-12"><label>Tags (digite e pressione Enter)</label><input type="text" id="cTagsInput" class="form-control" list="tagSuggestions"><datalist id="tagSuggestions"></datalist><div id="cTagsContainer" class="mt-2"></div></div>
         </div>
         <div class="mt-3"><label><strong>📝 Anotações</strong></label><textarea id="cAnotacoes" class="form-control" rows="3"></textarea></div>
         <ul class="nav nav-tabs mt-3">
@@ -213,21 +201,19 @@
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card-custom">
         <div class="row g-3 mb-3">
-          <div class="col-md-3"><input type="text" id="globalSearch" class="form-control" placeholder="Busca global" oninput="applyFiltersAndRender()"></div>
-          <div class="col-md-2"><select id="filterStatus" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Status</option></select></div>
-          <div class="col-md-2"><select id="filterPlano" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Plano</option></select></div>
-          <div class="col-md-2"><select id="filterTags" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Tag</option></select></div>
-          <div class="col-md-3"><button class="btn btn-outline-primary btn-sm" onclick="saveCurrentFilter()">Salvar filtro</button> <button class="btn btn-outline-secondary btn-sm" onclick="loadSavedFilters()">Meus filtros</button></div>
+          <div class="col-md-4"><input type="text" id="globalSearch" class="form-control" placeholder="Busca global" oninput="applyFiltersAndRender()"></div>
+          <div class="col-md-3"><select id="filterStatus" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Todos os status</option></select></div>
+          <div class="col-md-3"><select id="filterPlano" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Todos os planos</option></select></div>
+          <div class="col-md-2"><button class="btn btn-outline-primary btn-sm" onclick="saveCurrentFilter()">Salvar filtro</button> <button class="btn btn-outline-secondary btn-sm" onclick="loadSavedFilters()">Meus filtros</button></div>
         </div>
         <div class="row g-2 mb-3">
           <div class="col-auto"><button class="btn btn-success btn-sm" onclick="bulkWhatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp em massa</button></div>
           <div class="col-auto"><button class="btn btn-danger btn-sm" onclick="bulkDelete()"><i class="bi bi-trash"></i> Excluir selecionados</button></div>
-          <div class="col-auto"><select id="bulkStatus" class="form-select form-select-sm"><option value="">Status...</option></select><button class="btn btn-sm btn-warning" onclick="bulkChangeStatus()">Aplicar</button></div>
+          <div class="col-auto"><select id="bulkStatus" class="form-select form-select-sm"><option value="">Alterar status...</option></select><button class="btn btn-sm btn-warning" onclick="bulkChangeStatus()">Aplicar</button></div>
           <div class="col-auto"><input type="date" id="bulkRetorno" class="form-control form-control-sm"><button class="btn btn-sm btn-info" onclick="bulkScheduleReturn()">Agendar retorno</button></div>
-          <div class="col-auto"><select id="bulkTag" class="form-select form-select-sm"><option value="">Adicionar tag...</option></select><button class="btn btn-sm btn-secondary" onclick="bulkAddTag()">Adicionar</button></div>
         </div>
         <div class="table-responsive">
-          <table class="table table-hover"><thead><tr><th><input type="checkbox" id="selectAllCheckbox"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Tags</th><th>Status</th><th>Retorno</th><th>Ações</th></tr></thead><tbody id="tableBody"></tbody></table>
+          <table class="table table-hover"><thead><tr><th><input type="checkbox" id="selectAllCheckbox"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Retorno</th><th>Ações</th></tr></thead><tbody id="tableBody"></tbody></table>
         </div>
       </div>
     </div>
@@ -240,8 +226,31 @@
     <!-- CONFIGURAÇÕES -->
     <div class="tab-pane fade" id="configTab">
       <div class="row g-4">
-        <div class="col-lg-6"><div class="card-custom"><h4>Tags Globais</h4><div id="globalTagsList"></div><div class="input-group mt-3"><input type="text" id="newGlobalTag" class="form-control" placeholder="Nova tag"><button class="btn btn-success" onclick="addGlobalTag()">Adicionar</button></div></div></div>
-        <div class="col-lg-6"><div class="card-custom"><h4>Backup Automático</h4><label>Intervalo (horas)</label><input type="number" id="backupIntervalHours" class="form-control" value="24"><button class="btn btn-primary mt-2" onclick="setAutoBackup()">Ativar</button> <button class="btn btn-danger mt-2" onclick="stopAutoBackup()">Desligar</button><hr><button class="btn btn-primary" onclick="exportAllToCSV()">Exportar CSV</button> <button class="btn btn-outline-primary" onclick="exportBackup()">Backup JSON</button> <button class="btn btn-outline-primary" onclick="importBackup()">Importar JSON</button><input type="file" id="backupFileInput" accept=".json" style="display:none"></div></div>
+        <div class="col-lg-6">
+          <div class="card-custom">
+            <h4>Gerenciar Status</h4>
+            <div id="statusList"></div>
+            <div class="input-group mt-3">
+              <input type="text" id="newStatus" class="form-control" placeholder="Novo status">
+              <button class="btn btn-success" onclick="addStatus()">Adicionar</button>
+            </div>
+            <small class="text-muted">Os status são usados no campo único do cliente.</small>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card-custom">
+            <h4>Backup Automático</h4>
+            <label>Intervalo (horas)</label>
+            <input type="number" id="backupIntervalHours" class="form-control" value="24">
+            <button class="btn btn-primary mt-2" onclick="setAutoBackup()">Ativar</button>
+            <button class="btn btn-danger mt-2" onclick="stopAutoBackup()">Desligar</button>
+            <hr>
+            <button class="btn btn-primary" onclick="exportAllToCSV()">Exportar CSV</button>
+            <button class="btn btn-outline-primary" onclick="exportBackup()">Backup JSON</button>
+            <button class="btn btn-outline-primary" onclick="importBackup()">Importar JSON</button>
+            <input type="file" id="backupFileInput" accept=".json" style="display:none">
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -264,11 +273,10 @@
 
   let currentUser = null;
   let clients = [];
-  let statuses = ['Em negociação', 'Fechou o plano', 'Não tem interesse'];
-  let globalTags = ['prioridade alta', 'reclamação', 'proposta enviada'];
+  let statuses = ['Em Negociação', 'Para Enviar Documentação', 'Implantado', 'Sem Interesse'];
   let autoBackupInterval = null;
   let reminderInterval = null;
-  let recoveryChart, conversionChart;
+  let recoveryChart, statusChart;
 
   // Helper: sanitização HTML
   const escapeHtml = (str) => {
@@ -292,7 +300,6 @@
       currentUser = user;
       document.getElementById('loginScreen').style.display = 'none';
       await loadStatuses();
-      await loadGlobalTags();
       await loadClients();
       startReminderChecker();
     } else {
@@ -309,85 +316,53 @@
   const toggleTheme = () => { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light'); };
   if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
 
-  // ==================== STATUS (ETIQUETAS DE STATUS) ====================
+  // ==================== STATUS ====================
   async function loadStatuses() {
     const doc = await db.collection('customStatuses').doc(currentUser.uid).get();
-    if (doc.exists && doc.data().statuses) statuses = doc.data().statuses;
+    if (doc.exists && doc.data().statuses && doc.data().statuses.length) {
+      statuses = doc.data().statuses;
+    }
     renderStatuses();
   }
   async function saveStatuses() { await db.collection('customStatuses').doc(currentUser.uid).set({ statuses }); }
-  function addStatus() { let s = prompt('Novo status'); if (s && !statuses.includes(s)) { statuses.push(s); renderStatuses(); saveStatuses(); } }
-  function deleteStatus(i) { statuses.splice(i, 1); renderStatuses(); saveStatuses(); }
+  function addStatus() {
+    let s = document.getElementById('newStatus').value.trim();
+    if (!s) return;
+    if (statuses.includes(s)) return alert('Status já existe.');
+    statuses.push(s);
+    renderStatuses();
+    saveStatuses();
+    document.getElementById('newStatus').value = '';
+  }
+  function deleteStatus(i) {
+    if (!confirm('Remover este status? Os clientes com este status não serão afetados, mas você não poderão mais selecioná-lo.')) return;
+    statuses.splice(i, 1);
+    renderStatuses();
+    saveStatuses();
+  }
   function renderStatuses() {
-    document.getElementById('cStatus').innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
-    document.getElementById('filterStatus').innerHTML = '<option value="ALL">Todos status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    document.getElementById('bulkStatus').innerHTML = '<option value="">Selecionar...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-  }
-
-  // ==================== TAGS GLOBAIS ====================
-  async function loadGlobalTags() {
-    const doc = await db.collection('globalTags').doc(currentUser.uid).get();
-    if (doc.exists && doc.data().tags) globalTags = doc.data().tags;
-    renderGlobalTags();
-  }
-  async function saveGlobalTags() { await db.collection('globalTags').doc(currentUser.uid).set({ tags: globalTags }); }
-
-  async function addGlobalTag() {
-    const tag = document.getElementById('newGlobalTag').value.trim();
-    if (!tag) return;
-    if (globalTags.includes(tag)) return alert('Tag já existe.');
-    globalTags.push(tag);
-    await saveGlobalTags();
-    renderGlobalTags();
-    document.getElementById('newGlobalTag').value = '';
-  }
-
-  async function deleteGlobalTag(index) {
-    if (!confirm('Remover esta tag de todos os clientes?')) return;
-    const tagToRemove = globalTags[index];
-    globalTags.splice(index, 1);
-    await saveGlobalTags();
-    renderGlobalTags();
-    for (const client of clients) {
-      if (client.tags && client.tags.includes(tagToRemove)) {
-        const newTags = client.tags.filter(t => t !== tagToRemove);
-        await db.collection('clients').doc(client.id).update({ tags: newTags });
-      }
-    }
-    await loadClients();
-  }
-
-  function renderGlobalTags() {
-    const container = document.getElementById('globalTagsList');
-    if (container) {
-      container.innerHTML = globalTags.map((t, i) => `
+    // Dropdown na ficha cliente
+    const cStatus = document.getElementById('cStatus');
+    if (cStatus) cStatus.innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
+    // Filtro de status na pesquisa
+    const filterStatus = document.getElementById('filterStatus');
+    if (filterStatus) filterStatus.innerHTML = '<option value="ALL">Todos os status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+    // Ações em massa - status
+    const bulkStatus = document.getElementById('bulkStatus');
+    if (bulkStatus) bulkStatus.innerHTML = '<option value="">Alterar status...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+    // Lista de gerenciamento na aba Configurações
+    const statusListDiv = document.getElementById('statusList');
+    if (statusListDiv) {
+      statusListDiv.innerHTML = statuses.map((s, i) => `
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <span class="tag-badge">${escapeHtml(t)}</span>
-          <button class="btn btn-sm btn-danger" onclick="deleteGlobalTag(${i})">✖</button>
+          <span>${escapeHtml(s)}</span>
+          <button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})">Excluir</button>
         </div>
       `).join('');
     }
-    const filterTags = document.getElementById('filterTags');
-    if (filterTags) {
-      filterTags.innerHTML = '<option value="ALL">Todas tags</option>' +
-        globalTags.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
-    }
-    const bulkTag = document.getElementById('bulkTag');
-    if (bulkTag) {
-      bulkTag.innerHTML = '<option value="">Adicionar tag...</option>' +
-        globalTags.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
-    }
-    const datalist = document.getElementById('tagSuggestions');
-    if (datalist) {
-      datalist.innerHTML = globalTags.map(t => `<option value="${escapeHtml(t)}">`).join('');
-    }
-    const tagsInput = document.getElementById('cTagsInput');
-    if (tagsInput && globalTags.length) {
-      tagsInput.placeholder = `Ex: ${globalTags.slice(0, 3).join(', ')}...`;
-    }
   }
 
-  // ==================== CLIENTES (CRUD) ====================
+  // ==================== CLIENTES ====================
   async function loadClients() {
     const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
     clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -399,7 +374,6 @@
 
   async function saveClient() {
     const id = document.getElementById('clientId').value;
-    const tags = Array.from(document.querySelectorAll('#cTagsContainer .tag-badge')).map(el => el.innerText.trim());
     const data = {
       nome: document.getElementById('cNome').value.trim(),
       nomeSocial: document.getElementById('cNomeSocial').value.trim(),
@@ -422,7 +396,6 @@
       emails: document.getElementById('cEmails').value.trim(),
       retorno: document.getElementById('cRetorno').value,
       anotacoes: document.getElementById('cAnotacoes').value.trim(),
-      tags,
       userId: currentUser.uid,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
@@ -434,6 +407,7 @@
       if (id) {
         await db.collection('clients').doc(id).update(data);
         await addLog(id, 'edit', 'Cliente atualizado');
+        alert('Cliente atualizado!');
       } else {
         if (data.cpf) {
           const dup = await db.collection('clients').where('userId', '==', currentUser.uid).where('cpf', '==', data.cpf).get();
@@ -441,6 +415,7 @@
         }
         const newRef = await db.collection('clients').add(data);
         await addLog(newRef.id, 'create', 'Novo cliente cadastrado');
+        alert('Cliente cadastrado!');
       }
       clearForm();
       document.querySelector('[data-bs-target="#dashboardTab"]').click();
@@ -453,7 +428,6 @@
     document.getElementById('clientId').value = '';
     ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('cStatus').selectedIndex = 0;
-    document.getElementById('cTagsContainer').innerHTML = '';
     document.getElementById('preview').style.display = 'none';
     document.getElementById('anexosList').innerHTML = '';
     document.getElementById('historicoList').innerHTML = '';
@@ -485,29 +459,19 @@
     document.getElementById('cEmails').value = c.emails || '';
     document.getElementById('cRetorno').value = c.retorno || '';
     document.getElementById('cAnotacoes').value = c.anotacoes || '';
-    document.getElementById('cTagsContainer').innerHTML = '';
-    if (c.tags) c.tags.forEach(tag => addTagToForm(tag));
     loadAnexos(id);
     loadHistorico(id);
     document.querySelector('[data-bs-target="#clientesTab"]').click();
   }
 
-  function addTagToForm(tag) {
-    const container = document.getElementById('cTagsContainer');
-    const span = document.createElement('span');
-    span.className = 'tag-badge';
-    span.innerText = tag;
-    span.innerHTML += ` <i class="bi bi-x-circle" onclick="this.parentElement.remove()"></i>`;
-    container.appendChild(span);
+  async function deleteClient(id) {
+    if (!confirm('Excluir este cliente?')) return;
+    await db.collection('clients').doc(id).delete();
+    await addLog(id, 'delete', 'Cliente excluído');
+    await loadClients();
   }
-  document.getElementById('cTagsInput')?.addEventListener('keypress', e => {
-    if (e.key === 'Enter' && e.target.value.trim()) {
-      addTagToForm(e.target.value.trim());
-      e.target.value = '';
-    }
-  });
 
-  // ==================== ANEXOS (Storage) ====================
+  // ==================== ANEXOS ====================
   async function loadAnexos(clientId) {
     const listDiv = document.getElementById('anexosList');
     listDiv.innerHTML = 'Carregando...';
@@ -518,7 +482,7 @@
     let html = '';
     for (const item of items) {
       const url = await item.getDownloadURL();
-      html += `<div class="attachment-item"><a href="${url}" target="_blank">${item.name}</a><button class="btn btn-sm btn-danger" onclick="deleteAnexo('${clientId}','${item.name}')">Excluir</button></div>`;
+      html += `<div class="d-flex justify-content-between align-items-center mb-2"><a href="${url}" target="_blank">${item.name}</a><button class="btn btn-sm btn-danger" onclick="deleteAnexo('${clientId}','${item.name}')">Excluir</button></div>`;
     }
     listDiv.innerHTML = html;
   }
@@ -571,7 +535,7 @@
     if (Notification.permission === 'default') Notification.requestPermission();
   }
 
-  // ==================== BACKUP E IMPORTAÇÃO (CORRIGIDOS) ====================
+  // ==================== BACKUP ====================
   function exportBackup() {
     const dataToExport = clients.map(c => {
       const { updatedAt, createdAt, ...rest } = c;
@@ -584,9 +548,7 @@
     a.click();
     URL.revokeObjectURL(a.href);
   }
-
   function importBackup() { document.getElementById('backupFileInput').click(); }
-
   async function handleBackupFile(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -597,79 +559,48 @@
         let arr = Array.isArray(parsed) ? parsed : (parsed.clients && Array.isArray(parsed.clients) ? parsed.clients : null);
         if (!arr) throw new Error('Formato inválido: não é um array.');
         if (!confirm(`Importar ${arr.length} clientes?`)) return;
-
         let adicionados = 0, ignorados = 0;
         for (const c of arr) {
           const { id, ...d } = c;
           d.userId = currentUser.uid;
           if (!d.nome) { ignorados++; continue; }
-
-          // === VERIFICAÇÃO DE DUPLICIDADE ===
           let duplicado = false;
           if (d.cpf) {
-            const existing = await db.collection('clients')
-              .where('userId', '==', currentUser.uid)
-              .where('cpf', '==', d.cpf)
-              .get();
+            const existing = await db.collection('clients').where('userId', '==', currentUser.uid).where('cpf', '==', d.cpf).get();
             if (!existing.empty) duplicado = true;
           }
           if (!duplicado && d.telefones) {
-            const existingTel = await db.collection('clients')
-              .where('userId', '==', currentUser.uid)
-              .where('telefones', '==', d.telefones)
-              .get();
+            const existingTel = await db.collection('clients').where('userId', '==', currentUser.uid).where('telefones', '==', d.telefones).get();
             if (!existingTel.empty) duplicado = true;
           }
-          if (!duplicado && d.nome) {
-            const existingNome = await db.collection('clients')
-              .where('userId', '==', currentUser.uid)
-              .where('nome', '==', d.nome)
-              .get();
-            if (!existingNome.empty) duplicado = true;
-          }
-
-          if (duplicado) {
-            if (!confirm(`Cliente "${d.nome}" já existe. Deseja importar mesmo assim?`)) {
-              ignorados++;
-              continue;
-            }
-          }
-
+          if (duplicado && !confirm(`Cliente "${d.nome}" já existe. Importar mesmo assim?`)) { ignorados++; continue; }
           try {
             await db.collection('clients').add(d);
             adicionados++;
-          } catch (err) { ignorados++; console.error(err); }
+          } catch (err) { ignorados++; }
         }
-        alert(`Importação concluída: ${adicionados} adicionados, ${ignorados} ignorados/erros.`);
+        alert(`Importação: ${adicionados} adicionados, ${ignorados} ignorados.`);
         await loadClients();
-      } catch (er) { alert('Erro ao processar arquivo: ' + er.message); }
+      } catch (er) { alert('Erro: ' + er.message); }
     };
     reader.readAsText(file);
   }
   document.getElementById('backupFileInput').addEventListener('change', handleBackupFile);
 
   function exportAllToCSV() {
-    // Cabeçalho com mais campos
-    const rows = [['Nome', 'Telefone', 'Email', 'Status', 'Empresa', 'Tags']];
+    const rows = [['Nome', 'Telefone', 'Email', 'Status', 'Empresa']];
     for (const c of clients) {
-      const telefone = c.telefones || '';
-      const email = c.emails || '';
-      const status = c.status || '';
-      const empresa = c.empresa || '';
-      const tags = (c.tags || []).join('; ');
-      // Escapa aspas e vírgulas nos campos
       const esc = (s) => `"${(s || '').replace(/"/g, '""')}"`;
       rows.push([
         esc(c.nome || ''),
-        esc(telefone),
-        esc(email),
-        esc(status),
-        esc(empresa),
-        esc(tags)
+        esc(c.telefones || ''),
+        esc(c.emails || ''),
+        esc(c.status || ''),
+        esc(c.empresa || '')
       ]);
     }
     const csv = rows.map(r => r.join(',')).join('\n');
-    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' }); // BOM para acentos
+    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `contatos_${new Date().toISOString().slice(0,19)}.csv`;
@@ -685,39 +616,23 @@
   }
   function stopAutoBackup() { if (autoBackupInterval) { clearInterval(autoBackupInterval); autoBackupInterval = null; alert('Backup desligado.'); } }
 
-  // ==================== EXCLUSÃO EM MASSA ====================
-  async function bulkDelete() {
-    const ids = getSelectedIds();
-    if (ids.length === 0) return alert('Selecione ao menos um cliente.');
-    if (!confirm(`Tem certeza que deseja excluir permanentemente ${ids.length} cliente(s)?`)) return;
-    for (const id of ids) {
-      await db.collection('clients').doc(id).delete();
-      await addLog(id, 'bulk_delete', 'Cliente removido em massa');
-    }
-    await loadClients();
-    alert(`${ids.length} cliente(s) removido(s).`);
-  }
-
-  // ==================== RENDERIZAÇÃO DAS TABELAS ====================
+  // ==================== RENDERIZAÇÃO ====================
   function renderTable() {
     const search = document.getElementById('globalSearch').value.toLowerCase();
     const status = document.getElementById('filterStatus').value;
     const plano = document.getElementById('filterPlano').value;
-    const tag = document.getElementById('filterTags').value;
 
     const filtered = clients.filter(c => {
       const matchSearch = !search || c.nome?.toLowerCase().includes(search) || c.cpf?.includes(search) || c.telefones?.includes(search) || c.emails?.toLowerCase().includes(search) || c.empresa?.toLowerCase().includes(search);
       const matchStatus = status === 'ALL' || c.status === status;
       const matchPlano = plano === 'ALL' || c.planoAtual === plano || c.redePlano === plano;
-      const matchTag = tag === 'ALL' || (c.tags && c.tags.includes(tag));
-      return matchSearch && matchStatus && matchPlano && matchTag;
+      return matchSearch && matchStatus && matchPlano;
     });
 
     const tbody = document.getElementById('tableBody');
-    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum cliente encontrado.</td></tr>'; return; }
+    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum cliente encontrado.</td></tr>'; return; }
     let html = '';
     for (const c of filtered) {
-      const tagsHtml = (c.tags || []).map(t => `<span class="tag-badge">${escapeHtml(t)}</span>`).join('');
       const telefoneRaw = c.telefones || '';
       const whatsLink = `https://wa.me/${formatPhoneForWhatsApp(telefoneRaw)}`;
       html += `<tr>
@@ -725,8 +640,7 @@
         <td><strong>${escapeHtml(c.nome)}</strong></td>
         <td>${escapeHtml(c.empresa)}</td>
         <td>${escapeHtml(telefoneRaw)}</td>
-        <td>${tagsHtml}</td>
-        <td><span class="badge bg-primary">${c.status || ''}</span></td>
+        <td><span class="badge bg-primary">${escapeHtml(c.status || '')}</span></td>
         <td>${c.retorno || ''}</td>
         <td>
           <button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
@@ -739,7 +653,7 @@
 
   function renderAgenda() {
     const tbody = document.getElementById('agendaBody');
-    if (clients.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhum cliente. Florida</tr>'; return; }
+    if (clients.length === 0) { tbody.innerHTML = '<td><td colspan="5" class="text-center">Nenhum cliente. Florida</td></tr>'; return; }
     let html = '';
     for (const c of clients) {
       const telefoneRaw = c.telefones || '';
@@ -759,7 +673,7 @@
     const planos = new Set();
     clients.forEach(c => { if (c.planoAtual) planos.add(c.planoAtual); if (c.redePlano) planos.add(c.redePlano); });
     const select = document.getElementById('filterPlano');
-    select.innerHTML = '<option value="ALL">Todos planos</option>' + [...planos].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
+    select.innerHTML = '<option value="ALL">Todos os planos</option>' + [...planos].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
   }
 
   // ==================== AÇÕES EM MASSA ====================
@@ -770,7 +684,6 @@
   document.getElementById('globalSearch')?.addEventListener('input', () => renderTable());
   document.getElementById('filterStatus')?.addEventListener('change', () => renderTable());
   document.getElementById('filterPlano')?.addEventListener('change', () => renderTable());
-  document.getElementById('filterTags')?.addEventListener('change', () => renderTable());
 
   async function bulkWhatsApp() {
     const ids = getSelectedIds();
@@ -780,6 +693,17 @@
       if (c?.telefones) window.open(`https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`, '_blank');
       await addLog(id, 'bulk_whatsapp', 'Disparo em massa');
     }
+  }
+  async function bulkDelete() {
+    const ids = getSelectedIds();
+    if (ids.length === 0) return alert('Selecione ao menos um cliente.');
+    if (!confirm(`Excluir permanentemente ${ids.length} cliente(s)?`)) return;
+    for (const id of ids) {
+      await db.collection('clients').doc(id).delete();
+      await addLog(id, 'bulk_delete', 'Cliente removido em massa');
+    }
+    await loadClients();
+    alert(`${ids.length} cliente(s) removido(s).`);
   }
   async function bulkChangeStatus() {
     const newStatus = document.getElementById('bulkStatus').value;
@@ -801,48 +725,53 @@
     }
     await loadClients();
   }
-  async function bulkAddTag() {
-    const tag = document.getElementById('bulkTag').value;
-    if (!tag) return alert('Selecione uma tag');
-    const ids = getSelectedIds();
-    for (const id of ids) {
-      const c = clients.find(c => c.id === id);
-      const tags = c.tags || [];
-      if (!tags.includes(tag)) tags.push(tag);
-      await db.collection('clients').doc(id).update({ tags });
-      await addLog(id, 'bulk_tag', `Tag "${tag}" adicionada`);
-    }
-    await loadClients();
-  }
 
   // ==================== DASHBOARD ====================
   function updateDashboard() {
-    document.getElementById('dashTotal').innerText = clients.length;
-    document.getElementById('dashFechados').innerText = clients.filter(c => c.status === 'Fechou o plano').length;
-    const periodo = document.getElementById('periodSelect').value;
-    const limite = periodo !== 'all' ? new Date(Date.now() - parseInt(periodo) * 86400000) : new Date(0);
-    const recuperados = clients.filter(c => c.status === 'Fechou o plano' && c.updatedAt && new Date(c.updatedAt.toDate?.() || c.updatedAt) >= limite).length;
-    document.getElementById('dashRecuperados').innerText = recuperados;
-    const tempos = clients.filter(c => c.adesao && c.cancelamento).map(c => (new Date(c.cancelamento) - new Date(c.adesao)) / 86400000).filter(d => d > 0);
-    const media = tempos.length ? Math.round(tempos.reduce((a, b) => a + b, 0) / tempos.length) : 0;
-    document.getElementById('dashTempoCancel').innerText = media;
+    const total = clients.length;
+    const implantados = clients.filter(c => c.status === 'Implantado').length;
+    const semInteresse = clients.filter(c => c.status === 'Sem Interesse').length;
+    const taxaConversao = total > 0 ? ((implantados / total) * 100).toFixed(1) : 0;
 
-    const meses = [];
-    const counts = new Array(6).fill(0);
-    for (let i = 5; i >= 0; i--) { const d = new Date(); d.setMonth(d.getMonth() - i); meses.push(d.toLocaleString('default', { month: 'short' })); }
+    document.getElementById('dashTotal').innerText = total;
+    document.getElementById('dashImplantados').innerText = implantados;
+    document.getElementById('dashSemInteresse').innerText = semInteresse;
+    document.getElementById('dashConversao').innerText = taxaConversao + '%';
+
+    // Período selecionado para recuperados por mês
+    const periodo = document.getElementById('periodSelect').value;
+    const now = new Date();
+    let meses = [];
+    let counts = new Array(6).fill(0);
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      meses.push(d.toLocaleString('default', { month: 'short' }));
+    }
     clients.forEach(c => {
-      if (c.status === 'Fechou o plano' && c.updatedAt) {
-        const d = new Date(c.updatedAt.toDate?.() || c.updatedAt);
-        const diff = (new Date().getFullYear() - d.getFullYear()) * 12 + (new Date().getMonth() - d.getMonth());
-        if (diff >= 0 && diff < 6) counts[5 - diff]++;
+      if (c.status === 'Implantado' && c.updatedAt) {
+        let data = c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt);
+        let diffMeses = (now.getFullYear() - data.getFullYear()) * 12 + (now.getMonth() - data.getMonth());
+        if (diffMeses >= 0 && diffMeses < 6) {
+          if (periodo === 'all' || diffMeses <= parseInt(periodo) / 30) {
+            counts[5 - diffMeses]++;
+          }
+        }
       }
     });
     if (recoveryChart) recoveryChart.destroy();
-    recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels: meses, datasets: [{ label: 'Recuperados', data: counts, backgroundColor: '#10b981' }] } });
+    recoveryChart = new Chart(document.getElementById('recoveryChart'), {
+      type: 'bar',
+      data: { labels: meses, datasets: [{ label: 'Recuperados (Implantados)', data: counts, backgroundColor: '#10b981' }] }
+    });
 
-    const convData = [clients.filter(c => c.status === 'Em negociação').length, clients.filter(c => c.status === 'Fechou o plano').length];
-    if (conversionChart) conversionChart.destroy();
-    conversionChart = new Chart(document.getElementById('conversionChart'), { type: 'doughnut', data: { labels: ['Em negociação', 'Fechou'], datasets: [{ data: convData, backgroundColor: ['#f59e0b', '#10b981'] }] } });
+    // Gráfico de distribuição de status
+    const statusLabels = statuses;
+    const statusData = statuses.map(s => clients.filter(c => c.status === s).length);
+    if (statusChart) statusChart.destroy();
+    statusChart = new Chart(document.getElementById('statusChart'), {
+      type: 'doughnut',
+      data: { labels: statusLabels, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] }
+    });
   }
   document.getElementById('periodSelect')?.addEventListener('change', updateDashboard);
 
@@ -851,8 +780,7 @@
     const filter = {
       search: document.getElementById('globalSearch').value,
       status: document.getElementById('filterStatus').value,
-      plano: document.getElementById('filterPlano').value,
-      tag: document.getElementById('filterTags').value
+      plano: document.getElementById('filterPlano').value
     };
     localStorage.setItem(`savedFilter_${currentUser.uid}`, JSON.stringify(filter));
     alert('Filtro salvo!');
@@ -864,7 +792,6 @@
       document.getElementById('globalSearch').value = f.search || '';
       document.getElementById('filterStatus').value = f.status || 'ALL';
       document.getElementById('filterPlano').value = f.plano || 'ALL';
-      document.getElementById('filterTags').value = f.tag || 'ALL';
       renderTable();
     } else alert('Nenhum filtro salvo.');
   }
