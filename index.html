@@ -1,5 +1,5 @@
 <!-- ===================================================== --> 
-<!-- CRM RECUPERAÇÃO COMPLETO FINAL - REDESENHO CSS + DASHBOARD ANALÍTICO -->
+<!-- CRM RECUPERAÇÃO COMPLETO FINAL - REDESENHO CSS + DASHBOARD ANALÍTICO + ANOTAÇÕES -->
 <!-- ===================================================== -->
 
 <!DOCTYPE html>
@@ -536,6 +536,11 @@
               <input type="hidden" id="fotoBase64">
               <img id="preview">
             </div>
+            <!-- CAMPO DE ANOTAÇÕES -->
+            <div class="col-12">
+              <label>Anotações</label>
+              <textarea id="cAnotacoes" class="form-control" rows="4" placeholder="Registre aqui observações sobre este cliente..."></textarea>
+            </div>
           </div>
           <div class="d-flex gap-2 mt-4">
             <button class="btn btn-success" onclick="saveClient()">Salvar Cliente</button>
@@ -755,7 +760,7 @@
       renderTable();
       renderAgenda();
       updateDashboard();
-      updatePlanosFilter(); // Atualiza o filtro de planos
+      updatePlanosFilter();
       renderStatuses();
     }
 
@@ -803,6 +808,7 @@
         telefones: document.getElementById('cTelefones').value,
         emails: document.getElementById('cEmails').value,
         retorno: document.getElementById('cRetorno').value,
+        anotacoes: document.getElementById('cAnotacoes').value,
         userId: currentUser.uid,
         updatedAt: new Date().toISOString()
       };
@@ -838,7 +844,7 @@
         'cNome', 'cNomeSocial', 'cCPF', 'cNascimento', 'cEndereco',
         'cCidade', 'cUF', 'cEmpresa', 'cAdeEmp', 'cRedePlano',
         'cPlanoAtual', 'cAcomodacao', 'cSituacao', 'cAdesao',
-        'cCancelamento', 'cTempo', 'cTelefones', 'cEmails', 'cRetorno'
+        'cCancelamento', 'cTempo', 'cTelefones', 'cEmails', 'cRetorno', 'cAnotacoes'
       ];
       campos.forEach(id => {
         const el = document.getElementById(id);
@@ -884,6 +890,7 @@
       document.getElementById('cTelefones').value = client.telefones || '';
       document.getElementById('cEmails').value = client.emails || '';
       document.getElementById('cRetorno').value = client.retorno || '';
+      document.getElementById('cAnotacoes').value = client.anotacoes || '';
       document.querySelector('[data-bs-target="#clientesTab"]').click();
     }
 
@@ -897,7 +904,7 @@
       }
     }
 
-    /* TABELA - agora com filtro por plano */
+    /* TABELA - com filtro por plano */
     function renderTable() {
       const tbody = document.getElementById('tableBody');
       const search = document.getElementById('search').value.toLowerCase();
@@ -936,11 +943,9 @@
       });
     }
 
-    /* Atualiza o select de planos baseado nos clientes atuais */
     function updatePlanosFilter() {
       const select = document.getElementById('filterPlano');
       const currentValue = select.value;
-      // Coleta todos os planos únicos (planoAtual ou redePlano)
       const planosSet = new Set();
       clients.forEach(c => {
         if (c.planoAtual) planosSet.add(c.planoAtual);
@@ -953,7 +958,6 @@
         select.innerHTML += `<option value="${plano}">${plano}</option>`;
       });
       
-      // Tenta manter o valor selecionado anteriormente
       if (planos.includes(currentValue)) {
         select.value = currentValue;
       } else {
