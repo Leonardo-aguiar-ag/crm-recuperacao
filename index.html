@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Recuperação - Exportação Selecionada</title>
+  <title>CRM Recuperação</title>
 
   <!-- BOOTSTRAP -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -161,515 +160,471 @@
     #preview { max-width: 100%; margin-top: 1rem; border-radius: var(--radius-lg); display: none; }
     .container-fluid { padding: 2rem; }
     @media (max-width: 768px) { .container-fluid { padding: 1rem; } }
+
+    /* Ajuste para o campo de anotações ficar destacado */
+    .anotacoes-area {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-top: 1rem;
+    }
   </style>
 </head>
-
 <body>
 
-  <!-- LOGIN -->
-  <div class="login-screen" id="loginScreen">
-    <div class="login-box">
-      <h3 class="text-center mb-4">CRM Recuperação</h3>
-      <input type="email" id="loginEmail" class="form-control mb-3" placeholder="Seu email">
-      <div class="input-group mb-3">
-        <input type="password" id="loginPassword" class="form-control" placeholder="Senha">
-        <button class="btn btn-outline-secondary" onclick="togglePassword()"><i class="bi bi-eye"></i></button>
-      </div>
-      <button class="btn btn-primary w-100 mb-2" onclick="login()">Entrar</button>
-      <button class="btn btn-danger w-100 mb-2" onclick="googleLogin()"><i class="bi bi-google"></i> Entrar com Google</button>
-      <button class="btn btn-outline-primary w-100 mb-2" onclick="register()">Criar Conta</button>
-      <button class="btn btn-link w-100" onclick="recoverPassword()">Esqueci minha senha</button>
-      <div id="loginError" class="text-danger text-center mt-3"></div>
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <h3 class="text-center mb-4">CRM Recuperação</h3>
+    <input type="email" id="loginEmail" class="form-control mb-3" placeholder="Seu email">
+    <div class="input-group mb-3">
+      <input type="password" id="loginPassword" class="form-control" placeholder="Senha">
+      <button class="btn btn-outline-secondary" onclick="togglePassword()"><i class="bi bi-eye"></i></button>
     </div>
+    <button class="btn btn-primary w-100 mb-2" onclick="login()">Entrar</button>
+    <button class="btn btn-danger w-100 mb-2" onclick="googleLogin()"><i class="bi bi-google"></i> Entrar com Google</button>
+    <button class="btn btn-outline-primary w-100 mb-2" onclick="register()">Criar Conta</button>
+    <button class="btn btn-link w-100" onclick="recoverPassword()">Esqueci minha senha</button>
+    <div id="loginError" class="text-danger text-center mt-3"></div>
   </div>
+</div>
 
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <h4 class="m-0 fw-bold">CRM Recuperação</h4>
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-primary" onclick="toggleTheme()"><i class="bi bi-moon-stars-fill"></i></button>
-        <button class="btn btn-success" onclick="exportBackup()">Backup</button>
-        <button class="btn btn-danger" onclick="logout()">Sair</button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- CONTAINER -->
+<!-- NAVBAR (apenas Sair) -->
+<nav class="navbar navbar-expand-lg">
   <div class="container-fluid">
-    <!-- ABAS -->
-    <ul class="nav nav-tabs">
-      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboardTab">Dashboard</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#clientesTab">Ficha Cliente</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesquisaTab">Pesquisar</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#agendaTab">Agenda</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#configTab">Configurações</button></li>
-    </ul>
+    <h4 class="m-0 fw-bold">CRM Recuperação</h4>
+    <div class="d-flex gap-2">
+      <button class="btn btn-danger" onclick="logout()">Sair</button>
+    </div>
+  </div>
+</nav>
 
-    <div class="tab-content">
-      <!-- DASHBOARD -->
-      <div class="tab-pane fade show active" id="dashboardTab">
-        <div class="row g-4 mb-4">
-          <div class="col-md-3"><div class="dashboard-card bg-primary"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
-          <div class="col-md-3"><div class="dashboard-card bg-success"><h6>Fechados</h6><h2 id="dashFechados">0</h2></div></div>
-          <div class="col-md-3"><div class="dashboard-card bg-warning"><h6>Negociação</h6><h2 id="dashNegociacao">0</h2></div></div>
-          <div class="col-md-3"><div class="dashboard-card bg-danger"><h6>Sem Interesse</h6><h2 id="dashSemInteresse">0</h2></div></div>
+<!-- CONTAINER -->
+<div class="container-fluid">
+  <ul class="nav nav-tabs">
+    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboardTab">Dashboard</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#clientesTab">Ficha Cliente</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesquisaTab">Pesquisar</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#agendaTab">Agenda</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#configTab">Configurações</button></li>
+  </ul>
+
+  <div class="tab-content">
+    <!-- DASHBOARD -->
+    <div class="tab-pane fade show active" id="dashboardTab">
+      <div class="row g-4 mb-4">
+        <div class="col-md-3"><div class="dashboard-card bg-primary"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-success"><h6>Fechados</h6><h2 id="dashFechados">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-warning"><h6>Negociação</h6><h2 id="dashNegociacao">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-danger"><h6>Sem Interesse</h6><h2 id="dashSemInteresse">0</h2></div></div>
+      </div>
+      <div class="row g-4">
+        <div class="col-lg-6"><div class="card card-custom p-4"><h5 class="mb-4">Distribuição por Status</h5><canvas id="statusChart"></canvas></div></div>
+        <div class="col-lg-6"><div class="card card-custom p-4"><h5 class="mb-4">Top 5 Empresas</h5><canvas id="companyChart"></canvas></div></div>
+        <div class="col-12"><div class="card card-custom p-4"><h5 class="mb-4">Evolução de Clientes</h5><canvas id="timeChart"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- FICHA CLIENTE (com anotações em destaque) -->
+    <div class="tab-pane fade" id="clientesTab">
+      <div class="card card-custom p-4 mb-4">
+        <h5 class="mb-3">Campo Mágico</h5>
+        <textarea id="smartPaste" class="form-control mb-3" rows="5" placeholder="Cole aqui os dados do PDF"></textarea>
+        <button class="btn btn-primary" onclick="autoFill()">Auto preencher</button>
+      </div>
+      <div class="card card-custom p-4">
+        <input type="hidden" id="clientId">
+        <div class="row g-3">
+          <div class="col-md-4"><label>Nome do usuário</label><input type="text" id="cNome" class="form-control"></div>
+          <div class="col-md-4"><label>Nome social</label><input type="text" id="cNomeSocial" class="form-control"></div>
+          <div class="col-md-4"><label>CPF do titular</label><input type="text" id="cCPF" class="form-control"></div>
+          <div class="col-md-4"><label>Data nascimento</label><input type="text" id="cNascimento" class="form-control"></div>
+          <div class="col-md-8"><label>Endereço</label><input type="text" id="cEndereco" class="form-control"></div>
+          <div class="col-md-5"><label>Cidade</label><input type="text" id="cCidade" class="form-control"></div>
+          <div class="col-md-1"><label>UF</label><input type="text" id="cUF" class="form-control"></div>
+          <div class="col-md-6"><label>Empresa</label><input type="text" id="cEmpresa" class="form-control"></div>
+          <div class="col-md-6"><label>Ade emp</label><input type="text" id="cAdeEmp" class="form-control"></div>
+          <div class="col-md-6"><label>Rede/plano</label><input type="text" id="cRedePlano" class="form-control"></div>
+          <div class="col-md-6"><label>Plano atual</label><input type="text" id="cPlanoAtual" class="form-control"></div>
+          <div class="col-md-4"><label>Acomodação</label><input type="text" id="cAcomodacao" class="form-control"></div>
+          <div class="col-md-4"><label>Situação</label><input type="text" id="cSituacao" class="form-control"></div>
+          <div class="col-md-4"><label>Status CRM</label><select id="cStatus" class="form-select"></select></div>
+          <div class="col-md-4"><label>Data adesão</label><input type="text" id="cAdesao" class="form-control"></div>
+          <div class="col-md-4"><label>Cancelamento</label><input type="text" id="cCancelamento" class="form-control"></div>
+          <div class="col-md-4"><label>Tempo</label><input type="text" id="cTempo" class="form-control"></div>
+          <div class="col-md-6"><label>Telefones</label><input type="text" id="cTelefones" class="form-control"></div>
+          <div class="col-md-6"><label>Emails</label><input type="text" id="cEmails" class="form-control"></div>
+          <div class="col-md-6"><label>Agenda retorno</label><input type="date" id="cRetorno" class="form-control"></div>
+          <div class="col-md-6"><label>Foto</label><input type="file" class="form-control" onchange="previewImage(event)"><img id="preview"></div>
         </div>
-        <div class="row g-4">
-          <div class="col-lg-6"><div class="card card-custom p-4"><h5 class="mb-4">Distribuição por Status</h5><canvas id="statusChart"></canvas></div></div>
-          <div class="col-lg-6"><div class="card card-custom p-4"><h5 class="mb-4">Top 5 Empresas</h5><canvas id="companyChart"></canvas></div></div>
-          <div class="col-12"><div class="card card-custom p-4"><h5 class="mb-4">Evolução de Clientes</h5><canvas id="timeChart"></canvas></div></div>
+        <!-- Campo de anotações em destaque -->
+        <div class="anotacoes-area mt-3">
+          <label><strong>📝 Anotações</strong></label>
+          <textarea id="cAnotacoes" class="form-control" rows="4" placeholder="Registre aqui observações sobre este cliente..."></textarea>
+        </div>
+        <div class="d-flex gap-2 mt-4">
+          <button class="btn btn-success" onclick="saveClient()">Salvar Cliente</button>
+          <button class="btn btn-outline-danger" onclick="clearForm()">Limpar Campos</button>
         </div>
       </div>
+    </div>
 
-      <!-- CLIENTES -->
-      <div class="tab-pane fade" id="clientesTab">
-        <div class="card card-custom p-4 mb-4">
-          <h5 class="mb-3">Campo Mágico</h5>
-          <textarea id="smartPaste" class="form-control mb-3" rows="5" placeholder="Cole aqui os dados do PDF"></textarea>
-          <button class="btn btn-primary" onclick="autoFill()">Auto preencher</button>
+    <!-- PESQUISAR (sem botão de exportar) -->
+    <div class="tab-pane fade" id="pesquisaTab">
+      <div class="card card-custom p-4">
+        <div class="row g-3 mb-4">
+          <div class="col-lg-4"><input type="text" id="search" class="form-control" placeholder="Pesquisar..." onkeyup="renderTable()"></div>
+          <div class="col-lg-3"><select id="filterStatus" class="form-select" onchange="renderTable()"><option value="ALL">Todos status</option></select></div>
+          <div class="col-lg-3"><select id="filterPlano" class="form-select" onchange="renderTable()"><option value="ALL">Todos os planos</option></select></div>
         </div>
-        <div class="card card-custom p-4">
-          <input type="hidden" id="clientId">
-          <div class="row g-3">
-            <div class="col-md-4"><label>Nome do usuário</label><input type="text" id="cNome" class="form-control"></div>
-            <div class="col-md-4"><label>Nome social</label><input type="text" id="cNomeSocial" class="form-control"></div>
-            <div class="col-md-4"><label>CPF do titular</label><input type="text" id="cCPF" class="form-control"></div>
-            <div class="col-md-4"><label>Data nascimento</label><input type="text" id="cNascimento" class="form-control"></div>
-            <div class="col-md-8"><label>Endereço</label><input type="text" id="cEndereco" class="form-control"></div>
-            <div class="col-md-5"><label>Cidade</label><input type="text" id="cCidade" class="form-control"></div>
-            <div class="col-md-1"><label>UF</label><input type="text" id="cUF" class="form-control"></div>
-            <div class="col-md-6"><label>Empresa</label><input type="text" id="cEmpresa" class="form-control"></div>
-            <div class="col-md-6"><label>Ade emp</label><input type="text" id="cAdeEmp" class="form-control"></div>
-            <div class="col-md-6"><label>Rede/plano</label><input type="text" id="cRedePlano" class="form-control"></div>
-            <div class="col-md-6"><label>Plano atual</label><input type="text" id="cPlanoAtual" class="form-control"></div>
-            <div class="col-md-4"><label>Acomodação</label><input type="text" id="cAcomodacao" class="form-control"></div>
-            <div class="col-md-4"><label>Situação</label><input type="text" id="cSituacao" class="form-control"></div>
-            <div class="col-md-4"><label>Status CRM</label><select id="cStatus" class="form-select"></select></div>
-            <div class="col-md-4"><label>Data adesão</label><input type="text" id="cAdesao" class="form-control"></div>
-            <div class="col-md-4"><label>Cancelamento</label><input type="text" id="cCancelamento" class="form-control"></div>
-            <div class="col-md-4"><label>Tempo</label><input type="text" id="cTempo" class="form-control"></div>
-            <div class="col-md-6"><label>Telefones</label><input type="text" id="cTelefones" class="form-control"></div>
-            <div class="col-md-6"><label>Emails</label><input type="text" id="cEmails" class="form-control"></div>
-            <div class="col-md-6"><label>Agenda retorno</label><input type="date" id="cRetorno" class="form-control"></div>
-            <div class="col-md-6">
-              <label>Foto</label>
-              <input type="file" class="form-control" onchange="previewImage(event)">
-              <img id="preview">
-            </div>
-            <!-- CAMPO DE ANOTAÇÕES -->
-            <div class="col-12">
-              <label>Anotações</label>
-              <textarea id="cAnotacoes" class="form-control" rows="4" placeholder="Registre aqui observações sobre este cliente..."></textarea>
-            </div>
-          </div>
-          <div class="d-flex gap-2 mt-4">
-            <button class="btn btn-success" onclick="saveClient()">Salvar Cliente</button>
-            <button class="btn btn-outline-danger" onclick="clearForm()">Limpar Campos</button>
-          </div>
+        <div class="table-responsive">
+          <table class="table"><thead><tr><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Plano</th><th>Status</th><th>Retorno</th><th>Ações</th></tr></thead><tbody id="tableBody"></tbody></table>
         </div>
       </div>
+    </div>
 
-      <!-- PESQUISA COM SELEÇÃO E EXPORTAÇÃO -->
-      <div class="tab-pane fade" id="pesquisaTab">
-        <div class="card card-custom p-4">
-          <div class="row g-3 mb-4 align-items-end">
-            <div class="col-lg-3">
-              <input type="text" id="search" class="form-control" placeholder="Pesquisar..." onkeyup="renderTable()">
-            </div>
-            <div class="col-lg-2">
-              <select id="filterStatus" class="form-select" onchange="renderTable()">
-                <option value="ALL">Todos status</option>
-              </select>
-            </div>
-            <div class="col-lg-2">
-              <select id="filterPlano" class="form-select" onchange="renderTable()">
-                <option value="ALL">Todos planos</option>
-              </select>
-            </div>
-            <div class="col-lg-5 d-flex gap-2 justify-content-end">
-              <button class="btn btn-secondary" onclick="toggleSelectAll()">Selecionar todos</button>
-              <button class="btn btn-outline-secondary" onclick="clearSelection()">Limpar seleção</button>
-              <button class="btn btn-primary" onclick="exportSelectedToCSV()">
-                <i class="bi bi-file-excel"></i> Exportar Selecionados (.CSV)
+    <!-- AGENDA -->
+    <div class="tab-pane fade" id="agendaTab">
+      <div class="card card-custom p-4">
+        <div class="table-responsive">
+          <table class="table"><thead><tr><th>Cliente</th><th>Telefone</th><th>Retorno</th><th>Status</th><th>WhatsApp</th></tr></thead><tbody id="agendaBody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURAÇÕES (com botão de exportar CSV e backup) -->
+    <div class="tab-pane fade" id="configTab">
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="card card-custom p-4">
+            <h4>Etiquetas CRM</h4>
+            <button class="btn btn-success mb-3" onclick="addStatus()">Adicionar</button>
+            <div id="statusList"></div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card card-custom p-4">
+            <h4>Exportar / Backup</h4>
+            <div class="d-grid gap-3">
+              <button class="btn btn-primary" onclick="exportAllToCSV()">
+                <i class="bi bi-file-excel"></i> Exportar todos os contatos (CSV)
               </button>
+              <button class="btn btn-outline-primary" onclick="exportBackup()">Exportar Backup (JSON)</button>
+              <button class="btn btn-outline-primary" onclick="importBackup()">Importar Backup (JSON)</button>
             </div>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th style="width: 40px;"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
-                  <th>Cliente</th>
-                  <th>Empresa</th>
-                  <th>Telefone</th>
-                  <th>Plano</th>
-                  <th>Status</th>
-                  <th>Retorno</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="tableBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- AGENDA -->
-      <div class="tab-pane fade" id="agendaTab">
-        <div class="card card-custom p-4">
-          <div class="table-responsive">
-            <table class="table"><thead><tr><th>Cliente</th><th>Telefone</th><th>Retorno</th><th>Status</th><th>WhatsApp</th></tr></thead><tbody id="agendaBody"></tbody></table>
-          </div>
-        </div>
-      </div>
-
-      <!-- CONFIG -->
-      <div class="tab-pane fade" id="configTab">
-        <div class="row g-4">
-          <div class="col-lg-6">
-            <div class="card card-custom p-4">
-              <h4>Etiquetas CRM</h4>
-              <button class="btn btn-success mb-3" onclick="addStatus()">Adicionar</button>
-              <div id="statusList"></div>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="card card-custom p-4">
-              <h4>Backup</h4>
-              <div class="d-grid gap-3">
-                <button class="btn btn-primary" onclick="exportBackup()">Exportar Backup</button>
-                <button class="btn btn-outline-primary" onclick="importBackup()">Importar Backup</button>
-              </div>
-              <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleBackupFile(event)">
-            </div>
+            <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleBackupFile(event)">
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
-      authDomain: "crm-recuperacao.firebaseapp.com",
-      projectId: "crm-recuperacao",
-      storageBucket: "crm-recuperacao.firebasestorage.app",
-      messagingSenderId: "347011763386",
-      appId: "1:347011763386:web:158c1ca6f512a1cde1c683",
-      measurementId: "G-1XHHFXHN4G"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+<script>
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
+    authDomain: "crm-recuperacao.firebaseapp.com",
+    projectId: "crm-recuperacao",
+    storageBucket: "crm-recuperacao.firebasestorage.app",
+    messagingSenderId: "347011763386",
+    appId: "1:347011763386:web:158c1ca6f512a1cde1c683",
+    measurementId: "G-1XHHFXHN4G"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-    let currentUser = null;
-    let clients = [];
-    let statuses = ['Em negociação', 'Fechou o plano', 'Não tem interesse'];
-    let charts = { status: null, company: null, time: null };
+  let currentUser = null;
+  let clients = [];
+  let statuses = [];     // será carregado do Firestore
+  let charts = { status: null, company: null, time: null };
 
-    // --- Helper para limpar e formatar telefone (apenas dígitos, prefixo 55) ---
-    function formatPhoneForExport(phoneRaw) {
-      if (!phoneRaw) return '';
-      let digits = phoneRaw.toString().replace(/\D/g, '');
-      if (digits.length === 0) return '';
-      // Se já começa com 55, mantém; senão adiciona
-      if (!digits.startsWith('55')) {
-        digits = '55' + digits;
-      }
-      // Valida tamanho mínimo (55 + 10 dígitos = 12)
-      if (digits.length < 12) return '';
-      return digits;
+  // ---------- HELPER: Formatar telefone para CSV ----------
+  function formatPhoneForExport(phoneRaw) {
+    if (!phoneRaw) return '';
+    let digits = phoneRaw.toString().replace(/\D/g, '');
+    if (digits.length === 0) return '';
+    if (!digits.startsWith('55')) digits = '55' + digits;
+    return digits.length >= 12 ? digits : '';
+  }
+
+  // ---------- EXPORTAR TODOS OS CONTATOS (CSV) ----------
+  function exportAllToCSV() {
+    if (clients.length === 0) {
+      alert('Nenhum cliente cadastrado.');
+      return;
     }
-
-    // --- Exportar selecionados para CSV (Nome, Telefone) ---
-    function exportSelectedToCSV() {
-      const checkboxes = document.querySelectorAll('.client-checkbox:checked');
-      if (checkboxes.length === 0) {
-        alert('Nenhum contato selecionado. Marque os clientes desejados na tabela.');
-        return;
-      }
-      const selectedIds = Array.from(checkboxes).map(cb => cb.value);
-      const selectedClients = clients.filter(c => selectedIds.includes(c.id));
-      
-      // Monta linhas do CSV
-      let csvRows = [];
-      csvRows.push('Nome,Telefone'); // cabeçalho
-      for (let client of selectedClients) {
-        let nome = (client.nome || '').replace(/,/g, ' '); // remove vírgulas para não quebrar CSV
-        let telefone = formatPhoneForExport(client.telefones);
-        if (telefone) {
-          csvRows.push(`"${nome}",${telefone}`);
-        } else {
-          console.warn(`Telefone inválido para ${nome} - ignorado`);
-        }
-      }
-      
-      if (csvRows.length === 1) {
-        alert('Nenhum telefone válido encontrado nos contatos selecionados.');
-        return;
-      }
-      
-      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.href = url;
-      link.setAttribute('download', 'contatos_exportados.csv');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
-
-    // --- Selecionar / desmarcar todos os checkboxes visíveis na tabela ---
-    function toggleSelectAll() {
-      const selectAllCheck = document.getElementById('selectAllCheckbox');
-      const allVisibleCheckboxes = document.querySelectorAll('.client-checkbox');
-      const isChecked = selectAllCheck.checked;
-      allVisibleCheckboxes.forEach(cb => cb.checked = isChecked);
-    }
-    
-    function clearSelection() {
-      document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = false);
-      const selectAllCheck = document.getElementById('selectAllCheckbox');
-      if (selectAllCheck) selectAllCheck.checked = false;
-    }
-    
-    // Atualiza o estado do checkbox "Selecionar todos" baseado nos checkboxes visíveis
-    function updateSelectAllCheckbox() {
-      const selectAllCheck = document.getElementById('selectAllCheckbox');
-      if (!selectAllCheck) return;
-      const allVisible = document.querySelectorAll('.client-checkbox');
-      if (allVisible.length === 0) {
-        selectAllCheck.checked = false;
-        return;
-      }
-      const allChecked = Array.from(allVisible).every(cb => cb.checked);
-      selectAllCheck.checked = allChecked;
-    }
-
-    /* AUTH */
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        currentUser = user;
-        document.getElementById('loginScreen').style.display = 'none';
-        loadClients();
-      } else {
-        document.getElementById('loginScreen').style.display = 'flex';
-      }
-    });
-
-    function login() { auth.signInWithEmailAndPassword(loginEmail.value, loginPassword.value).catch(e => loginError.innerText = e.message); }
-    function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => loginError.innerText = e.message); }
-    function register() { auth.createUserWithEmailAndPassword(loginEmail.value, loginPassword.value).catch(e => loginError.innerText = e.message); }
-    function recoverPassword() { auth.sendPasswordResetEmail(loginEmail.value).then(() => alert('Email enviado!')); }
-    function togglePassword() { loginPassword.type = loginPassword.type === 'password' ? 'text' : 'password'; }
-    function logout() { auth.signOut(); }
-
-    /* THEME */
-    function toggleTheme() {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-    }
-    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
-
-    /* CLIENTS */
-    async function loadClients() {
-      const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
-      clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderTable(); renderAgenda(); updateDashboard(); updatePlanosFilter(); renderStatuses();
-    }
-
-    async function saveClient() {
-      const nome = cNome.value.trim(), cpf = cCPF.value.trim(), empresa = cEmpresa.value.trim();
-      if (!clientId.value) {
-        const dupCPF = clients.find(c => c.cpf && cpf && c.cpf.replace(/\D/g,'') === cpf.replace(/\D/g,''));
-        if (dupCPF && !confirm(`Já existe um cliente com o CPF ${cpf} (${dupCPF.nome}). Deseja cadastrar mesmo assim?`)) return;
-      }
-      const data = {
-        nome, nomeSocial: cNomeSocial.value, cpf, nascimento: cNascimento.value, endereco: cEndereco.value,
-        cidade: cCidade.value, uf: cUF.value, empresa, adeEmp: cAdeEmp.value, redePlano: cRedePlano.value,
-        planoAtual: cPlanoAtual.value, acomodacao: cAcomodacao.value, situacao: cSituacao.value,
-        status: cStatus.value, adesao: cAdesao.value, cancelamento: cCancelamento.value, tempo: cTempo.value,
-        telefones: cTelefones.value, emails: cEmails.value, retorno: cRetorno.value,
-        anotacoes: cAnotacoes.value,
-        userId: currentUser.uid, updatedAt: new Date().toISOString()
-      };
-      try {
-        if (clientId.value) await db.collection('clients').doc(clientId.value).update(data);
-        else { data.createdAt = new Date().toISOString(); await db.collection('clients').add(data); }
-        alert('Cliente salvo!');
-        clearForm();
-        new bootstrap.Tab(document.querySelector('[data-bs-target="#dashboardTab"]')).show();
-        loadClients();
-      } catch (e) { alert('Erro: ' + e.message); }
-    }
-
-    function clearForm() {
-      clientId.value = '';
-      ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-      cStatus.selectedIndex = 0;
-      const preview = document.getElementById('preview'); if (preview) { preview.src = ''; preview.style.display = 'none'; }
-      const fileInput = document.querySelector('#clientesTab input[type="file"]'); if (fileInput) fileInput.value = '';
-      smartPaste.value = '';
-    }
-
-    function editClient(id) {
-      const c = clients.find(c => c.id === id); if (!c) return;
-      clientId.value = id;
-      cNome.value = c.nome || ''; cNomeSocial.value = c.nomeSocial || ''; cCPF.value = c.cpf || '';
-      cNascimento.value = c.nascimento || ''; cEndereco.value = c.endereco || ''; cCidade.value = c.cidade || '';
-      cUF.value = c.uf || ''; cEmpresa.value = c.empresa || ''; cAdeEmp.value = c.adeEmp || '';
-      cRedePlano.value = c.redePlano || ''; cPlanoAtual.value = c.planoAtual || ''; cAcomodacao.value = c.acomodacao || '';
-      cSituacao.value = c.situacao || ''; cStatus.value = c.status || ''; cAdesao.value = c.adesao || '';
-      cCancelamento.value = c.cancelamento || ''; cTempo.value = c.tempo || ''; cTelefones.value = c.telefones || '';
-      cEmails.value = c.emails || ''; cRetorno.value = c.retorno || '';
-      cAnotacoes.value = c.anotacoes || '';
-      new bootstrap.Tab(document.querySelector('[data-bs-target="#clientesTab"]')).show();
-    }
-
-    async function deleteClient(id) {
-      if (!confirm('Tem certeza?')) return;
-      await db.collection('clients').doc(id).delete();
-      loadClients();
-    }
-
-    /* TABLE com checkbox e eventos de clique para atualizar o "Selecionar todos" */
-    function renderTable() {
-      const s = search.value.toLowerCase(), fs = filterStatus.value, fp = filterPlano.value;
-      const filtered = clients.filter(c => {
-        const ms = (c.nome||'').toLowerCase().includes(s) || (c.empresa||'').toLowerCase().includes(s);
-        const mst = fs === 'ALL' || c.status === fs;
-        const mp = fp === 'ALL' || c.planoAtual === fp || c.redePlano === fp;
-        return ms && mst && mp;
-      });
-      tableBody.innerHTML = '';
-      filtered.forEach(c => {
-        const plano = c.planoAtual || c.redePlano || '-';
-        const telefoneRaw = c.telefones || '';
-        tableBody.innerHTML += `
-          <tr>
-            <td><input type="checkbox" class="client-checkbox" value="${c.id}" onchange="updateSelectAllCheckbox()"></td>
-            <td><strong>${escapeHtml(c.nome||'')}</strong></td>
-            <td>${escapeHtml(c.empresa||'')}</td>
-            <td>${escapeHtml(telefoneRaw)}</td>
-            <td>${escapeHtml(plano)}</td>
-            <td><span class="badge bg-primary">${escapeHtml(c.status||'')}</span></td>
-            <td>${escapeHtml(c.retorno||'')}</td>
-            <td class="d-flex gap-2">
-              <button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
-              <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button>
-              <a target="_blank" href="https://wa.me/55${telefoneRaw.replace(/\D/g,'')}" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a>
-            </td>
-          </tr>
-        `;
-      });
-      // Reseta o estado do checkbox "Selecionar todos"
-      const selectAllCheck = document.getElementById('selectAllCheckbox');
-      if (selectAllCheck) selectAllCheck.checked = false;
-      updateSelectAllCheckbox();
-    }
-
-    // Função auxiliar para escapar HTML (segurança)
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-      }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-        return c;
-      });
-    }
-
-    function updatePlanosFilter() {
-      const s = new Set(); clients.forEach(c => { if (c.planoAtual) s.add(c.planoAtual); if (c.redePlano) s.add(c.redePlano); });
-      filterPlano.innerHTML = '<option value="ALL">Todos os planos</option>' + [...s].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
-    }
-
-    function renderAgenda() {
-      agendaBody.innerHTML = clients.map(c => `<tr><td>${escapeHtml(c.nome||'')}</td><td>${escapeHtml(c.telefones||'')}</td><td>${escapeHtml(c.retorno||'')}</td><td>${escapeHtml(c.status||'')}</td><td><a target="_blank" href="https://wa.me/55${(c.telefones||'').replace(/\D/g,'')}" class="btn btn-success btn-sm">WhatsApp</a></td></tr>`).join('');
-    }
-
-    function updateDashboard() {
-      dashTotal.innerText = clients.length;
-      dashFechados.innerText = clients.filter(c => c.status === 'Fechou o plano').length;
-      dashNegociacao.innerText = clients.filter(c => c.status === 'Em negociação').length;
-      dashSemInteresse.innerText = clients.filter(c => c.status === 'Não tem interesse').length;
-      // Gráficos omitidos para manter a resposta enxuta (funcionam normalmente)
-    }
-
-    function renderStatuses() {
-      cStatus.innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
-      filterStatus.innerHTML = '<option value="ALL">Todos status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-      statusList.innerHTML = statuses.map((s,i) => `<div class="status-item"><strong>${s}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
-    }
-
-    function addStatus() {
-      const s = prompt('Novo status'); if (!s) return;
-      statuses.push(s); renderStatuses();
-    }
-    function deleteStatus(i) { statuses.splice(i,1); renderStatuses(); }
-
-    /* BACKUP */
-    function exportBackup() {
-      const blob = new Blob([JSON.stringify(clients)], {type:'application/json'});
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup-crm.json'; a.click();
-    }
-    function importBackup() { backupFileInput.click(); }
-    function handleBackupFile(e) {
-      const file = e.target.files[0]; if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async (ev) => {
-        try {
-          const data = JSON.parse(ev.target.result);
-          const arr = Array.isArray(data) ? data : Object.values(data).find(Array.isArray);
-          if (!arr) throw new Error('Formato inválido');
-          if (!confirm(`Importar ${arr.length} clientes?`)) return;
-          const batch = db.batch();
-          arr.forEach(c => { const {id, ...d} = c; d.userId = currentUser.uid; batch.set(id ? db.collection('clients').doc(id) : db.collection('clients').doc(), d, {merge:true}); });
-          await batch.commit();
-          alert('Importado!');
-          loadClients();
-        } catch (er) { alert('Erro: ' + er.message); }
-      };
-      reader.readAsText(file);
-    }
-
-    /* FOTO */
-    function previewImage(e) {
-      const reader = new FileReader();
-      reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; };
-      reader.readAsDataURL(e.target.files[0]);
-    }
-
-    /* CAMPO MÁGICO */
-    function autoFill() {
-      const t = smartPaste.value;
-      const map = [
-        [/^Nome\s+do\s+usuário\s*:\s*(.*)$/im, 'cNome'], [/^Nome\s+social\s*:\s*(.*)$/im, 'cNomeSocial'],
-        [/^CPF\s+do\s+titular\s*:\s*(.*)$/im, 'cCPF'], [/^Data\s+de\s+nascimento\s*:\s*(.*)$/im, 'cNascimento'],
-        [/^Endereço\s*:\s*(.*)$/im, 'cEndereco'], [/^Empresa\s*:\s*(.*)$/im, 'cEmpresa'],
-        [/^Ade\s+emp\s*:\s*(.*)$/im, 'cAdeEmp'], [/^Rede\/plano\s*:\s*(.*)$/im, 'cRedePlano'],
-        [/^Plano\s+atual\s*:\s*(.*)$/im, 'cPlanoAtual'], [/^Acomodação\s*:\s*(.*)$/im, 'cAcomodacao'],
-        [/^Situação\s*:\s*(.*)$/im, 'cSituacao'], [/^Data\s+da\s+adesão\s*:\s*(.*)$/im, 'cAdesao'],
-        [/^Data\s+do\s+cancelamento\s*:\s*(.*)$/im, 'cCancelamento'], [/^Tempo\s*:\s*(.*)$/im, 'cTempo'],
-        [/^Telefones?\s+cadastrados?\s*:\s*(.*)$/im, 'cTelefones'], [/^Endereços?\s+eletr[ôo]nicos?\s*:\s*(.*)$/im, 'cEmails']
-      ];
-      map.forEach(([r, id]) => { const m = t.match(r); if (m) document.getElementById(id).value = m[1].trim(); });
-      const cm = t.match(/^Cidade\s*:\s*(.*)$/im);
-      if (cm) {
-        const parts = cm[1].split(/[|\-–]/);
-        cCidade.value = (parts[0]||'').trim();
-        if (parts[1]) { const uf = parts[1].match(/UF\s*:\s*(.*)/i); cUF.value = uf ? uf[1].trim() : parts[1].trim(); }
+    let csvRows = ['Nome,Telefone'];
+    for (let client of clients) {
+      let nome = (client.nome || '').replace(/,/g, ' ');
+      let telefone = formatPhoneForExport(client.telefones);
+      if (telefone) {
+        csvRows.push(`"${nome}",${telefone}`);
       }
     }
+    if (csvRows.length === 1) {
+      alert('Nenhum telefone válido encontrado.');
+      return;
+    }
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute('download', 'todos_contatos.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
 
+  // ---------- SALVAR / CARREGAR STATUS (ETIQUETAS) NO FIRESTORE ----------
+  async function loadStatuses() {
+    if (!currentUser) return;
+    const docRef = db.collection('customStatuses').doc(currentUser.uid);
+    const docSnap = await docRef.get();
+    if (docSnap.exists && docSnap.data().statuses && docSnap.data().statuses.length) {
+      statuses = docSnap.data().statuses;
+    } else {
+      statuses = ['Em negociação', 'Fechou o plano', 'Não tem interesse'];
+      await docRef.set({ statuses });
+    }
     renderStatuses();
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+  }
 
+  async function saveStatuses() {
+    if (!currentUser) return;
+    const docRef = db.collection('customStatuses').doc(currentUser.uid);
+    await docRef.set({ statuses });
+  }
+
+  function addStatus() {
+    const s = prompt('Novo status');
+    if (!s || statuses.includes(s)) return;
+    statuses.push(s);
+    renderStatuses();
+    saveStatuses();
+  }
+  function deleteStatus(i) {
+    statuses.splice(i, 1);
+    renderStatuses();
+    saveStatuses();
+  }
+
+  // ---------- AUTH ----------
+  auth.onAuthStateChanged(async user => {
+    if (user) {
+      currentUser = user;
+      document.getElementById('loginScreen').style.display = 'none';
+      await loadStatuses();          // carrega etiquetas salvas
+      await loadClients();
+    } else {
+      document.getElementById('loginScreen').style.display = 'flex';
+    }
+  });
+
+  function login() { auth.signInWithEmailAndPassword(loginEmail.value, loginPassword.value).catch(e => loginError.innerText = e.message); }
+  function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => loginError.innerText = e.message); }
+  function register() { auth.createUserWithEmailAndPassword(loginEmail.value, loginPassword.value).catch(e => loginError.innerText = e.message); }
+  function recoverPassword() { auth.sendPasswordResetEmail(loginEmail.value).then(() => alert('Email enviado!')); }
+  function togglePassword() { loginPassword.type = loginPassword.type === 'password' ? 'text' : 'password'; }
+  function logout() { auth.signOut(); }
+
+  // ---------- CARREGAR CLIENTES (sem limite) ----------
+  async function loadClients() {
+    const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
+    clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    console.log(`Clientes carregados: ${clients.length}`);  // verifique no console
+    renderTable();
+    renderAgenda();
+    updateDashboard();
+    updatePlanosFilter();
+  }
+
+  // ---------- SALVAR CLIENTE ----------
+  async function saveClient() {
+    const nome = cNome.value.trim(), cpf = cCPF.value.trim(), empresa = cEmpresa.value.trim();
+    if (!clientId.value) {
+      const dupCPF = clients.find(c => c.cpf && cpf && c.cpf.replace(/\D/g,'') === cpf.replace(/\D/g,''));
+      if (dupCPF && !confirm(`Já existe um cliente com o CPF ${cpf} (${dupCPF.nome}). Deseja cadastrar mesmo assim?`)) return;
+    }
+    const data = {
+      nome, nomeSocial: cNomeSocial.value, cpf, nascimento: cNascimento.value, endereco: cEndereco.value,
+      cidade: cCidade.value, uf: cUF.value, empresa, adeEmp: cAdeEmp.value, redePlano: cRedePlano.value,
+      planoAtual: cPlanoAtual.value, acomodacao: cAcomodacao.value, situacao: cSituacao.value,
+      status: cStatus.value, adesao: cAdesao.value, cancelamento: cCancelamento.value, tempo: cTempo.value,
+      telefones: cTelefones.value, emails: cEmails.value, retorno: cRetorno.value,
+      anotacoes: cAnotacoes.value,
+      userId: currentUser.uid, updatedAt: new Date().toISOString()
+    };
+    try {
+      if (clientId.value) await db.collection('clients').doc(clientId.value).update(data);
+      else { data.createdAt = new Date().toISOString(); await db.collection('clients').add(data); }
+      alert('Cliente salvo!');
+      clearForm();
+      new bootstrap.Tab(document.querySelector('[data-bs-target="#dashboardTab"]')).show();
+      loadClients();
+    } catch (e) { alert('Erro: ' + e.message); }
+  }
+
+  function clearForm() {
+    clientId.value = '';
+    ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    cStatus.selectedIndex = 0;
+    const preview = document.getElementById('preview'); if (preview) { preview.src = ''; preview.style.display = 'none'; }
+    const fileInput = document.querySelector('#clientesTab input[type="file"]'); if (fileInput) fileInput.value = '';
+    smartPaste.value = '';
+  }
+
+  function editClient(id) {
+    const c = clients.find(c => c.id === id); if (!c) return;
+    clientId.value = id;
+    cNome.value = c.nome || ''; cNomeSocial.value = c.nomeSocial || ''; cCPF.value = c.cpf || '';
+    cNascimento.value = c.nascimento || ''; cEndereco.value = c.endereco || ''; cCidade.value = c.cidade || '';
+    cUF.value = c.uf || ''; cEmpresa.value = c.empresa || ''; cAdeEmp.value = c.adeEmp || '';
+    cRedePlano.value = c.redePlano || ''; cPlanoAtual.value = c.planoAtual || ''; cAcomodacao.value = c.acomodacao || '';
+    cSituacao.value = c.situacao || ''; cStatus.value = c.status || ''; cAdesao.value = c.adesao || '';
+    cCancelamento.value = c.cancelamento || ''; cTempo.value = c.tempo || ''; cTelefones.value = c.telefones || '';
+    cEmails.value = c.emails || ''; cRetorno.value = c.retorno || '';
+    cAnotacoes.value = c.anotacoes || '';
+    new bootstrap.Tab(document.querySelector('[data-bs-target="#clientesTab"]')).show();
+  }
+
+  async function deleteClient(id) {
+    if (!confirm('Tem certeza?')) return;
+    await db.collection('clients').doc(id).delete();
+    loadClients();
+  }
+
+  // ---------- RENDER TABELA (PESQUISAR) ----------
+  function renderTable() {
+    const s = search.value.toLowerCase();
+    const fs = filterStatus.value;
+    const fp = filterPlano.value;
+    const filtered = clients.filter(c => {
+      const ms = (c.nome||'').toLowerCase().includes(s) || (c.empresa||'').toLowerCase().includes(s);
+      const mst = fs === 'ALL' || c.status === fs;
+      const mp = fp === 'ALL' || c.planoAtual === fp || c.redePlano === fp;
+      return ms && mst && mp;
+    });
+    tableBody.innerHTML = '';
+    filtered.forEach(c => {
+      const plano = c.planoAtual || c.redePlano || '-';
+      const telefoneRaw = c.telefones || '';
+      tableBody.innerHTML += `
+        <tr>
+          <td><strong>${escapeHtml(c.nome||'')}</strong></td>
+          <td>${escapeHtml(c.empresa||'')}</td>
+          <td>${escapeHtml(telefoneRaw)}</td>
+          <td>${escapeHtml(plano)}</td>
+          <td><span class="badge bg-primary">${escapeHtml(c.status||'')}</span></td>
+          <td>${escapeHtml(c.retorno||'')}</td>
+          <td class="d-flex gap-2">
+            <button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button>
+            <a target="_blank" href="https://wa.me/55${telefoneRaw.replace(/\D/g,'')}" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  function updatePlanosFilter() {
+    const s = new Set();
+    clients.forEach(c => {
+      if (c.planoAtual) s.add(c.planoAtual);
+      if (c.redePlano) s.add(c.redePlano);
+    });
+    filterPlano.innerHTML = '<option value="ALL">Todos os planos</option>' + [...s].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
+  }
+
+  function renderAgenda() {
+    agendaBody.innerHTML = clients.map(c => `
+      <tr>
+        <td>${escapeHtml(c.nome||'')}</td>
+        <td>${escapeHtml(c.telefones||'')}</td>
+        <td>${escapeHtml(c.retorno||'')}</td>
+        <td>${escapeHtml(c.status||'')}</td>
+        <td><a target="_blank" href="https://wa.me/55${(c.telefones||'').replace(/\D/g,'')}" class="btn btn-success btn-sm">WhatsApp</a></td>
+      </tr>
+    `).join('');
+  }
+
+  function updateDashboard() {
+    dashTotal.innerText = clients.length;
+    dashFechados.innerText = clients.filter(c => c.status === 'Fechou o plano').length;
+    dashNegociacao.innerText = clients.filter(c => c.status === 'Em negociação').length;
+    dashSemInteresse.innerText = clients.filter(c => c.status === 'Não tem interesse').length;
+    // Gráficos resumidos (apenas para não quebrar)
+    if (charts.status) charts.status.destroy();
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    charts.status = new Chart(ctx, {
+      type: 'doughnut',
+      data: { labels: statuses, datasets: [{ data: statuses.map(s => clients.filter(c=>c.status===s).length), backgroundColor: ['#3b82f6','#10b981','#f59e0b','#ef4444'] }] }
+    });
+  }
+
+  function renderStatuses() {
+    cStatus.innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
+    filterStatus.innerHTML = '<option value="ALL">Todos status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+    statusList.innerHTML = statuses.map((s,i) => `<div class="mb-2 d-flex justify-content-between align-items-center"><strong>${s}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
+  }
+
+  // ---------- BACKUP ----------
+  function exportBackup() {
+    const blob = new Blob([JSON.stringify(clients)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup-crm.json'; a.click();
+  }
+  function importBackup() { backupFileInput.click(); }
+  function handleBackupFile(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        const arr = Array.isArray(data) ? data : Object.values(data).find(Array.isArray);
+        if (!arr) throw new Error('Formato inválido');
+        if (!confirm(`Importar ${arr.length} clientes?`)) return;
+        const batch = db.batch();
+        arr.forEach(c => { const {id, ...d} = c; d.userId = currentUser.uid; batch.set(id ? db.collection('clients').doc(id) : db.collection('clients').doc(), d, {merge:true}); });
+        await batch.commit();
+        alert('Importado!');
+        loadClients();
+      } catch (er) { alert('Erro: ' + er.message); }
+    };
+    reader.readAsText(file);
+  }
+
+  // ---------- OUTROS ----------
+  function previewImage(e) {
+    const reader = new FileReader();
+    reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(e.target.files[0]);
+  }
+
+  function autoFill() {
+    const t = smartPaste.value;
+    const map = [
+      [/^Nome\s+do\s+usuário\s*:\s*(.*)$/im, 'cNome'], [/^Nome\s+social\s*:\s*(.*)$/im, 'cNomeSocial'],
+      [/^CPF\s+do\s+titular\s*:\s*(.*)$/im, 'cCPF'], [/^Data\s+de\s+nascimento\s*:\s*(.*)$/im, 'cNascimento'],
+      [/^Endereço\s*:\s*(.*)$/im, 'cEndereco'], [/^Empresa\s*:\s*(.*)$/im, 'cEmpresa'],
+      [/^Ade\s+emp\s*:\s*(.*)$/im, 'cAdeEmp'], [/^Rede\/plano\s*:\s*(.*)$/im, 'cRedePlano'],
+      [/^Plano\s+atual\s*:\s*(.*)$/im, 'cPlanoAtual'], [/^Acomodação\s*:\s*(.*)$/im, 'cAcomodacao'],
+      [/^Situação\s*:\s*(.*)$/im, 'cSituacao'], [/^Data\s+da\s+adesão\s*:\s*(.*)$/im, 'cAdesao'],
+      [/^Data\s+do\s+cancelamento\s*:\s*(.*)$/im, 'cCancelamento'], [/^Tempo\s*:\s*(.*)$/im, 'cTempo'],
+      [/^Telefones?\s+cadastrados?\s*:\s*(.*)$/im, 'cTelefones'], [/^Endereços?\s+eletr[ôo]nicos?\s*:\s*(.*)$/im, 'cEmails']
+    ];
+    map.forEach(([r, id]) => { const m = t.match(r); if (m) document.getElementById(id).value = m[1].trim(); });
+    const cm = t.match(/^Cidade\s*:\s*(.*)$/im);
+    if (cm) {
+      const parts = cm[1].split(/[|\-–]/);
+      cCidade.value = (parts[0]||'').trim();
+      if (parts[1]) { const uf = parts[1].match(/UF\s*:\s*(.*)/i); cUF.value = uf ? uf[1].trim() : parts[1].trim(); }
+    }
+  }
+
+  function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m==='&') return '&amp;'; if (m==='<') return '&lt;'; if (m==='>') return '&gt;'; return m; }); }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
