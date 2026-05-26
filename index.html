@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recupere ai</title>
+  <title>Recupera Health CRM - Otimizado</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -14,6 +14,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <style>
+    /* (mesmo CSS do código anterior, mantido para não repetir) */
     :root {
       --bg: #f8fafb;
       --card: #ffffff;
@@ -154,8 +155,6 @@
       max-height: 300px;
       overflow-y: auto;
     }
-
-    /* Estilos para a aba de Pesquisar */
     #pesquisaTab .search-filters {
       background: rgba(59, 130, 246, 0.05);
       padding: 1.5rem;
@@ -235,7 +234,7 @@
   </ul>
 
   <div class="tab-content">
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD (igual ao anterior) -->
     <div class="tab-pane fade show active" id="dashboardTab">
       <div class="row g-4 mb-4">
         <div class="col-md-3"><div class="dashboard-card"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
@@ -254,7 +253,7 @@
       </div>
     </div>
 
-    <!-- FICHA CLIENTE -->
+    <!-- FICHA CLIENTE (com campos de vidas e valores) -->
     <div class="tab-pane fade" id="clientesTab">
       <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4"></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
       <div class="card-custom">
@@ -281,13 +280,11 @@
           <div class="col-md-6"><label>Emails</label><input id="cEmails" class="form-control"></div>
           <div class="col-md-6"><label>Retorno</label><input type="date" id="cRetorno" class="form-control"></div>
           <div class="col-md-6"><label>Foto</label><input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)"><img id="preview" style="max-width:100%; margin-top:0.5rem; display:none;"></div>
-          
-          <!-- NOVOS CAMPOS -->
-          <div class="col-md-4"><label>Valor sem desconto (R$)</label><input type="number" step="0.01" id="cValorSemDesconto" class="form-control" placeholder="0,00"></div>
-          <div class="col-md-4"><label>Valor com desconto (R$)</label><input type="number" step="0.01" id="cValorComDesconto" class="form-control" placeholder="0,00"></div>
-          <div class="col-md-4"><label>Quantidade de vidas</label><input type="number" step="1" id="cVidas" class="form-control" placeholder="0"></div>
-          <div class="col-md-4"><label>Data da implantação</label><input type="date" id="cDataImplantacao" class="form-control"></div>
-          <div class="col-md-4"><label>Data do pagamento</label><input type="date" id="cDataPagamento" class="form-control"></div>
+          <div class="col-md-4"><label>Valor sem desconto (R$)</label><input type="number" step="0.01" id="cValorSemDesconto" class="form-control"></div>
+          <div class="col-md-4"><label>Valor com desconto (R$)</label><input type="number" step="0.01" id="cValorComDesconto" class="form-control"></div>
+          <div class="col-md-4"><label>Quantidade de vidas</label><input type="number" step="1" id="cVidas" class="form-control"></div>
+          <div class="col-md-4"><label>Data implantação</label><input type="date" id="cDataImplantacao" class="form-control"></div>
+          <div class="col-md-4"><label>Data pagamento</label><input type="date" id="cDataPagamento" class="form-control"></div>
         </div>
         <div class="mt-3"><label><strong>📝 Anotações</strong></label><textarea id="cAnotacoes" class="form-control" rows="3"></textarea></div>
         <ul class="nav nav-tabs mt-3">
@@ -353,7 +350,7 @@
     <div class="tab-pane fade" id="configTab">
       <div class="row g-4">
         <div class="col-lg-6"><div class="card-custom"><h4>Gerenciar Status</h4><div id="statusList"></div><div class="input-group mt-3"><input type="text" id="newStatus" class="form-control" placeholder="Novo status"><button class="btn btn-success" onclick="addStatus()">Adicionar</button></div></div></div>
-        <div class="col-lg-6"><div class="card-custom"><h4>Backup Automático</h4><label>Intervalo (horas)</label><input type="number" id="backupIntervalHours" class="form-control" value="24"><button class="btn btn-primary mt-2" onclick="setAutoBackup()">Ativar</button> <button class="btn btn-danger mt-2" onclick="stopAutoBackup()">Desligar</button><hr><button class="btn btn-primary" onclick="exportAllToCSV()">Exportar CSV (todos)</button> <button class="btn btn-outline-primary" onclick="exportBackup()">Backup JSON</button> <button class="btn btn-outline-primary" onclick="importBackup()">Importar JSON</button><input type="file" id="backupFileInput" accept=".json" style="display:none"></div></div>
+        <div class="col-lg-6"><div class="card-custom"><h4>Backup Automático</h4><label>Intervalo (horas)</label><input type="number" id="backupIntervalHours" class="form-control" value="24"><button class="btn btn-primary mt-2" onclick="setAutoBackup()">Ativar</button> <button class="btn btn-danger mt-2" onclick="stopAutoBackup()">Desligar</button><hr><button class="btn btn-primary" onclick="exportAllToCSV()">Exportar CSV</button> <button class="btn btn-outline-primary" onclick="exportBackup()">Backup JSON</button> <button class="btn btn-outline-primary" onclick="importBackup()">Importar JSON</button><input type="file" id="backupFileInput" accept=".json" style="display:none"></div></div>
       </div>
     </div>
   </div>
@@ -474,11 +471,9 @@
 
   async function saveClient() {
     const id = document.getElementById('clientId').value;
-    // Garantir que vidas seja um inteiro não negativo
     let vidasRaw = parseInt(document.getElementById('cVidas').value);
     if (isNaN(vidasRaw)) vidasRaw = 0;
     const vidas = Math.max(0, vidasRaw);
-    
     const data = {
       nome: document.getElementById('cNome').value.trim(),
       nomeSocial: document.getElementById('cNomeSocial').value.trim(),
@@ -660,7 +655,7 @@
     if (Notification.permission === 'default') Notification.requestPermission();
   }
 
-  // ==================== BACKUP ====================
+  // ==================== BACKUP E IMPORTAÇÃO OTIMIZADOS ====================
   function exportBackup() {
     const dataToExport = clients.map(c => {
       const { updatedAt, createdAt, ...rest } = c;
@@ -673,7 +668,9 @@
     a.click();
     URL.revokeObjectURL(a.href);
   }
+
   function importBackup() { document.getElementById('backupFileInput').click(); }
+
   async function handleBackupFile(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -682,21 +679,62 @@
       try {
         const parsed = JSON.parse(ev.target.result);
         let arr = Array.isArray(parsed) ? parsed : (parsed.clients && Array.isArray(parsed.clients) ? parsed.clients : null);
-        if (!arr) throw new Error('Formato inválido');
+        if (!arr) throw new Error('Formato inválido: não é um array.');
         if (!confirm(`Importar ${arr.length} clientes?`)) return;
-        let adicionados = 0, ignorados = 0;
+
+        // 1. Coletar todos os CPFs e telefones existentes (para evitar duplicatas)
+        const existingDocs = await db.collection('clients').where('userId', '==', currentUser.uid).get();
+        const existingCpfSet = new Set();
+        const existingPhoneSet = new Set();
+        existingDocs.forEach(doc => {
+          const data = doc.data();
+          if (data.cpf) existingCpfSet.add(data.cpf.replace(/\D/g, ''));
+          if (data.telefones) existingPhoneSet.add(data.telefones.replace(/\D/g, ''));
+        });
+
+        // 2. Preparar dados, marcando duplicados
+        const clientsToAdd = [];
+        let duplicates = 0;
         for (const c of arr) {
           const { id, ...d } = c;
           d.userId = currentUser.uid;
-          if (!d.nome) { ignorados++; continue; }
-          try {
-            await db.collection('clients').add(d);
-            adicionados++;
-          } catch (err) { ignorados++; }
+          if (!d.createdAt) d.createdAt = new Date().toISOString();
+          const cpfClean = d.cpf ? d.cpf.replace(/\D/g, '') : null;
+          const phoneClean = d.telefones ? d.telefones.replace(/\D/g, '') : null;
+          const isDuplicate = (cpfClean && existingCpfSet.has(cpfClean)) || (phoneClean && existingPhoneSet.has(phoneClean));
+          if (isDuplicate) {
+            duplicates++;
+            continue;
+          }
+          clientsToAdd.push(d);
         }
-        alert(`Importação: ${adicionados} adicionados, ${ignorados} ignorados.`);
+
+        if (clientsToAdd.length === 0) {
+          alert(`Nenhum cliente novo para importar. ${duplicates} duplicados ignorados.`);
+          return;
+        }
+
+        // 3. Importar em lotes (batch) para performance
+        const BATCH_SIZE = 500;
+        let added = 0;
+        for (let i = 0; i < clientsToAdd.length; i += BATCH_SIZE) {
+          const batch = db.batch();
+          const chunk = clientsToAdd.slice(i, i + BATCH_SIZE);
+          for (const client of chunk) {
+            const docRef = db.collection('clients').doc(); // ID automático
+            batch.set(docRef, client);
+          }
+          await batch.commit();
+          added += chunk.length;
+          // Atualiza progresso a cada lote
+          alert(`Importando... ${added} de ${clientsToAdd.length} adicionados.`);
+        }
+
+        alert(`Importação concluída: ${added} novos clientes adicionados. ${duplicates} duplicados ignorados.`);
         await loadClients();
-      } catch (er) { alert('Erro: ' + er.message); }
+      } catch (er) {
+        alert('Erro ao importar: ' + er.message);
+      }
     };
     reader.readAsText(file);
   }
@@ -728,7 +766,7 @@
       const telefone = formatPhoneForCSV(c.telefones);
       if (telefone) rows.push([`"${nome}"`, telefone]);
     }
-    if (rows.length === 1) { alert('Nenhum telefone válido encontrado nos selecionados.'); return; }
+    if (rows.length === 1) { alert('Nenhum telefone válido encontrado.'); return; }
     const csv = rows.map(r => r.join(',')).join('\n');
     const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
     const a = document.createElement('a');
@@ -746,6 +784,29 @@
   }
   function stopAutoBackup() { if (autoBackupInterval) { clearInterval(autoBackupInterval); autoBackupInterval = null; alert('Backup desligado.'); } }
 
+  // ==================== EXCLUSÃO EM MASSA OTIMIZADA ====================
+  async function bulkDelete() {
+    const ids = getSelectedIds();
+    if (ids.length === 0) return alert('Selecione ao menos um cliente.');
+    if (!confirm(`Excluir permanentemente ${ids.length} cliente(s)?`)) return;
+
+    const BATCH_SIZE = 500;
+    let deleted = 0;
+    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+      const batch = db.batch();
+      const chunk = ids.slice(i, i + BATCH_SIZE);
+      for (const id of chunk) {
+        const docRef = db.collection('clients').doc(id);
+        batch.delete(docRef);
+        await addLog(id, 'bulk_delete', 'Cliente removido em massa (batch)');
+      }
+      await batch.commit();
+      deleted += chunk.length;
+    }
+    await loadClients();
+    alert(`${deleted} cliente(s) removido(s).`);
+  }
+
   // ==================== RENDER TABELA ====================
   function renderTable() {
     const search = document.getElementById('globalSearch').value.toLowerCase();
@@ -760,7 +821,7 @@
     let html = '';
     for (const c of filtered) {
       const waLink = `https://wa.me/55${(c.telefones || '' ).replace(/\D/g, '')}`;
-      html += `<td><input type="checkbox" class="client-checkbox" value="${c.id}"></td><td><div class="fw-bold">${escapeHtml(c.nome || '')}</div><div class="small text-muted">${escapeHtml(c.cpf || '')}</div></td><td>${escapeHtml(c.empresa || '')}</td><td>${escapeHtml(c.telefones || '')}</td><td><span class="badge-status bg-primary text-white">${escapeHtml(c.status || 'Sem status')}</span></td><td>${c.retorno || '-'}</td><td class="text-center"><div class="d-flex gap-2 justify-content-center"><button class="btn btn-warning btn-action text-white" onclick="editClient('${c.id}')"><i class="bi bi-pencil-square"></i></button><a href="${waLink}" target="_blank" class="btn btn-success btn-action"><i class="bi bi-whatsapp"></i></a></div></td></tr>`;
+      html += `<tr><td><input type="checkbox" class="client-checkbox" value="${c.id}"></td><td><div class="fw-bold">${escapeHtml(c.nome || '')}</div><div class="small text-muted">${escapeHtml(c.cpf || '')}</div></td><td>${escapeHtml(c.empresa || '')}</td><td>${escapeHtml(c.telefones || '')}</td><td><span class="badge-status bg-primary text-white">${escapeHtml(c.status || 'Sem status')}</span></td><td>${c.retorno || '-'}</td><td class="text-center"><div class="d-flex gap-2 justify-content-center"><button class="btn btn-warning btn-action text-white" onclick="editClient('${c.id}')"><i class="bi bi-pencil-square"></i></button><a href="${waLink}" target="_blank" class="btn btn-success btn-action"><i class="bi bi-whatsapp"></i></a></div></td></tr>`;
     }
     tbody.innerHTML = html;
   }
@@ -772,7 +833,7 @@
     select.innerHTML = '<option value="ALL">Todos os planos</option>' + [...planos].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
   }
 
-  // ==================== AÇÕES EM MASSA ====================
+  // ==================== AÇÕES EM MASSA (exceto bulkDelete, já reescrita) ====================
   function getSelectedIds() { return Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value); }
   function toggleSelectAll() { const all = document.getElementById('selectAllCheckbox').checked; document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = all); }
   document.getElementById('selectAllCheckbox')?.addEventListener('change', toggleSelectAll);
@@ -790,24 +851,19 @@
       await addLog(id, 'bulk_whatsapp', 'Disparo em massa');
     }
   }
-  async function bulkDelete() {
-    const ids = getSelectedIds();
-    if (ids.length === 0) return alert('Selecione ao menos um cliente.');
-    if (!confirm(`Excluir permanentemente ${ids.length} cliente(s)?`)) return;
-    for (const id of ids) {
-      await db.collection('clients').doc(id).delete();
-      await addLog(id, 'bulk_delete', 'Cliente removido em massa');
-    }
-    await loadClients();
-    alert(`${ids.length} cliente(s) removido(s).`);
-  }
   async function bulkChangeStatus() {
     const newStatus = document.getElementById('bulkStatus').value;
     if (!newStatus) return alert('Selecione um status');
     const ids = getSelectedIds();
-    for (const id of ids) {
-      await db.collection('clients').doc(id).update({ status: newStatus });
-      await addLog(id, 'bulk_status', `Status alterado para ${newStatus}`);
+    const BATCH_SIZE = 500;
+    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+      const batch = db.batch();
+      const chunk = ids.slice(i, i + BATCH_SIZE);
+      for (const id of chunk) {
+        batch.update(db.collection('clients').doc(id), { status: newStatus });
+        await addLog(id, 'bulk_status', `Status alterado para ${newStatus}`);
+      }
+      await batch.commit();
     }
     await loadClients();
   }
@@ -815,14 +871,20 @@
     const date = document.getElementById('bulkRetorno').value;
     if (!date) return alert('Selecione uma data');
     const ids = getSelectedIds();
-    for (const id of ids) {
-      await db.collection('clients').doc(id).update({ retorno: date });
-      await addLog(id, 'bulk_retorno', `Retorno agendado para ${date}`);
+    const BATCH_SIZE = 500;
+    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+      const batch = db.batch();
+      const chunk = ids.slice(i, i + BATCH_SIZE);
+      for (const id of chunk) {
+        batch.update(db.collection('clients').doc(id), { retorno: date });
+        await addLog(id, 'bulk_retorno', `Retorno agendado para ${date}`);
+      }
+      await batch.commit();
     }
     await loadClients();
   }
 
-  // ==================== DASHBOARD (CORRIGIDO) ====================
+  // ==================== DASHBOARD ====================
   function populateMonthYearSelectors() {
     const monthSelect = document.getElementById('monthSelectDashboard');
     const yearSelect = document.getElementById('yearSelectDashboard');
@@ -860,17 +922,14 @@
     }
     const totalClientes = filteredClients.length;
     const implantados = filteredClients.filter(c => c.status === 'Implantado');
-    // 🔥 CORREÇÃO: Soma apenas valores >= 0
     const totalVidas = implantados.reduce((acc, c) => acc + Math.max(0, c.vidas || 0), 0);
     const valorTotal = implantados.reduce((acc, c) => acc + getEffectiveValue(c), 0);
-    const naoConvertidos = totalClientes - implantados.length; // não usado diretamente, mas útil
     const taxaConversao = totalClientes > 0 ? ((implantados.length / totalClientes) * 100).toFixed(1) : 0;
     document.getElementById('dashTotal').innerText = totalClientes;
     document.getElementById('dashVidas').innerText = totalVidas;
     document.getElementById('dashValor').innerHTML = formatMoney(valorTotal);
     document.getElementById('dashConversao').innerText = `${taxaConversao}%`;
 
-    // Gráfico de recuperados por mês (últimos 6 meses)
     const now = new Date();
     let meses = [];
     let counts = new Array(6).fill(0);
@@ -887,7 +946,6 @@
     });
     if (recoveryChart) recoveryChart.destroy();
     recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels: meses, datasets: [{ label: 'Implantados', data: counts, backgroundColor: '#10b981' }] } });
-    // Gráfico de status geral
     const statusData = statuses.map(s => clients.filter(c => c.status === s).length);
     if (statusChart) statusChart.destroy();
     statusChart = new Chart(document.getElementById('statusChart'), { type: 'doughnut', data: { labels: statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] } });
