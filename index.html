@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recupera Health CRM - Corrigido</title>
+  <title>Recupera Health CRM </title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -257,11 +257,11 @@
   const formatMoney = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
   const getEffectiveValue = (client) => client.valorComDesconto && client.valorComDesconto > 0 ? client.valorComDesconto : (client.valorSemDesconto || 0);
   const getClientDate = (client) => {
-    // Retorna a data relevante para o cliente (data de implantação ou updatedAt)
     if (client.dataImplantacao) return new Date(client.dataImplantacao);
     if (client.updatedAt) return client.updatedAt.toDate ? client.updatedAt.toDate() : new Date(client.updatedAt);
     return null;
   };
+  const getTodayStr = () => new Date().toISOString().split('T')[0];
 
   // ==================== AUTENTICAÇÃO ====================
   auth.onAuthStateChanged(async user => {
@@ -338,6 +338,25 @@
     const id = document.getElementById('clientId').value;
     let vidasRaw = parseInt(document.getElementById('cVidas').value) || 0;
     const vidas = Math.max(0, vidasRaw);
+    let dataImplantacao = document.getElementById('cDataImplantacao').value;
+    let dataPagamento = document.getElementById('cDataPagamento').value;
+    const status = document.getElementById('cStatus').value;
+    const hoje = getTodayStr();
+
+    // Regras de preenchimento automático:
+    // 1. Novo cliente com status "Implantado": preencher dataImplantacao se vazia
+    if (!id && status === 'Implantado' && !dataImplantacao) {
+      dataImplantacao = hoje;
+    }
+    // 2. Para cliente existente, se o status mudou para "Implantado" e dataPagamento vazia, preencher dataPagamento
+    if (id && status === 'Implantado') {
+      // Buscar o cliente atual para verificar se o status mudou
+      const oldClient = clients.find(c => c.id === id);
+      if (oldClient && oldClient.status !== 'Implantado' && !dataPagamento) {
+        dataPagamento = hoje;
+      }
+    }
+
     const data = {
       nome: document.getElementById('cNome').value.trim(),
       nomeSocial: document.getElementById('cNomeSocial').value.trim(),
@@ -352,7 +371,7 @@
       planoAtual: document.getElementById('cPlanoAtual').value.trim(),
       acomodacao: document.getElementById('cAcomodacao').value.trim(),
       situacao: document.getElementById('cSituacao').value.trim(),
-      status: document.getElementById('cStatus').value,
+      status: status,
       adesao: document.getElementById('cAdesao').value.trim(),
       cancelamento: document.getElementById('cCancelamento').value.trim(),
       tempo: document.getElementById('cTempo').value.trim(),
@@ -363,8 +382,8 @@
       valorSemDesconto: parseFloat(document.getElementById('cValorSemDesconto').value) || 0,
       valorComDesconto: parseFloat(document.getElementById('cValorComDesconto').value) || 0,
       vidas: vidas,
-      dataImplantacao: document.getElementById('cDataImplantacao').value || null,
-      dataPagamento: document.getElementById('cDataPagamento').value || null,
+      dataImplantacao: dataImplantacao || null,
+      dataPagamento: dataPagamento || null,
       origem: document.getElementById('cOrigem').value.trim(),
       campanha: document.getElementById('cCampanha').value.trim(),
       userId: currentUser.uid,
@@ -535,7 +554,7 @@
       return matchSearch && matchStatus && matchOrigem && matchCampanha && matchTags;
     });
     const tbody = document.getElementById('tableBody');
-    if (filtered.length === 0) { tbody.innerHTML = '</table><td colspan="8" class="text-center">Nenhum cliente encontrado.��</td></table>'; return; }
+    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum cliente encontrado.��堆/', return; }
     let html = '';
     for (const c of filtered) {
       const waLink = `https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`;
@@ -787,7 +806,19 @@
     const ids = getSelectedIds();
     if (!ids.length) return alert('Selecione ao menos um cliente.');
     if (!confirm(`Alterar status de ${ids.length} cliente(s) para "${newStatus}"?`)) return;
-    for (const id of ids) await db.collection('clients').doc(id).update({ status: newStatus });
+    const hoje = getTodayStr();
+    for (const id of ids) {
+      const updateData = { status: newStatus };
+      // Se o novo status for "Implantado" e o cliente não tiver dataPagamento, preencher com hoje
+      if (newStatus === 'Implantado') {
+        const client = clients.find(c => c.id === id);
+        if (client && !client.dataPagamento) {
+          updateData.dataPagamento = hoje;
+        }
+      }
+      await db.collection('clients').doc(id).update(updateData);
+      await addLog(id, 'bulk_status', `Status alterado em massa para ${newStatus}`);
+    }
     await loadClients();
     alert(`${ids.length} cliente(s) atualizado(s).`);
   }
