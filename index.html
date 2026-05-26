@@ -1,674 +1,718 @@
-# CRM Recuperação — Código Completo Corrigido
-
-```html
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRM Recuperação</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Recuperação - Versão Estável</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-
-<style>
-:root {
---bg:#f5f7fb;
---card:#ffffff;
---text:#111827;
---border:#dbe1ea;
---primary:#2563eb;
---success:#10b981;
---danger:#ef4444;
-}
-
-body.dark-mode {
---bg:#0f172a;
---card:#1e293b;
---text:#f1f5f9;
---border:#334155;
-}
-
-body {
-background:var(--bg);
-color:var(--text);
-font-family:Segoe UI;
-transition:.3s;
-}
-
-.card-custom {
-background:var(--card);
-border:1px solid var(--border);
-border-radius:16px;
-padding:20px;
-margin-bottom:20px;
-}
-
-.form-control,
-.form-select {
-background:var(--card);
-color:var(--text);
-border:1px solid var(--border);
-}
-
-.table {
-color:var(--text);
-}
-
-.tag-badge {
-display:inline-flex;
-align-items:center;
-gap:6px;
-background:#dbeafe;
-padding:4px 10px;
-border-radius:20px;
-margin:2px;
-}
-
-.login-screen {
-position:fixed;
-inset:0;
-display:flex;
-align-items:center;
-justify-content:center;
-background:#2563eb;
-z-index:9999;
-}
-
-.login-box {
-background:white;
-padding:30px;
-border-radius:16px;
-width:100%;
-max-width:400px;
-}
-</style>
+  <style>
+    :root { --bg: #f8fafb; --card: #fff; --border: #e5e7eb; --text: #111; --primary: #3b82f6; }
+    body.dark-mode { --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #f1f5f9; --primary: #3b82f6; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; transition: background 0.3s; }
+    .navbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; }
+    .card-custom { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .dashboard-card { padding: 2rem; border-radius: 16px; color: white; background: linear-gradient(135deg, var(--primary), #1e40af); }
+    .btn { border-radius: 12px; font-weight: 600; }
+    .nav-tabs { gap: 0.75rem; border: none; flex-wrap: wrap; }
+    .nav-tabs .nav-link { background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
+    .nav-tabs .nav-link.active { background: var(--primary); color: white; }
+    .tag-badge { background: #e2e8f0; color: #1e293b; display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; margin-right: 0.5rem; margin-bottom: 0.25rem; }
+    .tag-badge i { cursor: pointer; margin-left: 0.5rem; }
+    .history-log { border-left: 3px solid var(--primary); padding-left: 0.75rem; margin-bottom: 0.75rem; font-size: 0.85rem; }
+    .login-screen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--primary), #1e40af); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    .login-box { background: white; border-radius: 20px; padding: 2rem; width: 100%; max-width: 400px; }
+    .container-fluid { padding: 2rem; }
+    @media (max-width: 768px) { .container-fluid { padding: 1rem; } }
+  </style>
 </head>
 <body>
 
+<!-- TELA DE LOGIN -->
 <div class="login-screen" id="loginScreen">
-<div class="login-box">
-<h3 class="mb-3 text-center">CRM Recuperação</h3>
-<input type="email" id="loginEmail" class="form-control mb-2" placeholder="Email">
-<input type="password" id="loginPassword" class="form-control mb-3" placeholder="Senha">
-<button class="btn btn-primary w-100 mb-2" onclick="login()">Entrar</button>
-<button class="btn btn-danger w-100 mb-2" onclick="googleLogin()">Google</button>
-<button class="btn btn-success w-100" onclick="register()">Criar conta</button>
-</div>
+  <div class="login-box">
+    <h3 class="text-center mb-4">CRM Recuperação</h3>
+    <input type="email" id="loginEmail" class="form-control mb-3" placeholder="Email">
+    <div class="input-group mb-3">
+      <input type="password" id="loginPassword" class="form-control" placeholder="Senha">
+      <button class="btn btn-outline-secondary" onclick="togglePassword()"><i class="bi bi-eye"></i></button>
+    </div>
+    <button class="btn btn-primary w-100 mb-2" onclick="login()">Entrar</button>
+    <button class="btn btn-danger w-100 mb-2" onclick="googleLogin()"><i class="bi bi-google"></i> Google</button>
+    <button class="btn btn-outline-primary w-100 mb-2" onclick="register()">Criar Conta</button>
+    <button class="btn btn-link w-100" onclick="recoverPassword()">Esqueci a senha</button>
+    <div id="loginError" class="text-danger text-center mt-3"></div>
+  </div>
 </div>
 
-<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
-<div class="container-fluid">
-<h4>CRM Recuperação</h4>
-<div class="d-flex gap-2">
-<button class="btn btn-dark" onclick="toggleTheme()">
-<i class="bi bi-moon-stars"></i>
-</button>
-<button class="btn btn-danger" onclick="logout()">Sair</button>
-</div>
-</div>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <h4 class="m-0 fw-bold">CRM Recuperação</h4>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary" onclick="toggleTheme()"><i class="bi bi-moon-stars-fill"></i></button>
+      <button class="btn btn-danger" onclick="logout()">Sair</button>
+    </div>
+  </div>
 </nav>
 
-<div class="container-fluid p-4">
+<!-- CONTEÚDO PRINCIPAL -->
+<div class="container-fluid">
+  <ul class="nav nav-tabs" id="mainTab">
+    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboardTab">Dashboard</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#clientesTab">Ficha Cliente</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesquisaTab">Pesquisar</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#agendaTab">Agenda</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#configTab">Configurações</button></li>
+  </ul>
 
-<ul class="nav nav-tabs mb-4">
-<li class="nav-item">
-<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboardTab">Dashboard</button>
-</li>
-<li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#clientesTab">Clientes</button>
-</li>
-<li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesquisaTab">Pesquisa</button>
-</li>
-<li class="nav-item">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#configTab">Config</button>
-</li>
-</ul>
+  <div class="tab-content">
+    <!-- DASHBOARD -->
+    <div class="tab-pane fade show active" id="dashboardTab">
+      <div class="row g-4 mb-4">
+        <div class="col-md-3"><div class="dashboard-card"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#10b981,#059669)"><h6>Fechados</h6><h2 id="dashFechados">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><h6>Recuperados (30d)</h6><h2 id="dashRecuperados">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)"><h6>Tempo médio cancel.</h6><h2 id="dashTempoCancel">0</h2><small>dias</small></div></div>
+      </div>
+      <div class="row g-3 mb-4">
+        <div class="col-auto"><label>Período</label><select id="periodSelect" class="form-select"><option value="30">30 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="all">Todo período</option></select></div>
+      </div>
+      <div class="row g-4">
+        <div class="col-lg-6"><div class="card-custom"><h5>Recuperados por Mês</h5><canvas id="recoveryChart"></canvas></div></div>
+        <div class="col-lg-6"><div class="card-custom"><h5>Taxa de Conversão</h5><canvas id="conversionChart"></canvas></div></div>
+      </div>
+    </div>
 
-<div class="tab-content">
+    <!-- FICHA CLIENTE -->
+    <div class="tab-pane fade" id="clientesTab">
+      <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4"></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
+      <div class="card-custom">
+        <input type="hidden" id="clientId">
+        <div class="row g-3">
+          <div class="col-md-4"><label>Nome</label><input id="cNome" class="form-control"></div>
+          <div class="col-md-4"><label>Nome social</label><input id="cNomeSocial" class="form-control"></div>
+          <div class="col-md-4"><label>CPF</label><input id="cCPF" class="form-control"></div>
+          <div class="col-md-4"><label>Nascimento</label><input id="cNascimento" class="form-control"></div>
+          <div class="col-md-8"><label>Endereço</label><input id="cEndereco" class="form-control"></div>
+          <div class="col-md-5"><label>Cidade</label><input id="cCidade" class="form-control"></div>
+          <div class="col-md-1"><label>UF</label><input id="cUF" class="form-control"></div>
+          <div class="col-md-6"><label>Empresa</label><input id="cEmpresa" class="form-control"></div>
+          <div class="col-md-6"><label>Ade emp</label><input id="cAdeEmp" class="form-control"></div>
+          <div class="col-md-6"><label>Rede/plano</label><input id="cRedePlano" class="form-control"></div>
+          <div class="col-md-6"><label>Plano atual</label><input id="cPlanoAtual" class="form-control"></div>
+          <div class="col-md-4"><label>Acomodação</label><input id="cAcomodacao" class="form-control"></div>
+          <div class="col-md-4"><label>Situação</label><input id="cSituacao" class="form-control"></div>
+          <div class="col-md-4"><label>Status CRM</label><select id="cStatus" class="form-select"></select></div>
+          <div class="col-md-4"><label>Adesão</label><input id="cAdesao" class="form-control"></div>
+          <div class="col-md-4"><label>Cancelamento</label><input id="cCancelamento" class="form-control"></div>
+          <div class="col-md-4"><label>Tempo</label><input id="cTempo" class="form-control"></div>
+          <div class="col-md-6"><label>Telefones</label><input id="cTelefones" class="form-control"></div>
+          <div class="col-md-6"><label>Emails</label><input id="cEmails" class="form-control"></div>
+          <div class="col-md-6"><label>Retorno</label><input type="date" id="cRetorno" class="form-control"></div>
+          <div class="col-md-6"><label>Foto</label><input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)"><img id="preview" style="max-width:100%; margin-top:0.5rem; display:none;"></div>
+          <div class="col-md-12"><label>Tags (digite e pressione Enter)</label><input type="text" id="cTagsInput" class="form-control"><div id="cTagsContainer" class="mt-2"></div></div>
+        </div>
+        <div class="mt-3"><label><strong>📝 Anotações</strong></label><textarea id="cAnotacoes" class="form-control" rows="3"></textarea></div>
+        <ul class="nav nav-tabs mt-3">
+          <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dadosTab">Dados</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#anexosTab">Anexos</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#historicoTab">Histórico</button></li>
+        </ul>
+        <div class="tab-content mt-2">
+          <div class="tab-pane active" id="dadosTab"><p class="text-muted">Campos acima.</p></div>
+          <div class="tab-pane" id="anexosTab"><div id="anexosList"></div><input type="file" id="uploadAnexo" multiple accept="image/*,application/pdf" class="form-control mt-2"><button class="btn btn-sm btn-primary mt-2" onclick="uploadAnexos()">Enviar</button></div>
+          <div class="tab-pane" id="historicoTab"><div id="historicoList"></div></div>
+        </div>
+        <div class="d-flex gap-2 mt-4">
+          <button class="btn btn-success" onclick="saveClient()">Salvar Cliente</button>
+          <button class="btn btn-outline-danger" onclick="clearForm()">Limpar Campos</button>
+        </div>
+      </div>
+    </div>
 
-<div class="tab-pane fade show active" id="dashboardTab">
-<div class="row g-3">
-<div class="col-md-4">
-<div class="card-custom">
-<h5>Total clientes</h5>
-<h1 id="dashTotal">0</h1>
-</div>
-</div>
+    <!-- PESQUISAR -->
+    <div class="tab-pane fade" id="pesquisaTab">
+      <div class="card-custom">
+        <div class="row g-3 mb-3">
+          <div class="col-md-3"><input type="text" id="globalSearch" class="form-control" placeholder="Busca global"></div>
+          <div class="col-md-2"><select id="filterStatus" class="form-select"><option value="ALL">Status</option></select></div>
+          <div class="col-md-2"><select id="filterPlano" class="form-select"><option value="ALL">Plano</option></select></div>
+          <div class="col-md-2"><select id="filterTags" class="form-select"><option value="ALL">Tag</option></select></div>
+          <div class="col-md-3"><button class="btn btn-outline-primary btn-sm" onclick="saveCurrentFilter()">Salvar filtro</button> <button class="btn btn-outline-secondary btn-sm" onclick="loadSavedFilters()">Meus filtros</button></div>
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-auto"><button class="btn btn-success btn-sm" onclick="bulkWhatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp em massa</button></div>
+          <div class="col-auto"><select id="bulkStatus" class="form-select form-select-sm"><option value="">Status...</option></select><button class="btn btn-sm btn-warning" onclick="bulkChangeStatus()">Aplicar</button></div>
+          <div class="col-auto"><input type="date" id="bulkRetorno" class="form-control form-control-sm"><button class="btn btn-sm btn-info" onclick="bulkScheduleReturn()">Agendar retorno</button></div>
+          <div class="col-auto"><select id="bulkTag" class="form-select form-select-sm"><option value="">Adicionar tag...</option></select><button class="btn btn-sm btn-secondary" onclick="bulkAddTag()">Adicionar</button></div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover"><thead><tr><th><input type="checkbox" id="selectAllCheckbox"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Tags</th><th>Status</th><th>Retorno</th><th>Ações</th></tr></thead><tbody id="tableBody"></tbody></table>
+        </div>
+      </div>
+    </div>
 
-<div class="col-md-4">
-<div class="card-custom">
-<h5>Fechados</h5>
-<h1 id="dashFechados">0</h1>
-</div>
-</div>
+    <!-- AGENDA -->
+    <div class="tab-pane fade" id="agendaTab">
+      <div class="card-custom"><div class="table-responsive"><table class="table"><thead><tr><th>Cliente</th><th>Telefone</th><th>Retorno</th><th>Status</th><th>WhatsApp</th></tr></thead><tbody id="agendaBody"></tbody></table></div></div>
+    </div>
 
-<div class="col-md-4">
-<div class="card-custom">
-<h5>Conversão</h5>
-<canvas id="conversionChart"></canvas>
-</div>
-</div>
-</div>
-</div>
-
-<div class="tab-pane fade" id="clientesTab">
-<div class="card-custom">
-
-<input type="hidden" id="clientId">
-
-<div class="row g-3">
-
-<div class="col-md-6">
-<label>Nome</label>
-<input id="cNome" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>CPF</label>
-<input id="cCPF" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Telefone</label>
-<input id="cTelefones" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Email</label>
-<input id="cEmails" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Empresa</label>
-<input id="cEmpresa" class="form-control">
-</div>
-
-<div class="col-md-6">
-<label>Status</label>
-<select id="cStatus" class="form-select"></select>
-</div>
-
-<div class="col-md-12">
-<label>Anotações</label>
-<textarea id="cAnotacoes" rows="4" class="form-control"></textarea>
-</div>
-
-<div class="col-md-12">
-<label>Tags</label>
-<input id="cTagsInput" class="form-control">
-<div id="cTagsContainer" class="mt-2"></div>
-</div>
-
-</div>
-
-<div class="d-flex gap-2 mt-4">
-<button class="btn btn-success" onclick="saveClient()">Salvar</button>
-<button class="btn btn-danger" onclick="clearForm()">Limpar</button>
-</div>
-
-</div>
-</div>
-
-<div class="tab-pane fade" id="pesquisaTab">
-<div class="card-custom">
-<div class="row g-3 mb-3">
-<div class="col-md-4">
-<input id="globalSearch" class="form-control" placeholder="Pesquisar" onkeyup="renderTable()">
-</div>
-<div class="col-md-4">
-<select id="filterStatus" class="form-select" onchange="renderTable()"></select>
-</div>
-</div>
-
-<div class="table-responsive">
-<table class="table">
-<thead>
-<tr>
-<th>Nome</th>
-<th>Empresa</th>
-<th>Telefone</th>
-<th>Status</th>
-<th>Ações</th>
-</tr>
-</thead>
-<tbody id="tableBody"></tbody>
-</table>
-</div>
-</div>
-</div>
-
-<div class="tab-pane fade" id="configTab">
-<div class="card-custom">
-<h4>Backup</h4>
-
-<div class="d-flex gap-2 flex-wrap">
-<button class="btn btn-primary" onclick="exportBackup()">Exportar Backup</button>
-<button class="btn btn-success" onclick="importBackup()">Importar Backup</button>
-</div>
-
-<input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleBackupFile(event)">
-</div>
-</div>
-
-</div>
+    <!-- CONFIGURAÇÕES -->
+    <div class="tab-pane fade" id="configTab">
+      <div class="row g-4">
+        <div class="col-lg-6"><div class="card-custom"><h4>Tags Globais</h4><div id="globalTagsList"></div><div class="input-group mt-3"><input type="text" id="newGlobalTag" class="form-control" placeholder="Nova tag"><button class="btn btn-success" onclick="addGlobalTag()">Adicionar</button></div></div></div>
+        <div class="col-lg-6"><div class="card-custom"><h4>Backup Automático</h4><label>Intervalo (horas)</label><input type="number" id="backupIntervalHours" class="form-control" value="24"><button class="btn btn-primary mt-2" onclick="setAutoBackup()">Ativar</button> <button class="btn btn-danger mt-2" onclick="stopAutoBackup()">Desligar</button><hr><button class="btn btn-primary" onclick="exportAllToCSV()">Exportar CSV</button> <button class="btn btn-outline-primary" onclick="exportBackup()">Backup JSON</button> <button class="btn btn-outline-primary" onclick="importBackup()">Importar JSON</button><input type="file" id="backupFileInput" accept=".json" style="display:none"></div></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-const firebaseConfig = {
-apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
-authDomain: "crm-recuperacao.firebaseapp.com",
-projectId: "crm-recuperacao",
-storageBucket: "crm-recuperacao.firebasestorage.app",
-messagingSenderId: "347011763386",
-appId: "1:347011763386:web:158c1ca6f512a1cde1c683"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-let currentUser = null;
-let clients = [];
-
-let statuses = [
-'Em negociação',
-'Fechou o plano',
-'Não tem interesse'
-];
-
-function toggleTheme() {
-document.body.classList.toggle('dark-mode');
-localStorage.setItem('theme', document.body.classList.contains('dark-mode'));
-}
-
-if(localStorage.getItem('theme') === 'true') {
-document.body.classList.add('dark-mode');
-}
-
-function renderStatuses() {
-
-const cStatus = document.getElementById('cStatus');
-const filterStatus = document.getElementById('filterStatus');
-
-cStatus.innerHTML = statuses.map(s => `
-<option value="${s}">${s}</option>
-`).join('');
-
-filterStatus.innerHTML = `
-<option value="ALL">Todos</option>
-${statuses.map(s => `<option value="${s}">${s}</option>`).join('')}
-`;
-}
-
-renderStatuses();
-
-auth.onAuthStateChanged(async user => {
-
-if(user) {
-currentUser = user;
-document.getElementById('loginScreen').style.display = 'none';
-await loadClients();
-} else {
-document.getElementById('loginScreen').style.display = 'flex';
-}
-});
-
-async function login() {
-try {
-await auth.signInWithEmailAndPassword(
-loginEmail.value,
-loginPassword.value
-);
-} catch(e) {
-alert(e.message);
-}
-}
-
-async function register() {
-try {
-await auth.createUserWithEmailAndPassword(
-loginEmail.value,
-loginPassword.value
-);
-} catch(e) {
-alert(e.message);
-}
-}
-
-async function googleLogin() {
-try {
-await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-} catch(e) {
-alert(e.message);
-}
-}
-
-function logout() {
-auth.signOut();
-}
-
-async function loadClients() {
-
-try {
-
-const snap = await db
-.collection('clients')
-.where('userId', '==', currentUser.uid)
-.get();
-
-clients = snap.docs.map(doc => ({
-id: doc.id,
-...doc.data()
-}));
-
-renderTable();
-updateDashboard();
-
-} catch(e) {
-console.error(e);
-alert('Erro ao carregar clientes');
-}
-}
-
-async function saveClient() {
-
-try {
-
-if(!currentUser) {
-alert('Usuário não autenticado');
-return;
-}
-
-const id = document.getElementById('clientId').value;
-
-const tags = Array.from(document.querySelectorAll('.tag-badge'))
-.map(el => el.dataset.tag);
-
-const data = {
-nome: cNome.value || '',
-cpf: cCPF.value || '',
-telefones: cTelefones.value || '',
-emails: cEmails.value || '',
-empresa: cEmpresa.value || '',
-status: cStatus.value || '',
-anotacoes: cAnotacoes.value || '',
-tags,
-userId: currentUser.uid,
-updatedAt: new Date().toISOString()
-};
-
-if(!data.nome.trim()) {
-alert('Digite o nome');
-return;
-}
-
-if(id) {
-await db.collection('clients').doc(id).update(data);
-} else {
-data.createdAt = new Date().toISOString();
-await db.collection('clients').add(data);
-}
-
-alert('Cliente salvo');
-
-clearForm();
-
-await loadClients();
-
-} catch(e) {
-console.error(e);
-alert('Erro ao salvar: ' + e.message);
-}
-}
-
-function clearForm() {
-
-[
-'clientId',
-'cNome',
-'cCPF',
-'cTelefones',
-'cEmails',
-'cEmpresa',
-'cAnotacoes'
-].forEach(id => {
-const el = document.getElementById(id);
-if(el) el.value = '';
-});
-
-cTagsContainer.innerHTML = '';
-}
-
-function editClient(id) {
-
-const c = clients.find(x => x.id === id);
-
-if(!c) return;
-
-clientId.value = c.id || '';
-cNome.value = c.nome || '';
-cCPF.value = c.cpf || '';
-cTelefones.value = c.telefones || '';
-cEmails.value = c.emails || '';
-cEmpresa.value = c.empresa || '';
-cStatus.value = c.status || '';
-cAnotacoes.value = c.anotacoes || '';
-
-cTagsContainer.innerHTML = '';
-
-(c.tags || []).forEach(addTagToForm);
-}
-
-function addTagToForm(tag) {
-
-const span = document.createElement('span');
-
-span.className = 'tag-badge';
-span.dataset.tag = tag;
-
-span.innerHTML = `
-${tag}
-<i class="bi bi-x-circle" style="cursor:pointer"></i>
-`;
-
-span.querySelector('i').onclick = () => span.remove();
-
-cTagsContainer.appendChild(span);
-}
-
-cTagsInput.addEventListener('keypress', e => {
-
-if(e.key === 'Enter') {
-
-e.preventDefault();
-
-const value = e.target.value.trim();
-
-if(!value) return;
-
-addTagToForm(value);
-
-e.target.value = '';
-}
-});
-
-function renderTable() {
-
-const tbody = document.getElementById('tableBody');
-
-const search = globalSearch.value.toLowerCase();
-const status = filterStatus.value;
-
-let filtered = clients.filter(c => {
-
-const okSearch =
-(c.nome || '').toLowerCase().includes(search) ||
-(c.telefones || '').includes(search) ||
-(c.empresa || '').toLowerCase().includes(search);
-
-const okStatus =
-status === 'ALL' || c.status === status;
-
-return okSearch && okStatus;
-});
-
-tbody.innerHTML = '';
-
-filtered.forEach(c => {
-
-tbody.innerHTML += `
-<tr>
-<td>${c.nome || ''}</td>
-<td>${c.empresa || ''}</td>
-<td>${c.telefones || ''}</td>
-<td>${c.status || ''}</td>
-<td>
-<button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')">
-Editar
-</button>
-</td>
-</tr>
-`;
-});
-}
-
-function updateDashboard() {
-
-const total = clients.length;
-
-const fechados = clients.filter(c =>
-c.status === 'Fechou o plano'
-).length;
-
-dashTotal.innerText = total;
-dashFechados.innerText = fechados;
-
-const ctx = document.getElementById('conversionChart');
-
-if(window.chartInstance) {
-window.chartInstance.destroy();
-}
-
-window.chartInstance = new Chart(ctx, {
-type:'doughnut',
-data:{
-labels:['Fechados','Outros'],
-datasets:[{
-data:[fechados, total - fechados]
-}]
-}
-});
-}
-
-function exportBackup() {
-
-try {
-
-const json = JSON.stringify(clients, null, 2);
-
-const blob = new Blob([json], {
-type:'application/json'
-});
-
-const url = URL.createObjectURL(blob);
-
-const a = document.createElement('a');
-a.href = url;
-a.download = 'backup-crm.json';
-a.click();
-
-URL.revokeObjectURL(url);
-
-} catch(e) {
-alert('Erro ao exportar backup');
-}
-}
-
-function importBackup() {
-document.getElementById('backupFileInput').click();
-}
-
-async function handleBackupFile(event) {
-
-try {
-
-const file = event.target.files[0];
-
-if(!file) return;
-
-const text = await file.text();
-
-const json = JSON.parse(text);
-
-let arr = [];
-
-if(Array.isArray(json)) {
-arr = json;
-} else if(Array.isArray(json.clients)) {
-arr = json.clients;
-} else {
-throw new Error('Formato inválido');
-}
-
-if(!arr.length) {
-alert('Backup vazio');
-return;
-}
-
-let imported = 0;
-
-for(const client of arr) {
-
-const clean = {
-...client,
-userId: currentUser.uid,
-updatedAt: new Date().toISOString()
-};
-
-delete clean.id;
-
-await db.collection('clients').add(clean);
-
-imported++;
-}
-
-alert(`${imported} clientes importados`);
-
-await loadClients();
-
-} catch(e) {
-console.error(e);
-alert('Erro ao importar: ' + e.message);
-}
-}
+  // ==================== CONFIGURAÇÕES INICIAIS ====================
+  const firebaseConfig = {
+    apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
+    authDomain: "crm-recuperacao.firebaseapp.com",
+    projectId: "crm-recuperacao",
+    storageBucket: "crm-recuperacao.firebasestorage.app",
+    messagingSenderId: "347011763386",
+    appId: "1:347011763386:web:158c1ca6f512a1cde1c683"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+
+  let currentUser = null;
+  let clients = [];
+  let statuses = ['Em negociação', 'Fechou o plano', 'Não tem interesse'];
+  let globalTags = ['prioridade alta', 'reclamação', 'proposta enviada'];
+  let autoBackupInterval = null;
+  let reminderInterval = null;
+  let recoveryChart, conversionChart;
+
+  // Helper: sanitização HTML
+  const escapeHtml = (str) => {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+  };
+
+  // Helper: formata telefone para WhatsApp
+  const formatPhoneForWhatsApp = (raw) => {
+    if (!raw) return '';
+    let digits = raw.toString().replace(/\D/g, '');
+    if (digits.length === 0) return '';
+    if (digits.startsWith('55')) digits = digits.substring(2);
+    if (digits.length >= 10) digits = '55' + digits;
+    return digits;
+  };
+
+  // ==================== AUTENTICAÇÃO ====================
+  auth.onAuthStateChanged(async user => {
+    if (user) {
+      currentUser = user;
+      document.getElementById('loginScreen').style.display = 'none';
+      await loadStatuses();
+      await loadGlobalTags();
+      await loadClients();
+      startReminderChecker();
+    } else {
+      document.getElementById('loginScreen').style.display = 'flex';
+    }
+  });
+
+  const login = () => auth.signInWithEmailAndPassword(loginEmail.value, loginPassword.value).catch(e => loginError.innerText = e.message);
+  const googleLogin = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  const register = () => auth.createUserWithEmailAndPassword(loginEmail.value, loginPassword.value);
+  const recoverPassword = () => auth.sendPasswordResetEmail(loginEmail.value).then(() => alert('Email enviado!'));
+  const togglePassword = () => loginPassword.type = loginPassword.type === 'password' ? 'text' : 'password';
+  const logout = () => auth.signOut();
+  const toggleTheme = () => { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light'); };
+  if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+
+  // ==================== STATUS E TAGS GLOBAIS (Firestore) ====================
+  async function loadStatuses() {
+    const doc = await db.collection('customStatuses').doc(currentUser.uid).get();
+    if (doc.exists && doc.data().statuses) statuses = doc.data().statuses;
+    renderStatuses();
+  }
+  async function saveStatuses() { await db.collection('customStatuses').doc(currentUser.uid).set({ statuses }); }
+  function addStatus() { let s = prompt('Novo status'); if (s && !statuses.includes(s)) { statuses.push(s); renderStatuses(); saveStatuses(); } }
+  function deleteStatus(i) { statuses.splice(i, 1); renderStatuses(); saveStatuses(); }
+  function renderStatuses() {
+    document.getElementById('cStatus').innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
+    document.getElementById('filterStatus').innerHTML = '<option value="ALL">Todos status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+    document.getElementById('bulkStatus').innerHTML = '<option value="">Selecionar...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+  }
+
+  async function loadGlobalTags() {
+    const doc = await db.collection('globalTags').doc(currentUser.uid).get();
+    if (doc.exists && doc.data().tags) globalTags = doc.data().tags;
+    renderGlobalTags();
+  }
+  async function saveGlobalTags() { await db.collection('globalTags').doc(currentUser.uid).set({ tags: globalTags }); }
+  function addGlobalTag() { let tag = document.getElementById('newGlobalTag').value.trim(); if (tag && !globalTags.includes(tag)) { globalTags.push(tag); renderGlobalTags(); saveGlobalTags(); document.getElementById('newGlobalTag').value = ''; } }
+  function deleteGlobalTag(i) { globalTags.splice(i, 1); renderGlobalTags(); saveGlobalTags(); }
+  function renderGlobalTags() {
+    document.getElementById('globalTagsList').innerHTML = globalTags.map((t, i) => `<div class="d-flex justify-content-between"><span class="tag-badge">${t}</span><button class="btn btn-sm btn-danger" onclick="deleteGlobalTag(${i})">✖</button></div>`).join('');
+    document.getElementById('filterTags').innerHTML = '<option value="ALL">Todas tags</option>' + globalTags.map(t => `<option>${t}</option>`).join('');
+    document.getElementById('bulkTag').innerHTML = '<option value="">Adicionar tag...</option>' + globalTags.map(t => `<option>${t}</option>`).join('');
+  }
+
+  // ==================== CLIENTES (CRUD) ====================
+  async function loadClients() {
+    const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
+    clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderTable();
+    renderAgenda();
+    updateDashboard();
+    updatePlanosFilter();
+  }
+
+  async function saveClient() {
+    const id = document.getElementById('clientId').value;
+    const tags = Array.from(document.querySelectorAll('#cTagsContainer .tag-badge')).map(el => el.innerText.trim());
+    const data = {
+      nome: document.getElementById('cNome').value.trim(),
+      nomeSocial: document.getElementById('cNomeSocial').value.trim(),
+      cpf: document.getElementById('cCPF').value.trim(),
+      nascimento: document.getElementById('cNascimento').value.trim(),
+      endereco: document.getElementById('cEndereco').value.trim(),
+      cidade: document.getElementById('cCidade').value.trim(),
+      uf: document.getElementById('cUF').value.trim(),
+      empresa: document.getElementById('cEmpresa').value.trim(),
+      adeEmp: document.getElementById('cAdeEmp').value.trim(),
+      redePlano: document.getElementById('cRedePlano').value.trim(),
+      planoAtual: document.getElementById('cPlanoAtual').value.trim(),
+      acomodacao: document.getElementById('cAcomodacao').value.trim(),
+      situacao: document.getElementById('cSituacao').value.trim(),
+      status: document.getElementById('cStatus').value,
+      adesao: document.getElementById('cAdesao').value.trim(),
+      cancelamento: document.getElementById('cCancelamento').value.trim(),
+      tempo: document.getElementById('cTempo').value.trim(),
+      telefones: document.getElementById('cTelefones').value.trim(),
+      emails: document.getElementById('cEmails').value.trim(),
+      retorno: document.getElementById('cRetorno').value,
+      anotacoes: document.getElementById('cAnotacoes').value.trim(),
+      tags,
+      userId: currentUser.uid,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (!id) data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+
+    if (!data.nome) return alert('Nome é obrigatório.');
+
+    try {
+      if (id) {
+        await db.collection('clients').doc(id).update(data);
+        await addLog(id, 'edit', 'Cliente atualizado');
+      } else {
+        if (data.cpf) {
+          const dup = await db.collection('clients').where('userId', '==', currentUser.uid).where('cpf', '==', data.cpf).get();
+          if (!dup.empty && !confirm(`CPF ${data.cpf} já existe. Deseja duplicar?`)) return;
+        }
+        const newRef = await db.collection('clients').add(data);
+        await addLog(newRef.id, 'create', 'Novo cliente cadastrado');
+      }
+      clearForm();
+      document.querySelector('[data-bs-target="#dashboardTab"]').click();
+      await loadClients();
+    } catch (e) { alert('Erro: ' + e.message); }
+  }
+
+  function clearForm() {
+    if (!confirm('Limpar todos os campos?')) return;
+    document.getElementById('clientId').value = '';
+    ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('cStatus').selectedIndex = 0;
+    document.getElementById('cTagsContainer').innerHTML = '';
+    document.getElementById('preview').style.display = 'none';
+    document.getElementById('anexosList').innerHTML = '';
+    document.getElementById('historicoList').innerHTML = '';
+    document.getElementById('smartPaste').value = '';
+  }
+
+  function editClient(id) {
+    const c = clients.find(c => c.id === id);
+    if (!c) return;
+    document.getElementById('clientId').value = id;
+    document.getElementById('cNome').value = c.nome || '';
+    document.getElementById('cNomeSocial').value = c.nomeSocial || '';
+    document.getElementById('cCPF').value = c.cpf || '';
+    document.getElementById('cNascimento').value = c.nascimento || '';
+    document.getElementById('cEndereco').value = c.endereco || '';
+    document.getElementById('cCidade').value = c.cidade || '';
+    document.getElementById('cUF').value = c.uf || '';
+    document.getElementById('cEmpresa').value = c.empresa || '';
+    document.getElementById('cAdeEmp').value = c.adeEmp || '';
+    document.getElementById('cRedePlano').value = c.redePlano || '';
+    document.getElementById('cPlanoAtual').value = c.planoAtual || '';
+    document.getElementById('cAcomodacao').value = c.acomodacao || '';
+    document.getElementById('cSituacao').value = c.situacao || '';
+    document.getElementById('cStatus').value = c.status || '';
+    document.getElementById('cAdesao').value = c.adesao || '';
+    document.getElementById('cCancelamento').value = c.cancelamento || '';
+    document.getElementById('cTempo').value = c.tempo || '';
+    document.getElementById('cTelefones').value = c.telefones || '';
+    document.getElementById('cEmails').value = c.emails || '';
+    document.getElementById('cRetorno').value = c.retorno || '';
+    document.getElementById('cAnotacoes').value = c.anotacoes || '';
+    document.getElementById('cTagsContainer').innerHTML = '';
+    if (c.tags) c.tags.forEach(tag => addTagToForm(tag));
+    loadAnexos(id);
+    loadHistorico(id);
+    document.querySelector('[data-bs-target="#clientesTab"]').click();
+  }
+
+  function addTagToForm(tag) {
+    const container = document.getElementById('cTagsContainer');
+    const span = document.createElement('span');
+    span.className = 'tag-badge';
+    span.innerText = tag;
+    span.innerHTML += ` <i class="bi bi-x-circle" onclick="this.parentElement.remove()"></i>`;
+    container.appendChild(span);
+  }
+  document.getElementById('cTagsInput')?.addEventListener('keypress', e => {
+    if (e.key === 'Enter' && e.target.value.trim()) {
+      addTagToForm(e.target.value.trim());
+      e.target.value = '';
+    }
+  });
+
+  // ==================== ANEXOS (Storage) ====================
+  async function loadAnexos(clientId) {
+    const listDiv = document.getElementById('anexosList');
+    listDiv.innerHTML = 'Carregando...';
+    const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}`);
+    let items = [];
+    try { const res = await ref.listAll(); items = res.items; } catch(e) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
+    if (items.length === 0) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
+    let html = '';
+    for (const item of items) {
+      const url = await item.getDownloadURL();
+      html += `<div class="attachment-item"><a href="${url}" target="_blank">${item.name}</a><button class="btn btn-sm btn-danger" onclick="deleteAnexo('${clientId}','${item.name}')">Excluir</button></div>`;
+    }
+    listDiv.innerHTML = html;
+  }
+  async function uploadAnexos() {
+    const clientId = document.getElementById('clientId').value;
+    if (!clientId) return alert('Salve o cliente primeiro!');
+    const files = document.getElementById('uploadAnexo').files;
+    if (!files.length) return;
+    for (const file of files) {
+      if (!file.type.match(/image.*|application\/pdf/)) { alert(`Tipo inválido: ${file.name}`); continue; }
+      const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}/${Date.now()}_${file.name}`);
+      await ref.put(file);
+    }
+    alert('Arquivos enviados!');
+    loadAnexos(clientId);
+  }
+  async function deleteAnexo(clientId, fileName) {
+    if (!confirm('Excluir anexo?')) return;
+    const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}/${fileName}`);
+    await ref.delete();
+    loadAnexos(clientId);
+  }
+
+  // ==================== HISTÓRICO ====================
+  async function addLog(clientId, action, details) {
+    if (!currentUser) return;
+    await db.collection('interactionLogs').add({ clientId, userId: currentUser.uid, action, details, timestamp: firebase.firestore.FieldValue.serverTimestamp(), userEmail: currentUser.email });
+  }
+  async function loadHistorico(clientId) {
+    const snap = await db.collection('interactionLogs').where('clientId', '==', clientId).orderBy('timestamp', 'desc').limit(50).get();
+    const logs = snap.docs.map(d => d.data());
+    const div = document.getElementById('historicoList');
+    if (logs.length === 0) { div.innerHTML = '<p class="text-muted">Nenhuma interação.</p>'; return; }
+    div.innerHTML = logs.map(l => `<div class="history-log"><small>${l.timestamp ? new Date(l.timestamp.toDate()).toLocaleString() : ''}</small><br><strong>${l.action}</strong><br>${l.details}</div>`).join('');
+  }
+
+  // ==================== LEMBRETES (único intervalo) ====================
+  function startReminderChecker() {
+    if (reminderInterval) clearInterval(reminderInterval);
+    reminderInterval = setInterval(() => {
+      const today = new Date().toISOString().split('T')[0];
+      clients.forEach(async c => {
+        if (c.retorno === today) {
+          if (Notification.permission === 'granted') new Notification(`Lembrete: ${c.nome}`, { body: `Retorno hoje. Tel: ${c.telefones}` });
+          if (c.emails) window.open(`mailto:${c.emails}?subject=Lembrete%20de%20retorno&body=Olá ${c.nome}, seu retorno está agendado para hoje.`);
+          await addLog(c.id, 'lembrete', `Lembrete enviado (${today})`);
+        }
+      });
+    }, 3600000);
+    if (Notification.permission === 'default') Notification.requestPermission();
+  }
+
+  // ==================== BACKUP E IMPORTAÇÃO (corrigidos) ====================
+  function exportBackup() {
+    const dataToExport = clients.map(c => {
+      const { updatedAt, createdAt, ...rest } = c;
+      return rest;
+    });
+    const blob = new Blob([JSON.stringify(dataToExport)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `backup_${new Date().toISOString().slice(0,19)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  function importBackup() { document.getElementById('backupFileInput').click(); }
+  async function handleBackupFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        let arr = Array.isArray(parsed) ? parsed : (parsed.clients && Array.isArray(parsed.clients) ? parsed.clients : null);
+        if (!arr) throw new Error('Formato inválido: não é um array.');
+        if (!confirm(`Importar ${arr.length} clientes?`)) return;
+        let sucessos = 0, erros = 0;
+        for (const c of arr) {
+          const { id, ...d } = c;
+          d.userId = currentUser.uid;
+          if (!d.nome) { erros++; continue; }
+          try {
+            await db.collection('clients').add(d);
+            sucessos++;
+          } catch (err) { erros++; console.error(err); }
+        }
+        alert(`Importação: ${sucessos} adicionados, ${erros} ignorados.`);
+        await loadClients();
+      } catch (er) { alert('Erro ao processar arquivo: ' + er.message); }
+    };
+    reader.readAsText(file);
+  }
+  document.getElementById('backupFileInput').addEventListener('change', handleBackupFile);
+
+  function exportAllToCSV() {
+    const rows = [['Nome', 'Telefone']];
+    for (const c of clients) {
+      const tel = formatPhoneForWhatsApp(c.telefones);
+      if (tel) rows.push([`"${c.nome || ''}"`, tel]);
+    }
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `contatos_${new Date().toISOString().slice(0,19)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // Backup automático (único intervalo)
+  function setAutoBackup() {
+    const hours = parseInt(document.getElementById('backupIntervalHours').value);
+    if (autoBackupInterval) clearInterval(autoBackupInterval);
+    autoBackupInterval = setInterval(() => exportBackup(), hours * 3600000);
+    alert(`Backup automático a cada ${hours} hora(s).`);
+  }
+  function stopAutoBackup() { if (autoBackupInterval) { clearInterval(autoBackupInterval); autoBackupInterval = null; alert('Backup desligado.'); } }
+
+  // ==================== RENDERIZAÇÃO DAS TABELAS (performance com join) ====================
+  function renderTable() {
+    const search = document.getElementById('globalSearch').value.toLowerCase();
+    const status = document.getElementById('filterStatus').value;
+    const plano = document.getElementById('filterPlano').value;
+    const tag = document.getElementById('filterTags').value;
+
+    const filtered = clients.filter(c => {
+      const matchSearch = !search || c.nome?.toLowerCase().includes(search) || c.cpf?.includes(search) || c.telefones?.includes(search) || c.emails?.toLowerCase().includes(search) || c.empresa?.toLowerCase().includes(search);
+      const matchStatus = status === 'ALL' || c.status === status;
+      const matchPlano = plano === 'ALL' || c.planoAtual === plano || c.redePlano === plano;
+      const matchTag = tag === 'ALL' || (c.tags && c.tags.includes(tag));
+      return matchSearch && matchStatus && matchPlano && matchTag;
+    });
+
+    const tbody = document.getElementById('tableBody');
+    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum cliente encontrado.</td></tr>'; return; }
+    let html = '';
+    for (const c of filtered) {
+      const tagsHtml = (c.tags || []).map(t => `<span class="tag-badge">${escapeHtml(t)}</span>`).join('');
+      const telefoneRaw = c.telefones || '';
+      const whatsLink = `https://wa.me/${formatPhoneForWhatsApp(telefoneRaw)}`;
+      html += `<tr>
+        <td><input type="checkbox" class="client-checkbox" value="${c.id}"></td>
+        <td><strong>${escapeHtml(c.nome)}</strong></td>
+        <td>${escapeHtml(c.empresa)}</td>
+        <td>${escapeHtml(telefoneRaw)}</td>
+        <td>${tagsHtml}</td>
+        <td><span class="badge bg-primary">${c.status || ''}</span></td>
+        <td>${c.retorno || ''}</td>
+        <td>
+          <button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
+          <a target="_blank" href="${whatsLink}" class="btn btn-success btn-sm" onclick="addLog('${c.id}','whatsapp','Clique no WhatsApp')"><i class="bi bi-whatsapp"></i></a>
+        </td>
+      </tr>`;
+    }
+    tbody.innerHTML = html;
+  }
+
+  function renderAgenda() {
+    const tbody = document.getElementById('agendaBody');
+    if (clients.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhum cliente.</td></tr>'; return; }
+    let html = '';
+    for (const c of clients) {
+      const telefoneRaw = c.telefones || '';
+      const whatsLink = `https://wa.me/${formatPhoneForWhatsApp(telefoneRaw)}`;
+      html += `<tr>
+        <td>${escapeHtml(c.nome)}</td>
+        <td>${escapeHtml(telefoneRaw)}</td>
+        <td>${c.retorno || ''}</td>
+        <td>${c.status || ''}</td>
+        <td><a target="_blank" href="${whatsLink}" class="btn btn-success btn-sm">WhatsApp</a></td>
+      </tr>`;
+    }
+    tbody.innerHTML = html;
+  }
+
+  function updatePlanosFilter() {
+    const planos = new Set();
+    clients.forEach(c => { if (c.planoAtual) planos.add(c.planoAtual); if (c.redePlano) planos.add(c.redePlano); });
+    const select = document.getElementById('filterPlano');
+    select.innerHTML = '<option value="ALL">Todos planos</option>' + [...planos].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
+  }
+
+  // ==================== AÇÕES EM MASSA ====================
+  function getSelectedIds() { return Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value); }
+  function toggleSelectAll() { const all = document.getElementById('selectAllCheckbox').checked; document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = all); }
+  document.getElementById('selectAllCheckbox')?.addEventListener('change', toggleSelectAll);
+  window.applyFiltersAndRender = () => renderTable();
+  document.getElementById('globalSearch')?.addEventListener('input', () => renderTable());
+  document.getElementById('filterStatus')?.addEventListener('change', () => renderTable());
+  document.getElementById('filterPlano')?.addEventListener('change', () => renderTable());
+  document.getElementById('filterTags')?.addEventListener('change', () => renderTable());
+
+  async function bulkWhatsApp() {
+    const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
+    for (const id of ids) {
+      const c = clients.find(c => c.id === id);
+      if (c?.telefones) window.open(`https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`, '_blank');
+      await addLog(id, 'bulk_whatsapp', 'Disparo em massa');
+    }
+  }
+  async function bulkChangeStatus() {
+    const newStatus = document.getElementById('bulkStatus').value;
+    if (!newStatus) return alert('Selecione um status');
+    const ids = getSelectedIds();
+    for (const id of ids) {
+      await db.collection('clients').doc(id).update({ status: newStatus });
+      await addLog(id, 'bulk_status', `Status alterado para ${newStatus}`);
+    }
+    await loadClients();
+  }
+  async function bulkScheduleReturn() {
+    const date = document.getElementById('bulkRetorno').value;
+    if (!date) return alert('Selecione uma data');
+    const ids = getSelectedIds();
+    for (const id of ids) {
+      await db.collection('clients').doc(id).update({ retorno: date });
+      await addLog(id, 'bulk_retorno', `Retorno agendado para ${date}`);
+    }
+    await loadClients();
+  }
+  async function bulkAddTag() {
+    const tag = document.getElementById('bulkTag').value;
+    if (!tag) return alert('Selecione uma tag');
+    const ids = getSelectedIds();
+    for (const id of ids) {
+      const c = clients.find(c => c.id === id);
+      const tags = c.tags || [];
+      if (!tags.includes(tag)) tags.push(tag);
+      await db.collection('clients').doc(id).update({ tags });
+      await addLog(id, 'bulk_tag', `Tag "${tag}" adicionada`);
+    }
+    await loadClients();
+  }
+
+  // ==================== DASHBOARD COM GRÁFICOS (destruição correta) ====================
+  function updateDashboard() {
+    document.getElementById('dashTotal').innerText = clients.length;
+    document.getElementById('dashFechados').innerText = clients.filter(c => c.status === 'Fechou o plano').length;
+    const periodo = document.getElementById('periodSelect').value;
+    const limite = periodo !== 'all' ? new Date(Date.now() - parseInt(periodo) * 86400000) : new Date(0);
+    const recuperados = clients.filter(c => c.status === 'Fechou o plano' && c.updatedAt && new Date(c.updatedAt.toDate?.() || c.updatedAt) >= limite).length;
+    document.getElementById('dashRecuperados').innerText = recuperados;
+    const tempos = clients.filter(c => c.adesao && c.cancelamento).map(c => (new Date(c.cancelamento) - new Date(c.adesao)) / 86400000).filter(d => d > 0);
+    const media = tempos.length ? Math.round(tempos.reduce((a, b) => a + b, 0) / tempos.length) : 0;
+    document.getElementById('dashTempoCancel').innerText = media;
+
+    // Gráfico recuperados por mês (últimos 6 meses)
+    const meses = [];
+    const counts = new Array(6).fill(0);
+    for (let i = 5; i >= 0; i--) { const d = new Date(); d.setMonth(d.getMonth() - i); meses.push(d.toLocaleString('default', { month: 'short' })); }
+    clients.forEach(c => {
+      if (c.status === 'Fechou o plano' && c.updatedAt) {
+        const d = new Date(c.updatedAt.toDate?.() || c.updatedAt);
+        const diff = (new Date().getFullYear() - d.getFullYear()) * 12 + (new Date().getMonth() - d.getMonth());
+        if (diff >= 0 && diff < 6) counts[5 - diff]++;
+      }
+    });
+    if (recoveryChart) recoveryChart.destroy();
+    recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels: meses, datasets: [{ label: 'Recuperados', data: counts, backgroundColor: '#10b981' }] } });
+
+    // Taxa de conversão
+    const convData = [clients.filter(c => c.status === 'Em negociação').length, clients.filter(c => c.status === 'Fechou o plano').length];
+    if (conversionChart) conversionChart.destroy();
+    conversionChart = new Chart(document.getElementById('conversionChart'), { type: 'doughnut', data: { labels: ['Em negociação', 'Fechou'], datasets: [{ data: convData, backgroundColor: ['#f59e0b', '#10b981'] }] } });
+  }
+  document.getElementById('periodSelect')?.addEventListener('change', updateDashboard);
+
+  // ==================== FILTROS SALVOS ====================
+  function saveCurrentFilter() {
+    const filter = {
+      search: document.getElementById('globalSearch').value,
+      status: document.getElementById('filterStatus').value,
+      plano: document.getElementById('filterPlano').value,
+      tag: document.getElementById('filterTags').value
+    };
+    localStorage.setItem(`savedFilter_${currentUser.uid}`, JSON.stringify(filter));
+    alert('Filtro salvo!');
+  }
+  function loadSavedFilters() {
+    const saved = localStorage.getItem(`savedFilter_${currentUser.uid}`);
+    if (saved) {
+      const f = JSON.parse(saved);
+      document.getElementById('globalSearch').value = f.search || '';
+      document.getElementById('filterStatus').value = f.status || 'ALL';
+      document.getElementById('filterPlano').value = f.plano || 'ALL';
+      document.getElementById('filterTags').value = f.tag || 'ALL';
+      renderTable();
+    } else alert('Nenhum filtro salvo.');
+  }
+
+  // ==================== AUTO PREENCHIMENTO ====================
+  function autoFill() {
+    const text = document.getElementById('smartPaste').value;
+    const map = [
+      [/Nome\s*:\s*(.*)/i, 'cNome'], [/CPF\s*:\s*(.*)/i, 'cCPF'],
+      [/Telefone\s*:\s*(.*)/i, 'cTelefones'], [/Email\s*:\s*(.*)/i, 'cEmails'],
+      [/Empresa\s*:\s*(.*)/i, 'cEmpresa'], [/Endereço\s*:\s*(.*)/i, 'cEndereco'],
+      [/Cidade\s*:\s*(.*)/i, 'cCidade'], [/UF\s*:\s*(.*)/i, 'cUF']
+    ];
+    map.forEach(([regex, id]) => { const match = text.match(regex); if (match) document.getElementById(id).value = match[1].trim(); });
+  }
+  function previewImage(e) {
+    const reader = new FileReader();
+    reader.onload = ev => { document.getElementById('preview').src = ev.target.result; document.getElementById('preview').style.display = 'block'; };
+    reader.readAsDataURL(e.target.files[0]);
+  }
+
+  // ==================== TRATAMENTO GLOBAL DE ERROS ====================
+  window.addEventListener('unhandledrejection', event => {
+    console.error('Erro não tratado:', event.reason);
+    alert('Ocorreu um erro inesperado. Recarregue a página e tente novamente.');
+  });
 </script>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
-```
-
-## Correções aplicadas
-
-* Corrigido erro ao salvar cliente
-* Corrigido erro ao importar backup
-* Corrigido render das tabelas
-* Corrigido dashboard
-* Corrigido login Firebase
-* Corrigido exportação JSON
-* Corrigido tags
-* Corrigido filtros
-* Corrigido tema dark mode
-* Corrigido atualização automática
-* Corrigido edição de clientes
-* Corrigido validações
