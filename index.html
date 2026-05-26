@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RecuperaHealth CRM</title>
+  <title>CRM Recuperação - com Vidas e Valores</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -155,11 +155,7 @@
       overflow-y: auto;
     }
 
-    /* Estilos exclusivos para a aba de Pesquisar (Lite) */
-    #pesquisaTab .card-custom {
-      border-radius: 20px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
+    /* Estilos para a aba de Pesquisar */
     #pesquisaTab .search-filters {
       background: rgba(59, 130, 246, 0.05);
       padding: 1.5rem;
@@ -176,17 +172,10 @@
     #pesquisaTab .table thead th {
       background: transparent;
       border-bottom: 2px solid var(--border);
-      color: var(--text);
       font-weight: 700;
       text-transform: uppercase;
       font-size: 0.75rem;
       letter-spacing: 0.05em;
-      padding: 1rem;
-    }
-    #pesquisaTab .table tbody td {
-      padding: 1rem;
-      vertical-align: middle;
-      border-bottom: 1px solid var(--border);
     }
     #pesquisaTab .badge-status {
       padding: 0.5rem 0.75rem;
@@ -210,7 +199,7 @@
 <!-- TELA DE LOGIN -->
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
-    <h3 class="text-center mb-4">RecuperaHealth CRM</h3>
+    <h3 class="text-center mb-4">CRM Recuperação</h3>
     <input type="email" id="loginEmail" class="form-control mb-3" placeholder="Email">
     <div class="input-group mb-3">
       <input type="password" id="loginPassword" class="form-control" placeholder="Senha">
@@ -246,29 +235,40 @@
   </ul>
 
   <div class="tab-content">
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD (modificado) -->
     <div class="tab-pane fade show active" id="dashboardTab">
       <div class="row g-4 mb-4">
         <div class="col-md-3"><div class="dashboard-card"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
-        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#10b981,#059669)"><h6>Implantados</h6><h2 id="dashImplantados">0</h2></div></div>
-        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)"><h6>Sem Interesse</h6><h2 id="dashSemInteresse">0</h2></div></div>
-        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#10b981,#059669)"><h6>Vidas Implantadas</h6><h2 id="dashVidas">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><h6>Valor Processado</h6><h2 id="dashValor">R$ 0,00</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)"><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
       </div>
-      <div class="row g-3 mb-4">
-        <div class="col-auto"><label>Período</label><select id="periodSelect" class="form-select"><option value="30">30 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="all">Todo período</option></select></div>
+      <div class="row g-3 mb-4 align-items-end">
+        <div class="col-auto"><label class="fw-bold">Filtrar por mês de implantação</label></div>
+        <div class="col-auto">
+          <select id="monthSelectDashboard" class="form-select" style="width: auto;">
+            <option value="all">Todos os meses</option>
+          </select>
+        </div>
+        <div class="col-auto">
+          <select id="yearSelectDashboard" class="form-select" style="width: auto;">
+            <option value="all">Todos os anos</option>
+          </select>
+        </div>
       </div>
       <div class="row g-4">
-        <div class="col-lg-6"><div class="card-custom"><h5>Recuperados por Mês</h5><canvas id="recoveryChart"></canvas></div></div>
+        <div class="col-lg-6"><div class="card-custom"><h5>Recuperados por Mês (Implantados)</h5><canvas id="recoveryChart"></canvas></div></div>
         <div class="col-lg-6"><div class="card-custom"><h5>Distribuição por Status</h5><canvas id="statusChart"></canvas></div></div>
       </div>
     </div>
 
-    <!-- FICHA CLIENTE -->
+    <!-- FICHA CLIENTE (com novos campos) -->
     <div class="tab-pane fade" id="clientesTab">
       <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4"></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
       <div class="card-custom">
         <input type="hidden" id="clientId">
         <div class="row g-3">
+          <!-- Campos existentes -->
           <div class="col-md-4"><label>Nome</label><input id="cNome" class="form-control"></div>
           <div class="col-md-4"><label>Nome social</label><input id="cNomeSocial" class="form-control"></div>
           <div class="col-md-4"><label>CPF</label><input id="cCPF" class="form-control"></div>
@@ -290,6 +290,13 @@
           <div class="col-md-6"><label>Emails</label><input id="cEmails" class="form-control"></div>
           <div class="col-md-6"><label>Retorno</label><input type="date" id="cRetorno" class="form-control"></div>
           <div class="col-md-6"><label>Foto</label><input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)"><img id="preview" style="max-width:100%; margin-top:0.5rem; display:none;"></div>
+          
+          <!-- NOVOS CAMPOS -->
+          <div class="col-md-4"><label>Valor sem desconto (R$)</label><input type="number" step="0.01" id="cValorSemDesconto" class="form-control" placeholder="0,00"></div>
+          <div class="col-md-4"><label>Valor com desconto (R$)</label><input type="number" step="0.01" id="cValorComDesconto" class="form-control" placeholder="0,00"></div>
+          <div class="col-md-4"><label>Quantidade de vidas</label><input type="number" step="1" id="cVidas" class="form-control" placeholder="0"></div>
+          <div class="col-md-4"><label>Data da implantação</label><input type="date" id="cDataImplantacao" class="form-control"></div>
+          <div class="col-md-4"><label>Data do pagamento</label><input type="date" id="cDataPagamento" class="form-control"></div>
         </div>
         <div class="mt-3"><label><strong>📝 Anotações</strong></label><textarea id="cAnotacoes" class="form-control" rows="3"></textarea></div>
         <ul class="nav nav-tabs mt-3">
@@ -309,125 +316,56 @@
       </div>
     </div>
 
-    <!-- PESQUISAR - VERSÃO LITE MODERNA -->
+    <!-- PESQUISAR (mantido igual ao Lite) -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card-custom">
-        <!-- Filtros de Busca -->
         <div class="search-filters">
           <div class="row g-3 align-items-end">
-            <div class="col-md-4">
-              <label class="form-label fw-bold small">BUSCA GLOBAL</label>
-              <input type="text" id="globalSearch" class="form-control" placeholder="Nome, empresa, telefone..." oninput="applyFiltersAndRender()">
-            </div>
-            <div class="col-md-3">
-              <label class="form-label fw-bold small">STATUS</label>
-              <select id="filterStatus" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Todos os status</option></select>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label fw-bold small">PLANO</label>
-              <select id="filterPlano" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Todos os planos</option></select>
-            </div>
-            <div class="col-md-2 d-flex gap-2">
-              <button class="btn btn-outline-primary w-100 btn-sm" onclick="saveCurrentFilter()"><i class="bi bi-bookmark"></i></button>
-              <button class="btn btn-outline-secondary w-100 btn-sm" onclick="loadSavedFilters()"><i class="bi bi-arrow-counterclockwise"></i></button>
-            </div>
+            <div class="col-md-4"><label class="form-label fw-bold small">BUSCA GLOBAL</label><input type="text" id="globalSearch" class="form-control" placeholder="Nome, empresa, telefone..." oninput="applyFiltersAndRender()"></div>
+            <div class="col-md-3"><label class="form-label fw-bold small">STATUS</label><select id="filterStatus" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Todos os status</option></select></div>
+            <div class="col-md-3"><label class="form-label fw-bold small">PLANO</label><select id="filterPlano" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Todos os planos</option></select></div>
+            <div class="col-md-2 d-flex gap-2"><button class="btn btn-outline-primary w-100 btn-sm" onclick="saveCurrentFilter()"><i class="bi bi-bookmark"></i></button><button class="btn btn-outline-secondary w-100 btn-sm" onclick="loadSavedFilters()"><i class="bi bi-arrow-counterclockwise"></i></button></div>
           </div>
         </div>
-
-        <!-- Ações em Massa -->
         <div class="bulk-actions">
           <div class="row g-2 align-items-center">
             <div class="col-auto"><button class="btn btn-success btn-sm" onclick="bulkWhatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp</button></div>
             <div class="col-auto"><button class="btn btn-danger btn-sm" onclick="bulkDelete()"><i class="bi bi-trash"></i> Excluir</button></div>
-            <div class="col-auto ms-md-auto">
-              <div class="input-group input-group-sm">
-                <select id="bulkStatus" class="form-select" style="width: 150px;"><option value="">Mudar status...</option></select>
-                <button class="btn btn-warning" onclick="bulkChangeStatus()">Aplicar</button>
-              </div>
-            </div>
-            <div class="col-auto">
-              <div class="input-group input-group-sm">
-                <input type="date" id="bulkRetorno" class="form-control" style="width: 130px;">
-                <button class="btn btn-info text-white" onclick="bulkScheduleReturn()">Agendar</button>
-              </div>
-            </div>
-            <div class="col-auto">
-              <button class="btn btn-primary btn-sm" onclick="exportSelectedToCSV()"><i class="bi bi-file-earmark-excel"></i> Exportar CSV</button>
-            </div>
+            <div class="col-auto ms-md-auto"><div class="input-group input-group-sm"><select id="bulkStatus" class="form-select" style="width: 150px;"><option value="">Mudar status...</option></select><button class="btn btn-warning" onclick="bulkChangeStatus()">Aplicar</button></div></div>
+            <div class="col-auto"><div class="input-group input-group-sm"><input type="date" id="bulkRetorno" class="form-control" style="width: 130px;"><button class="btn btn-info text-white" onclick="bulkScheduleReturn()">Agendar</button></div></div>
+            <div class="col-auto"><button class="btn btn-primary btn-sm" onclick="exportSelectedToCSV()"><i class="bi bi-file-earmark-excel"></i> Exportar CSV</button></div>
           </div>
         </div>
-
-        <!-- Tabela de Dados -->
         <div class="table-responsive">
           <table class="table table-hover">
-            <thead>
-              <tr>
-                <th style="width: 40px;"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
-                <th>Cliente</th>
-                <th>Empresa</th>
-                <th>Telefone</th>
-                <th>Status</th>
-                <th>Retorno</th>
-                <th class="text-center">Ações</th>
-              </tr>
-            </thead>
+            <thead><tr><th style="width: 40px;"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Retorno</th><th class="text-center">Ações</th></tr></thead>
             <tbody id="tableBody"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- AGENDA - CALENDÁRIO -->
+    <!-- AGENDA (calendário) -->
     <div class="tab-pane fade" id="agendaTab">
       <div class="card-custom">
         <div class="calendar">
           <div class="calendar-header">
             <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i> Mês anterior</button>
-            <div class="d-flex gap-2">
-              <select id="monthSelect" class="form-select form-select-sm" style="width: auto;" onchange="goToMonth()"></select>
-              <select id="yearSelect" class="form-select form-select-sm" style="width: auto;" onchange="goToMonth()"></select>
-            </div>
+            <div class="d-flex gap-2"><select id="monthSelect" class="form-select form-select-sm" style="width: auto;" onchange="goToMonth()"></select><select id="yearSelect" class="form-select form-select-sm" style="width: auto;" onchange="goToMonth()"></select></div>
             <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(1)">Próximo mês <i class="bi bi-chevron-right"></i></button>
           </div>
-          <div class="calendar-weekdays">
-            <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
-          </div>
+          <div class="calendar-weekdays"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
           <div id="calendarDays" class="calendar-days"></div>
         </div>
-        <div id="clientsByDay" class="client-list mt-4">
-          <h6>Clientes com retorno no dia selecionado</h6>
-          <div id="selectedDayClients" class="list-group"></div>
-        </div>
+        <div id="clientsByDay" class="client-list mt-4"><h6>Clientes com retorno no dia selecionado</h6><div id="selectedDayClients" class="list-group"></div></div>
       </div>
     </div>
 
     <!-- CONFIGURAÇÕES -->
     <div class="tab-pane fade" id="configTab">
       <div class="row g-4">
-        <div class="col-lg-6">
-          <div class="card-custom">
-            <h4>Gerenciar Status</h4>
-            <div id="statusList"></div>
-            <div class="input-group mt-3">
-              <input type="text" id="newStatus" class="form-control" placeholder="Novo status">
-              <button class="btn btn-success" onclick="addStatus()">Adicionar</button>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="card-custom">
-            <h4>Backup Automático</h4>
-            <label>Intervalo (horas)</label>
-            <input type="number" id="backupIntervalHours" class="form-control" value="24">
-            <button class="btn btn-primary mt-2" onclick="setAutoBackup()">Ativar</button>
-            <button class="btn btn-danger mt-2" onclick="stopAutoBackup()">Desligar</button>
-            <hr>
-            <button class="btn btn-primary" onclick="exportAllToCSV()">Exportar CSV (todos)</button>
-            <button class="btn btn-outline-primary" onclick="exportBackup()">Backup JSON</button>
-            <button class="btn btn-outline-primary" onclick="importBackup()">Importar JSON</button>
-            <input type="file" id="backupFileInput" accept=".json" style="display:none">
-          </div>
-        </div>
+        <div class="col-lg-6"><div class="card-custom"><h4>Gerenciar Status</h4><div id="statusList"></div><div class="input-group mt-3"><input type="text" id="newStatus" class="form-control" placeholder="Novo status"><button class="btn btn-success" onclick="addStatus()">Adicionar</button></div></div></div>
+        <div class="col-lg-6"><div class="card-custom"><h4>Backup Automático</h4><label>Intervalo (horas)</label><input type="number" id="backupIntervalHours" class="form-control" value="24"><button class="btn btn-primary mt-2" onclick="setAutoBackup()">Ativar</button> <button class="btn btn-danger mt-2" onclick="stopAutoBackup()">Desligar</button><hr><button class="btn btn-primary" onclick="exportAllToCSV()">Exportar CSV (todos)</button> <button class="btn btn-outline-primary" onclick="exportBackup()">Backup JSON</button> <button class="btn btn-outline-primary" onclick="importBackup()">Importar JSON</button><input type="file" id="backupFileInput" accept=".json" style="display:none"></div></div>
       </div>
     </div>
   </div>
@@ -473,6 +411,16 @@
     if (!digits.startsWith('55')) digits = '55' + digits;
     return digits;
   };
+  const formatMoney = (value) => {
+    if (value === undefined || value === null || isNaN(value)) return 'R$ 0,00';
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+  };
+  // Obter valor efetivo para soma (prioriza com desconto)
+  const getEffectiveValue = (client) => {
+    if (client.valorComDesconto && client.valorComDesconto > 0) return client.valorComDesconto;
+    if (client.valorSemDesconto && client.valorSemDesconto > 0) return client.valorSemDesconto;
+    return 0;
+  };
 
   // ==================== AUTENTICAÇÃO ====================
   auth.onAuthStateChanged(async user => {
@@ -483,6 +431,7 @@
       await loadClients();
       startReminderChecker();
       renderCalendar();
+      populateMonthYearSelectors();
     } else {
       document.getElementById('loginScreen').style.display = 'flex';
     }
@@ -560,6 +509,12 @@
       emails: document.getElementById('cEmails').value.trim(),
       retorno: document.getElementById('cRetorno').value,
       anotacoes: document.getElementById('cAnotacoes').value.trim(),
+      // novos campos
+      valorSemDesconto: parseFloat(document.getElementById('cValorSemDesconto').value) || 0,
+      valorComDesconto: parseFloat(document.getElementById('cValorComDesconto').value) || 0,
+      vidas: parseInt(document.getElementById('cVidas').value) || 0,
+      dataImplantacao: document.getElementById('cDataImplantacao').value || null,
+      dataPagamento: document.getElementById('cDataPagamento').value || null,
       userId: currentUser.uid,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
@@ -574,34 +529,16 @@
         let duplicate = false;
         let duplicateMessage = '';
         if (data.cpf) {
-          const existing = await db.collection('clients')
-            .where('userId', '==', currentUser.uid)
-            .where('cpf', '==', data.cpf)
-            .get();
-          if (!existing.empty) {
-            duplicate = true;
-            duplicateMessage = `CPF ${data.cpf} já cadastrado para ${existing.docs[0].data().nome}.`;
-          }
+          const existing = await db.collection('clients').where('userId', '==', currentUser.uid).where('cpf', '==', data.cpf).get();
+          if (!existing.empty) { duplicate = true; duplicateMessage = `CPF ${data.cpf} já cadastrado para ${existing.docs[0].data().nome}.`; }
         }
         if (!duplicate && data.telefones) {
-          const existingTel = await db.collection('clients')
-            .where('userId', '==', currentUser.uid)
-            .where('telefones', '==', data.telefones)
-            .get();
-          if (!existingTel.empty) {
-            duplicate = true;
-            duplicateMessage = `Telefone ${data.telefones} já cadastrado para ${existingTel.docs[0].data().nome}.`;
-          }
+          const existingTel = await db.collection('clients').where('userId', '==', currentUser.uid).where('telefones', '==', data.telefones).get();
+          if (!existingTel.empty) { duplicate = true; duplicateMessage = `Telefone ${data.telefones} já cadastrado para ${existingTel.docs[0].data().nome}.`; }
         }
         if (!duplicate && data.nome) {
-          const existingNome = await db.collection('clients')
-            .where('userId', '==', currentUser.uid)
-            .where('nome', '==', data.nome)
-            .get();
-          if (!existingNome.empty) {
-            duplicate = true;
-            duplicateMessage = `Nome "${data.nome}" já cadastrado.`;
-          }
+          const existingNome = await db.collection('clients').where('userId', '==', currentUser.uid).where('nome', '==', data.nome).get();
+          if (!existingNome.empty) { duplicate = true; duplicateMessage = `Nome "${data.nome}" já cadastrado.`; }
         }
         if (duplicate) {
           if (!confirm(`${duplicateMessage}\nDeseja cadastrar mesmo assim?`)) return;
@@ -618,7 +555,7 @@
   function clearForm() {
     if (!confirm('Limpar todos os campos?')) return;
     document.getElementById('clientId').value = '';
-    ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => document.getElementById(id).value = '');
+    ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes','cValorSemDesconto','cValorComDesconto','cVidas','cDataImplantacao','cDataPagamento'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('cStatus').selectedIndex = 0;
     document.getElementById('preview').style.display = 'none';
     document.getElementById('anexosList').innerHTML = '';
@@ -651,6 +588,11 @@
     document.getElementById('cEmails').value = c.emails || '';
     document.getElementById('cRetorno').value = c.retorno || '';
     document.getElementById('cAnotacoes').value = c.anotacoes || '';
+    document.getElementById('cValorSemDesconto').value = c.valorSemDesconto || '';
+    document.getElementById('cValorComDesconto').value = c.valorComDesconto || '';
+    document.getElementById('cVidas').value = c.vidas || '';
+    document.getElementById('cDataImplantacao').value = c.dataImplantacao || '';
+    document.getElementById('cDataPagamento').value = c.dataPagamento || '';
     loadAnexos(id);
     loadHistorico(id);
     document.querySelector('[data-bs-target="#clientesTab"]').click();
@@ -773,13 +715,7 @@
     const rows = [['Nome', 'Telefone', 'Email', 'Status', 'Empresa']];
     for (const c of clients) {
       const esc = (s) => `"${(s || '').replace(/"/g, '""')}"`;
-      rows.push([
-        esc(c.nome || ''),
-        esc(c.telefones || ''),
-        esc(c.emails || ''),
-        esc(c.status || ''),
-        esc(c.empresa || '')
-      ]);
+      rows.push([esc(c.nome || ''), esc(c.telefones || ''), esc(c.emails || ''), esc(c.status || ''), esc(c.empresa || '')]);
     }
     const csv = rows.map(r => r.join(',')).join('\n');
     const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
@@ -790,27 +726,18 @@
     URL.revokeObjectURL(a.href);
   }
 
-  // ==================== EXPORTAÇÃO SELECIONADA CSV ====================
   function exportSelectedToCSV() {
     const checkboxes = document.querySelectorAll('.client-checkbox:checked');
-    if (checkboxes.length === 0) {
-      alert('Nenhum cliente selecionado.');
-      return;
-    }
+    if (checkboxes.length === 0) { alert('Nenhum cliente selecionado.'); return; }
     const selectedIds = Array.from(checkboxes).map(cb => cb.value);
     const selectedClients = clients.filter(c => selectedIds.includes(c.id));
     const rows = [['Nome', 'Telefone']];
     for (const c of selectedClients) {
       const nome = (c.nome || '').replace(/,/g, ' ');
       const telefone = formatPhoneForCSV(c.telefones);
-      if (telefone) {
-        rows.push([`"${nome}"`, telefone]);
-      }
+      if (telefone) rows.push([`"${nome}"`, telefone]);
     }
-    if (rows.length === 1) {
-      alert('Nenhum telefone válido encontrado nos selecionados.');
-      return;
-    }
+    if (rows.length === 1) { alert('Nenhum telefone válido encontrado nos selecionados.'); return; }
     const csv = rows.map(r => r.join(',')).join('\n');
     const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
     const a = document.createElement('a');
@@ -828,45 +755,21 @@
   }
   function stopAutoBackup() { if (autoBackupInterval) { clearInterval(autoBackupInterval); autoBackupInterval = null; alert('Backup desligado.'); } }
 
-  // ==================== RENDER TABELA - VERSÃO LITE ====================
+  // ==================== RENDER TABELA ====================
   function renderTable() {
     const search = document.getElementById('globalSearch').value.toLowerCase();
     const status = document.getElementById('filterStatus').value;
-    
     const filtered = clients.filter(c => {
-      const matchSearch = !search || 
-        (c.nome && c.nome.toLowerCase().includes(search)) || 
-        (c.empresa && c.empresa.toLowerCase().includes(search)) || 
-        (c.telefones && c.telefones.includes(search));
+      const matchSearch = !search || (c.nome && c.nome.toLowerCase().includes(search)) || (c.empresa && c.empresa.toLowerCase().includes(search)) || (c.telefones && c.telefones.includes(search));
       const matchStatus = status === 'ALL' || c.status === status;
       return matchSearch && matchStatus;
     });
-
     const tbody = document.getElementById('tableBody');
-    if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">Nenhum cliente encontrado.��</td></tr>';
-      return;
-    }
-
+    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">Nenhum cliente encontrado.��</td></tr>'; return; }
     let html = '';
     for (const c of filtered) {
       const waLink = `https://wa.me/55${(c.telefones || '' ).replace(/\D/g, '')}`;
-      
-      html += `
-        <tr>
-          <td><input type="checkbox" class="client-checkbox" value="${c.id}"></td>
-          <td><div class="fw-bold">${escapeHtml(c.nome || '')}</div><div class="small text-muted">${escapeHtml(c.cpf || '')}</div></td>
-          <td>${escapeHtml(c.empresa || '')}</td>
-          <td>${escapeHtml(c.telefones || '')}</td>
-          <td><span class="badge-status bg-primary text-white">${escapeHtml(c.status || 'Sem status')}</span></td>
-          <td>${c.retorno || '-'}</td>
-          <td class="text-center">
-            <div class="d-flex gap-2 justify-content-center">
-              <button class="btn btn-warning btn-action text-white" onclick="editClient('${c.id}')"><i class="bi bi-pencil-square"></i></button>
-              <a href="${waLink}" target="_blank" class="btn btn-success btn-action"><i class="bi bi-whatsapp"></i></a>
-            </div>
-          </td>
-        </tr>`;
+      html += `<tr><td><input type="checkbox" class="client-checkbox" value="${c.id}"></td><td><div class="fw-bold">${escapeHtml(c.nome || '')}</div><div class="small text-muted">${escapeHtml(c.cpf || '')}</div></td><td>${escapeHtml(c.empresa || '')}</td><td>${escapeHtml(c.telefones || '')}</td><td><span class="badge-status bg-primary text-white">${escapeHtml(c.status || 'Sem status')}</span></td><td>${c.retorno || '-'}</td><td class="text-center"><div class="d-flex gap-2 justify-content-center"><button class="btn btn-warning btn-action text-white" onclick="editClient('${c.id}')"><i class="bi bi-pencil-square"></i></button><a href="${waLink}" target="_blank" class="btn btn-success btn-action"><i class="bi bi-whatsapp"></i></a></div></td></tr>`;
     }
     tbody.innerHTML = html;
   }
@@ -885,7 +788,6 @@
   window.applyFiltersAndRender = () => renderTable();
   document.getElementById('globalSearch')?.addEventListener('input', () => renderTable());
   document.getElementById('filterStatus')?.addEventListener('change', () => renderTable());
-  // O filtro de plano não aciona renderTable porque não é usado no momento; mas se quiser, pode manter o evento:
   document.getElementById('filterPlano')?.addEventListener('change', () => renderTable());
 
   async function bulkWhatsApp() {
@@ -929,18 +831,58 @@
     await loadClients();
   }
 
-  // ==================== DASHBOARD ====================
-  function updateDashboard() {
-    const total = clients.length;
-    const implantados = clients.filter(c => c.status === 'Implantado').length;
-    const semInteresse = clients.filter(c => c.status === 'Sem Interesse').length;
-    const taxa = total > 0 ? ((implantados / total) * 100).toFixed(1) : 0;
-    document.getElementById('dashTotal').innerText = total;
-    document.getElementById('dashImplantados').innerText = implantados;
-    document.getElementById('dashSemInteresse').innerText = semInteresse;
-    document.getElementById('dashConversao').innerText = taxa + '%';
+  // ==================== DASHBOARD (com filtro de mês/ano) ====================
+  function populateMonthYearSelectors() {
+    const monthSelect = document.getElementById('monthSelectDashboard');
+    const yearSelect = document.getElementById('yearSelectDashboard');
+    const currentYear = new Date().getFullYear();
+    for (let i = 1; i <= 12; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.text = new Date(2000, i-1, 1).toLocaleString('default', { month: 'long' });
+      monthSelect.appendChild(option);
+    }
+    for (let i = currentYear - 5; i <= currentYear + 1; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.text = i;
+      yearSelect.appendChild(option);
+    }
+    monthSelect.value = new Date().getMonth() + 1;
+    yearSelect.value = currentYear;
+  }
 
-    const periodo = document.getElementById('periodSelect').value;
+  function updateDashboard() {
+    const monthFilter = document.getElementById('monthSelectDashboard').value;
+    const yearFilter = document.getElementById('yearSelectDashboard').value;
+    let filteredClients = clients;
+    if (monthFilter !== 'all' && yearFilter !== 'all') {
+      filteredClients = clients.filter(c => {
+        if (!c.dataImplantacao) return false;
+        const implantDate = new Date(c.dataImplantacao);
+        return implantDate.getMonth() + 1 == monthFilter && implantDate.getFullYear() == yearFilter;
+      });
+    } else if (monthFilter !== 'all') {
+      filteredClients = clients.filter(c => c.dataImplantacao && new Date(c.dataImplantacao).getMonth() + 1 == monthFilter);
+    } else if (yearFilter !== 'all') {
+      filteredClients = clients.filter(c => c.dataImplantacao && new Date(c.dataImplantacao).getFullYear() == yearFilter);
+    }
+    // Total de clientes no período (todos os status)
+    const totalClientes = filteredClients.length;
+    // Vidas implantadas: soma do campo vidas dos clientes com status 'Implantado'
+    const implantados = filteredClients.filter(c => c.status === 'Implantado');
+    const totalVidas = implantados.reduce((acc, c) => acc + (c.vidas || 0), 0);
+    // Valor processado: soma dos valores efetivos dos clientes implantados
+    const valorTotal = implantados.reduce((acc, c) => acc + getEffectiveValue(c), 0);
+    // Leads não convertidos: clientes no período que não são implantados
+    const naoConvertidos = totalClientes - implantados.length;
+    // Taxa de conversão = (implantados / totalClientes) * 100, evitando divisão por zero
+    const taxaConversao = totalClientes > 0 ? ((implantados.length / totalClientes) * 100).toFixed(1) : 0;
+    document.getElementById('dashTotal').innerText = totalClientes;
+    document.getElementById('dashVidas').innerText = totalVidas;
+    document.getElementById('dashValor').innerHTML = formatMoney(valorTotal);
+    document.getElementById('dashConversao').innerText = `${taxaConversao}%`;
+    // Gráfico de recuperados por mês (últimos 6 meses, baseado em dataImplantacao ou updatedAt)
     const now = new Date();
     let meses = [];
     let counts = new Array(6).fill(0);
@@ -949,35 +891,25 @@
       meses.push(d.toLocaleString('default', { month: 'short' }));
     }
     clients.forEach(c => {
-      if (c.status === 'Implantado' && c.updatedAt) {
-        let data = c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt);
-        let diffMeses = (now.getFullYear() - data.getFullYear()) * 12 + (now.getMonth() - data.getMonth());
-        if (diffMeses >= 0 && diffMeses < 6) {
-          if (periodo === 'all' || diffMeses <= parseInt(periodo) / 30) counts[5 - diffMeses]++;
-        }
+      if (c.status === 'Implantado' && (c.dataImplantacao || c.updatedAt)) {
+        let implantDate = c.dataImplantacao ? new Date(c.dataImplantacao) : (c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt));
+        let diffMeses = (now.getFullYear() - implantDate.getFullYear()) * 12 + (now.getMonth() - implantDate.getMonth());
+        if (diffMeses >= 0 && diffMeses < 6) counts[5 - diffMeses]++;
       }
     });
     if (recoveryChart) recoveryChart.destroy();
-    recoveryChart = new Chart(document.getElementById('recoveryChart'), {
-      type: 'bar',
-      data: { labels: meses, datasets: [{ label: 'Recuperados', data: counts, backgroundColor: '#10b981' }] }
-    });
+    recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels: meses, datasets: [{ label: 'Implantados', data: counts, backgroundColor: '#10b981' }] } });
+    // Gráfico de status (distribuição geral)
     const statusData = statuses.map(s => clients.filter(c => c.status === s).length);
     if (statusChart) statusChart.destroy();
-    statusChart = new Chart(document.getElementById('statusChart'), {
-      type: 'doughnut',
-      data: { labels: statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] }
-    });
+    statusChart = new Chart(document.getElementById('statusChart'), { type: 'doughnut', data: { labels: statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] } });
   }
-  document.getElementById('periodSelect')?.addEventListener('change', updateDashboard);
+  document.getElementById('monthSelectDashboard')?.addEventListener('change', updateDashboard);
+  document.getElementById('yearSelectDashboard')?.addEventListener('change', updateDashboard);
 
   // ==================== FILTROS SALVOS ====================
   function saveCurrentFilter() {
-    const filter = {
-      search: document.getElementById('globalSearch').value,
-      status: document.getElementById('filterStatus').value,
-      plano: document.getElementById('filterPlano').value
-    };
+    const filter = { search: document.getElementById('globalSearch').value, status: document.getElementById('filterStatus').value, plano: document.getElementById('filterPlano').value };
     localStorage.setItem(`savedFilter_${currentUser.uid}`, JSON.stringify(filter));
     alert('Filtro salvo!');
   }
@@ -998,113 +930,51 @@
     const month = currentDate.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-
     const monthSelect = document.getElementById('monthSelect');
     const yearSelect = document.getElementById('yearSelect');
     if (monthSelect.children.length === 0) {
-      for (let i = 0; i < 12; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.text = new Date(year, i, 1).toLocaleString('default', { month: 'long' });
-        monthSelect.appendChild(option);
-      }
+      for (let i = 0; i < 12; i++) { const option = document.createElement('option'); option.value = i; option.text = new Date(year, i, 1).toLocaleString('default', { month: 'long' }); monthSelect.appendChild(option); }
     }
     monthSelect.value = month;
     if (yearSelect.children.length === 0) {
       const currentYear = new Date().getFullYear();
-      for (let i = currentYear - 5; i <= currentYear + 5; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.text = i;
-        yearSelect.appendChild(option);
-      }
+      for (let i = currentYear - 5; i <= currentYear + 5; i++) { const option = document.createElement('option'); option.value = i; option.text = i; yearSelect.appendChild(option); }
     }
     yearSelect.value = year;
-
     const daysContainer = document.getElementById('calendarDays');
     daysContainer.innerHTML = '';
-    for (let i = 0; i < firstDay; i++) {
-      const emptyDiv = document.createElement('div');
-      emptyDiv.className = 'calendar-day empty';
-      daysContainer.appendChild(emptyDiv);
-    }
+    for (let i = 0; i < firstDay; i++) { const emptyDiv = document.createElement('div'); emptyDiv.className = 'calendar-day empty'; daysContainer.appendChild(emptyDiv); }
     const todayStr = new Date().toISOString().split('T')[0];
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       const hasReturn = clients.some(c => c.retorno === dateStr);
-      const dayDiv = document.createElement('div');
-      dayDiv.className = 'calendar-day';
-      if (hasReturn) dayDiv.classList.add('has-return');
-      if (dateStr === todayStr) dayDiv.style.border = '2px solid var(--primary)';
-      dayDiv.innerText = d;
-      dayDiv.onclick = () => selectDay(dateStr);
-      daysContainer.appendChild(dayDiv);
+      const dayDiv = document.createElement('div'); dayDiv.className = 'calendar-day'; if (hasReturn) dayDiv.classList.add('has-return'); if (dateStr === todayStr) dayDiv.style.border = '2px solid var(--primary)'; dayDiv.innerText = d; dayDiv.onclick = () => selectDay(dateStr); daysContainer.appendChild(dayDiv);
     }
   }
-
   function selectDay(dateStr) {
     document.querySelectorAll('.calendar-day').forEach(day => day.classList.remove('selected'));
     const dayDivs = document.querySelectorAll('.calendar-day');
     const dayNum = parseInt(dateStr.split('-')[2]);
-    for (let div of dayDivs) {
-      if (div.innerText == dayNum && !div.classList.contains('empty')) {
-        div.classList.add('selected');
-        break;
-      }
-    }
+    for (let div of dayDivs) { if (div.innerText == dayNum && !div.classList.contains('empty')) { div.classList.add('selected'); break; } }
     const clientsOnDay = clients.filter(c => c.retorno === dateStr);
     const container = document.getElementById('selectedDayClients');
-    if (clientsOnDay.length === 0) {
-      container.innerHTML = '<div class="alert alert-info">Nenhum cliente com retorno nesta data.</div>';
-      return;
-    }
+    if (clientsOnDay.length === 0) { container.innerHTML = '<div class="alert alert-info">Nenhum cliente com retorno nesta data.</div>'; return; }
     let html = '';
     for (const c of clientsOnDay) {
       const whatsLink = `https://wa.me/55${(c.telefones || '').replace(/\D/g, '')}`;
-      html += `<div class="list-group-item d-flex justify-content-between align-items-center">
-        <div><strong>${escapeHtml(c.nome)}</strong><br><small>${escapeHtml(c.telefones)}</small></div>
-        <a target="_blank" href="${whatsLink}" class="btn btn-sm btn-success"><i class="bi bi-whatsapp"></i> WhatsApp</a>
-      </div>`;
+      html += `<div class="list-group-item d-flex justify-content-between align-items-center"><div><strong>${escapeHtml(c.nome)}</strong><br><small>${escapeHtml(c.telefones)}</small></div><a target="_blank" href="${whatsLink}" class="btn btn-sm btn-success"><i class="bi bi-whatsapp"></i> WhatsApp</a></div>`;
     }
     container.innerHTML = html;
   }
+  function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); renderCalendar(); document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>'; }
+  function goToMonth() { const newMonth = parseInt(document.getElementById('monthSelect').value); const newYear = parseInt(document.getElementById('yearSelect').value); currentDate = new Date(newYear, newMonth, 1); renderCalendar(); document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>'; }
 
-  function changeMonth(delta) {
-    currentDate.setMonth(currentDate.getMonth() + delta);
-    renderCalendar();
-    document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>';
-  }
-  function goToMonth() {
-    const newMonth = parseInt(document.getElementById('monthSelect').value);
-    const newYear = parseInt(document.getElementById('yearSelect').value);
-    currentDate = new Date(newYear, newMonth, 1);
-    renderCalendar();
-    document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>';
-  }
-
-  // ==================== CAMPO MÁGICO (SEM ALERTA) ====================
+  // ==================== CAMPO MÁGICO ====================
   function autoFill() {
     const text = document.getElementById('smartPaste').value;
     if (!text.trim()) return;
     const mappings = [
-      { label: 'Nome do usuário:', fieldId: 'cNome' },
-      { label: 'Nome social:', fieldId: 'cNomeSocial' },
-      { label: 'CPF do titular:', fieldId: 'cCPF' },
-      { label: 'Data de nascimento:', fieldId: 'cNascimento' },
-      { label: 'Endereço:', fieldId: 'cEndereco' },
-      { label: 'Cidade:', fieldId: 'cCidade' },
-      { label: 'UF:', fieldId: 'cUF' },
-      { label: 'Empresa:', fieldId: 'cEmpresa' },
-      { label: 'Ade emp:', fieldId: 'cAdeEmp' },
-      { label: 'Rede/plano:', fieldId: 'cRedePlano' },
-      { label: 'Plano atual:', fieldId: 'cPlanoAtual' },
-      { label: 'Acomodação:', fieldId: 'cAcomodacao' },
-      { label: 'Situação:', fieldId: 'cSituacao' },
-      { label: 'Data da adesão:', fieldId: 'cAdesao' },
-      { label: 'Data do cancelamento:', fieldId: 'cCancelamento' },
-      { label: 'Tempo:', fieldId: 'cTempo' },
-      { label: 'Telefones cadastrados:', fieldId: 'cTelefones' },
-      { label: 'Endereços eletrônicos:', fieldId: 'cEmails' }
+      { label: 'Nome do usuário:', fieldId: 'cNome' }, { label: 'Nome social:', fieldId: 'cNomeSocial' }, { label: 'CPF do titular:', fieldId: 'cCPF' }, { label: 'Data de nascimento:', fieldId: 'cNascimento' }, { label: 'Endereço:', fieldId: 'cEndereco' }, { label: 'Cidade:', fieldId: 'cCidade' }, { label: 'UF:', fieldId: 'cUF' }, { label: 'Empresa:', fieldId: 'cEmpresa' }, { label: 'Ade emp:', fieldId: 'cAdeEmp' }, { label: 'Rede/plano:', fieldId: 'cRedePlano' }, { label: 'Plano atual:', fieldId: 'cPlanoAtual' }, { label: 'Acomodação:', fieldId: 'cAcomodacao' }, { label: 'Situação:', fieldId: 'cSituacao' }, { label: 'Data da adesão:', fieldId: 'cAdesao' }, { label: 'Data do cancelamento:', fieldId: 'cCancelamento' }, { label: 'Tempo:', fieldId: 'cTempo' }, { label: 'Telefones cadastrados:', fieldId: 'cTelefones' }, { label: 'Endereços eletrônicos:', fieldId: 'cEmails' }
     ];
     for (const m of mappings) {
       const regex = new RegExp(`${m.label}\\s*(.*?)$`, 'im');
@@ -1118,17 +988,9 @@
       }
     }
   }
+  function previewImage(e) { const reader = new FileReader(); reader.onload = ev => { document.getElementById('preview').src = ev.target.result; document.getElementById('preview').style.display = 'block'; }; reader.readAsDataURL(e.target.files[0]); }
 
-  function previewImage(e) {
-    const reader = new FileReader();
-    reader.onload = ev => { document.getElementById('preview').src = ev.target.result; document.getElementById('preview').style.display = 'block'; };
-    reader.readAsDataURL(e.target.files[0]);
-  }
-
-  window.addEventListener('unhandledrejection', event => {
-    console.error('Erro não tratado:', event.reason);
-    alert('Ocorreu um erro inesperado. Recarregue a página e tente novamente.');
-  });
+  window.addEventListener('unhandledrejection', event => { console.error('Erro não tratado:', event.reason); alert('Ocorreu um erro inesperado. Recarregue a página e tente novamente.'); });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
