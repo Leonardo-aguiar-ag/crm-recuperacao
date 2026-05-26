@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recupera Health CRM - Edição Corrigida</title>
+  <title>Recupera Health CRM - Simplificado</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -15,13 +15,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <style>
-    :root {
-      --bg: #f8fafb;
-      --card: #ffffff;
-      --border: #e5e7eb;
-      --text: #111827;
-      --primary: #3b82f6;
-    }
+    :root { --bg: #f8fafb; --card: #ffffff; --border: #e5e7eb; --text: #111827; --primary: #3b82f6; }
     body.dark-mode { --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #f1f5f9; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; transition: background 0.3s; }
@@ -63,14 +57,8 @@
     <button class="btn btn-danger w-100 mb-2" type="button" onclick="googleLogin()"><i class="bi bi-google"></i> Google</button>
     <button class="btn btn-outline-primary w-100 mb-2" type="button" onclick="showRecover()">Esqueci a senha</button>
     <button class="btn btn-link w-100" type="button" onclick="showRegister()">Criar conta</button>
-    <div id="recoverBox" style="display:none; margin-top:1rem;">
-      <div class="input-group"><input type="email" id="recoverEmail" class="form-control" placeholder="Seu email"><button class="btn btn-warning" type="button" onclick="recoverPassword()">Enviar</button></div>
-    </div>
-    <div id="registerBox" style="display:none; margin-top:1rem;">
-      <input type="email" id="regEmail" class="form-control mb-2" placeholder="Email">
-      <input type="password" id="regPassword" class="form-control mb-2" placeholder="Senha">
-      <button class="btn btn-success w-100" type="button" onclick="register()">Cadastrar</button>
-    </div>
+    <div id="recoverBox" style="display:none; margin-top:1rem;"><div class="input-group"><input type="email" id="recoverEmail" class="form-control" placeholder="Seu email"><button class="btn btn-warning" type="button" onclick="recoverPassword()">Enviar</button></div></div>
+    <div id="registerBox" style="display:none; margin-top:1rem;"><input type="email" id="regEmail" class="form-control mb-2" placeholder="Email"><input type="password" id="regPassword" class="form-control mb-2" placeholder="Senha"><button class="btn btn-success w-100" type="button" onclick="register()">Cadastrar</button></div>
   </div>
 </div>
 
@@ -96,28 +84,21 @@
   </ul>
 
   <div class="tab-content">
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD (simplificado, sem filtros) -->
     <div class="tab-pane fade show active" id="dashboardTab" role="tabpanel">
       <div class="row g-4 mb-4">
-        <div class="col-md-3"><div class="dashboard-card"><h6>Total Clientes (filtro)</h6><h2 id="dashTotal">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
         <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#10b981,#059669)"><h6>Vidas Implantadas</h6><h2 id="dashVidas">0</h2></div></div>
         <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><h6>Valor Processado</h6><h2 id="dashValor">R$ 0,00</h2></div></div>
         <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)"><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
       </div>
-      <div class="row g-3 mb-4 align-items-end">
-        <div class="col-auto"><label>Tipo de filtro</label><select id="filterType" class="form-select"><option value="period">Período (últimos meses)</option><option value="month">Mês específico</option></select></div>
-        <div class="col-auto" id="periodDiv"><label>Período (meses)</label><select id="chartPeriod" class="form-select"><option value="3">Últimos 3 meses</option><option value="6" selected>Últimos 6 meses</option><option value="12">Últimos 12 meses</option></select></div>
-        <div class="col-auto" id="monthDiv" style="display:none;"><label>Mês</label><select id="specificMonth" class="form-select"><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
-        <div class="col-auto" id="yearDiv" style="display:none;"><label>Ano</label><select id="specificYear" class="form-select"></select></div>
-      </div>
       <div class="row g-4">
-        <div class="col-lg-4"><div class="card-custom"><h5>Recuperados por Mês</h5><canvas id="recoveryChart"></canvas></div></div>
-        <div class="col-lg-4"><div class="card-custom"><h5>Valor Processado (R$) por Mês</h5><canvas id="valueChart"></canvas></div></div>
-        <div class="col-lg-4"><div class="card-custom"><h5>Distribuição por Status (global)</h5><canvas id="statusChart"></canvas></div></div>
+        <div class="col-lg-6"><div class="card-custom"><h5>Recuperados por Mês (últimos 6 meses)</h5><canvas id="recoveryChart"></canvas></div></div>
+        <div class="col-lg-6"><div class="card-custom"><h5>Distribuição por Status</h5><canvas id="statusChart"></canvas></div></div>
       </div>
     </div>
 
-    <!-- FICHA CLIENTE -->
+    <!-- FICHA CLIENTE (com campos originais) -->
     <div class="tab-pane fade" id="clientesTab" role="tabpanel">
       <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4"></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
       <div class="card-custom">
@@ -191,17 +172,12 @@
           <div class="col-auto"><button class="btn btn-secondary btn-sm" onclick="importExcel()"><i class="bi bi-file-spreadsheet"></i> Importar Excel</button><input type="file" id="excelInput" accept=".xlsx,.csv" style="display:none" onchange="handleExcelUpload(event)"></div>
         </div>
         <div class="table-responsive">
-          <table class="table table-hover">
-            <thead>
-              <tr><th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Origem</th><th>Retorno</th><th>Ações</th></tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
+          <table class="table table-hover"><thead><tr><th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Origem</th><th>Retorno</th><th>Ações</th></tr></thead><tbody id="tableBody"></tbody></table>
         </div>
       </div>
     </div>
 
-    <!-- AGENDA -->
+    <!-- AGENDA (calendário) -->
     <div class="tab-pane fade" id="agendaTab" role="tabpanel">
       <div class="card-custom">
         <div class="calendar">
@@ -246,7 +222,7 @@
   let clients = [];
   let statuses = ['Em Negociação', 'Para Enviar Documentação', 'Implantado', 'Sem Interesse'];
   let autoBackupInterval = null, reminderInterval = null;
-  let recoveryChart, valueChart, statusChart;
+  let recoveryChart, statusChart;
   let currentDate = new Date();
 
   // Helpers
@@ -261,40 +237,16 @@
   };
   const formatMoney = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
   const getEffectiveValue = (client) => client.valorComDesconto && client.valorComDesconto > 0 ? client.valorComDesconto : (client.valorSemDesconto || 0);
-  const getClientDate = (client) => {
-    if (client.dataImplantacao) return new Date(client.dataImplantacao);
-    if (client.updatedAt) return client.updatedAt.toDate ? client.updatedAt.toDate() : new Date(client.updatedAt);
-    return null;
-  };
   const getTodayStr = () => new Date().toISOString().split('T')[0];
 
   // ==================== AUTENTICAÇÃO ====================
-  function login() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    const errorDiv = document.getElementById('loginError');
-    auth.signInWithEmailAndPassword(email, password)
-      .then(() => errorDiv.style.display = 'none')
-      .catch(error => { errorDiv.style.display = 'block'; errorDiv.innerText = error.message; });
-  }
-  function googleLogin() {
-    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-      .catch(error => { document.getElementById('loginError').style.display = 'block'; document.getElementById('loginError').innerText = error.message; });
-  }
-  function register() {
-    const email = document.getElementById('regEmail').value;
-    const password = document.getElementById('regPassword').value;
-    auth.createUserWithEmailAndPassword(email, password)
-      .then(() => alert('Conta criada! Faça login.'))
-      .catch(error => alert(error.message));
-  }
-  function recoverPassword() {
-    const email = document.getElementById('recoverEmail').value;
-    auth.sendPasswordResetEmail(email).then(() => alert('Email enviado!')).catch(error => alert(error.message));
-  }
-  function togglePassword() { const pwd = document.getElementById('loginPassword'); pwd.type = pwd.type === 'password' ? 'text' : 'password'; }
-  function showRecover() { document.getElementById('recoverBox').style.display = 'block'; document.getElementById('registerBox').style.display = 'none'; }
-  function showRegister() { document.getElementById('registerBox').style.display = 'block'; document.getElementById('recoverBox').style.display = 'none'; }
+  function login() { const email = loginEmail.value, password = loginPassword.value; auth.signInWithEmailAndPassword(email, password).catch(e => { loginError.style.display = 'block'; loginError.innerText = e.message; }); }
+  function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => { loginError.style.display = 'block'; loginError.innerText = e.message; }); }
+  function register() { auth.createUserWithEmailAndPassword(regEmail.value, regPassword.value).then(() => alert('Conta criada! Faça login.')).catch(e => alert(e.message)); }
+  function recoverPassword() { auth.sendPasswordResetEmail(recoverEmail.value).then(() => alert('Email enviado!')).catch(e => alert(e.message)); }
+  function togglePassword() { loginPassword.type = loginPassword.type === 'password' ? 'text' : 'password'; }
+  function showRecover() { recoverBox.style.display = 'block'; registerBox.style.display = 'none'; }
+  function showRegister() { registerBox.style.display = 'block'; recoverBox.style.display = 'none'; }
   function logout() { auth.signOut(); }
   function toggleTheme() { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light'); }
   if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
@@ -302,20 +254,19 @@
   auth.onAuthStateChanged(async user => {
     if (user) {
       currentUser = user;
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('navbar').style.display = 'flex';
-      document.getElementById('mainContent').style.display = 'block';
+      loginScreen.style.display = 'none';
+      navbar.style.display = 'flex';
+      mainContent.style.display = 'block';
       await loadStatuses();
       await loadClients();
       startReminderChecker();
       renderCalendar();
-      populateSpecificYear();
       populateFilters();
       setTimeout(() => updateDashboard(), 100);
     } else {
-      document.getElementById('loginScreen').style.display = 'flex';
-      document.getElementById('navbar').style.display = 'none';
-      document.getElementById('mainContent').style.display = 'none';
+      loginScreen.style.display = 'flex';
+      navbar.style.display = 'none';
+      mainContent.style.display = 'none';
       clients = [];
     }
   });
@@ -328,13 +279,13 @@
   }
   async function saveStatuses() { await db.collection('customStatuses').doc(currentUser.uid).set({ statuses }); }
   function addStatus() {
-    let s = document.getElementById('newStatus').value.trim();
+    let s = newStatus.value.trim();
     if (!s) return;
     if (statuses.includes(s)) return alert('Status já existe.');
     statuses.push(s);
     renderStatuses();
     saveStatuses();
-    document.getElementById('newStatus').value = '';
+    newStatus.value = '';
   }
   function deleteStatus(i) {
     if (!confirm('Remover este status?')) return;
@@ -343,10 +294,10 @@
     saveStatuses();
   }
   function renderStatuses() {
-    document.getElementById('cStatus').innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
-    document.getElementById('filterStatus').innerHTML = '<option value="ALL">Todos status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    document.getElementById('bulkStatus').innerHTML = '<option value="">Mudar status...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    document.getElementById('statusList').innerHTML = statuses.map((s, i) => `<div class="d-flex justify-content-between align-items-center mb-2"><span>${s}</span><button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
+    cStatus.innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
+    filterStatus.innerHTML = '<option value="ALL">Todos status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+    bulkStatus.innerHTML = '<option value="">Mudar status...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+    statusList.innerHTML = statuses.map((s, i) => `<div class="d-flex justify-content-between align-items-center mb-2"><span>${s}</span><button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
   }
 
   // ==================== CLIENTES ====================
@@ -361,49 +312,47 @@
   }
 
   async function saveClient() {
-    const id = document.getElementById('clientId').value;
-    let vidasRaw = parseInt(document.getElementById('cVidas').value) || 0;
+    const id = clientId.value;
+    let vidasRaw = parseInt(cVidas.value) || 0;
     const vidas = Math.max(0, vidasRaw);
-    let dataImplantacao = document.getElementById('cDataImplantacao').value;
-    let dataPagamento = document.getElementById('cDataPagamento').value;
-    const status = document.getElementById('cStatus').value;
+    let dataPagamento = cDataPagamento.value;
+    const status = cStatus.value;
     const hoje = getTodayStr();
 
-    if (!id && status === 'Implantado' && !dataImplantacao) dataImplantacao = hoje;
-    if (id && status === 'Implantado') {
-      const oldClient = clients.find(c => c.id === id);
-      if (oldClient && oldClient.status !== 'Implantado' && !dataPagamento) dataPagamento = hoje;
+    // Regra: se status for "Implantado" e dataPagamento estiver vazia, preencher com hoje
+    if (status === 'Implantado' && !dataPagamento) {
+      dataPagamento = hoje;
     }
 
     const data = {
-      nome: document.getElementById('cNome').value.trim(),
-      nomeSocial: document.getElementById('cNomeSocial').value.trim(),
-      cpf: document.getElementById('cCPF').value.trim(),
-      nascimento: document.getElementById('cNascimento').value.trim(),
-      endereco: document.getElementById('cEndereco').value.trim(),
-      cidade: document.getElementById('cCidade').value.trim(),
-      uf: document.getElementById('cUF').value.trim(),
-      empresa: document.getElementById('cEmpresa').value.trim(),
-      adeEmp: document.getElementById('cAdeEmp').value.trim(),
-      redePlano: document.getElementById('cRedePlano').value.trim(),
-      planoAtual: document.getElementById('cPlanoAtual').value.trim(),
-      acomodacao: document.getElementById('cAcomodacao').value.trim(),
-      situacao: document.getElementById('cSituacao').value.trim(),
+      nome: cNome.value.trim(),
+      nomeSocial: cNomeSocial.value.trim(),
+      cpf: cCPF.value.trim(),
+      nascimento: cNascimento.value.trim(),
+      endereco: cEndereco.value.trim(),
+      cidade: cCidade.value.trim(),
+      uf: cUF.value.trim(),
+      empresa: cEmpresa.value.trim(),
+      adeEmp: cAdeEmp.value.trim(),
+      redePlano: cRedePlano.value.trim(),
+      planoAtual: cPlanoAtual.value.trim(),
+      acomodacao: cAcomodacao.value.trim(),
+      situacao: cSituacao.value.trim(),
       status: status,
-      adesao: document.getElementById('cAdesao').value.trim(),
-      cancelamento: document.getElementById('cCancelamento').value.trim(),
-      tempo: document.getElementById('cTempo').value.trim(),
-      telefones: document.getElementById('cTelefones').value.trim(),
-      emails: document.getElementById('cEmails').value.trim(),
-      retorno: document.getElementById('cRetorno').value,
-      anotacoes: document.getElementById('cAnotacoes').value.trim(),
-      valorSemDesconto: parseFloat(document.getElementById('cValorSemDesconto').value) || 0,
-      valorComDesconto: parseFloat(document.getElementById('cValorComDesconto').value) || 0,
+      adesao: cAdesao.value.trim(),
+      cancelamento: cCancelamento.value.trim(),
+      tempo: cTempo.value.trim(),
+      telefones: cTelefones.value.trim(),
+      emails: cEmails.value.trim(),
+      retorno: cRetorno.value,
+      anotacoes: cAnotacoes.value.trim(),
+      valorSemDesconto: parseFloat(cValorSemDesconto.value) || 0,
+      valorComDesconto: parseFloat(cValorComDesconto.value) || 0,
       vidas: vidas,
-      dataImplantacao: dataImplantacao || null,
+      dataImplantacao: cDataImplantacao.value || null,
       dataPagamento: dataPagamento || null,
-      origem: document.getElementById('cOrigem').value.trim(),
-      campanha: document.getElementById('cCampanha').value.trim(),
+      origem: cOrigem.value.trim(),
+      campanha: cCampanha.value.trim(),
       userId: currentUser.uid,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
@@ -434,96 +383,44 @@
   async function loadHistorico(clientId) {
     const snap = await db.collection('interactionLogs').where('clientId', '==', clientId).orderBy('timestamp', 'desc').limit(50).get();
     const logs = snap.docs.map(d => d.data());
-    const div = document.getElementById('historicoList');
-    if (logs.length === 0) { div.innerHTML = '<p class="text-muted">Nenhuma interação.</p>'; return; }
-    div.innerHTML = logs.map(l => `<div class="history-log"><small>${l.timestamp ? new Date(l.timestamp.toDate()).toLocaleString() : ''}</small><br><strong>${l.action}</strong><br>${l.details}</div>`).join('');
+    historicoList.innerHTML = logs.length ? logs.map(l => `<div class="history-log"><small>${l.timestamp ? new Date(l.timestamp.toDate()).toLocaleString() : ''}</small><br><strong>${l.action}</strong><br>${l.details}</div>`).join('') : '<p class="text-muted">Nenhuma interação.</p>';
   }
 
   async function loadStatusHistory(clientId) {
     const snap = await db.collection('interactionLogs').where('clientId', '==', clientId).get();
     const logs = snap.docs.map(d => d.data()).filter(l => l.action === 'edit' && l.details.includes('Status alterado'));
-    const div = document.getElementById('statusHistoryList');
-    if (logs.length === 0) { div.innerHTML = '<p class="text-muted">Nenhuma alteração de status.</p>'; return; }
-    div.innerHTML = logs.map(l => `<div class="history-log"><small>${new Date(l.timestamp.toDate()).toLocaleString()}</small><br>${l.details}</div>`).join('');
+    statusHistoryList.innerHTML = logs.length ? logs.map(l => `<div class="history-log"><small>${new Date(l.timestamp.toDate()).toLocaleString()}</small><br>${l.details}</div>`).join('') : '<p class="text-muted">Nenhuma alteração de status.</p>';
   }
 
-  // Função editClient corrigida e garantida no escopo global
   function editClient(id) {
-    console.log('editClient chamado, id:', id);
     const c = clients.find(c => c.id === id);
-    if (!c) {
-      console.error('Cliente não encontrado:', id);
-      alert('Erro: cliente não encontrado.');
-      return;
-    }
-    document.getElementById('clientId').value = id;
-    
-    const fieldMapping = {
-      nome: 'cNome',
-      nomeSocial: 'cNomeSocial',
-      cpf: 'cCPF',
-      nascimento: 'cNascimento',
-      endereco: 'cEndereco',
-      cidade: 'cCidade',
-      uf: 'cUF',
-      empresa: 'cEmpresa',
-      adeEmp: 'cAdeEmp',
-      redePlano: 'cRedePlano',
-      planoAtual: 'cPlanoAtual',
-      acomodacao: 'cAcomodacao',
-      situacao: 'cSituacao',
-      status: 'cStatus',
-      adesao: 'cAdesao',
-      cancelamento: 'cCancelamento',
-      tempo: 'cTempo',
-      telefones: 'cTelefones',
-      emails: 'cEmails',
-      retorno: 'cRetorno',
-      anotacoes: 'cAnotacoes',
-      valorSemDesconto: 'cValorSemDesconto',
-      valorComDesconto: 'cValorComDesconto',
-      vidas: 'cVidas',
-      dataImplantacao: 'cDataImplantacao',
-      dataPagamento: 'cDataPagamento',
-      origem: 'cOrigem',
-      campanha: 'cCampanha'
-    };
-    
-    for (const [key, inputId] of Object.entries(fieldMapping)) {
-      const input = document.getElementById(inputId);
-      if (input) input.value = c[key] !== undefined ? c[key] : '';
-    }
-    
+    if (!c) return;
+    clientId.value = id;
+    const fields = ['nome','nomeSocial','cpf','nascimento','endereco','cidade','uf','empresa','adeEmp','redePlano','planoAtual','acomodacao','situacao','status','adesao','cancelamento','tempo','telefones','emails','retorno','anotacoes','valorSemDesconto','valorComDesconto','vidas','dataImplantacao','dataPagamento','origem','campanha'];
+    fields.forEach(k => {
+      const input = document.getElementById(`c${k.charAt(0).toUpperCase() + k.slice(1)}`);
+      if (input) input.value = c[k] !== undefined ? c[k] : '';
+    });
     loadAnexos(id);
     loadHistorico(id);
     loadStatusHistory(id);
-    
-    // Abrir a aba "Ficha Cliente"
-    const clientesTab = document.getElementById('clientes-tab');
-    if (clientesTab) {
-      const tab = new bootstrap.Tab(clientesTab);
-      tab.show();
-    } else {
-      const tabLink = document.querySelector('[data-bs-target="#clientesTab"]');
-      if (tabLink) tabLink.click();
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    new bootstrap.Tab(document.getElementById('clientes-tab')).show();
   }
   window.editClient = editClient;
 
   function clearForm() {
     if (!confirm('Limpar todos os campos?')) return;
-    document.getElementById('clientId').value = '';
+    clientId.value = '';
     ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes','cValorSemDesconto','cValorComDesconto','cVidas','cDataImplantacao','cDataPagamento','cOrigem','cCampanha'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('cStatus').selectedIndex = 0;
-    document.getElementById('preview').style.display = 'none';
-    document.getElementById('anexosList').innerHTML = '';
-    document.getElementById('historicoList').innerHTML = '';
-    document.getElementById('smartPaste').value = '';
+    cStatus.selectedIndex = 0;
+    preview.style.display = 'none';
+    anexosList.innerHTML = '';
+    historicoList.innerHTML = '';
+    smartPaste.value = '';
   }
 
   function autoFill() {
-    const text = document.getElementById('smartPaste').value;
+    const text = smartPaste.value;
     if (!text.trim()) return;
     const mappings = [
       { label: 'Nome do usuário:', fieldId: 'cNome' }, { label: 'Nome social:', fieldId: 'cNomeSocial' },
@@ -550,27 +447,26 @@
     alert('Campos preenchidos automaticamente!');
   }
 
-  function previewImage(e) { const reader = new FileReader(); reader.onload = ev => { document.getElementById('preview').src = ev.target.result; document.getElementById('preview').style.display = 'block'; }; reader.readAsDataURL(e.target.files[0]); }
+  function previewImage(e) { const reader = new FileReader(); reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; }; reader.readAsDataURL(e.target.files[0]); }
 
   // ==================== ANEXOS ====================
   async function loadAnexos(clientId) {
-    const listDiv = document.getElementById('anexosList');
-    listDiv.innerHTML = 'Carregando...';
+    anexosList.innerHTML = 'Carregando...';
     const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}`);
     let items = [];
-    try { const res = await ref.listAll(); items = res.items; } catch(e) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
-    if (items.length === 0) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
+    try { const res = await ref.listAll(); items = res.items; } catch(e) { anexosList.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
+    if (items.length === 0) { anexosList.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
     let html = '';
     for (const item of items) {
       const url = await item.getDownloadURL();
       html += `<div class="d-flex justify-content-between align-items-center mb-2"><a href="${url}" target="_blank">${item.name}</a><button class="btn btn-sm btn-danger" onclick="deleteAnexo('${clientId}','${item.name}')">Excluir</button></div>`;
     }
-    listDiv.innerHTML = html;
+    anexosList.innerHTML = html;
   }
   async function uploadAnexos() {
-    const clientId = document.getElementById('clientId').value;
+    const clientId = clientId.value;
     if (!clientId) return alert('Salve o cliente primeiro!');
-    const files = document.getElementById('uploadAnexo').files;
+    const files = uploadAnexo.files;
     if (!files.length) return;
     for (const file of files) {
       if (!file.type.match(/image.*|application\/pdf/)) { alert(`Tipo inválido: ${file.name}`); continue; }
@@ -591,27 +487,24 @@
   function populateFilters() {
     const allTags = new Set();
     clients.forEach(c => { if (c.tags) c.tags.forEach(t => allTags.add(t)); });
-    const container = document.getElementById('filterTagsContainer');
-    container.innerHTML = '';
+    filterTagsContainer.innerHTML = '';
     allTags.forEach(tag => {
       const cb = document.createElement('div');
       cb.className = 'form-check form-check-inline';
       cb.innerHTML = `<input class="form-check-input tag-checkbox" type="checkbox" value="${escapeHtml(tag)}" id="tag_${tag}" onchange="renderTable()"><label class="form-check-label" for="tag_${tag}">${escapeHtml(tag)}</label>`;
-      container.appendChild(cb);
+      filterTagsContainer.appendChild(cb);
     });
     const origens = new Set(clients.map(c => c.origem).filter(o => o));
-    const selectOrigem = document.getElementById('filterOrigem');
-    selectOrigem.innerHTML = '<option value="ALL">Todas</option>' + [...origens].sort().map(o => `<option>${escapeHtml(o)}</option>`).join('');
+    filterOrigem.innerHTML = '<option value="ALL">Todas</option>' + [...origens].sort().map(o => `<option>${escapeHtml(o)}</option>`).join('');
     const campanhas = new Set(clients.map(c => c.campanha).filter(ca => ca));
-    const selectCamp = document.getElementById('filterCampanha');
-    selectCamp.innerHTML = '<option value="ALL">Todas</option>' + [...campanhas].sort().map(ca => `<option>${escapeHtml(ca)}</option>`).join('');
+    filterCampanha.innerHTML = '<option value="ALL">Todas</option>' + [...campanhas].sort().map(ca => `<option>${escapeHtml(ca)}</option>`).join('');
   }
 
   function renderTable() {
-    const search = document.getElementById('globalSearch').value.toLowerCase();
-    const status = document.getElementById('filterStatus').value;
-    const origem = document.getElementById('filterOrigem').value;
-    const campanha = document.getElementById('filterCampanha').value;
+    const search = globalSearch.value.toLowerCase();
+    const status = filterStatus.value;
+    const origem = filterOrigem.value;
+    const campanha = filterCampanha.value;
     const selectedTags = Array.from(document.querySelectorAll('.tag-checkbox:checked')).map(cb => cb.value);
     const filtered = clients.filter(c => {
       const matchSearch = !search || (c.nome && c.nome.toLowerCase().includes(search)) || (c.empresa && c.empresa.toLowerCase().includes(search)) || (c.telefones && c.telefones.includes(search));
@@ -621,8 +514,7 @@
       const matchTags = selectedTags.length === 0 || (c.tags && selectedTags.every(tag => c.tags.includes(tag)));
       return matchSearch && matchStatus && matchOrigem && matchCampanha && matchTags;
     });
-    const tbody = document.getElementById('tableBody');
-    if (filtered.length === 0) { tbody.innerHTML = '<table><td colspan="8" class="text-center">Nenhum cliente encontrado.��堆</td>'; return; }
+    if (filtered.length === 0) { tableBody.innerHTML = '<table><td colspan="8" class="text-center">Nenhum cliente encontrado.��堆</table>'; return; }
     let html = '';
     for (const c of filtered) {
       const waLink = `https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`;
@@ -637,113 +529,46 @@
         <td class="text-center"><div class="d-flex gap-2 justify-content-center"><button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button><a href="${waLink}" target="_blank" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a></div></td>
       </tr>`;
     }
-    tbody.innerHTML = html;
+    tableBody.innerHTML = html;
   }
 
-  // ==================== DASHBOARD ====================
-  function populateSpecificYear() {
-    const yearSelect = document.getElementById('specificYear');
-    const currentYear = new Date().getFullYear();
-    yearSelect.innerHTML = '';
-    for (let i = currentYear - 5; i <= currentYear + 1; i++) {
-      const opt = document.createElement('option');
-      opt.value = i;
-      opt.text = i;
-      yearSelect.appendChild(opt);
-    }
-    yearSelect.value = currentYear;
-  }
-
-  function toggleFilterType() {
-    const type = document.getElementById('filterType').value;
-    document.getElementById('periodDiv').style.display = type === 'period' ? 'block' : 'none';
-    document.getElementById('monthDiv').style.display = type === 'month' ? 'block' : 'none';
-    document.getElementById('yearDiv').style.display = type === 'month' ? 'block' : 'none';
-    updateDashboard();
-  }
-
+  // ==================== DASHBOARD (simplificado, sem filtro) ====================
   function updateDashboard() {
-    const filterType = document.getElementById('filterType').value;
-    let labels = [];
-    let recoveryCounts = [];
-    let monthlyValues = [];
-    let filteredImplantados = [];
+    const totalClientes = clients.length;
+    const implantados = clients.filter(c => c.status === 'Implantado');
+    const totalVidas = implantados.reduce((acc, c) => acc + Math.max(0, c.vidas || 0), 0);
+    const valorTotal = implantados.reduce((acc, c) => acc + getEffectiveValue(c), 0);
+    const taxaConversao = totalClientes > 0 ? ((implantados.length / totalClientes) * 100).toFixed(1) : 0;
+    dashTotal.innerText = totalClientes;
+    dashVidas.innerText = totalVidas;
+    dashValor.innerHTML = formatMoney(valorTotal);
+    dashConversao.innerText = `${taxaConversao}%`;
 
-    if (filterType === 'period') {
-      const period = parseInt(document.getElementById('chartPeriod').value);
-      const now = new Date();
-      for (let i = period - 1; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        labels.push(d.toLocaleString('default', { month: 'short', year: '2-digit' }));
-      }
-      recoveryCounts = new Array(period).fill(0);
-      monthlyValues = new Array(period).fill(0);
-      filteredImplantados = clients.filter(c => {
-        if (c.status !== 'Implantado') return false;
-        const implantDate = getClientDate(c);
-        if (!implantDate) return false;
-        const monthIndex = (now.getFullYear() - implantDate.getFullYear()) * 12 + (now.getMonth() - implantDate.getMonth());
-        return monthIndex >= 0 && monthIndex < period;
-      });
-      filteredImplantados.forEach(c => {
-        const implantDate = getClientDate(c);
-        const monthIndex = (now.getFullYear() - implantDate.getFullYear()) * 12 + (now.getMonth() - implantDate.getMonth());
-        recoveryCounts[period - 1 - monthIndex]++;
-        monthlyValues[period - 1 - monthIndex] += getEffectiveValue(c);
-      });
-      const totalVidas = filteredImplantados.reduce((acc, c) => acc + Math.max(0, c.vidas || 0), 0);
-      const valorTotal = filteredImplantados.reduce((acc, c) => acc + getEffectiveValue(c), 0);
-      document.getElementById('dashTotal').innerText = filteredImplantados.length;
-      document.getElementById('dashVidas').innerText = totalVidas;
-      document.getElementById('dashValor').innerHTML = formatMoney(valorTotal);
-      const totalClientesPeriodo = clients.filter(c => {
-        if (!c.adesao) return false;
-        const adesaoDate = new Date(c.adesao);
-        const monthIndex = (now.getFullYear() - adesaoDate.getFullYear()) * 12 + (now.getMonth() - adesaoDate.getMonth());
-        return monthIndex >= 0 && monthIndex < period;
-      }).length;
-      const taxa = totalClientesPeriodo > 0 ? ((filteredImplantados.length / totalClientesPeriodo) * 100).toFixed(1) : 0;
-      document.getElementById('dashConversao').innerText = `${taxa}%`;
-    } else {
-      const month = parseInt(document.getElementById('specificMonth').value);
-      const year = parseInt(document.getElementById('specificYear').value);
-      labels = [new Date(year, month-1, 1).toLocaleString('default', { month: 'long', year: 'numeric' })];
-      filteredImplantados = clients.filter(c => {
-        if (c.status !== 'Implantado') return false;
-        const implantDate = getClientDate(c);
-        if (!implantDate) return false;
-        return implantDate.getMonth() + 1 === month && implantDate.getFullYear() === year;
-      });
-      const totalRec = filteredImplantados.length;
-      const totalVal = filteredImplantados.reduce((s, c) => s + getEffectiveValue(c), 0);
-      recoveryCounts = [totalRec];
-      monthlyValues = [totalVal];
-      document.getElementById('dashTotal').innerText = totalRec;
-      document.getElementById('dashVidas').innerText = filteredImplantados.reduce((acc, c) => acc + Math.max(0, c.vidas || 0), 0);
-      document.getElementById('dashValor').innerHTML = formatMoney(totalVal);
-      const totalClientesPeriodo = clients.filter(c => {
-        if (!c.adesao) return false;
-        const adesaoDate = new Date(c.adesao);
-        return adesaoDate.getMonth() + 1 === month && adesaoDate.getFullYear() === year;
-      }).length;
-      const taxa = totalClientesPeriodo > 0 ? ((totalRec / totalClientesPeriodo) * 100).toFixed(1) : 0;
-      document.getElementById('dashConversao').innerText = `${taxa}%`;
+    // Gráfico de recuperados por mês (últimos 6 meses, baseado em updatedAt quando status se tornou Implantado)
+    const now = new Date();
+    let meses = [];
+    let counts = new Array(6).fill(0);
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      meses.push(d.toLocaleString('default', { month: 'short' }));
     }
-
+    clients.forEach(c => {
+      if (c.status === 'Implantado' && c.updatedAt) {
+        let implantDate = c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt);
+        let diffMeses = (now.getFullYear() - implantDate.getFullYear()) * 12 + (now.getMonth() - implantDate.getMonth());
+        if (diffMeses >= 0 && diffMeses < 6) {
+          counts[5 - diffMeses]++;
+        }
+      }
+    });
     if (recoveryChart) recoveryChart.destroy();
-    recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels, datasets: [{ label: 'Implantados', data: recoveryCounts, backgroundColor: '#10b981' }] } });
-    if (valueChart) valueChart.destroy();
-    valueChart = new Chart(document.getElementById('valueChart'), { type: 'line', data: { labels, datasets: [{ label: 'Valor Processado (R$)', data: monthlyValues, borderColor: '#f59e0b', fill: false }] } });
+    recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels: meses, datasets: [{ label: 'Implantados', data: counts, backgroundColor: '#10b981' }] } });
 
+    // Gráfico de distribuição por status
     const statusData = statuses.map(s => clients.filter(c => c.status === s).length);
     if (statusChart) statusChart.destroy();
     statusChart = new Chart(document.getElementById('statusChart'), { type: 'doughnut', data: { labels: statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] } });
   }
-
-  document.getElementById('filterType').addEventListener('change', toggleFilterType);
-  document.getElementById('chartPeriod').addEventListener('change', updateDashboard);
-  document.getElementById('specificMonth').addEventListener('change', updateDashboard);
-  document.getElementById('specificYear').addEventListener('change', updateDashboard);
 
   // ==================== BACKUP E IMPORTAÇÃO ====================
   function exportBackup() {
@@ -751,7 +576,7 @@
     const blob = new Blob([JSON.stringify(dataToExport)], { type: 'application/json' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); URL.revokeObjectURL(a.href);
   }
-  function importBackup() { document.getElementById('backupFileInput').click(); }
+  function importBackup() { backupFileInput.click(); }
   async function handleBackupFile(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -779,17 +604,14 @@
     };
     reader.readAsText(file);
   }
-  document.getElementById('backupFileInput').addEventListener('change', handleBackupFile);
+  backupFileInput.addEventListener('change', handleBackupFile);
 
   function exportAllToCSV() {
     const rows = [['Nome', 'Telefone', 'Email', 'Status', 'Empresa', 'Origem', 'Campanha', 'Vidas', 'Valor Pago']];
     for (const c of clients) {
       const esc = (s) => `"${(s || '').replace(/"/g, '""')}"`;
       const valorPago = getEffectiveValue(c);
-      rows.push([
-        esc(c.nome || ''), esc(c.telefones || ''), esc(c.emails || ''), esc(c.status || ''),
-        esc(c.empresa || ''), esc(c.origem || ''), esc(c.campanha || ''), esc(c.vidas || 0), esc(valorPago)
-      ]);
+      rows.push([esc(c.nome || ''), esc(c.telefones || ''), esc(c.emails || ''), esc(c.status || ''), esc(c.empresa || ''), esc(c.origem || ''), esc(c.campanha || ''), esc(c.vidas || 0), esc(valorPago)]);
     }
     const csv = rows.map(r => r.join(',')).join('\n');
     const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
@@ -812,7 +634,7 @@
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `selecionados_${new Date().toISOString().slice(0,19)}.csv`; a.click(); URL.revokeObjectURL(a.href);
   }
 
-  function importExcel() { document.getElementById('excelInput').click(); }
+  function importExcel() { excelInput.click(); }
   async function handleExcelUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -846,10 +668,11 @@
     alert(`Importação concluída: ${imported} adicionados, ${errors} erros.`);
     await loadClients();
   }
+  excelInput.addEventListener('change', handleExcelUpload);
 
   // ==================== AÇÕES EM MASSA ====================
   function getSelectedIds() { return Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value); }
-  function toggleSelectAll() { const all = document.getElementById('selectAllCheckbox').checked; document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = all); }
+  function toggleSelectAll() { const all = selectAllCheckbox.checked; document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = all); }
 
   async function bulkWhatsApp() {
     const ids = getSelectedIds();
@@ -869,7 +692,7 @@
     alert(`${ids.length} cliente(s) removido(s).`);
   }
   async function bulkChangeStatus() {
-    const newStatus = document.getElementById('bulkStatus').value;
+    const newStatus = bulkStatus.value;
     if (!newStatus) return alert('Selecione um status');
     const ids = getSelectedIds();
     if (!ids.length) return alert('Selecione ao menos um cliente.');
@@ -888,7 +711,7 @@
     alert(`${ids.length} cliente(s) atualizado(s).`);
   }
   async function bulkScheduleReturn() {
-    const date = document.getElementById('bulkRetorno').value;
+    const date = bulkRetorno.value;
     if (!date) return alert('Selecione uma data');
     const ids = getSelectedIds();
     if (!ids.length) return alert('Selecione ao menos um cliente.');
@@ -904,8 +727,6 @@
     const month = currentDate.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const monthSelect = document.getElementById('monthSelect');
-    const yearSelect = document.getElementById('yearSelect');
     if (monthSelect.children.length === 0) {
       for (let i = 0; i < 12; i++) { const opt = document.createElement('option'); opt.value = i; opt.text = new Date(year, i, 1).toLocaleString('default', { month: 'long' }); monthSelect.appendChild(opt); }
     }
@@ -915,20 +736,13 @@
       for (let i = cy - 5; i <= cy + 5; i++) { const opt = document.createElement('option'); opt.value = i; opt.text = i; yearSelect.appendChild(opt); }
     }
     yearSelect.value = year;
-    const daysContainer = document.getElementById('calendarDays');
-    daysContainer.innerHTML = '';
-    for (let i = 0; i < firstDay; i++) { const empty = document.createElement('div'); empty.className = 'calendar-day empty'; daysContainer.appendChild(empty); }
+    calendarDays.innerHTML = '';
+    for (let i = 0; i < firstDay; i++) { const empty = document.createElement('div'); empty.className = 'calendar-day empty'; calendarDays.appendChild(empty); }
     const todayStr = getTodayStr();
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       const hasReturn = clients.some(c => c.retorno === dateStr);
-      const dayDiv = document.createElement('div');
-      dayDiv.className = 'calendar-day';
-      if (hasReturn) dayDiv.classList.add('has-return');
-      if (dateStr === todayStr) dayDiv.style.border = '2px solid var(--primary)';
-      dayDiv.innerText = d;
-      dayDiv.onclick = () => selectDay(dateStr);
-      daysContainer.appendChild(dayDiv);
+      const dayDiv = document.createElement('div'); dayDiv.className = 'calendar-day'; if (hasReturn) dayDiv.classList.add('has-return'); if (dateStr === todayStr) dayDiv.style.border = '2px solid var(--primary)'; dayDiv.innerText = d; dayDiv.onclick = () => selectDay(dateStr); calendarDays.appendChild(dayDiv);
     }
   }
   function selectDay(dateStr) {
@@ -937,24 +751,23 @@
     const dayNum = parseInt(dateStr.split('-')[2]);
     for (let div of dayDivs) { if (div.innerText == dayNum && !div.classList.contains('empty')) { div.classList.add('selected'); break; } }
     const clientsOnDay = clients.filter(c => c.retorno === dateStr);
-    const container = document.getElementById('selectedDayClients');
-    if (clientsOnDay.length === 0) { container.innerHTML = '<div class="alert alert-info">Nenhum cliente com retorno nesta data.</div>'; return; }
+    if (clientsOnDay.length === 0) { selectedDayClients.innerHTML = '<div class="alert alert-info">Nenhum cliente com retorno nesta data.</div>'; return; }
     let html = '';
     for (const c of clientsOnDay) {
       const whatsLink = `https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`;
       html += `<div class="list-group-item d-flex justify-content-between align-items-center"><div><strong>${escapeHtml(c.nome)}</strong><br><small>${escapeHtml(c.telefones)}</small></div><a target="_blank" href="${whatsLink}" class="btn btn-sm btn-success"><i class="bi bi-whatsapp"></i> WhatsApp</a></div>`;
     }
-    container.innerHTML = html;
+    selectedDayClients.innerHTML = html;
   }
-  function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); renderCalendar(); document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>'; }
-  function goToMonth() { const newMonth = parseInt(document.getElementById('monthSelect').value); const newYear = parseInt(document.getElementById('yearSelect').value); currentDate = new Date(newYear, newMonth, 1); renderCalendar(); document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>'; }
+  function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); renderCalendar(); selectedDayClients.innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>'; }
+  function goToMonth() { const newMonth = parseInt(monthSelect.value); const newYear = parseInt(yearSelect.value); currentDate = new Date(newYear, newMonth, 1); renderCalendar(); selectedDayClients.innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>'; }
 
   function updatePlanosFilter() {
     const planos = new Set();
     clients.forEach(c => { if (c.planoAtual) planos.add(c.planoAtual); if (c.redePlano) planos.add(c.redePlano); });
-    const select = document.getElementById('filterPlano');
-    if (select) select.innerHTML = '<option value="ALL">Todos os planos</option>' + [...planos].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
+    filterPlano.innerHTML = '<option value="ALL">Todos os planos</option>' + [...planos].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
   }
+
   function startReminderChecker() {
     if (reminderInterval) clearInterval(reminderInterval);
     reminderInterval = setInterval(() => {
