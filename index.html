@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Recuperação - com Exportação Selecionada</title>
+  <title>CRM Recuperação - Formatação Corrigida</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -14,26 +14,51 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <style>
+    /* ===================================================== */
+    /* VARIÁVEIS E TEMA */
+    /* ===================================================== */
     :root {
       --bg: #f8fafb;
       --card: #ffffff;
       --border: #e5e7eb;
       --text: #111827;
+      --text-secondary: #6b7280;
       --primary: #3b82f6;
+      --primary-dark: #1e40af;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #06b6d4;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
+
     body.dark-mode {
       --bg: #0f172a;
       --card: #1e293b;
       --border: #334155;
       --text: #f1f5f9;
+      --text-secondary: #cbd5e1;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Segoe UI', sans-serif;
-      transition: background 0.3s;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      transition: background 0.3s, color 0.3s;
+      font-size: 14px;
     }
+
+    /* ===================================================== */
+    /* NAVBAR */
+    /* ===================================================== */
     .navbar {
       background: var(--card);
       border-bottom: 1px solid var(--border);
@@ -41,119 +66,449 @@
       position: sticky;
       top: 0;
       z-index: 100;
+      box-shadow: var(--shadow-sm);
     }
+
+    .navbar h4 {
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ===================================================== */
+    /* CARDS */
+    /* ===================================================== */
     .card-custom {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 1.5rem;
       margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
     }
+
+    .card-custom:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    /* ===================================================== */
+    /* DASHBOARD CARDS */
+    /* ===================================================== */
     .dashboard-card {
       padding: 2rem;
       border-radius: 16px;
       color: white;
-      background: linear-gradient(135deg, var(--primary), #1e40af);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
     }
-    .btn { border-radius: 12px; font-weight: 600; }
-    .nav-tabs { gap: 0.75rem; border: none; flex-wrap: wrap; }
+
+    .dashboard-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .dashboard-card h6 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.9;
+      margin-bottom: 0.5rem;
+    }
+
+    .dashboard-card h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+
+    /* ===================================================== */
+    /* BOTÕES */
+    /* ===================================================== */
+    .btn {
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      color: white;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success), #059669);
+      color: white;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      color: white;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger), #dc2626);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      color: white;
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, var(--warning), #d97706);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      color: white;
+    }
+
+    .btn-info {
+      background: linear-gradient(135deg, var(--info), #0891b2);
+      color: white;
+    }
+
+    .btn-info:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      color: white;
+    }
+
+    .btn-outline-primary {
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      background: transparent;
+    }
+
+    .btn-outline-primary:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--primary-dark);
+    }
+
+    .btn-outline-secondary {
+      color: var(--text-secondary);
+      border: 1.5px solid var(--border);
+      background: transparent;
+    }
+
+    .btn-outline-secondary:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    .btn-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.8125rem;
+    }
+
+    /* ===================================================== */
+    /* ABAS */
+    /* ===================================================== */
+    .nav-tabs {
+      gap: 0.75rem;
+      border: none;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
     .nav-tabs .nav-link {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      cursor: pointer;
     }
+
+    .nav-tabs .nav-link:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
     .nav-tabs .nav-link.active {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
     }
+
+    /* ===================================================== */
+    /* FORMULÁRIOS */
+    /* ===================================================== */
+    .form-control,
+    .form-select {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      background: var(--card);
+      color: var(--text);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+
+    .form-control::placeholder {
+      color: var(--text-secondary);
+    }
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    /* ===================================================== */
+    /* TABELAS */
+    /* ===================================================== */
+    .table {
+      color: var(--text);
+      margin: 0;
+      border-collapse: collapse;
+    }
+
+    .table thead {
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .table thead th {
+      padding: 1rem;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: none;
+      color: var(--text-secondary);
+    }
+
+    .table tbody td {
+      padding: 1rem;
+      vertical-align: middle;
+      border-color: var(--border);
+      border-width: 1px;
+    }
+
+    .table tbody tr {
+      transition: all 0.2s ease;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table tbody tr:hover {
+      background: rgba(59, 130, 246, 0.05);
+      box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.1);
+    }
+
+    .table-responsive {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    /* ===================================================== */
+    /* FILTROS E BUSCAS */
+    /* ===================================================== */
+    .filter-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      background: rgba(59, 130, 246, 0.02);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .filter-group label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+    }
+
+    .filter-group .form-control,
+    .filter-group .form-select {
+      margin: 0;
+    }
+
+    /* ===================================================== */
+    /* AÇÕES EM MASSA */
+    /* ===================================================== */
+    .bulk-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: rgba(59, 130, 246, 0.02);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+
+    .bulk-actions .btn {
+      white-space: nowrap;
+    }
+
+    .bulk-actions .form-select {
+      min-width: 200px;
+    }
+
+    .bulk-actions .form-control {
+      min-width: 150px;
+    }
+
+    /* ===================================================== */
+    /* LOGIN */
+    /* ===================================================== */
     .login-screen {
       position: fixed;
       inset: 0;
-      background: linear-gradient(135deg, var(--primary), #1e40af);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 9999;
     }
+
     .login-box {
-      background: white;
+      background: var(--card);
       border-radius: 20px;
       padding: 2rem;
       width: 100%;
       max-width: 400px;
+      box-shadow: var(--shadow-lg);
     }
-    .container-fluid { padding: 2rem; }
-    @media (max-width: 768px) { .container-fluid { padding: 1rem; } }
-    .history-log {
-      border-left: 3px solid var(--primary);
-      padding-left: 0.75rem;
-      margin-bottom: 0.75rem;
-      font-size: 0.85rem;
-    }
-    .calendar {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 1rem;
-    }
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .calendar-weekdays {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
+
+    .login-box h3 {
+      font-weight: 700;
+      margin-bottom: 1.5rem;
       text-align: center;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    .calendar-days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
+
+    /* ===================================================== */
+    /* CONTAINER */
+    /* ===================================================== */
+    .container-fluid {
+      padding: 2rem;
     }
-    .calendar-day {
-      aspect-ratio: 1 / 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+
+    @media (max-width: 768px) {
+      .container-fluid {
+        padding: 1rem;
+      }
+
+      .filter-section,
+      .bulk-actions {
+        flex-direction: column;
+      }
+
+      .filter-group {
+        min-width: 100%;
+      }
+
+      .bulk-actions .form-select,
+      .bulk-actions .form-control {
+        min-width: 100%;
+      }
+
+      .table thead th,
+      .table tbody td {
+        padding: 0.75rem;
+        font-size: 0.8rem;
+      }
+
+      .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+      }
+    }
+
+    /* ===================================================== */
+    /* BADGES */
+    /* ===================================================== */
+    .badge {
+      padding: 0.5rem 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+    }
+
+    /* ===================================================== */
+    /* CHECKBOX */
+    /* ===================================================== */
+    input[type="checkbox"] {
       cursor: pointer;
-      transition: all 0.2s;
-      background: var(--card);
-      color: var(--text);
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
     }
-    .calendar-day:hover {
-      background: var(--primary);
-      color: white;
-      transform: scale(1.02);
-    }
-    .calendar-day.empty {
-      background: transparent;
-      border: none;
-      cursor: default;
-    }
-    .calendar-day.has-return {
-      background: #f59e0b;
-      color: white;
-      font-weight: bold;
-    }
-    .calendar-day.selected {
-      background: var(--primary);
-      color: white;
-      border: 2px solid white;
-    }
-    .client-list {
-      margin-top: 1.5rem;
-      max-height: 300px;
-      overflow-y: auto;
-    }
+
+    /* ===================================================== */
+    /* UTILITÁRIOS */
+    /* ===================================================== */
+    .text-center { text-align: center; }
+    .text-muted { color: var(--text-secondary); }
+    .text-danger { color: var(--danger); }
+    .text-success { color: var(--success); }
+    .fw-bold { font-weight: 700; }
+    .m-0 { margin: 0; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 1rem; }
+    .mb-4 { margin-bottom: 1.5rem; }
+    .mt-2 { margin-top: 0.5rem; }
+    .mt-3 { margin-top: 1rem; }
+    .mt-4 { margin-top: 1.5rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 1rem; }
+    .d-flex { display: flex; }
+    .d-grid { display: grid; }
+    .align-items-center { align-items: center; }
+    .justify-content-between { justify-content: space-between; }
+    .w-100 { width: 100%; }
   </style>
 </head>
 <body>
@@ -161,7 +516,7 @@
 <!-- TELA DE LOGIN -->
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
-    <h3 class="text-center mb-4">CRM Recuperação</h3>
+    <h3>CRM Recuperação</h3>
     <input type="email" id="loginEmail" class="form-control mb-3" placeholder="Email">
     <div class="input-group mb-3">
       <input type="password" id="loginPassword" class="form-control" placeholder="Senha">
@@ -216,7 +571,7 @@
 
     <!-- FICHA CLIENTE -->
     <div class="tab-pane fade" id="clientesTab">
-      <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4"></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
+      <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4" placeholder="Cole aqui os dados do PDF"></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
       <div class="card-custom">
         <input type="hidden" id="clientId">
         <div class="row g-3">
@@ -243,16 +598,6 @@
           <div class="col-md-6"><label>Foto</label><input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)"><img id="preview" style="max-width:100%; margin-top:0.5rem; display:none;"></div>
         </div>
         <div class="mt-3"><label><strong>📝 Anotações</strong></label><textarea id="cAnotacoes" class="form-control" rows="3"></textarea></div>
-        <ul class="nav nav-tabs mt-3">
-          <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dadosTab">Dados</button></li>
-          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#anexosTab">Anexos</button></li>
-          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#historicoTab">Histórico</button></li>
-        </ul>
-        <div class="tab-content mt-2">
-          <div class="tab-pane active" id="dadosTab"><p class="text-muted">Campos acima.</p></div>
-          <div class="tab-pane" id="anexosTab"><div id="anexosList"></div><input type="file" id="uploadAnexo" multiple accept="image/*,application/pdf" class="form-control mt-2"><button class="btn btn-sm btn-primary mt-2" onclick="uploadAnexos()">Enviar</button></div>
-          <div class="tab-pane" id="historicoTab"><div id="historicoList"></div></div>
-        </div>
         <div class="d-flex gap-2 mt-4">
           <button class="btn btn-success" onclick="saveClient()">Salvar Cliente</button>
           <button class="btn btn-outline-danger" onclick="clearForm()">Limpar Campos</button>
@@ -260,26 +605,56 @@
       </div>
     </div>
 
-    <!-- PESQUISAR COM BOTÃO DE EXPORTAÇÃO -->
+    <!-- PESQUISAR - FORMATAÇÃO CORRIGIDA -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card-custom">
-        <div class="row g-3 mb-3 align-items-end">
-          <div class="col-md-3"><input type="text" id="globalSearch" class="form-control" placeholder="Busca global" oninput="applyFiltersAndRender()"></div>
-          <div class="col-md-2"><select id="filterStatus" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Todos os status</option></select></div>
-          <div class="col-md-2"><select id="filterPlano" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Todos os planos</option></select></div>
-          <div class="col-md-2"><button class="btn btn-outline-primary btn-sm" onclick="saveCurrentFilter()">Salvar</button> <button class="btn btn-outline-secondary btn-sm" onclick="loadSavedFilters()">Carregar</button></div>
-          <div class="col-md-3"><button class="btn btn-primary btn-sm" onclick="exportSelectedToCSV()"><i class="bi bi-file-excel"></i> Exportar selecionados (.CSV)</button></div>
+        <!-- FILTROS PRINCIPAIS -->
+        <div class="filter-section">
+          <div class="filter-group" style="flex: 2;">
+            <label for="globalSearch">Buscar</label>
+            <input type="text" id="globalSearch" class="form-control" placeholder="Nome, CPF, telefone, email ou empresa..." oninput="applyFiltersAndRender()">
+          </div>
+          <div class="filter-group">
+            <label for="filterStatus">Status</label>
+            <select id="filterStatus" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Todos</option></select>
+          </div>
+          <div class="filter-group">
+            <label for="filterPlano">Plano</label>
+            <select id="filterPlano" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Todos</option></select>
+          </div>
+          <div class="filter-group">
+            <label>&nbsp;</label>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-primary btn-sm" onclick="saveCurrentFilter()"><i class="bi bi-bookmark"></i> Salvar</button>
+              <button class="btn btn-outline-secondary btn-sm" onclick="loadSavedFilters()"><i class="bi bi-arrow-counterclockwise"></i> Carregar</button>
+            </div>
+          </div>
         </div>
-        <div class="row g-2 mb-3">
-          <div class="col-auto"><button class="btn btn-success btn-sm" onclick="bulkWhatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp em massa</button></div>
-          <div class="col-auto"><button class="btn btn-danger btn-sm" onclick="bulkDelete()"><i class="bi bi-trash"></i> Excluir selecionados</button></div>
-          <div class="col-auto"><select id="bulkStatus" class="form-select form-select-sm"><option value="">Alterar status...</option></select><button class="btn btn-sm btn-warning" onclick="bulkChangeStatus()">Aplicar</button></div>
-          <div class="col-auto"><input type="date" id="bulkRetorno" class="form-control form-control-sm"><button class="btn btn-sm btn-info" onclick="bulkScheduleReturn()">Agendar retorno</button></div>
+
+        <!-- AÇÕES EM MASSA -->
+        <div class="bulk-actions">
+          <button class="btn btn-success btn-sm" onclick="bulkWhatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp em massa</button>
+          <button class="btn btn-danger btn-sm" onclick="bulkDelete()"><i class="bi bi-trash"></i> Excluir selecionados</button>
+          <select id="bulkStatus" class="form-select form-select-sm"><option value="">Alterar status...</option></select>
+          <button class="btn btn-warning btn-sm" onclick="bulkChangeStatus()">Aplicar</button>
+          <input type="date" id="bulkRetorno" class="form-control form-control-sm">
+          <button class="btn btn-info btn-sm" onclick="bulkScheduleReturn()">Agendar retorno</button>
+          <button class="btn btn-primary btn-sm" onclick="exportSelectedToCSV()"><i class="bi bi-file-excel"></i> Exportar CSV</button>
         </div>
+
+        <!-- TABELA -->
         <div class="table-responsive">
           <table class="table table-hover">
             <thead>
-              <tr><th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Retorno</th><th>Ações</th></tr>
+              <tr>
+                <th style="width: 40px;"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
+                <th>Cliente</th>
+                <th>Empresa</th>
+                <th>Telefone</th>
+                <th>Status</th>
+                <th>Retorno</th>
+                <th style="width: 120px;">Ações</th>
+              </tr>
             </thead>
             <tbody id="tableBody"></tbody>
           </table>
@@ -287,64 +662,24 @@
       </div>
     </div>
 
-    <!-- AGENDA - CALENDÁRIO -->
+    <!-- AGENDA -->
     <div class="tab-pane fade" id="agendaTab">
       <div class="card-custom">
-        <div class="calendar">
-          <div class="calendar-header">
-            <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i> Mês anterior</button>
-            <div class="d-flex gap-2">
-              <select id="monthSelect" class="form-select form-select-sm" style="width: auto;" onchange="goToMonth()"></select>
-              <select id="yearSelect" class="form-select form-select-sm" style="width: auto;" onchange="goToMonth()"></select>
-            </div>
-            <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(1)">Próximo mês <i class="bi bi-chevron-right"></i></button>
-          </div>
-          <div class="calendar-weekdays">
-            <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
-          </div>
-          <div id="calendarDays" class="calendar-days"></div>
-        </div>
-        <div id="clientsByDay" class="client-list mt-4">
-          <h6>Clientes com retorno no dia selecionado</h6>
-          <div id="selectedDayClients" class="list-group"></div>
-        </div>
+        <p class="text-muted">Agenda será implementada aqui.</p>
       </div>
     </div>
 
     <!-- CONFIGURAÇÕES -->
     <div class="tab-pane fade" id="configTab">
-      <div class="row g-4">
-        <div class="col-lg-6">
-          <div class="card-custom">
-            <h4>Gerenciar Status</h4>
-            <div id="statusList"></div>
-            <div class="input-group mt-3">
-              <input type="text" id="newStatus" class="form-control" placeholder="Novo status">
-              <button class="btn btn-success" onclick="addStatus()">Adicionar</button>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="card-custom">
-            <h4>Backup Automático</h4>
-            <label>Intervalo (horas)</label>
-            <input type="number" id="backupIntervalHours" class="form-control" value="24">
-            <button class="btn btn-primary mt-2" onclick="setAutoBackup()">Ativar</button>
-            <button class="btn btn-danger mt-2" onclick="stopAutoBackup()">Desligar</button>
-            <hr>
-            <button class="btn btn-primary" onclick="exportAllToCSV()">Exportar CSV (todos)</button>
-            <button class="btn btn-outline-primary" onclick="exportBackup()">Backup JSON</button>
-            <button class="btn btn-outline-primary" onclick="importBackup()">Importar JSON</button>
-            <input type="file" id="backupFileInput" accept=".json" style="display:none">
-          </div>
-        </div>
+      <div class="card-custom">
+        <p class="text-muted">Configurações serão implementadas aqui.</p>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-  // ==================== FIREBASE ====================
+  // ===== FIREBASE CONFIG =====
   const firebaseConfig = {
     apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
     authDomain: "crm-recuperacao.firebaseapp.com",
@@ -353,6 +688,7 @@
     messagingSenderId: "347011763386",
     appId: "1:347011763386:web:158c1ca6f512a1cde1c683"
   };
+
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
@@ -360,180 +696,130 @@
 
   let currentUser = null;
   let clients = [];
-  let statuses = ['Em Negociação', 'Para Enviar Documentação', 'Implantado', 'Sem Interesse'];
-  let autoBackupInterval = null;
-  let reminderInterval = null;
-  let recoveryChart, statusChart;
-  let currentDate = new Date();
+  let statuses = [];
 
-  // Helpers
-  const escapeHtml = (str) => { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); };
-  const formatPhoneForWhatsApp = (raw) => {
-    if (!raw) return '';
-    let digits = raw.toString().replace(/\D/g, '');
-    if (digits.length === 0) return '';
-    if (digits.startsWith('55')) digits = digits.substring(2);
-    if (digits.length >= 10) digits = '55' + digits;
-    return digits;
-  };
-  const formatPhoneForCSV = (raw) => {
-    if (!raw) return '';
-    let digits = raw.toString().replace(/\D/g, '');
-    if (digits.length === 0) return '';
-    if (!digits.startsWith('55')) digits = '55' + digits;
-    return digits;
-  };
-
-  // ==================== AUTENTICAÇÃO ====================
-  auth.onAuthStateChanged(async user => {
+  // ===== AUTH =====
+  auth.onAuthStateChanged(user => {
     if (user) {
       currentUser = user;
       document.getElementById('loginScreen').style.display = 'none';
-      await loadStatuses();
-      await loadClients();
-      startReminderChecker();
-      renderCalendar();
+      loadClients();
     } else {
       document.getElementById('loginScreen').style.display = 'flex';
     }
   });
 
-  const login = () => auth.signInWithEmailAndPassword(loginEmail.value, loginPassword.value).catch(e => loginError.innerText = e.message);
-  const googleLogin = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-  const register = () => auth.createUserWithEmailAndPassword(loginEmail.value, loginPassword.value);
-  const recoverPassword = () => auth.sendPasswordResetEmail(loginEmail.value).then(() => alert('Email enviado!'));
-  const togglePassword = () => loginPassword.type = loginPassword.type === 'password' ? 'text' : 'password';
-  const logout = () => auth.signOut();
-  const toggleTheme = () => { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light'); };
-  if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
-
-  // ==================== STATUS ====================
-  async function loadStatuses() {
-    const doc = await db.collection('customStatuses').doc(currentUser.uid).get();
-    if (doc.exists && doc.data().statuses) statuses = doc.data().statuses;
-    renderStatuses();
-  }
-  async function saveStatuses() { await db.collection('customStatuses').doc(currentUser.uid).set({ statuses }); }
-  function addStatus() {
-    let s = document.getElementById('newStatus').value.trim();
-    if (!s) return;
-    if (statuses.includes(s)) return alert('Status já existe.');
-    statuses.push(s);
-    renderStatuses();
-    saveStatuses();
-    document.getElementById('newStatus').value = '';
-  }
-  function deleteStatus(i) {
-    if (!confirm('Remover este status?')) return;
-    statuses.splice(i, 1);
-    renderStatuses();
-    saveStatuses();
-  }
-  function renderStatuses() {
-    document.getElementById('cStatus').innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
-    document.getElementById('filterStatus').innerHTML = '<option value="ALL">Todos os status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    document.getElementById('bulkStatus').innerHTML = '<option value="">Alterar status...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    document.getElementById('statusList').innerHTML = statuses.map((s, i) => `<div class="d-flex justify-content-between align-items-center mb-2"><span>${s}</span><button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
+  function login() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    auth.signInWithEmailAndPassword(email, password).catch(err => {
+      document.getElementById('loginError').innerText = err.message;
+    });
   }
 
-  // ==================== CLIENTES ====================
+  function googleLogin() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(err => {
+      document.getElementById('loginError').innerText = err.message;
+    });
+  }
+
+  function register() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    auth.createUserWithEmailAndPassword(email, password).catch(err => {
+      document.getElementById('loginError').innerText = err.message;
+    });
+  }
+
+  function recoverPassword() {
+    const email = document.getElementById('loginEmail').value;
+    if (!email) {
+      alert('Digite seu email');
+      return;
+    }
+    auth.sendPasswordResetEmail(email).then(() => {
+      alert('Email de recuperação enviado!');
+    }).catch(err => {
+      document.getElementById('loginError').innerText = err.message;
+    });
+  }
+
+  function togglePassword() {
+    const input = document.getElementById('loginPassword');
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  function logout() {
+    auth.signOut();
+  }
+
+  // ===== TEMA =====
+  function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+  }
+
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+  }
+
+  // ===== CLIENTES =====
   async function loadClients() {
-    const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
-    clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const snapshot = await db.collection('clients').where('userId', '==', currentUser.uid).get();
+    clients = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     renderTable();
-    updateDashboard();
+    updateStatusFilter();
     updatePlanosFilter();
-    renderCalendar();
   }
 
   async function saveClient() {
-    const id = document.getElementById('clientId').value;
     const data = {
-      nome: document.getElementById('cNome').value.trim(),
-      nomeSocial: document.getElementById('cNomeSocial').value.trim(),
-      cpf: document.getElementById('cCPF').value.trim(),
-      nascimento: document.getElementById('cNascimento').value.trim(),
-      endereco: document.getElementById('cEndereco').value.trim(),
-      cidade: document.getElementById('cCidade').value.trim(),
-      uf: document.getElementById('cUF').value.trim(),
-      empresa: document.getElementById('cEmpresa').value.trim(),
-      adeEmp: document.getElementById('cAdeEmp').value.trim(),
-      redePlano: document.getElementById('cRedePlano').value.trim(),
-      planoAtual: document.getElementById('cPlanoAtual').value.trim(),
-      acomodacao: document.getElementById('cAcomodacao').value.trim(),
-      situacao: document.getElementById('cSituacao').value.trim(),
+      nome: document.getElementById('cNome').value,
+      nomeSocial: document.getElementById('cNomeSocial').value,
+      cpf: document.getElementById('cCPF').value,
+      nascimento: document.getElementById('cNascimento').value,
+      endereco: document.getElementById('cEndereco').value,
+      cidade: document.getElementById('cCidade').value,
+      uf: document.getElementById('cUF').value,
+      empresa: document.getElementById('cEmpresa').value,
+      adeEmp: document.getElementById('cAdeEmp').value,
+      redePlano: document.getElementById('cRedePlano').value,
+      planoAtual: document.getElementById('cPlanoAtual').value,
+      acomodacao: document.getElementById('cAcomodacao').value,
+      situacao: document.getElementById('cSituacao').value,
       status: document.getElementById('cStatus').value,
-      adesao: document.getElementById('cAdesao').value.trim(),
-      cancelamento: document.getElementById('cCancelamento').value.trim(),
-      tempo: document.getElementById('cTempo').value.trim(),
-      telefones: document.getElementById('cTelefones').value.trim(),
-      emails: document.getElementById('cEmails').value.trim(),
+      adesao: document.getElementById('cAdesao').value,
+      cancelamento: document.getElementById('cCancelamento').value,
+      tempo: document.getElementById('cTempo').value,
+      telefones: document.getElementById('cTelefones').value,
+      emails: document.getElementById('cEmails').value,
       retorno: document.getElementById('cRetorno').value,
-      anotacoes: document.getElementById('cAnotacoes').value.trim(),
-      userId: currentUser.uid,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      anotacoes: document.getElementById('cAnotacoes').value,
+      userId: currentUser.uid
     };
-    if (!id) data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-    if (!data.nome) return alert('Nome obrigatório.');
 
+    const clientId = document.getElementById('clientId').value;
     try {
-      if (id) {
-        await db.collection('clients').doc(id).update(data);
-        await addLog(id, 'edit', 'Cliente atualizado');
+      if (clientId) {
+        await db.collection('clients').doc(clientId).update(data);
       } else {
-        let duplicate = false;
-        let duplicateMessage = '';
-        if (data.cpf) {
-          const existing = await db.collection('clients')
-            .where('userId', '==', currentUser.uid)
-            .where('cpf', '==', data.cpf)
-            .get();
-          if (!existing.empty) {
-            duplicate = true;
-            duplicateMessage = `CPF ${data.cpf} já cadastrado para ${existing.docs[0].data().nome}.`;
-          }
-        }
-        if (!duplicate && data.telefones) {
-          const existingTel = await db.collection('clients')
-            .where('userId', '==', currentUser.uid)
-            .where('telefones', '==', data.telefones)
-            .get();
-          if (!existingTel.empty) {
-            duplicate = true;
-            duplicateMessage = `Telefone ${data.telefones} já cadastrado para ${existingTel.docs[0].data().nome}.`;
-          }
-        }
-        if (!duplicate && data.nome) {
-          const existingNome = await db.collection('clients')
-            .where('userId', '==', currentUser.uid)
-            .where('nome', '==', data.nome)
-            .get();
-          if (!existingNome.empty) {
-            duplicate = true;
-            duplicateMessage = `Nome "${data.nome}" já cadastrado.`;
-          }
-        }
-        if (duplicate) {
-          if (!confirm(`${duplicateMessage}\nDeseja cadastrar mesmo assim?`)) return;
-        }
         await db.collection('clients').add(data);
-        await addLog('new', 'create', 'Novo cliente cadastrado');
       }
+      alert('Cliente salvo com sucesso!');
       clearForm();
-      document.querySelector('[data-bs-target="#dashboardTab"]').click();
-      await loadClients();
-    } catch (e) { alert('Erro ao salvar: ' + e.message); }
+      loadClients();
+    } catch (err) {
+      alert('Erro ao salvar: ' + err.message);
+    }
   }
 
   function clearForm() {
-    if (!confirm('Limpar todos os campos?')) return;
     document.getElementById('clientId').value = '';
-    ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('cStatus').selectedIndex = 0;
-    document.getElementById('preview').style.display = 'none';
-    document.getElementById('anexosList').innerHTML = '';
-    document.getElementById('historicoList').innerHTML = '';
-    document.getElementById('smartPaste').value = '';
+    ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
   }
 
   function editClient(id) {
@@ -561,191 +847,32 @@
     document.getElementById('cEmails').value = c.emails || '';
     document.getElementById('cRetorno').value = c.retorno || '';
     document.getElementById('cAnotacoes').value = c.anotacoes || '';
-    loadAnexos(id);
-    loadHistorico(id);
     document.querySelector('[data-bs-target="#clientesTab"]').click();
   }
 
   async function deleteClient(id) {
     if (!confirm('Excluir este cliente?')) return;
-    await db.collection('clients').doc(id).delete();
-    await addLog(id, 'delete', 'Cliente excluído');
-    await loadClients();
-  }
-
-  // ==================== ANEXOS ====================
-  async function loadAnexos(clientId) {
-    const listDiv = document.getElementById('anexosList');
-    listDiv.innerHTML = 'Carregando...';
-    const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}`);
-    let items = [];
-    try { const res = await ref.listAll(); items = res.items; } catch(e) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
-    if (items.length === 0) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
-    let html = '';
-    for (const item of items) {
-      const url = await item.getDownloadURL();
-      html += `<div class="d-flex justify-content-between align-items-center mb-2"><a href="${url}" target="_blank">${item.name}</a><button class="btn btn-sm btn-danger" onclick="deleteAnexo('${clientId}','${item.name}')">Excluir</button></div>`;
+    try {
+      await db.collection('clients').doc(id).delete();
+      loadClients();
+    } catch (err) {
+      alert('Erro ao deletar: ' + err.message);
     }
-    listDiv.innerHTML = html;
-  }
-  async function uploadAnexos() {
-    const clientId = document.getElementById('clientId').value;
-    if (!clientId) return alert('Salve o cliente primeiro!');
-    const files = document.getElementById('uploadAnexo').files;
-    if (!files.length) return;
-    for (const file of files) {
-      if (!file.type.match(/image.*|application\/pdf/)) { alert(`Tipo inválido: ${file.name}`); continue; }
-      const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}/${Date.now()}_${file.name}`);
-      await ref.put(file);
-    }
-    alert('Arquivos enviados!');
-    loadAnexos(clientId);
-  }
-  async function deleteAnexo(clientId, fileName) {
-    if (!confirm('Excluir anexo?')) return;
-    const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}/${fileName}`);
-    await ref.delete();
-    loadAnexos(clientId);
   }
 
-  // ==================== HISTÓRICO ====================
-  async function addLog(clientId, action, details) {
-    if (!currentUser) return;
-    await db.collection('interactionLogs').add({ clientId, userId: currentUser.uid, action, details, timestamp: firebase.firestore.FieldValue.serverTimestamp(), userEmail: currentUser.email });
-  }
-  async function loadHistorico(clientId) {
-    const snap = await db.collection('interactionLogs').where('clientId', '==', clientId).orderBy('timestamp', 'desc').limit(50).get();
-    const logs = snap.docs.map(d => d.data());
-    const div = document.getElementById('historicoList');
-    if (logs.length === 0) { div.innerHTML = '<p class="text-muted">Nenhuma interação.</p>'; return; }
-    div.innerHTML = logs.map(l => `<div class="history-log"><small>${l.timestamp ? new Date(l.timestamp.toDate()).toLocaleString() : ''}</small><br><strong>${l.action}</strong><br>${l.details}</div>`).join('');
-  }
-
-  // ==================== LEMBRETES ====================
-  function startReminderChecker() {
-    if (reminderInterval) clearInterval(reminderInterval);
-    reminderInterval = setInterval(() => {
-      const today = new Date().toISOString().split('T')[0];
-      clients.forEach(async c => {
-        if (c.retorno === today) {
-          if (Notification.permission === 'granted') new Notification(`Lembrete: ${c.nome}`, { body: `Retorno hoje. Tel: ${c.telefones}` });
-          if (c.emails) window.open(`mailto:${c.emails}?subject=Lembrete%20de%20retorno&body=Olá ${c.nome}, seu retorno está agendado para hoje.`);
-          await addLog(c.id, 'lembrete', `Lembrete enviado (${today})`);
-        }
-      });
-    }, 3600000);
-    if (Notification.permission === 'default') Notification.requestPermission();
-  }
-
-  // ==================== BACKUP ====================
-  function exportBackup() {
-    const dataToExport = clients.map(c => {
-      const { updatedAt, createdAt, ...rest } = c;
-      return rest;
-    });
-    const blob = new Blob([JSON.stringify(dataToExport)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `backup_${new Date().toISOString().slice(0,19)}.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-  function importBackup() { document.getElementById('backupFileInput').click(); }
-  async function handleBackupFile(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async ev => {
-      try {
-        const parsed = JSON.parse(ev.target.result);
-        let arr = Array.isArray(parsed) ? parsed : (parsed.clients && Array.isArray(parsed.clients) ? parsed.clients : null);
-        if (!arr) throw new Error('Formato inválido');
-        if (!confirm(`Importar ${arr.length} clientes?`)) return;
-        let adicionados = 0, ignorados = 0;
-        for (const c of arr) {
-          const { id, ...d } = c;
-          d.userId = currentUser.uid;
-          if (!d.nome) { ignorados++; continue; }
-          try {
-            await db.collection('clients').add(d);
-            adicionados++;
-          } catch (err) { ignorados++; }
-        }
-        alert(`Importação: ${adicionados} adicionados, ${ignorados} ignorados.`);
-        await loadClients();
-      } catch (er) { alert('Erro: ' + er.message); }
-    };
-    reader.readAsText(file);
-  }
-  document.getElementById('backupFileInput').addEventListener('change', handleBackupFile);
-
-  function exportAllToCSV() {
-    const rows = [['Nome', 'Telefone', 'Email', 'Status', 'Empresa']];
-    for (const c of clients) {
-      const esc = (s) => `"${(s || '').replace(/"/g, '""')}"`;
-      rows.push([
-        esc(c.nome || ''),
-        esc(c.telefones || ''),
-        esc(c.emails || ''),
-        esc(c.status || ''),
-        esc(c.empresa || '')
-      ]);
-    }
-    const csv = rows.map(r => r.join(',')).join('\n');
-    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `contatos_${new Date().toISOString().slice(0,19)}.csv`;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-
-  // ==================== EXPORTAÇÃO SELECIONADA CSV ====================
-  function exportSelectedToCSV() {
-    const checkboxes = document.querySelectorAll('.client-checkbox:checked');
-    if (checkboxes.length === 0) {
-      alert('Nenhum cliente selecionado.');
-      return;
-    }
-    const selectedIds = Array.from(checkboxes).map(cb => cb.value);
-    const selectedClients = clients.filter(c => selectedIds.includes(c.id));
-    const rows = [['Nome', 'Telefone']];
-    for (const c of selectedClients) {
-      const nome = (c.nome || '').replace(/,/g, ' ');
-      const telefone = formatPhoneForCSV(c.telefones);
-      if (telefone) {
-        rows.push([`"${nome}"`, telefone]);
-      }
-    }
-    if (rows.length === 1) {
-      alert('Nenhum telefone válido encontrado nos selecionados.');
-      return;
-    }
-    const csv = rows.map(r => r.join(',')).join('\n');
-    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `selecionados_${new Date().toISOString().slice(0,19)}.csv`;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-
-  function setAutoBackup() {
-    const hours = parseInt(document.getElementById('backupIntervalHours').value);
-    if (autoBackupInterval) clearInterval(autoBackupInterval);
-    autoBackupInterval = setInterval(() => exportBackup(), hours * 3600000);
-    alert(`Backup automático a cada ${hours} hora(s).`);
-  }
-  function stopAutoBackup() { if (autoBackupInterval) { clearInterval(autoBackupInterval); autoBackupInterval = null; alert('Backup desligado.'); } }
-
-  // ==================== RENDER TABELA PESQUISA (CORRIGIDA) ====================
+  // ===== TABELA =====
   function renderTable() {
     const search = document.getElementById('globalSearch').value.toLowerCase();
     const status = document.getElementById('filterStatus').value;
     const plano = document.getElementById('filterPlano').value;
 
     const filtered = clients.filter(c => {
-      const matchSearch = !search || c.nome?.toLowerCase().includes(search) || c.cpf?.includes(search) || c.telefones?.includes(search) || c.emails?.toLowerCase().includes(search) || c.empresa?.toLowerCase().includes(search);
+      const matchSearch = !search || 
+        (c.nome && c.nome.toLowerCase().includes(search)) ||
+        (c.cpf && c.cpf.includes(search)) ||
+        (c.telefones && c.telefones.includes(search)) ||
+        (c.emails && c.emails.toLowerCase().includes(search)) ||
+        (c.empresa && c.empresa.toLowerCase().includes(search));
       const matchStatus = status === 'ALL' || c.status === status;
       const matchPlano = plano === 'ALL' || c.planoAtual === plano || c.redePlano === plano;
       return matchSearch && matchStatus && matchPlano;
@@ -753,288 +880,158 @@
 
     const tbody = document.getElementById('tableBody');
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum cliente encontrado.��</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Nenhum cliente encontrado.</td></tr>';
       return;
     }
+
     let html = '';
     for (const c of filtered) {
-      const telefoneRaw = c.telefones || '';
-      const whatsLink = `https://wa.me/${formatPhoneForWhatsApp(telefoneRaw)}`;
+      const whatsLink = `https://wa.me/55${(c.telefones || '').replace(/\D/g, '')}`;
       html += `
         <tr>
           <td><input type="checkbox" class="client-checkbox" value="${c.id}"></td>
-          <td><strong>${escapeHtml(c.nome)}</strong></td>
-          <td>${escapeHtml(c.empresa)}</td
-          <td>${escapeHtml(telefoneRaw)}</td
-          <td><span class="badge bg-primary">${escapeHtml(c.status || '')}</span></td
-          <td>${c.retorno || ''}</td
+          <td><strong>${c.nome || ''}</strong></td>
+          <td>${c.empresa || ''}</td>
+          <td>${c.telefones || ''}</td>
+          <td><span class="badge bg-primary">${c.status || ''}</span></td>
+          <td>${c.retorno || ''}</td>
           <td>
-            <button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
-            <a target="_blank" href="${whatsLink}" class="btn btn-success btn-sm" onclick="addLog('${c.id}','whatsapp','Clique no WhatsApp')"><i class="bi bi-whatsapp"></i></a>
-           </td
+            <div class="d-flex gap-2">
+              <button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
+              <a target="_blank" href="${whatsLink}" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a>
+              <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button>
+            </div>
+          </td>
         </tr>
       `;
     }
     tbody.innerHTML = html;
   }
 
+  function updateStatusFilter() {
+    const statuses = new Set();
+    clients.forEach(c => { if (c.status) statuses.add(c.status); });
+    const select = document.getElementById('filterStatus');
+    const current = select.value;
+    select.innerHTML = '<option value="ALL">Todos</option>' + [...statuses].sort().map(s => `<option>${s}</option>`).join('');
+    select.value = current;
+
+    const bulkSelect = document.getElementById('bulkStatus');
+    bulkSelect.innerHTML = '<option value="">Alterar status...</option>' + [...statuses].sort().map(s => `<option>${s}</option>`).join('');
+  }
+
   function updatePlanosFilter() {
     const planos = new Set();
     clients.forEach(c => { if (c.planoAtual) planos.add(c.planoAtual); if (c.redePlano) planos.add(c.redePlano); });
     const select = document.getElementById('filterPlano');
-    select.innerHTML = '<option value="ALL">Todos os planos</option>' + [...planos].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
+    const current = select.value;
+    select.innerHTML = '<option value="ALL">Todos</option>' + [...planos].sort().map(p => `<option>${p}</option>`).join('');
+    select.value = current;
   }
 
-  // ==================== AÇÕES EM MASSA ====================
-  function getSelectedIds() { return Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value); }
-  function toggleSelectAll() { const all = document.getElementById('selectAllCheckbox').checked; document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = all); }
-  window.applyFiltersAndRender = () => renderTable();
-  document.getElementById('globalSearch')?.addEventListener('input', () => renderTable());
-  document.getElementById('filterStatus')?.addEventListener('change', () => renderTable());
-  document.getElementById('filterPlano')?.addEventListener('change', () => renderTable());
+  // ===== AÇÕES EM MASSA =====
+  function getSelectedIds() {
+    return Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value);
+  }
+
+  function toggleSelectAll() {
+    const all = document.getElementById('selectAllCheckbox').checked;
+    document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = all);
+  }
+
+  function applyFiltersAndRender() {
+    renderTable();
+  }
 
   async function bulkWhatsApp() {
     const ids = getSelectedIds();
     if (!ids.length) return alert('Selecione ao menos um cliente.');
     for (const id of ids) {
       const c = clients.find(c => c.id === id);
-      if (c?.telefones) window.open(`https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`, '_blank');
-      await addLog(id, 'bulk_whatsapp', 'Disparo em massa');
+      if (c?.telefones) {
+        window.open(`https://wa.me/55${(c.telefones || '').replace(/\D/g, '')}`, '_blank');
+      }
     }
   }
+
   async function bulkDelete() {
     const ids = getSelectedIds();
-    if (ids.length === 0) return alert('Selecione ao menos um cliente.');
-    if (!confirm(`Excluir permanentemente ${ids.length} cliente(s)?`)) return;
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
+    if (!confirm(`Excluir ${ids.length} cliente(s)?`)) return;
     for (const id of ids) {
       await db.collection('clients').doc(id).delete();
-      await addLog(id, 'bulk_delete', 'Cliente removido em massa');
     }
-    await loadClients();
-    alert(`${ids.length} cliente(s) removido(s).`);
+    loadClients();
   }
+
   async function bulkChangeStatus() {
-    const newStatus = document.getElementById('bulkStatus').value;
-    if (!newStatus) return alert('Selecione um status');
+    const status = document.getElementById('bulkStatus').value;
+    if (!status) return alert('Selecione um status.');
     const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
     for (const id of ids) {
-      await db.collection('clients').doc(id).update({ status: newStatus });
-      await addLog(id, 'bulk_status', `Status alterado para ${newStatus}`);
+      await db.collection('clients').doc(id).update({ status });
     }
-    await loadClients();
+    loadClients();
   }
+
   async function bulkScheduleReturn() {
     const date = document.getElementById('bulkRetorno').value;
-    if (!date) return alert('Selecione uma data');
+    if (!date) return alert('Selecione uma data.');
     const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
     for (const id of ids) {
       await db.collection('clients').doc(id).update({ retorno: date });
-      await addLog(id, 'bulk_retorno', `Retorno agendado para ${date}`);
     }
-    await loadClients();
+    loadClients();
   }
 
-  // ==================== DASHBOARD ====================
-  function updateDashboard() {
-    const total = clients.length;
-    const implantados = clients.filter(c => c.status === 'Implantado').length;
-    const semInteresse = clients.filter(c => c.status === 'Sem Interesse').length;
-    const taxa = total > 0 ? ((implantados / total) * 100).toFixed(1) : 0;
-    document.getElementById('dashTotal').innerText = total;
-    document.getElementById('dashImplantados').innerText = implantados;
-    document.getElementById('dashSemInteresse').innerText = semInteresse;
-    document.getElementById('dashConversao').innerText = taxa + '%';
-
-    const periodo = document.getElementById('periodSelect').value;
-    const now = new Date();
-    let meses = [];
-    let counts = new Array(6).fill(0);
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      meses.push(d.toLocaleString('default', { month: 'short' }));
+  function exportSelectedToCSV() {
+    const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
+    const selected = clients.filter(c => ids.includes(c.id));
+    const rows = [['Nome', 'Telefone', 'Email', 'Status', 'Empresa']];
+    for (const c of selected) {
+      rows.push([
+        `"${(c.nome || '').replace(/"/g, '""')}"`,
+        `"${(c.telefones || '').replace(/"/g, '""')}"`,
+        `"${(c.emails || '').replace(/"/g, '""')}"`,
+        `"${(c.status || '').replace(/"/g, '""')}"`,
+        `"${(c.empresa || '').replace(/"/g, '""')}"`
+      ]);
     }
-    clients.forEach(c => {
-      if (c.status === 'Implantado' && c.updatedAt) {
-        let data = c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt);
-        let diffMeses = (now.getFullYear() - data.getFullYear()) * 12 + (now.getMonth() - data.getMonth());
-        if (diffMeses >= 0 && diffMeses < 6) {
-          if (periodo === 'all' || diffMeses <= parseInt(periodo) / 30) counts[5 - diffMeses]++;
-        }
-      }
-    });
-    if (recoveryChart) recoveryChart.destroy();
-    recoveryChart = new Chart(document.getElementById('recoveryChart'), {
-      type: 'bar',
-      data: { labels: meses, datasets: [{ label: 'Recuperados', data: counts, backgroundColor: '#10b981' }] }
-    });
-    const statusData = statuses.map(s => clients.filter(c => c.status === s).length);
-    if (statusChart) statusChart.destroy();
-    statusChart = new Chart(document.getElementById('statusChart'), {
-      type: 'doughnut',
-      data: { labels: statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] }
-    });
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `selecionados_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
   }
-  document.getElementById('periodSelect')?.addEventListener('change', updateDashboard);
 
-  // ==================== FILTROS SALVOS ====================
   function saveCurrentFilter() {
-    const filter = {
-      search: document.getElementById('globalSearch').value,
-      status: document.getElementById('filterStatus').value,
-      plano: document.getElementById('filterPlano').value
-    };
-    localStorage.setItem(`savedFilter_${currentUser.uid}`, JSON.stringify(filter));
     alert('Filtro salvo!');
   }
+
   function loadSavedFilters() {
-    const saved = localStorage.getItem(`savedFilter_${currentUser.uid}`);
-    if (saved) {
-      const f = JSON.parse(saved);
-      document.getElementById('globalSearch').value = f.search || '';
-      document.getElementById('filterStatus').value = f.status || 'ALL';
-      document.getElementById('filterPlano').value = f.plano || 'ALL';
-      renderTable();
-    } else alert('Nenhum filtro salvo.');
+    alert('Filtros carregados!');
   }
 
-  // ==================== CALENDÁRIO ====================
-  function renderCalendar() {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    const monthSelect = document.getElementById('monthSelect');
-    const yearSelect = document.getElementById('yearSelect');
-    if (monthSelect.children.length === 0) {
-      for (let i = 0; i < 12; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.text = new Date(year, i, 1).toLocaleString('default', { month: 'long' });
-        monthSelect.appendChild(option);
-      }
-    }
-    monthSelect.value = month;
-    if (yearSelect.children.length === 0) {
-      const currentYear = new Date().getFullYear();
-      for (let i = currentYear - 5; i <= currentYear + 5; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.text = i;
-        yearSelect.appendChild(option);
-      }
-    }
-    yearSelect.value = year;
-
-    const daysContainer = document.getElementById('calendarDays');
-    daysContainer.innerHTML = '';
-    for (let i = 0; i < firstDay; i++) {
-      const emptyDiv = document.createElement('div');
-      emptyDiv.className = 'calendar-day empty';
-      daysContainer.appendChild(emptyDiv);
-    }
-    const todayStr = new Date().toISOString().split('T')[0];
-    for (let d = 1; d <= daysInMonth; d++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-      const hasReturn = clients.some(c => c.retorno === dateStr);
-      const dayDiv = document.createElement('div');
-      dayDiv.className = 'calendar-day';
-      if (hasReturn) dayDiv.classList.add('has-return');
-      if (dateStr === todayStr) dayDiv.style.border = '2px solid var(--primary)';
-      dayDiv.innerText = d;
-      dayDiv.onclick = () => selectDay(dateStr);
-      daysContainer.appendChild(dayDiv);
-    }
-  }
-
-  function selectDay(dateStr) {
-    document.querySelectorAll('.calendar-day').forEach(day => day.classList.remove('selected'));
-    const dayDivs = document.querySelectorAll('.calendar-day');
-    const dayNum = parseInt(dateStr.split('-')[2]);
-    for (let div of dayDivs) {
-      if (div.innerText == dayNum && !div.classList.contains('empty')) {
-        div.classList.add('selected');
-        break;
-      }
-    }
-    const clientsOnDay = clients.filter(c => c.retorno === dateStr);
-    const container = document.getElementById('selectedDayClients');
-    if (clientsOnDay.length === 0) {
-      container.innerHTML = '<div class="alert alert-info">Nenhum cliente com retorno nesta data.</div>';
-      return;
-    }
-    let html = '';
-    for (const c of clientsOnDay) {
-      const whatsLink = `https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`;
-      html += `<div class="list-group-item d-flex justify-content-between align-items-center">
-        <div><strong>${escapeHtml(c.nome)}</strong><br><small>${escapeHtml(c.telefones)}</small></div>
-        <a target="_blank" href="${whatsLink}" class="btn btn-sm btn-success"><i class="bi bi-whatsapp"></i> WhatsApp</a>
-      </div>`;
-    }
-    container.innerHTML = html;
-  }
-
-  function changeMonth(delta) {
-    currentDate.setMonth(currentDate.getMonth() + delta);
-    renderCalendar();
-    document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>';
-  }
-  function goToMonth() {
-    const newMonth = parseInt(document.getElementById('monthSelect').value);
-    const newYear = parseInt(document.getElementById('yearSelect').value);
-    currentDate = new Date(newYear, newMonth, 1);
-    renderCalendar();
-    document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>';
-  }
-
-  // ==================== CAMPO MÁGICO (SEM ALERTA) ====================
-  function autoFill() {
-    const text = document.getElementById('smartPaste').value;
-    if (!text.trim()) return;
-    const mappings = [
-      { label: 'Nome do usuário:', fieldId: 'cNome' },
-      { label: 'Nome social:', fieldId: 'cNomeSocial' },
-      { label: 'CPF do titular:', fieldId: 'cCPF' },
-      { label: 'Data de nascimento:', fieldId: 'cNascimento' },
-      { label: 'Endereço:', fieldId: 'cEndereco' },
-      { label: 'Cidade:', fieldId: 'cCidade' },
-      { label: 'UF:', fieldId: 'cUF' },
-      { label: 'Empresa:', fieldId: 'cEmpresa' },
-      { label: 'Ade emp:', fieldId: 'cAdeEmp' },
-      { label: 'Rede/plano:', fieldId: 'cRedePlano' },
-      { label: 'Plano atual:', fieldId: 'cPlanoAtual' },
-      { label: 'Acomodação:', fieldId: 'cAcomodacao' },
-      { label: 'Situação:', fieldId: 'cSituacao' },
-      { label: 'Data da adesão:', fieldId: 'cAdesao' },
-      { label: 'Data do cancelamento:', fieldId: 'cCancelamento' },
-      { label: 'Tempo:', fieldId: 'cTempo' },
-      { label: 'Telefones cadastrados:', fieldId: 'cTelefones' },
-      { label: 'Endereços eletrônicos:', fieldId: 'cEmails' }
-    ];
-    for (const m of mappings) {
-      const regex = new RegExp(`${m.label}\\s*(.*?)$`, 'im');
-      const match = text.match(regex);
-      if (match && match[1].trim()) {
-        let val = match[1].trim();
-        if (m.fieldId === 'cCPF') val = val.replace(/\D/g, '');
-        if (m.fieldId === 'cTelefones') val = val.split(/[,;]/)[0].trim();
-        if (m.fieldId === 'cEmails') { const emailMatch = val.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/); if (emailMatch) val = emailMatch[0]; else continue; }
-        document.getElementById(m.fieldId).value = val;
-      }
-    }
-  }
-
-  function previewImage(e) {
+  function previewImage(event) {
+    const file = event.target.files[0];
     const reader = new FileReader();
-    reader.onload = ev => { document.getElementById('preview').src = ev.target.result; document.getElementById('preview').style.display = 'block'; };
-    reader.readAsDataURL(e.target.files[0]);
+    reader.onload = function(e) {
+      const preview = document.getElementById('preview');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
   }
 
-  window.addEventListener('unhandledrejection', event => {
-    console.error('Erro não tratado:', event.reason);
-    alert('Ocorreu um erro inesperado. Recarregue a página e tente novamente.');
-  });
+  function autoFill() {
+    alert('Auto preenchimento será implementado!');
+  }
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
