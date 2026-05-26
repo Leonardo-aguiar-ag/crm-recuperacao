@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recupera Health CRM - Dashboard Automático</title>
+  <title>Recupera Health CRM - Versão Final Corrigida</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -14,7 +14,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <style>
-    /* (mesmo CSS do código anterior, omitido por brevidade - mantenha o original) */
     :root {
       --bg: #f8fafb;
       --card: #ffffff;
@@ -465,7 +464,7 @@
     const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
     clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderTable();
-    updateDashboard();   // ← força atualização do dashboard e gráficos
+    updateDashboard();
     updatePlanosFilter();
     renderCalendar();
   }
@@ -535,7 +534,7 @@
       }
       clearForm();
       document.querySelector('[data-bs-target="#dashboardTab"]').click();
-      await loadClients(); // ← recarrega e atualiza dashboard
+      await loadClients();
     } catch (e) { alert('Erro ao salvar: ' + e.message); }
   }
 
@@ -589,7 +588,7 @@
     if (!confirm('Excluir este cliente?')) return;
     await db.collection('clients').doc(id).delete();
     await addLog(id, 'delete', 'Cliente excluído');
-    await loadClients(); // ← recarrega
+    await loadClients();
   }
 
   // ==================== ANEXOS ====================
@@ -727,7 +726,7 @@
           alert(`Importando... ${added} de ${clientsToAdd.length} adicionados.`);
         }
         alert(`Importação concluída: ${added} novos clientes adicionados. ${duplicates} duplicados ignorados.`);
-        await loadClients(); // ← recarrega e atualiza dashboard
+        await loadClients();
       } catch (er) {
         alert('Erro ao importar: ' + er.message);
       }
@@ -782,8 +781,9 @@
 
   // ==================== EXCLUSÃO EM MASSA ====================
   async function bulkDelete() {
-    const ids = getSelectedIds();
-    if (ids.length === 0) return alert('Selecione ao menos um cliente.');
+    const checkboxes = document.querySelectorAll('.client-checkbox:checked');
+    if (checkboxes.length === 0) return alert('Selecione ao menos um cliente.');
+    const ids = Array.from(checkboxes).map(cb => cb.value);
     if (!confirm(`Excluir permanentemente ${ids.length} cliente(s)?`)) return;
 
     const BATCH_SIZE = 500;
@@ -799,8 +799,78 @@
       await batch.commit();
       deleted += chunk.length;
     }
-    await loadClients(); // ← recarrega e atualiza dashboard
+    await loadClients();
     alert(`${deleted} cliente(s) removido(s).`);
+  }
+
+  // ==================== AÇÕES EM MASSA CORRIGIDAS ====================
+  async function bulkWhatsApp() {
+    const checkboxes = document.querySelectorAll('.client-checkbox:checked');
+    if (checkboxes.length === 0) return alert('Selecione ao menos um cliente.');
+    for (const cb of checkboxes) {
+      const id = cb.value;
+      const c = clients.find(c => c.id === id);
+      if (c?.telefones) window.open(`https://wa.me/55${c.telefones.replace(/\D/g, '')}`, '_blank');
+      await addLog(id, 'bulk_whatsapp', 'Disparo em massa');
+    }
+  }
+
+  async function bulkChangeStatus() {
+    const newStatus = document.getElementById('bulkStatus').value;
+    if (!newStatus) return alert('Selecione um status');
+    
+    const checkboxes = document.querySelectorAll('.client-checkbox:checked');
+    if (checkboxes.length === 0) return alert('Selecione ao menos um cliente.');
+    const ids = Array.from(checkboxes).map(cb => cb.value);
+    if (!confirm(`Alterar status de ${ids.length} cliente(s) para "${newStatus}"?`)) return;
+
+    const BATCH_SIZE = 500;
+    let updated = 0;
+    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+      const batch = db.batch();
+      const chunk = ids.slice(i, i + BATCH_SIZE);
+      for (const id of chunk) {
+        const docRef = db.collection('clients').doc(id);
+        batch.update(docRef, { 
+          status: newStatus,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await addLog(id, 'bulk_status', `Status alterado em massa para ${newStatus}`);
+      }
+      await batch.commit();
+      updated += chunk.length;
+    }
+    await loadClients();
+    alert(`${updated} cliente(s) atualizado(s) para status "${newStatus}".`);
+  }
+
+  async function bulkScheduleReturn() {
+    const date = document.getElementById('bulkRetorno').value;
+    if (!date) return alert('Selecione uma data');
+    
+    const checkboxes = document.querySelectorAll('.client-checkbox:checked');
+    if (checkboxes.length === 0) return alert('Selecione ao menos um cliente.');
+    const ids = Array.from(checkboxes).map(cb => cb.value);
+    if (!confirm(`Agendar retorno para ${ids.length} cliente(s) na data ${date}?`)) return;
+
+    const BATCH_SIZE = 500;
+    let updated = 0;
+    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+      const batch = db.batch();
+      const chunk = ids.slice(i, i + BATCH_SIZE);
+      for (const id of chunk) {
+        const docRef = db.collection('clients').doc(id);
+        batch.update(docRef, { 
+          retorno: date,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await addLog(id, 'bulk_retorno', `Retorno agendado em massa para ${date}`);
+      }
+      await batch.commit();
+      updated += chunk.length;
+    }
+    await loadClients();
+    alert(`${updated} cliente(s) com retorno agendado para ${date}.`);
   }
 
   // ==================== RENDER TABELA ====================
@@ -813,7 +883,7 @@
       return matchSearch && matchStatus;
     });
     const tbody = document.getElementById('tableBody');
-    if (filtered.length === 0) { tbody.innerHTML = '</table><td colspan="7" class="text-center py-4">Nenhum cliente encontrado.��</td></tr>'; return; }
+    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">Nenhum cliente encontrado.��</td></tr>'; return; }
     let html = '';
     for (const c of filtered) {
       const waLink = `https://wa.me/55${(c.telefones || '' ).replace(/\D/g, '')}`;
@@ -830,7 +900,7 @@
             <a href="${waLink}" target="_blank" class="btn btn-success btn-action"><i class="bi bi-whatsapp"></i></a>
           </div>
         </td>
-      </table>`;
+      </tr>`;
     }
     tbody.innerHTML = html;
   }
@@ -842,58 +912,24 @@
     select.innerHTML = '<option value="ALL">Todos os planos</option>' + [...planos].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
   }
 
-  // ==================== AÇÕES EM MASSA ====================
-  function getSelectedIds() { return Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value); }
-  function toggleSelectAll() { const all = document.getElementById('selectAllCheckbox').checked; document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = all); }
-  document.getElementById('selectAllCheckbox')?.addEventListener('change', toggleSelectAll);
+  // ==================== UTILITÁRIOS DE SELEÇÃO ====================
+  function toggleSelectAll() {
+    const allCheckbox = document.getElementById('selectAllCheckbox');
+    const allVisible = document.querySelectorAll('.client-checkbox');
+    allVisible.forEach(cb => cb.checked = allCheckbox.checked);
+  }
+
+  function getSelectedIds() {
+    return Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value);
+  }
+
+  // Eventos de filtro e renderização
   window.applyFiltersAndRender = () => renderTable();
   document.getElementById('globalSearch')?.addEventListener('input', () => renderTable());
   document.getElementById('filterStatus')?.addEventListener('change', () => renderTable());
   document.getElementById('filterPlano')?.addEventListener('change', () => renderTable());
 
-  async function bulkWhatsApp() {
-    const ids = getSelectedIds();
-    if (!ids.length) return alert('Selecione ao menos um cliente.');
-    for (const id of ids) {
-      const c = clients.find(c => c.id === id);
-      if (c?.telefones) window.open(`https://wa.me/55${c.telefones.replace(/\D/g, '')}`, '_blank');
-      await addLog(id, 'bulk_whatsapp', 'Disparo em massa');
-    }
-  }
-  async function bulkChangeStatus() {
-    const newStatus = document.getElementById('bulkStatus').value;
-    if (!newStatus) return alert('Selecione um status');
-    const ids = getSelectedIds();
-    const BATCH_SIZE = 500;
-    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
-      const batch = db.batch();
-      const chunk = ids.slice(i, i + BATCH_SIZE);
-      for (const id of chunk) {
-        batch.update(db.collection('clients').doc(id), { status: newStatus });
-        await addLog(id, 'bulk_status', `Status alterado para ${newStatus}`);
-      }
-      await batch.commit();
-    }
-    await loadClients(); // ← recarrega
-  }
-  async function bulkScheduleReturn() {
-    const date = document.getElementById('bulkRetorno').value;
-    if (!date) return alert('Selecione uma data');
-    const ids = getSelectedIds();
-    const BATCH_SIZE = 500;
-    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
-      const batch = db.batch();
-      const chunk = ids.slice(i, i + BATCH_SIZE);
-      for (const id of chunk) {
-        batch.update(db.collection('clients').doc(id), { retorno: date });
-        await addLog(id, 'bulk_retorno', `Retorno agendado para ${date}`);
-      }
-      await batch.commit();
-    }
-    await loadClients(); // ← recarrega
-  }
-
-  // ==================== DASHBOARD COM ATUALIZAÇÃO DE GRÁFICOS ====================
+  // ==================== DASHBOARD ====================
   function populateMonthYearSelectors() {
     const monthSelect = document.getElementById('monthSelectDashboard');
     const yearSelect = document.getElementById('yearSelectDashboard');
@@ -942,7 +978,7 @@
     document.getElementById('dashValor').innerHTML = formatMoney(valorTotal);
     document.getElementById('dashConversao').innerText = `${taxaConversao}%`;
 
-    // Atualizar gráfico de recuperados por mês (últimos 6 meses)
+    // Gráfico de recuperados por mês (últimos 6 meses)
     const now = new Date();
     let meses = [];
     let counts = new Array(6).fill(0);
@@ -960,7 +996,7 @@
     if (recoveryChart) recoveryChart.destroy();
     recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels: meses, datasets: [{ label: 'Implantados', data: counts, backgroundColor: '#10b981' }] } });
 
-    // Atualizar gráfico de distribuição de status
+    // Gráfico de distribuição de status
     const statusData = statuses.map(s => clients.filter(c => c.status === s).length);
     if (statusChart) statusChart.destroy();
     statusChart = new Chart(document.getElementById('statusChart'), { type: 'doughnut', data: { labels: statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] } });
