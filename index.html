@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Recuperação - Campo Mágico sem Sobrescrita</title>
+  <title>CRM Recuperação - Agenda em Calendário</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -91,6 +91,70 @@
       margin-bottom: 0.75rem;
       font-size: 0.85rem;
     }
+    /* Estilos do calendário */
+    .calendar {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 1rem;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .calendar-day {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--card);
+      color: var(--text);
+    }
+    .calendar-day:hover {
+      background: var(--primary);
+      color: white;
+      transform: scale(1.02);
+    }
+    .calendar-day.empty {
+      background: transparent;
+      border: none;
+      cursor: default;
+    }
+    .calendar-day.has-return {
+      background: #f59e0b;
+      color: white;
+      font-weight: bold;
+    }
+    .calendar-day.selected {
+      background: var(--primary);
+      color: white;
+      border: 2px solid white;
+    }
+    .client-list {
+      margin-top: 1.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
@@ -138,22 +202,22 @@
     <div class="tab-pane fade show active" id="dashboardTab">
       <div class="row g-4 mb-4">
         <div class="col-md-3"><div class="dashboard-card"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
-        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#10b981,#059669)"><h6>Implantados (Recuperados)</h6><h2 id="dashImplantados">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#10b981,#059669)"><h6>Implantados</h6><h2 id="dashImplantados">0</h2></div></div>
         <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)"><h6>Sem Interesse</h6><h2 id="dashSemInteresse">0</h2></div></div>
-        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><h6>Taxa de Conversão</h6><h2 id="dashConversao">0%</h2><small>Implantados / Total</small></div></div>
+        <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
       </div>
       <div class="row g-3 mb-4">
-        <div class="col-auto"><label>Período para recuperados</label><select id="periodSelect" class="form-select"><option value="30">30 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="all">Todo período</option></select></div>
+        <div class="col-auto"><label>Período</label><select id="periodSelect" class="form-select"><option value="30">30 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="all">Todo período</option></select></div>
       </div>
       <div class="row g-4">
-        <div class="col-lg-6"><div class="card-custom"><h5>Recuperados por Mês (Implantados)</h5><canvas id="recoveryChart"></canvas></div></div>
+        <div class="col-lg-6"><div class="card-custom"><h5>Recuperados por Mês</h5><canvas id="recoveryChart"></canvas></div></div>
         <div class="col-lg-6"><div class="card-custom"><h5>Distribuição por Status</h5><canvas id="statusChart"></canvas></div></div>
       </div>
     </div>
 
     <!-- FICHA CLIENTE -->
     <div class="tab-pane fade" id="clientesTab">
-      <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4" placeholder="Cole aqui os dados com os rótulos exatos:&#10;Nome do usuário: ...&#10;CPF do titular: ...&#10;..."></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
+      <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4"></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
       <div class="card-custom">
         <input type="hidden" id="clientId">
         <div class="row g-3">
@@ -170,7 +234,7 @@
           <div class="col-md-6"><label>Plano atual</label><input id="cPlanoAtual" class="form-control"></div>
           <div class="col-md-4"><label>Acomodação</label><input id="cAcomodacao" class="form-control"></div>
           <div class="col-md-4"><label>Situação</label><input id="cSituacao" class="form-control"></div>
-          <div class="col-md-4"><label>Status CRM</label><select id="cStatus" class="form-select"></select></div>
+          <div class="col-md-4"><label>Status</label><select id="cStatus" class="form-select"></select></div>
           <div class="col-md-4"><label>Adesão</label><input id="cAdesao" class="form-control"></div>
           <div class="col-md-4"><label>Cancelamento</label><input id="cCancelamento" class="form-control"></div>
           <div class="col-md-4"><label>Tempo</label><input id="cTempo" class="form-control"></div>
@@ -197,14 +261,14 @@
       </div>
     </div>
 
-    <!-- PESQUISAR -->
+    <!-- PESQUISAR - Formatação corrigida -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card-custom">
-        <div class="row g-3 mb-3">
+        <div class="row g-3 mb-3 align-items-end">
           <div class="col-md-4"><input type="text" id="globalSearch" class="form-control" placeholder="Busca global" oninput="applyFiltersAndRender()"></div>
           <div class="col-md-3"><select id="filterStatus" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Todos os status</option></select></div>
           <div class="col-md-3"><select id="filterPlano" class="form-select" onchange="applyFiltersAndRender()"><option value="ALL">Todos os planos</option></select></div>
-          <div class="col-md-2"><button class="btn btn-outline-primary btn-sm" onclick="saveCurrentFilter()">Salvar filtro</button> <button class="btn btn-outline-secondary btn-sm" onclick="loadSavedFilters()">Meus filtros</button></div>
+          <div class="col-md-2"><button class="btn btn-outline-primary btn-sm" onclick="saveCurrentFilter()">Salvar</button> <button class="btn btn-outline-secondary btn-sm" onclick="loadSavedFilters()">Carregar</button></div>
         </div>
         <div class="row g-2 mb-3">
           <div class="col-auto"><button class="btn btn-success btn-sm" onclick="bulkWhatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp em massa</button></div>
@@ -213,14 +277,38 @@
           <div class="col-auto"><input type="date" id="bulkRetorno" class="form-control form-control-sm"><button class="btn btn-sm btn-info" onclick="bulkScheduleReturn()">Agendar retorno</button></div>
         </div>
         <div class="table-responsive">
-          <table class="table table-hover"><thead><tr><th><input type="checkbox" id="selectAllCheckbox"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Retorno</th><th>Ações</th></tr></thead><tbody id="tableBody"></tbody></table>
+          <table class="table table-hover">
+            <thead>
+              <tr><th><input type="checkbox" id="selectAllCheckbox"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Retorno</th><th>Ações</th></tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <!-- AGENDA -->
+    <!-- AGENDA - CALENDÁRIO -->
     <div class="tab-pane fade" id="agendaTab">
-      <div class="card-custom"><div class="table-responsive"><table class="table"><thead><tr><th>Cliente</th><th>Telefone</th><th>Retorno</th><th>Status</th><th>WhatsApp</th></tr></thead><tbody id="agendaBody"></tbody></table></div></div>
+      <div class="card-custom">
+        <div class="calendar">
+          <div class="calendar-header">
+            <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i> Mês anterior</button>
+            <div class="d-flex gap-2">
+              <select id="monthSelect" class="form-select form-select-sm" style="width: auto;" onchange="goToMonth()"></select>
+              <select id="yearSelect" class="form-select form-select-sm" style="width: auto;" onchange="goToMonth()"></select>
+            </div>
+            <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(1)">Próximo mês <i class="bi bi-chevron-right"></i></button>
+          </div>
+          <div class="calendar-weekdays">
+            <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+          </div>
+          <div id="calendarDays" class="calendar-days"></div>
+        </div>
+        <div id="clientsByDay" class="client-list mt-4">
+          <h6>Clientes com retorno no dia selecionado</h6>
+          <div id="selectedDayClients" class="list-group"></div>
+        </div>
+      </div>
     </div>
 
     <!-- CONFIGURAÇÕES -->
@@ -234,7 +322,6 @@
               <input type="text" id="newStatus" class="form-control" placeholder="Novo status">
               <button class="btn btn-success" onclick="addStatus()">Adicionar</button>
             </div>
-            <small class="text-muted">Os status são usados no campo único do cliente.</small>
           </div>
         </div>
         <div class="col-lg-6">
@@ -257,7 +344,7 @@
 </div>
 
 <script>
-  // ==================== FIREBASE CONFIG ====================
+  // ==================== FIREBASE ====================
   const firebaseConfig = {
     apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
     authDomain: "crm-recuperacao.firebaseapp.com",
@@ -277,14 +364,10 @@
   let autoBackupInterval = null;
   let reminderInterval = null;
   let recoveryChart, statusChart;
+  let currentDate = new Date(); // para o calendário
 
-  // Helper: sanitização HTML
-  const escapeHtml = (str) => {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
-  };
-
-  // Helper: formata telefone para WhatsApp
+  // Helpers
+  const escapeHtml = (str) => { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); };
   const formatPhoneForWhatsApp = (raw) => {
     if (!raw) return '';
     let digits = raw.toString().replace(/\D/g, '');
@@ -302,6 +385,7 @@
       await loadStatuses();
       await loadClients();
       startReminderChecker();
+      renderCalendar(); // inicia calendário
     } else {
       document.getElementById('loginScreen').style.display = 'flex';
     }
@@ -319,9 +403,7 @@
   // ==================== STATUS ====================
   async function loadStatuses() {
     const doc = await db.collection('customStatuses').doc(currentUser.uid).get();
-    if (doc.exists && doc.data().statuses && doc.data().statuses.length) {
-      statuses = doc.data().statuses;
-    }
+    if (doc.exists && doc.data().statuses) statuses = doc.data().statuses;
     renderStatuses();
   }
   async function saveStatuses() { await db.collection('customStatuses').doc(currentUser.uid).set({ statuses }); }
@@ -335,27 +417,16 @@
     document.getElementById('newStatus').value = '';
   }
   function deleteStatus(i) {
-    if (!confirm('Remover este status? Os clientes com este status não serão afetados, mas você não poderão mais selecioná-lo.')) return;
+    if (!confirm('Remover este status?')) return;
     statuses.splice(i, 1);
     renderStatuses();
     saveStatuses();
   }
   function renderStatuses() {
-    const cStatus = document.getElementById('cStatus');
-    if (cStatus) cStatus.innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
-    const filterStatus = document.getElementById('filterStatus');
-    if (filterStatus) filterStatus.innerHTML = '<option value="ALL">Todos os status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    const bulkStatus = document.getElementById('bulkStatus');
-    if (bulkStatus) bulkStatus.innerHTML = '<option value="">Alterar status...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    const statusListDiv = document.getElementById('statusList');
-    if (statusListDiv) {
-      statusListDiv.innerHTML = statuses.map((s, i) => `
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <span>${escapeHtml(s)}</span>
-          <button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})">Excluir</button>
-        </div>
-      `).join('');
-    }
+    document.getElementById('cStatus').innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
+    document.getElementById('filterStatus').innerHTML = '<option value="ALL">Todos os status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+    document.getElementById('bulkStatus').innerHTML = '<option value="">Alterar status...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+    document.getElementById('statusList').innerHTML = statuses.map((s, i) => `<div class="d-flex justify-content-between align-items-center mb-2"><span>${s}</span><button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
   }
 
   // ==================== CLIENTES ====================
@@ -363,9 +434,9 @@
     const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
     clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderTable();
-    renderAgenda();
     updateDashboard();
     updatePlanosFilter();
+    renderCalendar(); // atualiza calendário sempre que clientes mudam
   }
 
   async function saveClient() {
@@ -396,23 +467,11 @@
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
     if (!id) data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-
-    if (!data.nome) return alert('Nome é obrigatório.');
-
+    if (!data.nome) return alert('Nome obrigatório.');
     try {
-      if (id) {
-        await db.collection('clients').doc(id).update(data);
-        await addLog(id, 'edit', 'Cliente atualizado');
-        alert('Cliente atualizado!');
-      } else {
-        if (data.cpf) {
-          const dup = await db.collection('clients').where('userId', '==', currentUser.uid).where('cpf', '==', data.cpf).get();
-          if (!dup.empty && !confirm(`CPF ${data.cpf} já existe. Deseja duplicar?`)) return;
-        }
-        const newRef = await db.collection('clients').add(data);
-        await addLog(newRef.id, 'create', 'Novo cliente cadastrado');
-        alert('Cliente cadastrado!');
-      }
+      if (id) await db.collection('clients').doc(id).update(data);
+      else await db.collection('clients').add(data);
+      alert('Cliente salvo!');
       clearForm();
       document.querySelector('[data-bs-target="#dashboardTab"]').click();
       await loadClients();
@@ -420,7 +479,7 @@
   }
 
   function clearForm() {
-    if (!confirm('Limpar todos os campos?')) return;
+    if (!confirm('Limpar campos?')) return;
     document.getElementById('clientId').value = '';
     ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('cStatus').selectedIndex = 0;
@@ -434,36 +493,18 @@
     const c = clients.find(c => c.id === id);
     if (!c) return;
     document.getElementById('clientId').value = id;
-    document.getElementById('cNome').value = c.nome || '';
-    document.getElementById('cNomeSocial').value = c.nomeSocial || '';
-    document.getElementById('cCPF').value = c.cpf || '';
-    document.getElementById('cNascimento').value = c.nascimento || '';
-    document.getElementById('cEndereco').value = c.endereco || '';
-    document.getElementById('cCidade').value = c.cidade || '';
-    document.getElementById('cUF').value = c.uf || '';
-    document.getElementById('cEmpresa').value = c.empresa || '';
-    document.getElementById('cAdeEmp').value = c.adeEmp || '';
-    document.getElementById('cRedePlano').value = c.redePlano || '';
-    document.getElementById('cPlanoAtual').value = c.planoAtual || '';
-    document.getElementById('cAcomodacao').value = c.acomodacao || '';
-    document.getElementById('cSituacao').value = c.situacao || '';
-    document.getElementById('cStatus').value = c.status || '';
-    document.getElementById('cAdesao').value = c.adesao || '';
-    document.getElementById('cCancelamento').value = c.cancelamento || '';
-    document.getElementById('cTempo').value = c.tempo || '';
-    document.getElementById('cTelefones').value = c.telefones || '';
-    document.getElementById('cEmails').value = c.emails || '';
-    document.getElementById('cRetorno').value = c.retorno || '';
-    document.getElementById('cAnotacoes').value = c.anotacoes || '';
+    Object.keys(c).forEach(key => {
+      const input = document.getElementById(`c${key.charAt(0).toUpperCase() + key.slice(1)}`);
+      if (input) input.value = c[key] || '';
+    });
     loadAnexos(id);
     loadHistorico(id);
     document.querySelector('[data-bs-target="#clientesTab"]').click();
   }
 
   async function deleteClient(id) {
-    if (!confirm('Excluir este cliente?')) return;
+    if (!confirm('Excluir cliente?')) return;
     await db.collection('clients').doc(id).delete();
-    await addLog(id, 'delete', 'Cliente excluído');
     await loadClients();
   }
 
@@ -553,23 +594,13 @@
       try {
         const parsed = JSON.parse(ev.target.result);
         let arr = Array.isArray(parsed) ? parsed : (parsed.clients && Array.isArray(parsed.clients) ? parsed.clients : null);
-        if (!arr) throw new Error('Formato inválido: não é um array.');
+        if (!arr) throw new Error('Formato inválido');
         if (!confirm(`Importar ${arr.length} clientes?`)) return;
         let adicionados = 0, ignorados = 0;
         for (const c of arr) {
           const { id, ...d } = c;
           d.userId = currentUser.uid;
           if (!d.nome) { ignorados++; continue; }
-          let duplicado = false;
-          if (d.cpf) {
-            const existing = await db.collection('clients').where('userId', '==', currentUser.uid).where('cpf', '==', d.cpf).get();
-            if (!existing.empty) duplicado = true;
-          }
-          if (!duplicado && d.telefones) {
-            const existingTel = await db.collection('clients').where('userId', '==', currentUser.uid).where('telefones', '==', d.telefones).get();
-            if (!existingTel.empty) duplicado = true;
-          }
-          if (duplicado && !confirm(`Cliente "${d.nome}" já existe. Importar mesmo assim?`)) { ignorados++; continue; }
           try {
             await db.collection('clients').add(d);
             adicionados++;
@@ -612,7 +643,7 @@
   }
   function stopAutoBackup() { if (autoBackupInterval) { clearInterval(autoBackupInterval); autoBackupInterval = null; alert('Backup desligado.'); } }
 
-  // ==================== RENDERIZAÇÃO ====================
+  // ==================== RENDER TABELA PESQUISA ====================
   function renderTable() {
     const search = document.getElementById('globalSearch').value.toLowerCase();
     const status = document.getElementById('filterStatus').value;
@@ -626,40 +657,22 @@
     });
 
     const tbody = document.getElementById('tableBody');
-    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum cliente encontrado.��</tr>'; return; }
+    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum cliente encontrado.</td></tr>'; return; }
     let html = '';
     for (const c of filtered) {
       const telefoneRaw = c.telefones || '';
       const whatsLink = `https://wa.me/${formatPhoneForWhatsApp(telefoneRaw)}`;
       html += `<tr>
-        <td><input type="checkbox" class="client-checkbox" value="${c.id}"></td
-        <td><strong>${escapeHtml(c.nome)}</strong></td
-        <td>${escapeHtml(c.empresa)}</td
-        <td>${escapeHtml(telefoneRaw)}</td
-        <td><span class="badge bg-primary">${escapeHtml(c.status || '')}</span></td
-        <td>${c.retorno || ''}</td
+        <td><input type="checkbox" class="client-checkbox" value="${c.id}"></td>
+        <td><strong>${escapeHtml(c.nome)}</strong></td>
+        <td>${escapeHtml(c.empresa)}</td>
+        <td>${escapeHtml(telefoneRaw)}</td>
+        <td><span class="badge bg-primary">${escapeHtml(c.status || '')}</span></td>
+        <td>${c.retorno || ''}</td>
         <td>
           <button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
           <a target="_blank" href="${whatsLink}" class="btn btn-success btn-sm" onclick="addLog('${c.id}','whatsapp','Clique no WhatsApp')"><i class="bi bi-whatsapp"></i></a>
-         </td
-      </tr>`;
-    }
-    tbody.innerHTML = html;
-  }
-
-  function renderAgenda() {
-    const tbody = document.getElementById('agendaBody');
-    if (clients.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhum cliente. Florida</td></tr>'; return; }
-    let html = '';
-    for (const c of clients) {
-      const telefoneRaw = c.telefones || '';
-      const whatsLink = `https://wa.me/${formatPhoneForWhatsApp(telefoneRaw)}`;
-      html += `<tr>
-        <td>${escapeHtml(c.nome)}</td
-        <td>${escapeHtml(telefoneRaw)}</td
-        <td>${c.retorno || ''}</td
-        <td>${c.status || ''}</td
-        <td><a target="_blank" href="${whatsLink}" class="btn btn-success btn-sm">WhatsApp</a></td
+        </td>
       </tr>`;
     }
     tbody.innerHTML = html;
@@ -727,12 +740,11 @@
     const total = clients.length;
     const implantados = clients.filter(c => c.status === 'Implantado').length;
     const semInteresse = clients.filter(c => c.status === 'Sem Interesse').length;
-    const taxaConversao = total > 0 ? ((implantados / total) * 100).toFixed(1) : 0;
-
+    const taxa = total > 0 ? ((implantados / total) * 100).toFixed(1) : 0;
     document.getElementById('dashTotal').innerText = total;
     document.getElementById('dashImplantados').innerText = implantados;
     document.getElementById('dashSemInteresse').innerText = semInteresse;
-    document.getElementById('dashConversao').innerText = taxaConversao + '%';
+    document.getElementById('dashConversao').innerText = taxa + '%';
 
     const periodo = document.getElementById('periodSelect').value;
     const now = new Date();
@@ -747,24 +759,20 @@
         let data = c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt);
         let diffMeses = (now.getFullYear() - data.getFullYear()) * 12 + (now.getMonth() - data.getMonth());
         if (diffMeses >= 0 && diffMeses < 6) {
-          if (periodo === 'all' || diffMeses <= parseInt(periodo) / 30) {
-            counts[5 - diffMeses]++;
-          }
+          if (periodo === 'all' || diffMeses <= parseInt(periodo) / 30) counts[5 - diffMeses]++;
         }
       }
     });
     if (recoveryChart) recoveryChart.destroy();
     recoveryChart = new Chart(document.getElementById('recoveryChart'), {
       type: 'bar',
-      data: { labels: meses, datasets: [{ label: 'Recuperados (Implantados)', data: counts, backgroundColor: '#10b981' }] }
+      data: { labels: meses, datasets: [{ label: 'Recuperados', data: counts, backgroundColor: '#10b981' }] }
     });
-
-    const statusLabels = statuses;
     const statusData = statuses.map(s => clients.filter(c => c.status === s).length);
     if (statusChart) statusChart.destroy();
     statusChart = new Chart(document.getElementById('statusChart'), {
       type: 'doughnut',
-      data: { labels: statusLabels, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] }
+      data: { labels: statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] }
     });
   }
   document.getElementById('periodSelect')?.addEventListener('change', updateDashboard);
@@ -790,12 +798,107 @@
     } else alert('Nenhum filtro salvo.');
   }
 
-  // ==================== CAMPO MÁGICO (SEM SOBRESCRITA) ====================
+  // ==================== CALENDÁRIO ====================
+  function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay(); // 0 = domingo
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Preencher selects
+    const monthSelect = document.getElementById('monthSelect');
+    const yearSelect = document.getElementById('yearSelect');
+    if (monthSelect.children.length === 0) {
+      for (let i = 0; i < 12; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = new Date(year, i, 1).toLocaleString('default', { month: 'long' });
+        monthSelect.appendChild(option);
+      }
+    }
+    monthSelect.value = month;
+    if (yearSelect.children.length === 0) {
+      const currentYear = new Date().getFullYear();
+      for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = i;
+        yearSelect.appendChild(option);
+      }
+    }
+    yearSelect.value = year;
+
+    // Montar grade
+    const daysContainer = document.getElementById('calendarDays');
+    daysContainer.innerHTML = '';
+    // dias vazios antes do primeiro dia
+    for (let i = 0; i < firstDay; i++) {
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'calendar-day empty';
+      daysContainer.appendChild(emptyDiv);
+    }
+    // dias do mês
+    const todayStr = new Date().toISOString().split('T')[0];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const hasReturn = clients.some(c => c.retorno === dateStr);
+      const dayDiv = document.createElement('div');
+      dayDiv.className = 'calendar-day';
+      if (hasReturn) dayDiv.classList.add('has-return');
+      if (dateStr === todayStr) dayDiv.style.border = '2px solid var(--primary)';
+      dayDiv.innerText = d;
+      dayDiv.onclick = () => selectDay(dateStr);
+      daysContainer.appendChild(dayDiv);
+    }
+  }
+
+  function selectDay(dateStr) {
+    // remove selected de todos
+    document.querySelectorAll('.calendar-day').forEach(day => day.classList.remove('selected'));
+    // adiciona ao clicado (encontrar pelo texto)
+    const dayDivs = document.querySelectorAll('.calendar-day');
+    const dayNum = parseInt(dateStr.split('-')[2]);
+    for (let div of dayDivs) {
+      if (div.innerText == dayNum && !div.classList.contains('empty')) {
+        div.classList.add('selected');
+        break;
+      }
+    }
+    const clientsOnDay = clients.filter(c => c.retorno === dateStr);
+    const container = document.getElementById('selectedDayClients');
+    if (clientsOnDay.length === 0) {
+      container.innerHTML = '<div class="alert alert-info">Nenhum cliente com retorno nesta data.</div>';
+      return;
+    }
+    let html = '';
+    for (const c of clientsOnDay) {
+      const whatsLink = `https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`;
+      html += `<div class="list-group-item d-flex justify-content-between align-items-center">
+        <div><strong>${escapeHtml(c.nome)}</strong><br><small>${escapeHtml(c.telefones)}</small></div>
+        <a target="_blank" href="${whatsLink}" class="btn btn-sm btn-success"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+      </div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  function changeMonth(delta) {
+    currentDate.setMonth(currentDate.getMonth() + delta);
+    renderCalendar();
+    // limpar a lista de clientes do dia selecionado
+    document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>';
+  }
+  function goToMonth() {
+    const newMonth = parseInt(document.getElementById('monthSelect').value);
+    const newYear = parseInt(document.getElementById('yearSelect').value);
+    currentDate = new Date(newYear, newMonth, 1);
+    renderCalendar();
+    document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>';
+  }
+
+  // ==================== CAMPO MÁGICO ====================
   function autoFill() {
     const text = document.getElementById('smartPaste').value;
-    if (!text.trim()) return alert('Cole algum texto no campo mágico.');
-
-    // Mapeamento exato: rótulo -> ID do campo
+    if (!text.trim()) return alert('Cole algum texto.');
     const mappings = [
       { label: 'Nome do usuário:', fieldId: 'cNome' },
       { label: 'Nome social:', fieldId: 'cNomeSocial' },
@@ -816,42 +919,20 @@
       { label: 'Telefones cadastrados:', fieldId: 'cTelefones' },
       { label: 'Endereços eletrônicos:', fieldId: 'cEmails' }
     ];
-
-    let filledCount = 0;
-
-    for (const mapping of mappings) {
-      // Cria uma regex que captura o valor após o rótulo até o final da linha ou até o próximo rótulo (simplificado)
-      // Vamos capturar até o final da linha (assumindo que cada rótulo está em uma linha separada)
-      const regex = new RegExp(`${mapping.label}\\s*(.*?)$`, 'im');
+    let filled = 0;
+    for (const m of mappings) {
+      const regex = new RegExp(`${m.label}\\s*(.*?)$`, 'im');
       const match = text.match(regex);
-      if (match && match[1] !== undefined) {
-        let value = match[1].trim();
-        // Se o valor for vazio, não preenche (mantém o que estava)
-        if (value !== '') {
-          // Limpeza especial para CPF e telefone
-          if (mapping.fieldId === 'cCPF') value = value.replace(/\D/g, '');
-          if (mapping.fieldId === 'cTelefones') {
-            const firstPhone = value.split(/[,;]/)[0].trim();
-            value = firstPhone;
-          }
-          if (mapping.fieldId === 'cEmails') {
-            const emailMatch = value.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-            if (emailMatch) value = emailMatch[0];
-            else value = ''; // se não for email válido, não preenche
-          }
-          if (value !== '') {
-            document.getElementById(mapping.fieldId).value = value;
-            filledCount++;
-          }
-        }
+      if (match && match[1].trim()) {
+        let val = match[1].trim();
+        if (m.fieldId === 'cCPF') val = val.replace(/\D/g, '');
+        if (m.fieldId === 'cTelefones') val = val.split(/[,;]/)[0].trim();
+        if (m.fieldId === 'cEmails') { const emailMatch = val.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/); if (emailMatch) val = emailMatch[0]; else continue; }
+        document.getElementById(m.fieldId).value = val;
+        filled++;
       }
     }
-
-    if (filledCount > 0) {
-      alert(`${filledCount} campo(s) preenchido(s) com sucesso! Verifique os dados.`);
-    } else {
-      alert('Nenhum campo foi preenchido. Certifique-se de que o texto contenha os rótulos exatos (ex: "Nome do usuário:", "CPF do titular:", etc.).');
-    }
+    alert(`${filled} campo(s) preenchido(s).`);
   }
 
   function previewImage(e) {
@@ -860,7 +941,6 @@
     reader.readAsDataURL(e.target.files[0]);
   }
 
-  // ==================== TRATAMENTO GLOBAL DE ERROS ====================
   window.addEventListener('unhandledrejection', event => {
     console.error('Erro não tratado:', event.reason);
     alert('Ocorreu um erro inesperado. Recarregue a página e tente novamente.');
