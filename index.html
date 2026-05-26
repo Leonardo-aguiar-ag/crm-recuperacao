@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recupera Health CRM - Versão Premium</title>
+  <title>Recupera Health CRM - Versão Final</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -13,11 +13,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="https://apis.google.com/js/api.js"></script>
 
   <style>
-    /* (CSS mantido do código anterior, acrescentando estilos novos) */
     :root {
       --bg: #f8fafb;
       --card: #ffffff;
@@ -25,7 +22,12 @@
       --text: #111827;
       --primary: #3b82f6;
     }
-    body.dark-mode { --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #f1f5f9; }
+    body.dark-mode {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: var(--bg);
@@ -62,7 +64,10 @@
       border-radius: 12px;
       color: var(--text);
     }
-    .nav-tabs .nav-link.active { background: var(--primary); color: white; }
+    .nav-tabs .nav-link.active {
+      background: var(--primary);
+      color: white;
+    }
     .login-screen {
       position: fixed;
       inset: 0;
@@ -81,20 +86,62 @@
     }
     .container-fluid { padding: 2rem; }
     @media (max-width: 768px) { .container-fluid { padding: 1rem; } }
-    .history-log { border-left: 3px solid var(--primary); padding-left: 0.75rem; margin-bottom: 0.75rem; font-size: 0.85rem; }
-    .calendar { background: var(--card); border-radius: 16px; padding: 1rem; }
-    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
-    .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; margin-bottom: 0.5rem; }
-    .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-    .calendar-day { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; background: var(--card); }
-    .calendar-day.has-return { background: #f59e0b; color: white; }
-    .calendar-day.selected { background: var(--primary); color: white; border: 2px solid white; }
+    .history-log {
+      border-left: 3px solid var(--primary);
+      padding-left: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+    }
+    .calendar {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 1rem;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .calendar-day {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      background: var(--card);
+    }
+    .calendar-day.has-return {
+      background: #f59e0b;
+      color: white;
+    }
+    .calendar-day.selected {
+      background: var(--primary);
+      color: white;
+      border: 2px solid white;
+    }
     .tag-checkbox { margin-right: 0.5rem; margin-bottom: 0.25rem; display: inline-block; }
   </style>
 </head>
 <body>
 
-<!-- TELA DE LOGIN (melhorada) -->
+<!-- TELA DE LOGIN -->
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
     <h3 class="text-center mb-4">Recupera Health CRM</h3>
@@ -144,7 +191,7 @@
   </ul>
 
   <div class="tab-content">
-    <!-- DASHBOARD com seletor de período e gráfico de valor mensal -->
+    <!-- DASHBOARD com seletor de período e seletor de mês -->
     <div class="tab-pane fade show active" id="dashboardTab">
       <div class="row g-4 mb-4">
         <div class="col-md-3"><div class="dashboard-card"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
@@ -153,7 +200,10 @@
         <div class="col-md-3"><div class="dashboard-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)"><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
       </div>
       <div class="row g-3 mb-4 align-items-end">
-        <div class="col-auto"><label>Período gráficos</label><select id="chartPeriod" class="form-select"><option value="3">Últimos 3 meses</option><option value="6" selected>Últimos 6 meses</option><option value="12">Últimos 12 meses</option><option value="all">Todo período</option></select></div>
+        <div class="col-auto"><label>Tipo de filtro</label><select id="filterType" class="form-select"><option value="period">Período (últimos meses)</option><option value="month">Mês específico</option></select></div>
+        <div class="col-auto" id="periodDiv"><label>Período (meses)</label><select id="chartPeriod" class="form-select"><option value="3">Últimos 3 meses</option><option value="6" selected>Últimos 6 meses</option><option value="12">Últimos 12 meses</option></select></div>
+        <div class="col-auto" id="monthDiv" style="display:none;"><label>Selecione o mês</label><select id="specificMonth" class="form-select"><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
+        <div class="col-auto" id="yearDiv" style="display:none;"><label>Ano</label><select id="specificYear" class="form-select"></select></div>
       </div>
       <div class="row g-4">
         <div class="col-lg-4"><div class="card-custom"><h5>Recuperados por Mês</h5><canvas id="recoveryChart"></canvas></div></div>
@@ -195,8 +245,8 @@
           <div class="col-md-4"><label>Quantidade de vidas</label><input type="number" step="1" id="cVidas" class="form-control"></div>
           <div class="col-md-4"><label>Data implantação</label><input type="date" id="cDataImplantacao" class="form-control"></div>
           <div class="col-md-4"><label>Data pagamento</label><input type="date" id="cDataPagamento" class="form-control"></div>
-          <div class="col-md-4"><label>Origem do lead</label><input id="cOrigem" class="form-control" placeholder="Ex: Google Ads, Indicação, Facebook"></div>
-          <div class="col-md-4"><label>Campanha</label><input id="cCampanha" class="form-control" placeholder="Ex: Black Friday, Email Marketing"></div>
+          <div class="col-md-4"><label>Origem do lead</label><input id="cOrigem" class="form-control" placeholder="Ex: Google Ads, Indicação"></div>
+          <div class="col-md-4"><label>Campanha</label><input id="cCampanha" class="form-control" placeholder="Ex: Black Friday"></div>
         </div>
         <div class="mt-3"><label><strong>📝 Anotações</strong></label><textarea id="cAnotacoes" class="form-control" rows="3"></textarea></div>
         <ul class="nav nav-tabs mt-3">
@@ -218,27 +268,23 @@
       </div>
     </div>
 
-    <!-- PESQUISAR com busca combinada (status + tags por checkbox) -->
+    <!-- PESQUISAR com busca combinada -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card-custom">
-        <div class="search-filters">
-          <div class="row g-3 align-items-end">
-            <div class="col-md-3"><label>BUSCA GLOBAL</label><input type="text" id="globalSearch" class="form-control" oninput="renderTable()"></div>
-            <div class="col-md-2"><label>STATUS</label><select id="filterStatus" class="form-select" onchange="renderTable()"><option value="ALL">Todos</option></select></div>
-            <div class="col-md-3"><label>TAGS (selecione uma ou mais)</label><div id="filterTagsContainer"></div></div>
-            <div class="col-md-2"><label>ORIGEM</label><select id="filterOrigem" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
-            <div class="col-md-2"><label>CAMPANHA</label><select id="filterCampanha" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
-          </div>
+        <div class="row g-3 mb-3 align-items-end">
+          <div class="col-md-3"><label>BUSCA GLOBAL</label><input type="text" id="globalSearch" class="form-control" oninput="renderTable()"></div>
+          <div class="col-md-2"><label>STATUS</label><select id="filterStatus" class="form-select" onchange="renderTable()"><option value="ALL">Todos</option></select></div>
+          <div class="col-md-3"><label>TAGS (selecione uma ou mais)</label><div id="filterTagsContainer"></div></div>
+          <div class="col-md-2"><label>ORIGEM</label><select id="filterOrigem" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
+          <div class="col-md-2"><label>CAMPANHA</label><select id="filterCampanha" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
         </div>
-        <div class="bulk-actions">
-          <div class="row g-2 align-items-center">
-            <div class="col-auto"><button class="btn btn-success btn-sm" onclick="bulkWhatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp</button></div>
-            <div class="col-auto"><button class="btn btn-danger btn-sm" onclick="bulkDelete()"><i class="bi bi-trash"></i> Excluir</button></div>
-            <div class="col-auto ms-md-auto"><div class="input-group input-group-sm"><select id="bulkStatus" class="form-select" style="width: 150px;"><option value="">Mudar status...</option></select><button class="btn btn-warning" onclick="bulkChangeStatus()">Aplicar</button></div></div>
-            <div class="col-auto"><div class="input-group input-group-sm"><input type="date" id="bulkRetorno" class="form-control" style="width: 130px;"><button class="btn btn-info text-white" onclick="bulkScheduleReturn()">Agendar</button></div></div>
-            <div class="col-auto"><button class="btn btn-primary btn-sm" onclick="exportSelectedToCSV()"><i class="bi bi-file-earmark-excel"></i> Exportar CSV</button></div>
-            <div class="col-auto"><button class="btn btn-secondary btn-sm" onclick="importExcel()"><i class="bi bi-file-spreadsheet"></i> Importar Excel/CSV</button><input type="file" id="excelInput" accept=".xlsx, .csv" style="display:none" onchange="handleExcelUpload(event)"></div>
-          </div>
+        <div class="row g-2 mb-3">
+          <div class="col-auto"><button class="btn btn-success btn-sm" onclick="bulkWhatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp</button></div>
+          <div class="col-auto"><button class="btn btn-danger btn-sm" onclick="bulkDelete()"><i class="bi bi-trash"></i> Excluir</button></div>
+          <div class="col-auto"><select id="bulkStatus" class="form-select form-select-sm" style="width: 150px;"><option value="">Mudar status...</option></select><button class="btn btn-warning btn-sm" onclick="bulkChangeStatus()">Aplicar</button></div>
+          <div class="col-auto"><input type="date" id="bulkRetorno" class="form-control form-control-sm" style="width: 130px;"><button class="btn btn-info btn-sm" onclick="bulkScheduleReturn()">Agendar</button></div>
+          <div class="col-auto"><button class="btn btn-primary btn-sm" onclick="exportSelectedToCSV()"><i class="bi bi-file-earmark-excel"></i> Exportar CSV</button></div>
+          <div class="col-auto"><button class="btn btn-secondary btn-sm" onclick="importExcel()"><i class="bi bi-file-spreadsheet"></i> Importar Excel/CSV</button><input type="file" id="excelInput" accept=".xlsx, .csv" style="display:none" onchange="handleExcelUpload(event)"></div>
         </div>
         <div class="table-responsive">
           <table class="table table-hover"><thead><tr><th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Origem</th><th>Retorno</th><th>Ações</th></tr></thead><tbody id="tableBody"></tbody></table>
@@ -246,10 +292,23 @@
       </div>
     </div>
 
-    <!-- AGENDA (calendário) – sem alterações -->
-    <div class="tab-pane fade" id="agendaTab">...</div>
+    <!-- AGENDA (calendário) -->
+    <div class="tab-pane fade" id="agendaTab">
+      <div class="card-custom">
+        <div class="calendar">
+          <div class="calendar-header">
+            <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i> Mês anterior</button>
+            <div class="d-flex gap-2"><select id="monthSelect" class="form-select form-select-sm" style="width: auto;" onchange="goToMonth()"></select><select id="yearSelect" class="form-select form-select-sm" style="width: auto;" onchange="goToMonth()"></select></div>
+            <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(1)">Próximo mês <i class="bi bi-chevron-right"></i></button>
+          </div>
+          <div class="calendar-weekdays"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
+          <div id="calendarDays" class="calendar-days"></div>
+        </div>
+        <div id="clientsByDay" class="client-list mt-4"><h6>Clientes com retorno no dia selecionado</h6><div id="selectedDayClients" class="list-group"></div></div>
+      </div>
+    </div>
 
-    <!-- CONFIGURAÇÕES (backup Google Drive, EmailJS, etc.) -->
+    <!-- CONFIGURAÇÕES (sem EmailJS nem Google Drive) -->
     <div class="tab-pane fade" id="configTab">
       <div class="row g-4">
         <div class="col-lg-6">
@@ -261,23 +320,13 @@
         </div>
         <div class="col-lg-6">
           <div class="card-custom">
-            <h4>Backup Automático</h4>
-            <label>Intervalo (horas)</label><input type="number" id="backupIntervalHours" class="form-control" value="24">
-            <button class="btn btn-primary mt-2" onclick="setAutoBackup()">Ativar (local)</button>
-            <button class="btn btn-danger mt-2" onclick="stopAutoBackup()">Desligar</button>
-            <hr>
-            <button class="btn btn-primary" onclick="exportAllToCSV()">Exportar CSV</button>
-            <button class="btn btn-outline-primary" onclick="exportBackup()">Backup JSON</button>
-            <button class="btn btn-outline-primary" onclick="importBackup()">Importar JSON</button>
-            <button class="btn btn-success mt-2" onclick="backupToGoogleDrive()"><i class="bi bi-google"></i> Backup Google Drive</button>
-            <button class="btn btn-info mt-2" onclick="authenticateGoogleDrive()">Conectar Google Drive</button>
+            <h4>Backup</h4>
+            <button class="btn btn-primary mt-2" onclick="exportAllToCSV()">Exportar CSV (todos)</button>
+            <button class="btn btn-outline-primary mt-2" onclick="exportBackup()">Backup JSON</button>
+            <button class="btn btn-outline-primary mt-2" onclick="importBackup()">Importar JSON</button>
             <input type="file" id="backupFileInput" accept=".json" style="display:none">
             <hr>
-            <h4>Configuração EmailJS (lembretes)</h4>
-            <input type="text" id="emailjsService" class="form-control mb-2" placeholder="Service ID">
-            <input type="text" id="emailjsTemplate" class="form-control mb-2" placeholder="Template ID">
-            <input type="text" id="emailjsPublic" class="form-control mb-2" placeholder="Public Key">
-            <button class="btn btn-secondary" onclick="saveEmailJSConfig()">Salvar</button>
+            <button class="btn btn-secondary mt-2" onclick="importExcel()">Importar Excel/CSV</button>
           </div>
         </div>
       </div>
@@ -286,7 +335,7 @@
 </div>
 
 <script>
-  // ==================== CONFIGURAÇÕES INICIAIS ====================
+  // ==================== FIREBASE ====================
   const firebaseConfig = {
     apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
     authDomain: "crm-recuperacao.firebaseapp.com",
@@ -300,17 +349,6 @@
   const db = firebase.firestore();
   const storage = firebase.storage();
 
-  // EmailJS (será inicializado depois)
-  let emailjsReady = false;
-
-  // Google Drive API
-  let gapiInited = false;
-  let tokenClient;
-  const CLIENT_ID = 'SEU_CLIENT_ID.apps.googleusercontent.com'; // substitua
-  const API_KEY = 'SUA_API_KEY'; // substitua
-  const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
-  const SCOPES = 'https://www.googleapis.com/auth/drive.file';
-
   let currentUser = null;
   let clients = [];
   let statuses = ['Em Negociação', 'Para Enviar Documentação', 'Implantado', 'Sem Interesse'];
@@ -318,7 +356,7 @@
   let reminderInterval = null;
   let recoveryChart, valueChart, statusChart;
 
-  // ==================== AJUDA ====================
+  // Helpers
   const escapeHtml = (str) => { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); };
   const formatPhoneForWhatsApp = (raw) => {
     if (!raw) return '';
@@ -331,7 +369,7 @@
   const formatMoney = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
   const getEffectiveValue = (client) => client.valorComDesconto && client.valorComDesconto > 0 ? client.valorComDesconto : (client.valorSemDesconto || 0);
 
-  // ==================== AUTENTICAÇÃO (melhorada) ====================
+  // ==================== AUTENTICAÇÃO ====================
   auth.onAuthStateChanged(async user => {
     if (user) {
       currentUser = user;
@@ -341,7 +379,7 @@
       startReminderChecker();
       renderCalendar();
       populateFilters();
-      loadEmailJSConfig();
+      populateSpecificYear();
     } else {
       document.getElementById('loginScreen').style.display = 'flex';
     }
@@ -406,7 +444,7 @@
     document.getElementById('statusList').innerHTML = statuses.map((s, i) => `<div class="d-flex justify-content-between align-items-center mb-2"><span>${s}</span><button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
   }
 
-  // ==================== CLIENTES (salvar, editar, carregar) ====================
+  // ==================== CLIENTES ====================
   async function loadClients() {
     const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
     clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -460,9 +498,11 @@
       if (id) {
         await db.collection('clients').doc(id).update(data);
         await addLog(id, 'edit', 'Cliente atualizado');
+        alert('Cliente atualizado!');
       } else {
         await db.collection('clients').add(data);
         await addLog('new', 'create', 'Novo cliente cadastrado');
+        alert('Cliente cadastrado!');
       }
       clearForm();
       document.querySelector('[data-bs-target="#dashboardTab"]').click();
@@ -484,11 +524,11 @@
   }
 
   async function loadStatusHistory(clientId) {
-    const snap = await db.collection('interactionLogs').where('clientId', '==', clientId).where('action', 'in', ['edit', 'bulk_status']).orderBy('timestamp', 'desc').limit(50).get();
-    const logs = snap.docs.filter(d => d.data().details && d.data().details.includes('Status alterado'));
+    const snap = await db.collection('interactionLogs').where('clientId', '==', clientId).get();
+    const logs = snap.docs.map(d => d.data()).filter(l => l.action === 'edit' && l.details.includes('Status alterado'));
     const div = document.getElementById('statusHistoryList');
     if (logs.length === 0) { div.innerHTML = '<p class="text-muted">Nenhuma alteração de status.</p>'; return; }
-    div.innerHTML = logs.map(l => `<div class="history-log"><small>${l.timestamp ? new Date(l.timestamp.toDate()).toLocaleString() : ''}</small><br>${l.details}</div>`).join('');
+    div.innerHTML = logs.map(l => `<div class="history-log"><small>${new Date(l.timestamp.toDate()).toLocaleString()}</small><br>${l.details}</div>`).join('');
   }
 
   function editClient(id) {
@@ -505,9 +545,8 @@
     document.querySelector('[data-bs-target="#clientesTab"]').click();
   }
 
-  // ==================== PESQUISA AVANÇADA (tags + status combinados) ====================
+  // ==================== PESQUISA AVANÇADA ====================
   function populateFilters() {
-    // Tags únicas
     const allTags = new Set();
     clients.forEach(c => { if (c.tags) c.tags.forEach(t => allTags.add(t)); });
     const container = document.getElementById('filterTagsContainer');
@@ -518,11 +557,9 @@
       cb.innerHTML = `<input class="form-check-input tag-checkbox" type="checkbox" value="${escapeHtml(tag)}" id="tag_${tag}" onchange="renderTable()"><label class="form-check-label" for="tag_${tag}">${escapeHtml(tag)}</label>`;
       container.appendChild(cb);
     });
-    // Filtro origem
     const origens = new Set(clients.map(c => c.origem).filter(o => o));
     const selectOrigem = document.getElementById('filterOrigem');
     selectOrigem.innerHTML = '<option value="ALL">Todas</option>' + [...origens].sort().map(o => `<option>${escapeHtml(o)}</option>`).join('');
-    // Filtro campanha
     const campanhas = new Set(clients.map(c => c.campanha).filter(ca => ca));
     const selectCamp = document.getElementById('filterCampanha');
     selectCamp.innerHTML = '<option value="ALL">Todas</option>' + [...campanhas].sort().map(ca => `<option>${escapeHtml(ca)}</option>`).join('');
@@ -566,38 +603,91 @@
     tbody.innerHTML = html;
   }
 
-  // ==================== DASHBOARD (período, gráfico de valor mensal) ====================
+  // ==================== DASHBOARD ====================
+  function populateSpecificYear() {
+    const yearSelect = document.getElementById('specificYear');
+    const currentYear = new Date().getFullYear();
+    yearSelect.innerHTML = '';
+    for (let i = currentYear - 5; i <= currentYear + 1; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.text = i;
+      yearSelect.appendChild(opt);
+    }
+    yearSelect.value = currentYear;
+  }
+
+  function toggleFilterType() {
+    const type = document.getElementById('filterType').value;
+    const periodDiv = document.getElementById('periodDiv');
+    const monthDiv = document.getElementById('monthDiv');
+    const yearDiv = document.getElementById('yearDiv');
+    if (type === 'period') {
+      periodDiv.style.display = 'block';
+      monthDiv.style.display = 'none';
+      yearDiv.style.display = 'none';
+    } else {
+      periodDiv.style.display = 'none';
+      monthDiv.style.display = 'block';
+      yearDiv.style.display = 'block';
+    }
+    updateDashboard();
+  }
+
   function updateDashboard() {
-    const period = document.getElementById('chartPeriod').value;
-    let monthsToShow = period === 'all' ? 1000 : parseInt(period);
-    const now = new Date();
+    const filterType = document.getElementById('filterType').value;
+    let monthsToShow = 0;
     let labels = [];
     let recoveryCounts = [];
     let monthlyValues = [];
 
-    for (let i = monthsToShow - 1; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      labels.push(d.toLocaleString('default', { month: 'short', year: '2-digit' }));
-    }
-    // Inicializar arrays
-    for (let i = 0; i < monthsToShow; i++) { recoveryCounts.push(0); monthlyValues.push(0); }
-
-    clients.forEach(c => {
-      if (c.status === 'Implantado' && (c.dataImplantacao || c.updatedAt)) {
-        let implantDate = c.dataImplantacao ? new Date(c.dataImplantacao) : (c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt));
-        let monthIndex = (now.getFullYear() - implantDate.getFullYear()) * 12 + (now.getMonth() - implantDate.getMonth());
-        if (monthIndex >= 0 && monthIndex < monthsToShow) {
-          recoveryCounts[monthsToShow - 1 - monthIndex]++;
-          monthlyValues[monthsToShow - 1 - monthIndex] += getEffectiveValue(c);
-        }
+    if (filterType === 'period') {
+      const period = document.getElementById('chartPeriod').value;
+      monthsToShow = parseInt(period);
+      const now = new Date();
+      for (let i = monthsToShow - 1; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        labels.push(d.toLocaleString('default', { month: 'short', year: '2-digit' }));
       }
-    });
+      recoveryCounts = new Array(monthsToShow).fill(0);
+      monthlyValues = new Array(monthsToShow).fill(0);
+      clients.forEach(c => {
+        if (c.status === 'Implantado' && (c.dataImplantacao || c.updatedAt)) {
+          let implantDate = c.dataImplantacao ? new Date(c.dataImplantacao) : (c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt));
+          let monthIndex = (new Date().getFullYear() - implantDate.getFullYear()) * 12 + (new Date().getMonth() - implantDate.getMonth());
+          if (monthIndex >= 0 && monthIndex < monthsToShow) {
+            recoveryCounts[monthsToShow - 1 - monthIndex]++;
+            monthlyValues[monthsToShow - 1 - monthIndex] += getEffectiveValue(c);
+          }
+        }
+      });
+    } else {
+      // mês específico
+      const month = parseInt(document.getElementById('specificMonth').value);
+      const year = parseInt(document.getElementById('specificYear').value);
+      labels = [new Date(year, month-1, 1).toLocaleString('default', { month: 'long', year: 'numeric' })];
+      let totalRec = 0;
+      let totalVal = 0;
+      clients.forEach(c => {
+        if (c.status === 'Implantado') {
+          let implantDate = c.dataImplantacao ? new Date(c.dataImplantacao) : (c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt));
+          if (implantDate.getMonth() + 1 === month && implantDate.getFullYear() === year) {
+            totalRec++;
+            totalVal += getEffectiveValue(c);
+          }
+        }
+      });
+      recoveryCounts = [totalRec];
+      monthlyValues = [totalVal];
+      monthsToShow = 1;
+    }
+
     if (recoveryChart) recoveryChart.destroy();
     recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels, datasets: [{ label: 'Implantados', data: recoveryCounts, backgroundColor: '#10b981' }] } });
     if (valueChart) valueChart.destroy();
     valueChart = new Chart(document.getElementById('valueChart'), { type: 'line', data: { labels, datasets: [{ label: 'Valor Processado (R$)', data: monthlyValues, borderColor: '#f59e0b', fill: false }] } });
 
-    // KPIs (sem filtro de período – continuam globais ou podem ser adaptados)
+    // KPIs (sempre globais ou podem ser filtrados também; deixamos globais)
     const totalClientes = clients.length;
     const implantados = clients.filter(c => c.status === 'Implantado');
     const totalVidas = implantados.reduce((acc, c) => acc + Math.max(0, c.vidas || 0), 0);
@@ -612,95 +702,130 @@
     if (statusChart) statusChart.destroy();
     statusChart = new Chart(document.getElementById('statusChart'), { type: 'doughnut', data: { labels: statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] } });
   }
-  document.getElementById('chartPeriod')?.addEventListener('change', updateDashboard);
 
-  // ==================== NOTIFICAÇÕES POR E-MAIL (EmailJS) ====================
-  function saveEmailJSConfig() {
-    const service = document.getElementById('emailjsService').value;
-    const template = document.getElementById('emailjsTemplate').value;
-    const publicKey = document.getElementById('emailjsPublic').value;
-    if (service && template && publicKey) {
-      localStorage.setItem('emailjs_config', JSON.stringify({ service, template, publicKey }));
-      emailjs.init(publicKey);
-      emailjsReady = true;
-      alert('Configuração salva. Lembretes por e-mail serão enviados.');
-    } else alert('Preencha todos os campos.');
-  }
-  function loadEmailJSConfig() {
-    const saved = localStorage.getItem('emailjs_config');
-    if (saved) {
-      const cfg = JSON.parse(saved);
-      document.getElementById('emailjsService').value = cfg.service;
-      document.getElementById('emailjsTemplate').value = cfg.template;
-      document.getElementById('emailjsPublic').value = cfg.publicKey;
-      emailjs.init(cfg.publicKey);
-      emailjsReady = true;
+  document.getElementById('filterType').addEventListener('change', toggleFilterType);
+  document.getElementById('chartPeriod').addEventListener('change', updateDashboard);
+  document.getElementById('specificMonth').addEventListener('change', updateDashboard);
+  document.getElementById('specificYear').addEventListener('change', updateDashboard);
+
+  // ==================== ANEXOS ====================
+  async function loadAnexos(clientId) {
+    const listDiv = document.getElementById('anexosList');
+    listDiv.innerHTML = 'Carregando...';
+    const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}`);
+    let items = [];
+    try { const res = await ref.listAll(); items = res.items; } catch(e) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
+    if (items.length === 0) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
+    let html = '';
+    for (const item of items) {
+      const url = await item.getDownloadURL();
+      html += `<div class="d-flex justify-content-between align-items-center mb-2"><a href="${url}" target="_blank">${item.name}</a><button class="btn btn-sm btn-danger" onclick="deleteAnexo('${clientId}','${item.name}')">Excluir</button></div>`;
     }
+    listDiv.innerHTML = html;
+  }
+  async function uploadAnexos() {
+    const clientId = document.getElementById('clientId').value;
+    if (!clientId) return alert('Salve o cliente primeiro!');
+    const files = document.getElementById('uploadAnexo').files;
+    if (!files.length) return;
+    for (const file of files) {
+      if (!file.type.match(/image.*|application\/pdf/)) { alert(`Tipo inválido: ${file.name}`); continue; }
+      const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}/${Date.now()}_${file.name}`);
+      await ref.put(file);
+    }
+    alert('Arquivos enviados!');
+    loadAnexos(clientId);
+  }
+  async function deleteAnexo(clientId, fileName) {
+    if (!confirm('Excluir anexo?')) return;
+    const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}/${fileName}`);
+    await ref.delete();
+    loadAnexos(clientId);
   }
 
-  function startReminderChecker() {
-    if (reminderInterval) clearInterval(reminderInterval);
-    reminderInterval = setInterval(async () => {
-      const today = new Date().toISOString().split('T')[0];
-      for (const c of clients) {
-        if (c.retorno === today && c.emails && emailjsReady) {
-          const cfg = JSON.parse(localStorage.getItem('emailjs_config'));
-          if (cfg) {
-            try {
-              await emailjs.send(cfg.service, cfg.template, {
-                to_email: c.emails,
-                nome: c.nome,
-                telefone: c.telefones,
-                data: today
-              });
-              await addLog(c.id, 'email_reminder', `E-mail de lembrete enviado para ${c.emails}`);
-            } catch (err) { console.error('Erro EmailJS:', err); }
-          }
+  // ==================== BACKUP E IMPORTAÇÃO ====================
+  function exportBackup() {
+    const dataToExport = clients.map(c => {
+      const { updatedAt, createdAt, ...rest } = c;
+      return rest;
+    });
+    const blob = new Blob([JSON.stringify(dataToExport)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `backup_${new Date().toISOString().slice(0,19)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function importBackup() { document.getElementById('backupFileInput').click(); }
+  async function handleBackupFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        let arr = Array.isArray(parsed) ? parsed : (parsed.clients && Array.isArray(parsed.clients) ? parsed.clients : null);
+        if (!arr) throw new Error('Formato inválido');
+        if (!confirm(`Importar ${arr.length} clientes?`)) return;
+        let adicionados = 0, ignorados = 0;
+        for (const c of arr) {
+          const { id, ...d } = c;
+          d.userId = currentUser.uid;
+          if (!d.createdAt) d.createdAt = new Date().toISOString();
+          if (!d.nome) { ignorados++; continue; }
+          try {
+            await db.collection('clients').add(d);
+            adicionados++;
+          } catch (err) { ignorados++; }
         }
-      }
-    }, 3600000);
-    if (Notification.permission === 'default') Notification.requestPermission();
+        alert(`Importação: ${adicionados} adicionados, ${ignorados} ignorados.`);
+        await loadClients();
+      } catch (er) { alert('Erro: ' + er.message); }
+    };
+    reader.readAsText(file);
   }
+  document.getElementById('backupFileInput').addEventListener('change', handleBackupFile);
 
-  // ==================== BACKUP GOOGLE DRIVE ====================
-  async function authenticateGoogleDrive() {
-    if (!gapiInited) {
-      await new Promise((resolve) => {
-        gapi.load('client', async () => {
-          await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY_DOC] });
-          tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: CLIENT_ID,
-            scope: SCOPES,
-            callback: (tokenResponse) => { if (tokenResponse.access_token) gapi.client.setToken(tokenResponse); }
-          });
-          gapiInited = true;
-          resolve();
-        });
-      });
+  function exportAllToCSV() {
+    const rows = [['Nome', 'Telefone', 'Email', 'Status', 'Empresa', 'Origem', 'Campanha', 'Vidas', 'Valor Pago']];
+    for (const c of clients) {
+      const esc = (s) => `"${(s || '').replace(/"/g, '""')}"`;
+      const valorPago = getEffectiveValue(c);
+      rows.push([
+        esc(c.nome || ''), esc(c.telefones || ''), esc(c.emails || ''), esc(c.status || ''),
+        esc(c.empresa || ''), esc(c.origem || ''), esc(c.campanha || ''), esc(c.vidas || 0), esc(valorPago)
+      ]);
     }
-    tokenClient.requestAccessToken({ prompt: 'consent' });
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `contatos_${new Date().toISOString().slice(0,19)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
   }
 
-  async function backupToGoogleDrive() {
-    if (!gapi.client || !gapi.client.drive) { alert('Conecte-se ao Google Drive primeiro.'); return; }
-    const backupData = JSON.stringify(clients.map(c => { const { updatedAt, createdAt, ...rest } = c; return rest; }));
-    const file = new Blob([backupData], { type: 'application/json' });
-    const metadata = { name: `backup_${new Date().toISOString().slice(0,19)}.json`, parents: ['root'] };
-    const form = new FormData();
-    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-    form.append('file', file);
-    try {
-      const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-        method: 'POST',
-        headers: { 'Authorization': 'Bearer ' + gapi.client.getToken().access_token },
-        body: form
-      });
-      if (response.ok) alert('Backup enviado para o Google Drive!');
-      else alert('Erro: ' + response.statusText);
-    } catch (err) { alert('Erro: ' + err.message); }
+  function exportSelectedToCSV() {
+    const checkboxes = document.querySelectorAll('.client-checkbox:checked');
+    if (checkboxes.length === 0) { alert('Nenhum cliente selecionado.'); return; }
+    const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+    const selectedClients = clients.filter(c => selectedIds.includes(c.id));
+    const rows = [['Nome', 'Telefone']];
+    for (const c of selectedClients) {
+      const nome = (c.nome || '').replace(/,/g, ' ');
+      const telefone = formatPhoneForWhatsApp(c.telefones);
+      if (telefone) rows.push([`"${nome}"`, telefone]);
+    }
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `selecionados_${new Date().toISOString().slice(0,19)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
   }
 
-  // ==================== IMPORTAÇÃO EXCEL/CSV ====================
   function importExcel() { document.getElementById('excelInput').click(); }
   async function handleExcelUpload(e) {
     const file = e.target.files[0];
@@ -736,34 +861,155 @@
     await loadClients();
   }
 
-  // ==================== DEMAIS FUNÇÕES (calendário, ações em massa, etc.) ====================
-  // (a maior parte já existe no código anterior; manteremos apenas o essencial para não estourar o limite)
-  function renderCalendar() { /* ... manter do código antigo ... */ }
-  function changeMonth(delta) { /* ... */ }
-  function goToMonth() { /* ... */ }
-  function selectDay(dateStr) { /* ... */ }
-  function uploadAnexos() { /* ... */ }
-  function deleteAnexo() { /* ... */ }
-  function loadAnexos() { /* ... */ }
-  function bulkWhatsApp() { const ids = getSelectedIds(); for(let id of ids){ const c=clients.find(c=>c.id===id); if(c?.telefones) window.open(`https://wa.me/55${c.telefones.replace(/\D/g,'')}`); } }
-  async function bulkDelete() { const ids = getSelectedIds(); if(!ids.length) return; if(confirm(`Excluir ${ids.length} cliente(s)?`)){ for(let id of ids) await db.collection('clients').doc(id).delete(); await loadClients(); } }
-  async function bulkChangeStatus() { const newStatus = document.getElementById('bulkStatus').value; if(!newStatus) return; const ids = getSelectedIds(); for(let id of ids) await db.collection('clients').doc(id).update({ status: newStatus }); await loadClients(); }
-  async function bulkScheduleReturn() { const date = document.getElementById('bulkRetorno').value; if(!date) return; const ids = getSelectedIds(); for(let id of ids) await db.collection('clients').doc(id).update({ retorno: date }); await loadClients(); }
-  function exportSelectedToCSV() { /* ... */ }
-  function exportAllToCSV() { /* ... */ }
-  function exportBackup() { /* ... */ }
-  function importBackup() { /* ... */ }
-  function setAutoBackup() { /* ... */ }
-  function stopAutoBackup() { /* ... */ }
+  // ==================== AÇÕES EM MASSA ====================
   function getSelectedIds() { return Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value); }
   function toggleSelectAll() { const all = document.getElementById('selectAllCheckbox').checked; document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = all); }
-  function updatePlanosFilter() { /* ... */ }
-  function clearForm() { /* ... */ }
-  function autoFill() { /* ... */ }
-  function previewImage(e) { /* ... */ }
 
-  // Inicializações
-  renderStatuses();
+  async function bulkWhatsApp() {
+    const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
+    for (const id of ids) {
+      const c = clients.find(c => c.id === id);
+      if (c?.telefones) window.open(`https://wa.me/55${c.telefones.replace(/\D/g, '')}`, '_blank');
+      await addLog(id, 'bulk_whatsapp', 'Disparo em massa');
+    }
+  }
+  async function bulkDelete() {
+    const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
+    if (!confirm(`Excluir permanentemente ${ids.length} cliente(s)?`)) return;
+    for (const id of ids) await db.collection('clients').doc(id).delete();
+    await loadClients();
+    alert(`${ids.length} cliente(s) removido(s).`);
+  }
+  async function bulkChangeStatus() {
+    const newStatus = document.getElementById('bulkStatus').value;
+    if (!newStatus) return alert('Selecione um status');
+    const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
+    if (!confirm(`Alterar status de ${ids.length} cliente(s) para "${newStatus}"?`)) return;
+    for (const id of ids) await db.collection('clients').doc(id).update({ status: newStatus });
+    await loadClients();
+    alert(`${ids.length} cliente(s) atualizado(s).`);
+  }
+  async function bulkScheduleReturn() {
+    const date = document.getElementById('bulkRetorno').value;
+    if (!date) return alert('Selecione uma data');
+    const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
+    if (!confirm(`Agendar retorno para ${ids.length} cliente(s) na data ${date}?`)) return;
+    for (const id of ids) await db.collection('clients').doc(id).update({ retorno: date });
+    await loadClients();
+    alert(`${ids.length} cliente(s) com retorno agendado.`);
+  }
+
+  // ==================== CALENDÁRIO ====================
+  let currentDate = new Date();
+  function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthSelect = document.getElementById('monthSelect');
+    const yearSelect = document.getElementById('yearSelect');
+    if (monthSelect.children.length === 0) {
+      for (let i = 0; i < 12; i++) { const opt = document.createElement('option'); opt.value = i; opt.text = new Date(year, i, 1).toLocaleString('default', { month: 'long' }); monthSelect.appendChild(opt); }
+    }
+    monthSelect.value = month;
+    if (yearSelect.children.length === 0) {
+      const cy = new Date().getFullYear();
+      for (let i = cy - 5; i <= cy + 5; i++) { const opt = document.createElement('option'); opt.value = i; opt.text = i; yearSelect.appendChild(opt); }
+    }
+    yearSelect.value = year;
+    const daysContainer = document.getElementById('calendarDays');
+    daysContainer.innerHTML = '';
+    for (let i = 0; i < firstDay; i++) { const empty = document.createElement('div'); empty.className = 'calendar-day empty'; daysContainer.appendChild(empty); }
+    const todayStr = new Date().toISOString().split('T')[0];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const hasReturn = clients.some(c => c.retorno === dateStr);
+      const dayDiv = document.createElement('div'); dayDiv.className = 'calendar-day'; if (hasReturn) dayDiv.classList.add('has-return'); if (dateStr === todayStr) dayDiv.style.border = '2px solid var(--primary)'; dayDiv.innerText = d; dayDiv.onclick = () => selectDay(dateStr); daysContainer.appendChild(dayDiv);
+    }
+  }
+  function selectDay(dateStr) {
+    document.querySelectorAll('.calendar-day').forEach(day => day.classList.remove('selected'));
+    const dayDivs = document.querySelectorAll('.calendar-day');
+    const dayNum = parseInt(dateStr.split('-')[2]);
+    for (let div of dayDivs) { if (div.innerText == dayNum && !div.classList.contains('empty')) { div.classList.add('selected'); break; } }
+    const clientsOnDay = clients.filter(c => c.retorno === dateStr);
+    const container = document.getElementById('selectedDayClients');
+    if (clientsOnDay.length === 0) { container.innerHTML = '<div class="alert alert-info">Nenhum cliente com retorno nesta data.</div>'; return; }
+    let html = '';
+    for (const c of clientsOnDay) {
+      const whatsLink = `https://wa.me/55${(c.telefones || '').replace(/\D/g, '')}`;
+      html += `<div class="list-group-item d-flex justify-content-between align-items-center"><div><strong>${escapeHtml(c.nome)}</strong><br><small>${escapeHtml(c.telefones)}</small></div><a target="_blank" href="${whatsLink}" class="btn btn-sm btn-success"><i class="bi bi-whatsapp"></i> WhatsApp</a></div>`;
+    }
+    container.innerHTML = html;
+  }
+  function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); renderCalendar(); document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>'; }
+  function goToMonth() { const newMonth = parseInt(document.getElementById('monthSelect').value); const newYear = parseInt(document.getElementById('yearSelect').value); currentDate = new Date(newYear, newMonth, 1); renderCalendar(); document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>'; }
+
+  // ==================== AUTO PREENCHIMENTO ====================
+  function autoFill() {
+    const text = document.getElementById('smartPaste').value;
+    if (!text.trim()) return;
+    const mappings = [
+      { label: 'Nome do usuário:', fieldId: 'cNome' }, { label: 'Nome social:', fieldId: 'cNomeSocial' },
+      { label: 'CPF do titular:', fieldId: 'cCPF' }, { label: 'Data de nascimento:', fieldId: 'cNascimento' },
+      { label: 'Endereço:', fieldId: 'cEndereco' }, { label: 'Cidade:', fieldId: 'cCidade' },
+      { label: 'UF:', fieldId: 'cUF' }, { label: 'Empresa:', fieldId: 'cEmpresa' },
+      { label: 'Ade emp:', fieldId: 'cAdeEmp' }, { label: 'Rede/plano:', fieldId: 'cRedePlano' },
+      { label: 'Plano atual:', fieldId: 'cPlanoAtual' }, { label: 'Acomodação:', fieldId: 'cAcomodacao' },
+      { label: 'Situação:', fieldId: 'cSituacao' }, { label: 'Data da adesão:', fieldId: 'cAdesao' },
+      { label: 'Data do cancelamento:', fieldId: 'cCancelamento' }, { label: 'Tempo:', fieldId: 'cTempo' },
+      { label: 'Telefones cadastrados:', fieldId: 'cTelefones' }, { label: 'Endereços eletrônicos:', fieldId: 'cEmails' }
+    ];
+    for (const m of mappings) {
+      const regex = new RegExp(`${m.label}\\s*(.*?)$`, 'im');
+      const match = text.match(regex);
+      if (match && match[1].trim()) {
+        let val = match[1].trim();
+        if (m.fieldId === 'cCPF') val = val.replace(/\D/g, '');
+        if (m.fieldId === 'cTelefones') val = val.split(/[,;]/)[0].trim();
+        if (m.fieldId === 'cEmails') { const emailMatch = val.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/); if (emailMatch) val = emailMatch[0]; else continue; }
+        document.getElementById(m.fieldId).value = val;
+      }
+    }
+  }
+  function previewImage(e) { const reader = new FileReader(); reader.onload = ev => { document.getElementById('preview').src = ev.target.result; document.getElementById('preview').style.display = 'block'; }; reader.readAsDataURL(e.target.files[0]); }
+  function clearForm() {
+    if (!confirm('Limpar todos os campos?')) return;
+    document.getElementById('clientId').value = '';
+    ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes','cValorSemDesconto','cValorComDesconto','cVidas','cDataImplantacao','cDataPagamento','cOrigem','cCampanha'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('cStatus').selectedIndex = 0;
+    document.getElementById('preview').style.display = 'none';
+    document.getElementById('anexosList').innerHTML = '';
+    document.getElementById('historicoList').innerHTML = '';
+    document.getElementById('smartPaste').value = '';
+  }
+  function updatePlanosFilter() {
+    const planos = new Set();
+    clients.forEach(c => { if (c.planoAtual) planos.add(c.planoAtual); if (c.redePlano) planos.add(c.redePlano); });
+    const select = document.getElementById('filterPlano');
+    if (select) select.innerHTML = '<option value="ALL">Todos os planos</option>' + [...planos].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
+  }
+  function startReminderChecker() {
+    if (reminderInterval) clearInterval(reminderInterval);
+    reminderInterval = setInterval(() => {
+      const today = new Date().toISOString().split('T')[0];
+      clients.forEach(async c => {
+        if (c.retorno === today) {
+          if (Notification.permission === 'granted') new Notification(`Lembrete: ${c.nome}`, { body: `Retorno hoje. Tel: ${c.telefones}` });
+          if (c.emails) window.open(`mailto:${c.emails}?subject=Lembrete%20de%20retorno&body=Olá ${c.nome}, seu retorno está agendado para hoje.`);
+          await addLog(c.id, 'lembrete', `Lembrete enviado (${today})`);
+        }
+      });
+    }, 3600000);
+    if (Notification.permission === 'default') Notification.requestPermission();
+  }
+
+  window.applyFiltersAndRender = renderTable;
+  window.renderTable = renderTable;
 </script>
 </body>
 </html>
