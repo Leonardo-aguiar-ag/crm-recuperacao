@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recupera Health CRM - Otimizado</title>
+  <title>Recupera Health CRM - Dashboard Automático</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -14,7 +14,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <style>
-    /* (mesmo CSS do código anterior, mantido para não repetir) */
     :root {
       --bg: #f8fafb;
       --card: #ffffff;
@@ -234,7 +233,7 @@
   </ul>
 
   <div class="tab-content">
-    <!-- DASHBOARD (igual ao anterior) -->
+    <!-- DASHBOARD -->
     <div class="tab-pane fade show active" id="dashboardTab">
       <div class="row g-4 mb-4">
         <div class="col-md-3"><div class="dashboard-card"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
@@ -253,7 +252,7 @@
       </div>
     </div>
 
-    <!-- FICHA CLIENTE (com campos de vidas e valores) -->
+    <!-- FICHA CLIENTE -->
     <div class="tab-pane fade" id="clientesTab">
       <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4"></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
       <div class="card-custom">
@@ -456,7 +455,7 @@
     document.getElementById('cStatus').innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
     document.getElementById('filterStatus').innerHTML = '<option value="ALL">Todos os status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
     document.getElementById('bulkStatus').innerHTML = '<option value="">Mudar status...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    document.getElementById('statusList').innerHTML = statuses.map((s, i) => `<div class="d-flex justify-content-between align-items-center mb-2"><span>${s}</span><button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
+    document.getElementById('statusList').innerHTML = statuses.map((s, i) => `<div class="d-flex justify-content-between align-items-center mb-2"><span>${s}</span><button class="btn btn-sm btn-danger" onclick="deleteStatus($i)">Excluir</button></div>`).join('');
   }
 
   // ==================== CLIENTES ====================
@@ -464,7 +463,7 @@
     const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
     clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderTable();
-    updateDashboard();
+    updateDashboard();   // ← atualiza dashboard e gráficos
     updatePlanosFilter();
     renderCalendar();
   }
@@ -534,7 +533,7 @@
       }
       clearForm();
       document.querySelector('[data-bs-target="#dashboardTab"]').click();
-      await loadClients();
+      await loadClients(); // atualiza tudo
     } catch (e) { alert('Erro ao salvar: ' + e.message); }
   }
 
@@ -682,7 +681,6 @@
         if (!arr) throw new Error('Formato inválido: não é um array.');
         if (!confirm(`Importar ${arr.length} clientes?`)) return;
 
-        // 1. Coletar todos os CPFs e telefones existentes (para evitar duplicatas)
         const existingDocs = await db.collection('clients').where('userId', '==', currentUser.uid).get();
         const existingCpfSet = new Set();
         const existingPhoneSet = new Set();
@@ -692,7 +690,6 @@
           if (data.telefones) existingPhoneSet.add(data.telefones.replace(/\D/g, ''));
         });
 
-        // 2. Preparar dados, marcando duplicados
         const clientsToAdd = [];
         let duplicates = 0;
         for (const c of arr) {
@@ -714,24 +711,22 @@
           return;
         }
 
-        // 3. Importar em lotes (batch) para performance
         const BATCH_SIZE = 500;
         let added = 0;
         for (let i = 0; i < clientsToAdd.length; i += BATCH_SIZE) {
           const batch = db.batch();
           const chunk = clientsToAdd.slice(i, i + BATCH_SIZE);
           for (const client of chunk) {
-            const docRef = db.collection('clients').doc(); // ID automático
+            const docRef = db.collection('clients').doc();
             batch.set(docRef, client);
           }
           await batch.commit();
           added += chunk.length;
-          // Atualiza progresso a cada lote
           alert(`Importando... ${added} de ${clientsToAdd.length} adicionados.`);
         }
 
         alert(`Importação concluída: ${added} novos clientes adicionados. ${duplicates} duplicados ignorados.`);
-        await loadClients();
+        await loadClients(); // ← atualiza dashboard e gráficos após importação
       } catch (er) {
         alert('Erro ao importar: ' + er.message);
       }
@@ -803,7 +798,7 @@
       await batch.commit();
       deleted += chunk.length;
     }
-    await loadClients();
+    await loadClients(); // ← atualiza dashboard e gráficos após exclusão
     alert(`${deleted} cliente(s) removido(s).`);
   }
 
@@ -884,7 +879,7 @@
     await loadClients();
   }
 
-  // ==================== DASHBOARD ====================
+  // ==================== DASHBOARD COM ATUALIZAÇÃO AUTOMÁTICA DE GRÁFICOS ====================
   function populateMonthYearSelectors() {
     const monthSelect = document.getElementById('monthSelectDashboard');
     const yearSelect = document.getElementById('yearSelectDashboard');
@@ -919,7 +914,10 @@
       filteredClients = clients.filter(c => c.dataImplantacao && new Date(c.dataImplantacao).getMonth() + 1 == monthFilter);
     } else if (yearFilter !== 'all') {
       filteredClients = clients.filter(c => c.dataImplantacao && new Date(c.dataImplantacao).getFullYear() == yearFilter);
+    } else {
+      filteredClients = clients;
     }
+
     const totalClientes = filteredClients.length;
     const implantados = filteredClients.filter(c => c.status === 'Implantado');
     const totalVidas = implantados.reduce((acc, c) => acc + Math.max(0, c.vidas || 0), 0);
@@ -930,6 +928,7 @@
     document.getElementById('dashValor').innerHTML = formatMoney(valorTotal);
     document.getElementById('dashConversao').innerText = `${taxaConversao}%`;
 
+    // Gráfico de recuperados por mês (últimos 6 meses)
     const now = new Date();
     let meses = [];
     let counts = new Array(6).fill(0);
@@ -946,6 +945,8 @@
     });
     if (recoveryChart) recoveryChart.destroy();
     recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels: meses, datasets: [{ label: 'Implantados', data: counts, backgroundColor: '#10b981' }] } });
+
+    // Gráfico de distribuição de status (todos os clientes)
     const statusData = statuses.map(s => clients.filter(c => c.status === s).length);
     if (statusChart) statusChart.destroy();
     statusChart = new Chart(document.getElementById('statusChart'), { type: 'doughnut', data: { labels: statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] } });
