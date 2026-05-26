@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Recuperação - com Exportação Selecionada</title>
+  <title>CRM Recuperação - Aba Pesquisar Lite</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -85,65 +85,6 @@
     }
     .container-fluid { padding: 2rem; }
     @media (max-width: 768px) { .container-fluid { padding: 1rem; } }
-    
-    /* ===================================================== */
-    /* FORMATAÇÃO EXCLUSIVA PARA A ABA DE PESQUISAR */
-    /* ===================================================== */
-    #pesquisaTab .card-custom {
-      border-radius: 20px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-    #pesquisaTab .search-filters {
-      background: rgba(59, 130, 246, 0.05);
-      padding: 1.5rem;
-      border-radius: 15px;
-      margin-bottom: 1.5rem;
-    }
-    #pesquisaTab .bulk-actions {
-      background: rgba(0, 0, 0, 0.02);
-      padding: 1rem;
-      border-radius: 12px;
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--border);
-    }
-    #pesquisaTab .table {
-      margin-bottom: 0;
-    }
-    #pesquisaTab .table thead th {
-      background: transparent;
-      border-bottom: 2px solid var(--border);
-      color: var(--text);
-      font-weight: 700;
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      letter-spacing: 0.05em;
-      padding: 1rem;
-    }
-    #pesquisaTab .table tbody td {
-      padding: 1rem;
-      vertical-align: middle;
-      border-bottom: 1px solid var(--border);
-      color: var(--text);
-    }
-    #pesquisaTab .table tbody tr:hover {
-      background-color: rgba(59, 130, 246, 0.03);
-    }
-    #pesquisaTab .badge-status {
-      padding: 0.5rem 0.75rem;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.75rem;
-    }
-    #pesquisaTab .btn-action {
-      width: 32px;
-      height: 32px;
-      padding: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-    }
-    
     .history-log {
       border-left: 3px solid var(--primary);
       padding-left: 0.75rem;
@@ -212,6 +153,55 @@
       margin-top: 1.5rem;
       max-height: 300px;
       overflow-y: auto;
+    }
+
+    /* Estilos exclusivos para a aba de Pesquisar (Lite) */
+    #pesquisaTab .card-custom {
+      border-radius: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    #pesquisaTab .search-filters {
+      background: rgba(59, 130, 246, 0.05);
+      padding: 1.5rem;
+      border-radius: 15px;
+      margin-bottom: 1.5rem;
+    }
+    #pesquisaTab .bulk-actions {
+      background: rgba(0, 0, 0, 0.02);
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+    }
+    #pesquisaTab .table thead th {
+      background: transparent;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      padding: 1rem;
+    }
+    #pesquisaTab .table tbody td {
+      padding: 1rem;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border);
+    }
+    #pesquisaTab .badge-status {
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+    #pesquisaTab .btn-action {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
     }
   </style>
 </head>
@@ -302,6 +292,16 @@
           <div class="col-md-6"><label>Foto</label><input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)"><img id="preview" style="max-width:100%; margin-top:0.5rem; display:none;"></div>
         </div>
         <div class="mt-3"><label><strong>📝 Anotações</strong></label><textarea id="cAnotacoes" class="form-control" rows="3"></textarea></div>
+        <ul class="nav nav-tabs mt-3">
+          <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dadosTab">Dados</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#anexosTab">Anexos</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#historicoTab">Histórico</button></li>
+        </ul>
+        <div class="tab-content mt-2">
+          <div class="tab-pane active" id="dadosTab"><p class="text-muted">Campos acima.</p></div>
+          <div class="tab-pane" id="anexosTab"><div id="anexosList"></div><input type="file" id="uploadAnexo" multiple accept="image/*,application/pdf" class="form-control mt-2"><button class="btn btn-sm btn-primary mt-2" onclick="uploadAnexos()">Enviar</button></div>
+          <div class="tab-pane" id="historicoTab"><div id="historicoList"></div></div>
+        </div>
         <div class="d-flex gap-2 mt-4">
           <button class="btn btn-success" onclick="saveClient()">Salvar Cliente</button>
           <button class="btn btn-outline-danger" onclick="clearForm()">Limpar Campos</button>
@@ -309,10 +309,10 @@
       </div>
     </div>
 
-    <!-- PESQUISAR (FORMATAÇÃO BONITA E ORGANIZADA) -->
+    <!-- PESQUISAR - VERSÃO LITE MODERNA -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card-custom">
-        <!-- FILTROS PRINCIPAIS -->
+        <!-- Filtros de Busca -->
         <div class="search-filters">
           <div class="row g-3 align-items-end">
             <div class="col-md-4">
@@ -334,7 +334,7 @@
           </div>
         </div>
 
-        <!-- AÇÕES EM MASSA -->
+        <!-- Ações em Massa -->
         <div class="bulk-actions">
           <div class="row g-2 align-items-center">
             <div class="col-auto"><button class="btn btn-success btn-sm" onclick="bulkWhatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp</button></div>
@@ -357,7 +357,7 @@
           </div>
         </div>
 
-        <!-- TABELA -->
+        <!-- Tabela de Dados -->
         <div class="table-responsive">
           <table class="table table-hover">
             <thead>
@@ -377,38 +377,64 @@
       </div>
     </div>
 
-    <!-- AGENDA -->
+    <!-- AGENDA - CALENDÁRIO -->
     <div class="tab-pane fade" id="agendaTab">
       <div class="card-custom">
         <div class="calendar">
           <div class="calendar-header">
-            <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i></button>
+            <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i> Mês anterior</button>
             <div class="d-flex gap-2">
               <select id="monthSelect" class="form-select form-select-sm" style="width: auto;" onchange="goToMonth()"></select>
               <select id="yearSelect" class="form-select form-select-sm" style="width: auto;" onchange="goToMonth()"></select>
             </div>
-            <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(1)"><i class="bi bi-chevron-right"></i></button>
+            <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(1)">Próximo mês <i class="bi bi-chevron-right"></i></button>
           </div>
           <div class="calendar-weekdays">
-            <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+            <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
           </div>
           <div id="calendarDays" class="calendar-days"></div>
+        </div>
+        <div id="clientsByDay" class="client-list mt-4">
+          <h6>Clientes com retorno no dia selecionado</h6>
+          <div id="selectedDayClients" class="list-group"></div>
         </div>
       </div>
     </div>
 
     <!-- CONFIGURAÇÕES -->
     <div class="tab-pane fade" id="configTab">
-      <div class="card-custom">
-        <h5>Configurações</h5>
-        <button class="btn btn-danger" onclick="logout()">Sair do Sistema</button>
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="card-custom">
+            <h4>Gerenciar Status</h4>
+            <div id="statusList"></div>
+            <div class="input-group mt-3">
+              <input type="text" id="newStatus" class="form-control" placeholder="Novo status">
+              <button class="btn btn-success" onclick="addStatus()">Adicionar</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card-custom">
+            <h4>Backup Automático</h4>
+            <label>Intervalo (horas)</label>
+            <input type="number" id="backupIntervalHours" class="form-control" value="24">
+            <button class="btn btn-primary mt-2" onclick="setAutoBackup()">Ativar</button>
+            <button class="btn btn-danger mt-2" onclick="stopAutoBackup()">Desligar</button>
+            <hr>
+            <button class="btn btn-primary" onclick="exportAllToCSV()">Exportar CSV (todos)</button>
+            <button class="btn btn-outline-primary" onclick="exportBackup()">Backup JSON</button>
+            <button class="btn btn-outline-primary" onclick="importBackup()">Importar JSON</button>
+            <input type="file" id="backupFileInput" accept=".json" style="display:none">
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-  // CONFIGURAÇÃO FIREBASE
+  // ==================== FIREBASE ====================
   const firebaseConfig = {
     apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
     authDomain: "crm-recuperacao.firebaseapp.com",
@@ -417,65 +443,396 @@
     messagingSenderId: "347011763386",
     appId: "1:347011763386:web:158c1ca6f512a1cde1c683"
   };
-
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
+  const storage = firebase.storage();
 
   let currentUser = null;
   let clients = [];
-  let statuses = ['Em negociação', 'Implantado', 'Sem interesse', 'Aguardando retorno'];
+  let statuses = ['Em Negociação', 'Para Enviar Documentação', 'Implantado', 'Sem Interesse'];
+  let autoBackupInterval = null;
+  let reminderInterval = null;
+  let recoveryChart, statusChart;
+  let currentDate = new Date();
 
-  auth.onAuthStateChanged(user => {
+  // Helpers
+  const escapeHtml = (str) => { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); };
+  const formatPhoneForWhatsApp = (raw) => {
+    if (!raw) return '';
+    let digits = raw.toString().replace(/\D/g, '');
+    if (digits.length === 0) return '';
+    if (digits.startsWith('55')) digits = digits.substring(2);
+    if (digits.length >= 10) digits = '55' + digits;
+    return digits;
+  };
+  const formatPhoneForCSV = (raw) => {
+    if (!raw) return '';
+    let digits = raw.toString().replace(/\D/g, '');
+    if (digits.length === 0) return '';
+    if (!digits.startsWith('55')) digits = '55' + digits;
+    return digits;
+  };
+
+  // ==================== AUTENTICAÇÃO ====================
+  auth.onAuthStateChanged(async user => {
     if (user) {
       currentUser = user;
       document.getElementById('loginScreen').style.display = 'none';
-      loadClients();
+      await loadStatuses();
+      await loadClients();
+      startReminderChecker();
+      renderCalendar();
     } else {
       document.getElementById('loginScreen').style.display = 'flex';
     }
   });
 
-  function login() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    auth.signInWithEmailAndPassword(email, password).catch(e => alert(e.message));
+  const login = () => auth.signInWithEmailAndPassword(loginEmail.value, loginPassword.value).catch(e => loginError.innerText = e.message);
+  const googleLogin = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  const register = () => auth.createUserWithEmailAndPassword(loginEmail.value, loginPassword.value);
+  const recoverPassword = () => auth.sendPasswordResetEmail(loginEmail.value).then(() => alert('Email enviado!'));
+  const togglePassword = () => loginPassword.type = loginPassword.type === 'password' ? 'text' : 'password';
+  const logout = () => auth.signOut();
+  const toggleTheme = () => { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light'); };
+  if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+
+  // ==================== STATUS ====================
+  async function loadStatuses() {
+    const doc = await db.collection('customStatuses').doc(currentUser.uid).get();
+    if (doc.exists && doc.data().statuses) statuses = doc.data().statuses;
+    renderStatuses();
+  }
+  async function saveStatuses() { await db.collection('customStatuses').doc(currentUser.uid).set({ statuses }); }
+  function addStatus() {
+    let s = document.getElementById('newStatus').value.trim();
+    if (!s) return;
+    if (statuses.includes(s)) return alert('Status já existe.');
+    statuses.push(s);
+    renderStatuses();
+    saveStatuses();
+    document.getElementById('newStatus').value = '';
+  }
+  function deleteStatus(i) {
+    if (!confirm('Remover este status?')) return;
+    statuses.splice(i, 1);
+    renderStatuses();
+    saveStatuses();
+  }
+  function renderStatuses() {
+    document.getElementById('cStatus').innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
+    document.getElementById('filterStatus').innerHTML = '<option value="ALL">Todos os status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+    document.getElementById('bulkStatus').innerHTML = '<option value="">Mudar status...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+    document.getElementById('statusList').innerHTML = statuses.map((s, i) => `<div class="d-flex justify-content-between align-items-center mb-2"><span>${s}</span><button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
   }
 
-  function logout() { auth.signOut(); }
-
-  function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-  }
-  if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
-
+  // ==================== CLIENTES ====================
   async function loadClients() {
     const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
-    clients = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderTable();
     updateDashboard();
-    updateStatusOptions();
+    updatePlanosFilter();
+    renderCalendar();
   }
 
-  function updateDashboard() {
-    document.getElementById('dashTotal').innerText = clients.length;
-    document.getElementById('dashImplantados').innerText = clients.filter(c => c.status === 'Implantado').length;
-    document.getElementById('dashSemInteresse').innerText = clients.filter(c => c.status === 'Sem interesse').length;
+  async function saveClient() {
+    const id = document.getElementById('clientId').value;
+    const data = {
+      nome: document.getElementById('cNome').value.trim(),
+      nomeSocial: document.getElementById('cNomeSocial').value.trim(),
+      cpf: document.getElementById('cCPF').value.trim(),
+      nascimento: document.getElementById('cNascimento').value.trim(),
+      endereco: document.getElementById('cEndereco').value.trim(),
+      cidade: document.getElementById('cCidade').value.trim(),
+      uf: document.getElementById('cUF').value.trim(),
+      empresa: document.getElementById('cEmpresa').value.trim(),
+      adeEmp: document.getElementById('cAdeEmp').value.trim(),
+      redePlano: document.getElementById('cRedePlano').value.trim(),
+      planoAtual: document.getElementById('cPlanoAtual').value.trim(),
+      acomodacao: document.getElementById('cAcomodacao').value.trim(),
+      situacao: document.getElementById('cSituacao').value.trim(),
+      status: document.getElementById('cStatus').value,
+      adesao: document.getElementById('cAdesao').value.trim(),
+      cancelamento: document.getElementById('cCancelamento').value.trim(),
+      tempo: document.getElementById('cTempo').value.trim(),
+      telefones: document.getElementById('cTelefones').value.trim(),
+      emails: document.getElementById('cEmails').value.trim(),
+      retorno: document.getElementById('cRetorno').value,
+      anotacoes: document.getElementById('cAnotacoes').value.trim(),
+      userId: currentUser.uid,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (!id) data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    if (!data.nome) return alert('Nome obrigatório.');
+
+    try {
+      if (id) {
+        await db.collection('clients').doc(id).update(data);
+        await addLog(id, 'edit', 'Cliente atualizado');
+      } else {
+        let duplicate = false;
+        let duplicateMessage = '';
+        if (data.cpf) {
+          const existing = await db.collection('clients')
+            .where('userId', '==', currentUser.uid)
+            .where('cpf', '==', data.cpf)
+            .get();
+          if (!existing.empty) {
+            duplicate = true;
+            duplicateMessage = `CPF ${data.cpf} já cadastrado para ${existing.docs[0].data().nome}.`;
+          }
+        }
+        if (!duplicate && data.telefones) {
+          const existingTel = await db.collection('clients')
+            .where('userId', '==', currentUser.uid)
+            .where('telefones', '==', data.telefones)
+            .get();
+          if (!existingTel.empty) {
+            duplicate = true;
+            duplicateMessage = `Telefone ${data.telefones} já cadastrado para ${existingTel.docs[0].data().nome}.`;
+          }
+        }
+        if (!duplicate && data.nome) {
+          const existingNome = await db.collection('clients')
+            .where('userId', '==', currentUser.uid)
+            .where('nome', '==', data.nome)
+            .get();
+          if (!existingNome.empty) {
+            duplicate = true;
+            duplicateMessage = `Nome "${data.nome}" já cadastrado.`;
+          }
+        }
+        if (duplicate) {
+          if (!confirm(`${duplicateMessage}\nDeseja cadastrar mesmo assim?`)) return;
+        }
+        await db.collection('clients').add(data);
+        await addLog('new', 'create', 'Novo cliente cadastrado');
+      }
+      clearForm();
+      document.querySelector('[data-bs-target="#dashboardTab"]').click();
+      await loadClients();
+    } catch (e) { alert('Erro ao salvar: ' + e.message); }
   }
 
-  function updateStatusOptions() {
-    const options = statuses.map(s => `<option value="${s}">${s}</option>`).join('');
-    document.getElementById('filterStatus').innerHTML = '<option value="ALL">Todos os status</option>' + options;
-    document.getElementById('bulkStatus').innerHTML = '<option value="">Mudar Status...</option>' + options;
-    document.getElementById('cStatus').innerHTML = options;
+  function clearForm() {
+    if (!confirm('Limpar todos os campos?')) return;
+    document.getElementById('clientId').value = '';
+    ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('cStatus').selectedIndex = 0;
+    document.getElementById('preview').style.display = 'none';
+    document.getElementById('anexosList').innerHTML = '';
+    document.getElementById('historicoList').innerHTML = '';
+    document.getElementById('smartPaste').value = '';
   }
 
-  // RENDER TABLE COM ESTRUTURA CORRIGIDA
+  function editClient(id) {
+    const c = clients.find(c => c.id === id);
+    if (!c) return;
+    document.getElementById('clientId').value = id;
+    document.getElementById('cNome').value = c.nome || '';
+    document.getElementById('cNomeSocial').value = c.nomeSocial || '';
+    document.getElementById('cCPF').value = c.cpf || '';
+    document.getElementById('cNascimento').value = c.nascimento || '';
+    document.getElementById('cEndereco').value = c.endereco || '';
+    document.getElementById('cCidade').value = c.cidade || '';
+    document.getElementById('cUF').value = c.uf || '';
+    document.getElementById('cEmpresa').value = c.empresa || '';
+    document.getElementById('cAdeEmp').value = c.adeEmp || '';
+    document.getElementById('cRedePlano').value = c.redePlano || '';
+    document.getElementById('cPlanoAtual').value = c.planoAtual || '';
+    document.getElementById('cAcomodacao').value = c.acomodacao || '';
+    document.getElementById('cSituacao').value = c.situacao || '';
+    document.getElementById('cStatus').value = c.status || '';
+    document.getElementById('cAdesao').value = c.adesao || '';
+    document.getElementById('cCancelamento').value = c.cancelamento || '';
+    document.getElementById('cTempo').value = c.tempo || '';
+    document.getElementById('cTelefones').value = c.telefones || '';
+    document.getElementById('cEmails').value = c.emails || '';
+    document.getElementById('cRetorno').value = c.retorno || '';
+    document.getElementById('cAnotacoes').value = c.anotacoes || '';
+    loadAnexos(id);
+    loadHistorico(id);
+    document.querySelector('[data-bs-target="#clientesTab"]').click();
+  }
+
+  async function deleteClient(id) {
+    if (!confirm('Excluir este cliente?')) return;
+    await db.collection('clients').doc(id).delete();
+    await addLog(id, 'delete', 'Cliente excluído');
+    await loadClients();
+  }
+
+  // ==================== ANEXOS ====================
+  async function loadAnexos(clientId) {
+    const listDiv = document.getElementById('anexosList');
+    listDiv.innerHTML = 'Carregando...';
+    const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}`);
+    let items = [];
+    try { const res = await ref.listAll(); items = res.items; } catch(e) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
+    if (items.length === 0) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
+    let html = '';
+    for (const item of items) {
+      const url = await item.getDownloadURL();
+      html += `<div class="d-flex justify-content-between align-items-center mb-2"><a href="${url}" target="_blank">${item.name}</a><button class="btn btn-sm btn-danger" onclick="deleteAnexo('${clientId}','${item.name}')">Excluir</button></div>`;
+    }
+    listDiv.innerHTML = html;
+  }
+  async function uploadAnexos() {
+    const clientId = document.getElementById('clientId').value;
+    if (!clientId) return alert('Salve o cliente primeiro!');
+    const files = document.getElementById('uploadAnexo').files;
+    if (!files.length) return;
+    for (const file of files) {
+      if (!file.type.match(/image.*|application\/pdf/)) { alert(`Tipo inválido: ${file.name}`); continue; }
+      const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}/${Date.now()}_${file.name}`);
+      await ref.put(file);
+    }
+    alert('Arquivos enviados!');
+    loadAnexos(clientId);
+  }
+  async function deleteAnexo(clientId, fileName) {
+    if (!confirm('Excluir anexo?')) return;
+    const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}/${fileName}`);
+    await ref.delete();
+    loadAnexos(clientId);
+  }
+
+  // ==================== HISTÓRICO ====================
+  async function addLog(clientId, action, details) {
+    if (!currentUser) return;
+    await db.collection('interactionLogs').add({ clientId, userId: currentUser.uid, action, details, timestamp: firebase.firestore.FieldValue.serverTimestamp(), userEmail: currentUser.email });
+  }
+  async function loadHistorico(clientId) {
+    const snap = await db.collection('interactionLogs').where('clientId', '==', clientId).orderBy('timestamp', 'desc').limit(50).get();
+    const logs = snap.docs.map(d => d.data());
+    const div = document.getElementById('historicoList');
+    if (logs.length === 0) { div.innerHTML = '<p class="text-muted">Nenhuma interação.</p>'; return; }
+    div.innerHTML = logs.map(l => `<div class="history-log"><small>${l.timestamp ? new Date(l.timestamp.toDate()).toLocaleString() : ''}</small><br><strong>${l.action}</strong><br>${l.details}</div>`).join('');
+  }
+
+  // ==================== LEMBRETES ====================
+  function startReminderChecker() {
+    if (reminderInterval) clearInterval(reminderInterval);
+    reminderInterval = setInterval(() => {
+      const today = new Date().toISOString().split('T')[0];
+      clients.forEach(async c => {
+        if (c.retorno === today) {
+          if (Notification.permission === 'granted') new Notification(`Lembrete: ${c.nome}`, { body: `Retorno hoje. Tel: ${c.telefones}` });
+          if (c.emails) window.open(`mailto:${c.emails}?subject=Lembrete%20de%20retorno&body=Olá ${c.nome}, seu retorno está agendado para hoje.`);
+          await addLog(c.id, 'lembrete', `Lembrete enviado (${today})`);
+        }
+      });
+    }, 3600000);
+    if (Notification.permission === 'default') Notification.requestPermission();
+  }
+
+  // ==================== BACKUP ====================
+  function exportBackup() {
+    const dataToExport = clients.map(c => {
+      const { updatedAt, createdAt, ...rest } = c;
+      return rest;
+    });
+    const blob = new Blob([JSON.stringify(dataToExport)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `backup_${new Date().toISOString().slice(0,19)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  function importBackup() { document.getElementById('backupFileInput').click(); }
+  async function handleBackupFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        let arr = Array.isArray(parsed) ? parsed : (parsed.clients && Array.isArray(parsed.clients) ? parsed.clients : null);
+        if (!arr) throw new Error('Formato inválido');
+        if (!confirm(`Importar ${arr.length} clientes?`)) return;
+        let adicionados = 0, ignorados = 0;
+        for (const c of arr) {
+          const { id, ...d } = c;
+          d.userId = currentUser.uid;
+          if (!d.nome) { ignorados++; continue; }
+          try {
+            await db.collection('clients').add(d);
+            adicionados++;
+          } catch (err) { ignorados++; }
+        }
+        alert(`Importação: ${adicionados} adicionados, ${ignorados} ignorados.`);
+        await loadClients();
+      } catch (er) { alert('Erro: ' + er.message); }
+    };
+    reader.readAsText(file);
+  }
+  document.getElementById('backupFileInput').addEventListener('change', handleBackupFile);
+
+  function exportAllToCSV() {
+    const rows = [['Nome', 'Telefone', 'Email', 'Status', 'Empresa']];
+    for (const c of clients) {
+      const esc = (s) => `"${(s || '').replace(/"/g, '""')}"`;
+      rows.push([
+        esc(c.nome || ''),
+        esc(c.telefones || ''),
+        esc(c.emails || ''),
+        esc(c.status || ''),
+        esc(c.empresa || '')
+      ]);
+    }
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `contatos_${new Date().toISOString().slice(0,19)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ==================== EXPORTAÇÃO SELECIONADA CSV ====================
+  function exportSelectedToCSV() {
+    const checkboxes = document.querySelectorAll('.client-checkbox:checked');
+    if (checkboxes.length === 0) {
+      alert('Nenhum cliente selecionado.');
+      return;
+    }
+    const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+    const selectedClients = clients.filter(c => selectedIds.includes(c.id));
+    const rows = [['Nome', 'Telefone']];
+    for (const c of selectedClients) {
+      const nome = (c.nome || '').replace(/,/g, ' ');
+      const telefone = formatPhoneForCSV(c.telefones);
+      if (telefone) {
+        rows.push([`"${nome}"`, telefone]);
+      }
+    }
+    if (rows.length === 1) {
+      alert('Nenhum telefone válido encontrado nos selecionados.');
+      return;
+    }
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `selecionados_${new Date().toISOString().slice(0,19)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function setAutoBackup() {
+    const hours = parseInt(document.getElementById('backupIntervalHours').value);
+    if (autoBackupInterval) clearInterval(autoBackupInterval);
+    autoBackupInterval = setInterval(() => exportBackup(), hours * 3600000);
+    alert(`Backup automático a cada ${hours} hora(s).`);
+  }
+  function stopAutoBackup() { if (autoBackupInterval) { clearInterval(autoBackupInterval); autoBackupInterval = null; alert('Backup desligado.'); } }
+
+  // ==================== RENDER TABELA - VERSÃO LITE ====================
   function renderTable() {
     const search = document.getElementById('globalSearch').value.toLowerCase();
     const status = document.getElementById('filterStatus').value;
-
+    
     const filtered = clients.filter(c => {
       const matchSearch = !search || 
         (c.nome && c.nome.toLowerCase().includes(search)) || 
@@ -487,22 +844,21 @@
 
     const tbody = document.getElementById('tableBody');
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">Nenhum cliente encontrado.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">Nenhum cliente encontrado.��</td></tr>';
       return;
     }
 
     let html = '';
     for (const c of filtered) {
-      const waLink = `https://wa.me/55${(c.telefones || '').replace(/\D/g, '')}`;
+      const waLink = `https://wa.me/55${(c.telefones || '' ).replace(/\D/g, '')}`;
       
-      // ESTRUTURA DE TABELA CORRIGIDA
       html += `
         <tr>
           <td><input type="checkbox" class="client-checkbox" value="${c.id}"></td>
-          <td><div class="fw-bold">${c.nome || ''}</div><div class="small text-muted">${c.cpf || ''}</div></td>
-          <td>${c.empresa || ''}</td>
-          <td>${c.telefones || ''}</td>
-          <td><span class="badge-status bg-primary text-white">${c.status || 'Sem status'}</span></td>
+          <td><div class="fw-bold">${escapeHtml(c.nome || '')}</div><div class="small text-muted">${escapeHtml(c.cpf || '')}</div></td>
+          <td>${escapeHtml(c.empresa || '')}</td>
+          <td>${escapeHtml(c.telefones || '')}</td>
+          <td><span class="badge-status bg-primary text-white">${escapeHtml(c.status || 'Sem status')}</span></td>
           <td>${c.retorno || '-'}</td>
           <td class="text-center">
             <div class="d-flex gap-2 justify-content-center">
@@ -515,58 +871,265 @@
     tbody.innerHTML = html;
   }
 
-  // FUNÇÕES DE AÇÃO (MANTIDAS)
-  function toggleSelectAll() {
-    const checked = document.getElementById('selectAllCheckbox').checked;
-    document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = checked);
+  function updatePlanosFilter() {
+    const planos = new Set();
+    clients.forEach(c => { if (c.planoAtual) planos.add(c.planoAtual); if (c.redePlano) planos.add(c.redePlano); });
+    const select = document.getElementById('filterPlano');
+    select.innerHTML = '<option value="ALL">Todos os planos</option>' + [...planos].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
   }
 
-  function getSelectedIds() {
-    return Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value);
-  }
+  // ==================== AÇÕES EM MASSA ====================
+  function getSelectedIds() { return Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value); }
+  function toggleSelectAll() { const all = document.getElementById('selectAllCheckbox').checked; document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = all); }
+  document.getElementById('selectAllCheckbox')?.addEventListener('change', toggleSelectAll);
+  window.applyFiltersAndRender = () => renderTable();
+  document.getElementById('globalSearch')?.addEventListener('input', () => renderTable());
+  document.getElementById('filterStatus')?.addEventListener('change', () => renderTable());
+  // O filtro de plano não aciona renderTable porque não é usado no momento; mas se quiser, pode manter o evento:
+  document.getElementById('filterPlano')?.addEventListener('change', () => renderTable());
 
+  async function bulkWhatsApp() {
+    const ids = getSelectedIds();
+    if (!ids.length) return alert('Selecione ao menos um cliente.');
+    for (const id of ids) {
+      const c = clients.find(c => c.id === id);
+      if (c?.telefones) window.open(`https://wa.me/55${c.telefones.replace(/\D/g, '')}`, '_blank');
+      await addLog(id, 'bulk_whatsapp', 'Disparo em massa');
+    }
+  }
   async function bulkDelete() {
     const ids = getSelectedIds();
-    if(!ids.length) return alert('Selecione clientes');
-    if(!confirm('Excluir selecionados?')) return;
-    for(let id of ids) await db.collection('clients').doc(id).delete();
-    loadClients();
+    if (ids.length === 0) return alert('Selecione ao menos um cliente.');
+    if (!confirm(`Excluir permanentemente ${ids.length} cliente(s)?`)) return;
+    for (const id of ids) {
+      await db.collection('clients').doc(id).delete();
+      await addLog(id, 'bulk_delete', 'Cliente removido em massa');
+    }
+    await loadClients();
+    alert(`${ids.length} cliente(s) removido(s).`);
   }
-
   async function bulkChangeStatus() {
-    const status = document.getElementById('bulkStatus').value;
+    const newStatus = document.getElementById('bulkStatus').value;
+    if (!newStatus) return alert('Selecione um status');
     const ids = getSelectedIds();
-    if(!status || !ids.length) return alert('Selecione status e clientes');
-    for(let id of ids) await db.collection('clients').doc(id).update({ status });
-    loadClients();
+    for (const id of ids) {
+      await db.collection('clients').doc(id).update({ status: newStatus });
+      await addLog(id, 'bulk_status', `Status alterado para ${newStatus}`);
+    }
+    await loadClients();
   }
-
   async function bulkScheduleReturn() {
     const date = document.getElementById('bulkRetorno').value;
+    if (!date) return alert('Selecione uma data');
     const ids = getSelectedIds();
-    if(!date || !ids.length) return alert('Selecione data e clientes');
-    for(let id of ids) await db.collection('clients').doc(id).update({ retorno: date });
-    loadClients();
+    for (const id of ids) {
+      await db.collection('clients').doc(id).update({ retorno: date });
+      await addLog(id, 'bulk_retorno', `Retorno agendado para ${date}`);
+    }
+    await loadClients();
   }
 
-  function exportSelectedToCSV() {
-    const ids = getSelectedIds();
-    if(!ids.length) return alert('Selecione clientes');
-    const selected = clients.filter(c => ids.includes(c.id));
-    const csv = "Nome,Empresa,Telefone,Status,Retorno\n" + 
-      selected.map(c => `"${c.nome}","${c.empresa}","${c.telefones}","${c.status}","${c.retorno}"`).join("\n");
-    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "export.csv";
-    link.click();
+  // ==================== DASHBOARD ====================
+  function updateDashboard() {
+    const total = clients.length;
+    const implantados = clients.filter(c => c.status === 'Implantado').length;
+    const semInteresse = clients.filter(c => c.status === 'Sem Interesse').length;
+    const taxa = total > 0 ? ((implantados / total) * 100).toFixed(1) : 0;
+    document.getElementById('dashTotal').innerText = total;
+    document.getElementById('dashImplantados').innerText = implantados;
+    document.getElementById('dashSemInteresse').innerText = semInteresse;
+    document.getElementById('dashConversao').innerText = taxa + '%';
+
+    const periodo = document.getElementById('periodSelect').value;
+    const now = new Date();
+    let meses = [];
+    let counts = new Array(6).fill(0);
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      meses.push(d.toLocaleString('default', { month: 'short' }));
+    }
+    clients.forEach(c => {
+      if (c.status === 'Implantado' && c.updatedAt) {
+        let data = c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt);
+        let diffMeses = (now.getFullYear() - data.getFullYear()) * 12 + (now.getMonth() - data.getMonth());
+        if (diffMeses >= 0 && diffMeses < 6) {
+          if (periodo === 'all' || diffMeses <= parseInt(periodo) / 30) counts[5 - diffMeses]++;
+        }
+      }
+    });
+    if (recoveryChart) recoveryChart.destroy();
+    recoveryChart = new Chart(document.getElementById('recoveryChart'), {
+      type: 'bar',
+      data: { labels: meses, datasets: [{ label: 'Recuperados', data: counts, backgroundColor: '#10b981' }] }
+    });
+    const statusData = statuses.map(s => clients.filter(c => c.status === s).length);
+    if (statusChart) statusChart.destroy();
+    statusChart = new Chart(document.getElementById('statusChart'), {
+      type: 'doughnut',
+      data: { labels: statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] }
+    });
+  }
+  document.getElementById('periodSelect')?.addEventListener('change', updateDashboard);
+
+  // ==================== FILTROS SALVOS ====================
+  function saveCurrentFilter() {
+    const filter = {
+      search: document.getElementById('globalSearch').value,
+      status: document.getElementById('filterStatus').value,
+      plano: document.getElementById('filterPlano').value
+    };
+    localStorage.setItem(`savedFilter_${currentUser.uid}`, JSON.stringify(filter));
+    alert('Filtro salvo!');
+  }
+  function loadSavedFilters() {
+    const saved = localStorage.getItem(`savedFilter_${currentUser.uid}`);
+    if (saved) {
+      const f = JSON.parse(saved);
+      document.getElementById('globalSearch').value = f.search || '';
+      document.getElementById('filterStatus').value = f.status || 'ALL';
+      document.getElementById('filterPlano').value = f.plano || 'ALL';
+      renderTable();
+    } else alert('Nenhum filtro salvo.');
   }
 
-  function applyFiltersAndRender() { renderTable(); }
-  function saveCurrentFilter() { alert('Filtro salvo.'); }
-  function loadSavedFilters() { alert('Filtros carregados.'); }
+  // ==================== CALENDÁRIO ====================
+  function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const monthSelect = document.getElementById('monthSelect');
+    const yearSelect = document.getElementById('yearSelect');
+    if (monthSelect.children.length === 0) {
+      for (let i = 0; i < 12; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = new Date(year, i, 1).toLocaleString('default', { month: 'long' });
+        monthSelect.appendChild(option);
+      }
+    }
+    monthSelect.value = month;
+    if (yearSelect.children.length === 0) {
+      const currentYear = new Date().getFullYear();
+      for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = i;
+        yearSelect.appendChild(option);
+      }
+    }
+    yearSelect.value = year;
+
+    const daysContainer = document.getElementById('calendarDays');
+    daysContainer.innerHTML = '';
+    for (let i = 0; i < firstDay; i++) {
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'calendar-day empty';
+      daysContainer.appendChild(emptyDiv);
+    }
+    const todayStr = new Date().toISOString().split('T')[0];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const hasReturn = clients.some(c => c.retorno === dateStr);
+      const dayDiv = document.createElement('div');
+      dayDiv.className = 'calendar-day';
+      if (hasReturn) dayDiv.classList.add('has-return');
+      if (dateStr === todayStr) dayDiv.style.border = '2px solid var(--primary)';
+      dayDiv.innerText = d;
+      dayDiv.onclick = () => selectDay(dateStr);
+      daysContainer.appendChild(dayDiv);
+    }
+  }
+
+  function selectDay(dateStr) {
+    document.querySelectorAll('.calendar-day').forEach(day => day.classList.remove('selected'));
+    const dayDivs = document.querySelectorAll('.calendar-day');
+    const dayNum = parseInt(dateStr.split('-')[2]);
+    for (let div of dayDivs) {
+      if (div.innerText == dayNum && !div.classList.contains('empty')) {
+        div.classList.add('selected');
+        break;
+      }
+    }
+    const clientsOnDay = clients.filter(c => c.retorno === dateStr);
+    const container = document.getElementById('selectedDayClients');
+    if (clientsOnDay.length === 0) {
+      container.innerHTML = '<div class="alert alert-info">Nenhum cliente com retorno nesta data.</div>';
+      return;
+    }
+    let html = '';
+    for (const c of clientsOnDay) {
+      const whatsLink = `https://wa.me/55${(c.telefones || '').replace(/\D/g, '')}`;
+      html += `<div class="list-group-item d-flex justify-content-between align-items-center">
+        <div><strong>${escapeHtml(c.nome)}</strong><br><small>${escapeHtml(c.telefones)}</small></div>
+        <a target="_blank" href="${whatsLink}" class="btn btn-sm btn-success"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+      </div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  function changeMonth(delta) {
+    currentDate.setMonth(currentDate.getMonth() + delta);
+    renderCalendar();
+    document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>';
+  }
+  function goToMonth() {
+    const newMonth = parseInt(document.getElementById('monthSelect').value);
+    const newYear = parseInt(document.getElementById('yearSelect').value);
+    currentDate = new Date(newYear, newMonth, 1);
+    renderCalendar();
+    document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>';
+  }
+
+  // ==================== CAMPO MÁGICO (SEM ALERTA) ====================
+  function autoFill() {
+    const text = document.getElementById('smartPaste').value;
+    if (!text.trim()) return;
+    const mappings = [
+      { label: 'Nome do usuário:', fieldId: 'cNome' },
+      { label: 'Nome social:', fieldId: 'cNomeSocial' },
+      { label: 'CPF do titular:', fieldId: 'cCPF' },
+      { label: 'Data de nascimento:', fieldId: 'cNascimento' },
+      { label: 'Endereço:', fieldId: 'cEndereco' },
+      { label: 'Cidade:', fieldId: 'cCidade' },
+      { label: 'UF:', fieldId: 'cUF' },
+      { label: 'Empresa:', fieldId: 'cEmpresa' },
+      { label: 'Ade emp:', fieldId: 'cAdeEmp' },
+      { label: 'Rede/plano:', fieldId: 'cRedePlano' },
+      { label: 'Plano atual:', fieldId: 'cPlanoAtual' },
+      { label: 'Acomodação:', fieldId: 'cAcomodacao' },
+      { label: 'Situação:', fieldId: 'cSituacao' },
+      { label: 'Data da adesão:', fieldId: 'cAdesao' },
+      { label: 'Data do cancelamento:', fieldId: 'cCancelamento' },
+      { label: 'Tempo:', fieldId: 'cTempo' },
+      { label: 'Telefones cadastrados:', fieldId: 'cTelefones' },
+      { label: 'Endereços eletrônicos:', fieldId: 'cEmails' }
+    ];
+    for (const m of mappings) {
+      const regex = new RegExp(`${m.label}\\s*(.*?)$`, 'im');
+      const match = text.match(regex);
+      if (match && match[1].trim()) {
+        let val = match[1].trim();
+        if (m.fieldId === 'cCPF') val = val.replace(/\D/g, '');
+        if (m.fieldId === 'cTelefones') val = val.split(/[,;]/)[0].trim();
+        if (m.fieldId === 'cEmails') { const emailMatch = val.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/); if (emailMatch) val = emailMatch[0]; else continue; }
+        document.getElementById(m.fieldId).value = val;
+      }
+    }
+  }
+
+  function previewImage(e) {
+    const reader = new FileReader();
+    reader.onload = ev => { document.getElementById('preview').src = ev.target.result; document.getElementById('preview').style.display = 'block'; };
+    reader.readAsDataURL(e.target.files[0]);
+  }
+
+  window.addEventListener('unhandledrejection', event => {
+    console.error('Erro não tratado:', event.reason);
+    alert('Ocorreu um erro inesperado. Recarregue a página e tente novamente.');
+  });
 </script>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
