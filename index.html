@@ -160,8 +160,6 @@
     #preview { max-width: 100%; margin-top: 1rem; border-radius: var(--radius-lg); display: none; }
     .container-fluid { padding: 2rem; }
     @media (max-width: 768px) { .container-fluid { padding: 1rem; } }
-
-    /* Ajuste para o campo de anotações ficar destacado */
     .anotacoes-area {
       background: var(--bg-secondary);
       border-radius: var(--radius-md);
@@ -225,7 +223,7 @@
       </div>
     </div>
 
-    <!-- FICHA CLIENTE (com anotações em destaque) -->
+    <!-- FICHA CLIENTE -->
     <div class="tab-pane fade" id="clientesTab">
       <div class="card card-custom p-4 mb-4">
         <h5 class="mb-3">Campo Mágico</h5>
@@ -257,7 +255,6 @@
           <div class="col-md-6"><label>Agenda retorno</label><input type="date" id="cRetorno" class="form-control"></div>
           <div class="col-md-6"><label>Foto</label><input type="file" class="form-control" onchange="previewImage(event)"><img id="preview"></div>
         </div>
-        <!-- Campo de anotações em destaque -->
         <div class="anotacoes-area mt-3">
           <label><strong>📝 Anotações</strong></label>
           <textarea id="cAnotacoes" class="form-control" rows="4" placeholder="Registre aqui observações sobre este cliente..."></textarea>
@@ -269,7 +266,7 @@
       </div>
     </div>
 
-    <!-- PESQUISAR (sem botão de exportar) -->
+    <!-- PESQUISAR -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card card-custom p-4">
         <div class="row g-3 mb-4">
@@ -292,7 +289,7 @@
       </div>
     </div>
 
-    <!-- CONFIGURAÇÕES (com botão de exportar CSV e backup) -->
+    <!-- CONFIGURAÇÕES -->
     <div class="tab-pane fade" id="configTab">
       <div class="row g-4">
         <div class="col-lg-6">
@@ -306,9 +303,7 @@
           <div class="card card-custom p-4">
             <h4>Exportar / Backup</h4>
             <div class="d-grid gap-3">
-              <button class="btn btn-primary" onclick="exportAllToCSV()">
-                <i class="bi bi-file-excel"></i> Exportar todos os contatos (CSV)
-              </button>
+              <button class="btn btn-primary" onclick="exportAllToCSV()"><i class="bi bi-file-excel"></i> Exportar todos os contatos (CSV)</button>
               <button class="btn btn-outline-primary" onclick="exportBackup()">Exportar Backup (JSON)</button>
               <button class="btn btn-outline-primary" onclick="importBackup()">Importar Backup (JSON)</button>
             </div>
@@ -337,10 +332,10 @@
 
   let currentUser = null;
   let clients = [];
-  let statuses = [];     // será carregado do Firestore
+  let statuses = [];
   let charts = { status: null, company: null, time: null };
 
-  // ---------- HELPER: Formatar telefone para CSV ----------
+  // Helper: formatar telefone
   function formatPhoneForExport(phoneRaw) {
     if (!phoneRaw) return '';
     let digits = phoneRaw.toString().replace(/\D/g, '');
@@ -349,24 +344,16 @@
     return digits.length >= 12 ? digits : '';
   }
 
-  // ---------- EXPORTAR TODOS OS CONTATOS (CSV) ----------
+  // Exportar todos para CSV
   function exportAllToCSV() {
-    if (clients.length === 0) {
-      alert('Nenhum cliente cadastrado.');
-      return;
-    }
+    if (clients.length === 0) { alert('Nenhum cliente cadastrado.'); return; }
     let csvRows = ['Nome,Telefone'];
     for (let client of clients) {
       let nome = (client.nome || '').replace(/,/g, ' ');
       let telefone = formatPhoneForExport(client.telefones);
-      if (telefone) {
-        csvRows.push(`"${nome}",${telefone}`);
-      }
+      if (telefone) csvRows.push(`"${nome}",${telefone}`);
     }
-    if (csvRows.length === 1) {
-      alert('Nenhum telefone válido encontrado.');
-      return;
-    }
+    if (csvRows.length === 1) { alert('Nenhum telefone válido encontrado.'); return; }
     const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
@@ -378,7 +365,7 @@
     URL.revokeObjectURL(url);
   }
 
-  // ---------- SALVAR / CARREGAR STATUS (ETIQUETAS) NO FIRESTORE ----------
+  // Etiquetas (status) persistidas
   async function loadStatuses() {
     if (!currentUser) return;
     const docRef = db.collection('customStatuses').doc(currentUser.uid);
@@ -391,13 +378,10 @@
     }
     renderStatuses();
   }
-
   async function saveStatuses() {
     if (!currentUser) return;
-    const docRef = db.collection('customStatuses').doc(currentUser.uid);
-    await docRef.set({ statuses });
+    await db.collection('customStatuses').doc(currentUser.uid).set({ statuses });
   }
-
   function addStatus() {
     const s = prompt('Novo status');
     if (!s || statuses.includes(s)) return;
@@ -411,12 +395,12 @@
     saveStatuses();
   }
 
-  // ---------- AUTH ----------
+  // Auth
   auth.onAuthStateChanged(async user => {
     if (user) {
       currentUser = user;
       document.getElementById('loginScreen').style.display = 'none';
-      await loadStatuses();          // carrega etiquetas salvas
+      await loadStatuses();
       await loadClients();
     } else {
       document.getElementById('loginScreen').style.display = 'flex';
@@ -430,18 +414,17 @@
   function togglePassword() { loginPassword.type = loginPassword.type === 'password' ? 'text' : 'password'; }
   function logout() { auth.signOut(); }
 
-  // ---------- CARREGAR CLIENTES (sem limite) ----------
+  // Clientes
   async function loadClients() {
     const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
     clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    console.log(`Clientes carregados: ${clients.length}`);  // verifique no console
+    console.log(`Clientes carregados: ${clients.length}`);
     renderTable();
     renderAgenda();
     updateDashboard();
     updatePlanosFilter();
   }
 
-  // ---------- SALVAR CLIENTE ----------
   async function saveClient() {
     const nome = cNome.value.trim(), cpf = cCPF.value.trim(), empresa = cEmpresa.value.trim();
     if (!clientId.value) {
@@ -460,20 +443,25 @@
     try {
       if (clientId.value) await db.collection('clients').doc(clientId.value).update(data);
       else { data.createdAt = new Date().toISOString(); await db.collection('clients').add(data); }
-      alert('Cliente salvo!');
+      // SEM ALERTA - apenas salva silenciosamente
       clearForm();
-      new bootstrap.Tab(document.querySelector('[data-bs-target="#dashboardTab"]')).show();
+      // Vai para a Dashboard e rola para o topo
+      const dashboardTabBtn = document.querySelector('[data-bs-target="#dashboardTab"]');
+      if (dashboardTabBtn) new bootstrap.Tab(dashboardTabBtn).show();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       loadClients();
     } catch (e) { alert('Erro: ' + e.message); }
   }
 
   function clearForm() {
-    clientId.value = '';
-    ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-    cStatus.selectedIndex = 0;
-    const preview = document.getElementById('preview'); if (preview) { preview.src = ''; preview.style.display = 'none'; }
-    const fileInput = document.querySelector('#clientesTab input[type="file"]'); if (fileInput) fileInput.value = '';
-    smartPaste.value = '';
+    if (confirm('Tem certeza que deseja limpar todos os campos do formulário?')) {
+      clientId.value = '';
+      ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      cStatus.selectedIndex = 0;
+      const preview = document.getElementById('preview'); if (preview) { preview.src = ''; preview.style.display = 'none'; }
+      const fileInput = document.querySelector('#clientesTab input[type="file"]'); if (fileInput) fileInput.value = '';
+      smartPaste.value = '';
+    }
   }
 
   function editClient(id) {
@@ -496,7 +484,7 @@
     loadClients();
   }
 
-  // ---------- RENDER TABELA (PESQUISAR) ----------
+  // Renderização das tabelas
   function renderTable() {
     const s = search.value.toLowerCase();
     const fs = filterStatus.value;
@@ -523,8 +511,8 @@
             <button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
             <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button>
             <a target="_blank" href="https://wa.me/55${telefoneRaw.replace(/\D/g,'')}" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a>
-          </td>
-        </tr>
+           </td>
+         </tr>
       `;
     });
   }
@@ -555,7 +543,6 @@
     dashFechados.innerText = clients.filter(c => c.status === 'Fechou o plano').length;
     dashNegociacao.innerText = clients.filter(c => c.status === 'Em negociação').length;
     dashSemInteresse.innerText = clients.filter(c => c.status === 'Não tem interesse').length;
-    // Gráficos resumidos (apenas para não quebrar)
     if (charts.status) charts.status.destroy();
     const ctx = document.getElementById('statusChart').getContext('2d');
     charts.status = new Chart(ctx, {
@@ -570,7 +557,7 @@
     statusList.innerHTML = statuses.map((s,i) => `<div class="mb-2 d-flex justify-content-between align-items-center"><strong>${s}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
   }
 
-  // ---------- BACKUP ----------
+  // Backup
   function exportBackup() {
     const blob = new Blob([JSON.stringify(clients)], {type:'application/json'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup-crm.json'; a.click();
@@ -595,7 +582,6 @@
     reader.readAsText(file);
   }
 
-  // ---------- OUTROS ----------
   function previewImage(e) {
     const reader = new FileReader();
     reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; };
