@@ -11,7 +11,7 @@
   <!-- ICONS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <!-- CHART -->
+  <!-- CHART.JS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- FIREBASE -->
@@ -217,9 +217,9 @@
         <div class="col-md-3"><div class="dashboard-card bg-danger"><h6>Sem Interesse</h6><h2 id="dashSemInteresse">0</h2></div></div>
       </div>
       <div class="row g-4">
-        <div class="col-lg-6"><div class="card card-custom p-4"><h5 class="mb-4">Distribuição por Status</h5><canvas id="statusChart"></canvas></div></div>
-        <div class="col-lg-6"><div class="card card-custom p-4"><h5 class="mb-4">Top 5 Empresas</h5><canvas id="companyChart"></canvas></div></div>
-        <div class="col-12"><div class="card card-custom p-4"><h5 class="mb-4">Evolução de Clientes</h5><canvas id="timeChart"></canvas></div></div>
+        <div class="col-lg-4"><div class="card card-custom p-4"><h5 class="mb-4">Distribuição por Status</h5><canvas id="statusChart"></canvas></div></div>
+        <div class="col-lg-4"><div class="card card-custom p-4"><h5 class="mb-4">Top 5 Empresas</h5><canvas id="companyChart"></canvas></div></div>
+        <div class="col-lg-4"><div class="card card-custom p-4"><h5 class="mb-4">Evolução de Clientes (últimos 6 meses)</h5><canvas id="timeChart"></canvas></div></div>
       </div>
     </div>
 
@@ -335,7 +335,7 @@
   let statuses = [];
   let charts = { status: null, company: null, time: null };
 
-  // Helper: formatar telefone
+  // ---------- HELPER: formatar telefone para CSV ----------
   function formatPhoneForExport(phoneRaw) {
     if (!phoneRaw) return '';
     let digits = phoneRaw.toString().replace(/\D/g, '');
@@ -344,7 +344,7 @@
     return digits.length >= 12 ? digits : '';
   }
 
-  // Exportar todos para CSV
+  // ---------- EXPORTAR TODOS OS CONTATOS (CSV) ----------
   function exportAllToCSV() {
     if (clients.length === 0) { alert('Nenhum cliente cadastrado.'); return; }
     let csvRows = ['Nome,Telefone'];
@@ -365,7 +365,7 @@
     URL.revokeObjectURL(url);
   }
 
-  // Etiquetas (status) persistidas
+  // ---------- ETIQUETAS (STATUS) - PERSISTIDAS ----------
   async function loadStatuses() {
     if (!currentUser) return;
     const docRef = db.collection('customStatuses').doc(currentUser.uid);
@@ -378,10 +378,12 @@
     }
     renderStatuses();
   }
+
   async function saveStatuses() {
     if (!currentUser) return;
     await db.collection('customStatuses').doc(currentUser.uid).set({ statuses });
   }
+
   function addStatus() {
     const s = prompt('Novo status');
     if (!s || statuses.includes(s)) return;
@@ -389,13 +391,14 @@
     renderStatuses();
     saveStatuses();
   }
+
   function deleteStatus(i) {
     statuses.splice(i, 1);
     renderStatuses();
     saveStatuses();
   }
 
-  // Auth
+  // ---------- AUTENTICAÇÃO ----------
   auth.onAuthStateChanged(async user => {
     if (user) {
       currentUser = user;
@@ -414,7 +417,7 @@
   function togglePassword() { loginPassword.type = loginPassword.type === 'password' ? 'text' : 'password'; }
   function logout() { auth.signOut(); }
 
-  // Clientes
+  // ---------- CLIENTES ----------
   async function loadClients() {
     const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
     clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -426,14 +429,23 @@
   }
 
   async function saveClient() {
-    const nome = cNome.value.trim(), cpf = cCPF.value.trim(), empresa = cEmpresa.value.trim();
-    if (!clientId.value) {
-      const dupCPF = clients.find(c => c.cpf && cpf && c.cpf.replace(/\D/g,'') === cpf.replace(/\D/g,''));
-      if (dupCPF && !confirm(`Já existe um cliente com o CPF ${cpf} (${dupCPF.nome}). Deseja cadastrar mesmo assim?`)) return;
+    const nome = cNome.value.trim();
+    const cpf = cCPF.value.trim();
+    const isNew = !clientId.value;
+
+    // Verifica duplicidade de CPF apenas se for novo cadastro
+    if (isNew && cpf) {
+      const duplicate = clients.find(c => c.cpf && c.cpf.replace(/\D/g,'') === cpf.replace(/\D/g,''));
+      if (duplicate) {
+        if (!confirm(`Já existe um cliente com o CPF ${cpf} (${duplicate.nome}). Deseja cadastrar mesmo assim?`)) {
+          return; // cancela o cadastro
+        }
+      }
     }
+
     const data = {
       nome, nomeSocial: cNomeSocial.value, cpf, nascimento: cNascimento.value, endereco: cEndereco.value,
-      cidade: cCidade.value, uf: cUF.value, empresa, adeEmp: cAdeEmp.value, redePlano: cRedePlano.value,
+      cidade: cCidade.value, uf: cUF.value, empresa: cEmpresa.value, adeEmp: cAdeEmp.value, redePlano: cRedePlano.value,
       planoAtual: cPlanoAtual.value, acomodacao: cAcomodacao.value, situacao: cSituacao.value,
       status: cStatus.value, adesao: cAdesao.value, cancelamento: cCancelamento.value, tempo: cTempo.value,
       telefones: cTelefones.value, emails: cEmails.value, retorno: cRetorno.value,
@@ -441,31 +453,43 @@
       userId: currentUser.uid, updatedAt: new Date().toISOString()
     };
     try {
-      if (clientId.value) await db.collection('clients').doc(clientId.value).update(data);
-      else { data.createdAt = new Date().toISOString(); await db.collection('clients').add(data); }
-      // SEM ALERTA - apenas salva silenciosamente
+      if (!isNew) {
+        await db.collection('clients').doc(clientId.value).update(data);
+      } else {
+        data.createdAt = new Date().toISOString();
+        await db.collection('clients').add(data);
+      }
+      // Sem alerta de sucesso
       clearForm();
-      // Vai para a Dashboard e rola para o topo
-      const dashboardTabBtn = document.querySelector('[data-bs-target="#dashboardTab"]');
-      if (dashboardTabBtn) new bootstrap.Tab(dashboardTabBtn).show();
+      // Voltar para Dashboard e rolar para o topo
+      const dashboardTab = document.querySelector('[data-bs-target="#dashboardTab"]');
+      if (dashboardTab) new bootstrap.Tab(dashboardTab).show();
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      loadClients();
-    } catch (e) { alert('Erro: ' + e.message); }
+      await loadClients(); // recarrega a lista
+    } catch (e) {
+      alert('Erro ao salvar: ' + e.message);
+    }
   }
 
   function clearForm() {
     if (confirm('Tem certeza que deseja limpar todos os campos do formulário?')) {
       clientId.value = '';
-      ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
       cStatus.selectedIndex = 0;
-      const preview = document.getElementById('preview'); if (preview) { preview.src = ''; preview.style.display = 'none'; }
-      const fileInput = document.querySelector('#clientesTab input[type="file"]'); if (fileInput) fileInput.value = '';
+      const preview = document.getElementById('preview');
+      if (preview) { preview.src = ''; preview.style.display = 'none'; }
+      const fileInput = document.querySelector('#clientesTab input[type="file"]');
+      if (fileInput) fileInput.value = '';
       smartPaste.value = '';
     }
   }
 
   function editClient(id) {
-    const c = clients.find(c => c.id === id); if (!c) return;
+    const c = clients.find(c => c.id === id);
+    if (!c) return;
     clientId.value = id;
     cNome.value = c.nome || ''; cNomeSocial.value = c.nomeSocial || ''; cCPF.value = c.cpf || '';
     cNascimento.value = c.nascimento || ''; cEndereco.value = c.endereco || ''; cCidade.value = c.cidade || '';
@@ -479,12 +503,12 @@
   }
 
   async function deleteClient(id) {
-    if (!confirm('Tem certeza?')) return;
+    if (!confirm('Tem certeza que deseja excluir este cliente?')) return;
     await db.collection('clients').doc(id).delete();
-    loadClients();
+    await loadClients();
   }
 
-  // Renderização das tabelas
+  // ---------- RENDER TABELAS ----------
   function renderTable() {
     const s = search.value.toLowerCase();
     const fs = filterStatus.value;
@@ -511,8 +535,8 @@
             <button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
             <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button>
             <a target="_blank" href="https://wa.me/55${telefoneRaw.replace(/\D/g,'')}" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a>
-           </td>
-         </tr>
+          </td>
+        </tr>
       `;
     });
   }
@@ -538,53 +562,147 @@
     `).join('');
   }
 
+  // ---------- DASHBOARD E GRÁFICOS ----------
   function updateDashboard() {
     dashTotal.innerText = clients.length;
     dashFechados.innerText = clients.filter(c => c.status === 'Fechou o plano').length;
     dashNegociacao.innerText = clients.filter(c => c.status === 'Em negociação').length;
     dashSemInteresse.innerText = clients.filter(c => c.status === 'Não tem interesse').length;
+
+    // Gráfico de Status (doughnut)
     if (charts.status) charts.status.destroy();
-    const ctx = document.getElementById('statusChart').getContext('2d');
-    charts.status = new Chart(ctx, {
+    const ctxStatus = document.getElementById('statusChart').getContext('2d');
+    charts.status = new Chart(ctxStatus, {
       type: 'doughnut',
-      data: { labels: statuses, datasets: [{ data: statuses.map(s => clients.filter(c=>c.status===s).length), backgroundColor: ['#3b82f6','#10b981','#f59e0b','#ef4444'] }] }
+      data: {
+        labels: statuses,
+        datasets: [{ data: statuses.map(s => clients.filter(c => c.status === s).length), backgroundColor: ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6'] }]
+      }
+    });
+
+    // Gráfico de Top 5 Empresas (barra)
+    const empresaCount = {};
+    clients.forEach(c => {
+      const emp = c.empresa || '(sem empresa)';
+      empresaCount[emp] = (empresaCount[emp] || 0) + 1;
+    });
+    const sortedEmpresas = Object.entries(empresaCount).sort((a,b) => b[1] - a[1]).slice(0,5);
+    if (charts.company) charts.company.destroy();
+    const ctxCompany = document.getElementById('companyChart').getContext('2d');
+    charts.company = new Chart(ctxCompany, {
+      type: 'bar',
+      data: {
+        labels: sortedEmpresas.map(e => e[0].length > 20 ? e[0].substring(0,20)+'…' : e[0]),
+        datasets: [{ label: 'Clientes', data: sortedEmpresas.map(e => e[1]), backgroundColor: '#3b82f6' }]
+      },
+      options: { responsive: true, maintainAspectRatio: true }
+    });
+
+    // Gráfico de Evolução (últimos 6 meses, baseado em createdAt)
+    const now = new Date();
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push(d.toLocaleString('default', { month: 'short', year: '2-digit' }));
+    }
+    const counts = new Array(6).fill(0);
+    clients.forEach(c => {
+      if (c.createdAt) {
+        const date = new Date(c.createdAt);
+        const diffMonths = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
+        if (diffMonths >= 0 && diffMonths < 6) {
+          counts[5 - diffMonths]++;
+        }
+      }
+    });
+    if (charts.time) charts.time.destroy();
+    const ctxTime = document.getElementById('timeChart').getContext('2d');
+    charts.time = new Chart(ctxTime, {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [{ label: 'Novos Clientes', data: counts, borderColor: '#10b981', fill: false, tension: 0.3 }]
+      }
     });
   }
 
   function renderStatuses() {
-    cStatus.innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
-    filterStatus.innerHTML = '<option value="ALL">Todos status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    statusList.innerHTML = statuses.map((s,i) => `<div class="mb-2 d-flex justify-content-between align-items-center"><strong>${s}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
+    if (cStatus) {
+      cStatus.innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
+    }
+    const filterStatusSelect = document.getElementById('filterStatus');
+    if (filterStatusSelect) {
+      filterStatusSelect.innerHTML = '<option value="ALL">Todos status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+    }
+    const statusListDiv = document.getElementById('statusList');
+    if (statusListDiv) {
+      statusListDiv.innerHTML = statuses.map((s,i) => `<div class="mb-2 d-flex justify-content-between align-items-center"><strong>${s}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
+    }
   }
 
-  // Backup
+  // ---------- BACKUP E IMPORTAÇÃO (com mescla de etiquetas) ----------
   function exportBackup() {
-    const blob = new Blob([JSON.stringify(clients)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup-crm.json'; a.click();
+    const blob = new Blob([JSON.stringify(clients)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'backup-crm.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
   }
-  function importBackup() { backupFileInput.click(); }
-  function handleBackupFile(e) {
-    const file = e.target.files[0]; if (!file) return;
+
+  function importBackup() {
+    backupFileInput.click();
+  }
+
+  async function handleBackupFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
     const reader = new FileReader();
     reader.onload = async (ev) => {
       try {
         const data = JSON.parse(ev.target.result);
-        const arr = Array.isArray(data) ? data : Object.values(data).find(Array.isArray);
+        let arr = Array.isArray(data) ? data : Object.values(data).find(Array.isArray);
         if (!arr) throw new Error('Formato inválido');
         if (!confirm(`Importar ${arr.length} clientes?`)) return;
+
+        // --- Mesclar etiquetas (status) dos clientes importados com as existentes ---
+        const importedStatuses = new Set(statuses);
+        arr.forEach(c => {
+          if (c.status && c.status.trim()) importedStatuses.add(c.status.trim());
+        });
+        const newStatuses = Array.from(importedStatuses);
+        if (JSON.stringify(newStatuses) !== JSON.stringify(statuses)) {
+          statuses = newStatuses;
+          await saveStatuses();
+          renderStatuses();
+        }
+
         const batch = db.batch();
-        arr.forEach(c => { const {id, ...d} = c; d.userId = currentUser.uid; batch.set(id ? db.collection('clients').doc(id) : db.collection('clients').doc(), d, {merge:true}); });
+        for (const c of arr) {
+          const { id, ...d } = c;
+          d.userId = currentUser.uid;
+          if (!d.createdAt) d.createdAt = new Date().toISOString();
+          const docRef = id ? db.collection('clients').doc(id) : db.collection('clients').doc();
+          batch.set(docRef, d, { merge: true });
+        }
         await batch.commit();
-        alert('Importado!');
-        loadClients();
-      } catch (er) { alert('Erro: ' + er.message); }
+        alert('Importação concluída!');
+        await loadClients();
+      } catch (er) {
+        alert('Erro ao importar: ' + er.message);
+      }
     };
     reader.readAsText(file);
   }
 
+  // ---------- OUTROS ----------
   function previewImage(e) {
     const reader = new FileReader();
-    reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; };
+    reader.onload = ev => {
+      const previewImg = document.getElementById('preview');
+      previewImg.src = ev.target.result;
+      previewImg.style.display = 'block';
+    };
     reader.readAsDataURL(e.target.files[0]);
   }
 
@@ -600,16 +718,30 @@
       [/^Data\s+do\s+cancelamento\s*:\s*(.*)$/im, 'cCancelamento'], [/^Tempo\s*:\s*(.*)$/im, 'cTempo'],
       [/^Telefones?\s+cadastrados?\s*:\s*(.*)$/im, 'cTelefones'], [/^Endereços?\s+eletr[ôo]nicos?\s*:\s*(.*)$/im, 'cEmails']
     ];
-    map.forEach(([r, id]) => { const m = t.match(r); if (m) document.getElementById(id).value = m[1].trim(); });
+    map.forEach(([r, id]) => {
+      const m = t.match(r);
+      if (m) document.getElementById(id).value = m[1].trim();
+    });
     const cm = t.match(/^Cidade\s*:\s*(.*)$/im);
     if (cm) {
       const parts = cm[1].split(/[|\-–]/);
-      cCidade.value = (parts[0]||'').trim();
-      if (parts[1]) { const uf = parts[1].match(/UF\s*:\s*(.*)/i); cUF.value = uf ? uf[1].trim() : parts[1].trim(); }
+      cCidade.value = (parts[0] || '').trim();
+      if (parts[1]) {
+        const ufMatch = parts[1].match(/UF\s*:\s*(.*)/i);
+        cUF.value = ufMatch ? ufMatch[1].trim() : parts[1].trim();
+      }
     }
   }
 
-  function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m==='&') return '&amp;'; if (m==='<') return '&lt;'; if (m==='>') return '&gt;'; return m; }); }
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
