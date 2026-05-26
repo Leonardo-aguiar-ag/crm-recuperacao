@@ -64,10 +64,7 @@
     <button class="btn btn-outline-primary w-100 mb-2" type="button" onclick="showRecover()">Esqueci a senha</button>
     <button class="btn btn-link w-100" type="button" onclick="showRegister()">Criar conta</button>
     <div id="recoverBox" style="display:none; margin-top:1rem;">
-      <div class="input-group">
-        <input type="email" id="recoverEmail" class="form-control" placeholder="Seu email">
-        <button class="btn btn-warning" type="button" onclick="recoverPassword()">Enviar</button>
-      </div>
+      <div class="input-group"><input type="email" id="recoverEmail" class="form-control" placeholder="Seu email"><button class="btn btn-warning" type="button" onclick="recoverPassword()">Enviar</button></div>
     </div>
     <div id="registerBox" style="display:none; margin-top:1rem;">
       <input type="email" id="regEmail" class="form-control mb-2" placeholder="Email">
@@ -196,16 +193,7 @@
         <div class="table-responsive">
           <table class="table table-hover">
             <thead>
-              <tr>
-                <th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
-                <th>Cliente</th>
-                <th>Empresa</th>
-                <th>Telefone</th>
-                <th>Status</th>
-                <th>Origem</th>
-                <th>Retorno</th>
-                <th>Ações</th>
-              </tr>
+              <tr><th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Origem</th><th>Retorno</th><th>Ações</th></tr>
             </thead>
             <tbody id="tableBody"></tbody>
           </table>
@@ -459,33 +447,69 @@
     div.innerHTML = logs.map(l => `<div class="history-log"><small>${new Date(l.timestamp.toDate()).toLocaleString()}</small><br>${l.details}</div>`).join('');
   }
 
-  // Função editClient (corrigida e exposta globalmente)
+  // Função editClient corrigida e garantida no escopo global
   function editClient(id) {
-    console.log('editClient chamado para id:', id);
+    console.log('editClient chamado, id:', id);
     const c = clients.find(c => c.id === id);
     if (!c) {
       console.error('Cliente não encontrado:', id);
+      alert('Erro: cliente não encontrado.');
       return;
     }
     document.getElementById('clientId').value = id;
-    for (let k of ['nome','nomeSocial','cpf','nascimento','endereco','cidade','uf','empresa','adeEmp','redePlano','planoAtual','acomodacao','situacao','status','adesao','cancelamento','tempo','telefones','emails','retorno','anotacoes','valorSemDesconto','valorComDesconto','vidas','dataImplantacao','dataPagamento','origem','campanha']) {
-      const val = c[k] || '';
-      const input = document.getElementById(`c${k.charAt(0).toUpperCase() + k.slice(1)}`);
-      if (input) input.value = val;
+    
+    const fieldMapping = {
+      nome: 'cNome',
+      nomeSocial: 'cNomeSocial',
+      cpf: 'cCPF',
+      nascimento: 'cNascimento',
+      endereco: 'cEndereco',
+      cidade: 'cCidade',
+      uf: 'cUF',
+      empresa: 'cEmpresa',
+      adeEmp: 'cAdeEmp',
+      redePlano: 'cRedePlano',
+      planoAtual: 'cPlanoAtual',
+      acomodacao: 'cAcomodacao',
+      situacao: 'cSituacao',
+      status: 'cStatus',
+      adesao: 'cAdesao',
+      cancelamento: 'cCancelamento',
+      tempo: 'cTempo',
+      telefones: 'cTelefones',
+      emails: 'cEmails',
+      retorno: 'cRetorno',
+      anotacoes: 'cAnotacoes',
+      valorSemDesconto: 'cValorSemDesconto',
+      valorComDesconto: 'cValorComDesconto',
+      vidas: 'cVidas',
+      dataImplantacao: 'cDataImplantacao',
+      dataPagamento: 'cDataPagamento',
+      origem: 'cOrigem',
+      campanha: 'cCampanha'
+    };
+    
+    for (const [key, inputId] of Object.entries(fieldMapping)) {
+      const input = document.getElementById(inputId);
+      if (input) input.value = c[key] !== undefined ? c[key] : '';
     }
+    
     loadAnexos(id);
     loadHistorico(id);
     loadStatusHistory(id);
+    
     // Abrir a aba "Ficha Cliente"
     const clientesTab = document.getElementById('clientes-tab');
     if (clientesTab) {
       const tab = new bootstrap.Tab(clientesTab);
       tab.show();
     } else {
-      document.querySelector('[data-bs-target="#clientesTab"]').click();
+      const tabLink = document.querySelector('[data-bs-target="#clientesTab"]');
+      if (tabLink) tabLink.click();
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  window.editClient = editClient; // garante acesso global
+  window.editClient = editClient;
 
   function clearForm() {
     if (!confirm('Limpar todos os campos?')) return;
@@ -598,7 +622,7 @@
       return matchSearch && matchStatus && matchOrigem && matchCampanha && matchTags;
     });
     const tbody = document.getElementById('tableBody');
-    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum cliente encontrado.��</td></tr>'; return; }
+    if (filtered.length === 0) { tbody.innerHTML = '<table><td colspan="8" class="text-center">Nenhum cliente encontrado.��堆</td>'; return; }
     let html = '';
     for (const c of filtered) {
       const waLink = `https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`;
@@ -946,11 +970,9 @@
     if (Notification.permission === 'default') Notification.requestPermission();
   }
 
-  // Expor funções globais para depuração e garantia
   window.applyFiltersAndRender = renderTable;
   window.renderTable = renderTable;
   window.updateDashboard = updateDashboard;
-  window.editClient = editClient;
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
