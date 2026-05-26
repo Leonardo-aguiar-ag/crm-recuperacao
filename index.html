@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Recuperação - Campo Mágico Corrigido</title>
+  <title>CRM Recuperação - Campo Mágico Aprimorado</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -14,6 +14,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <style>
+    /* (mesmo CSS anterior, sem alterações) */
     :root {
       --bg: #f8fafb;
       --card: #ffffff;
@@ -123,7 +124,7 @@
   </div>
 </nav>
 
-<!-- CONTEÚDO PRINCIPAL -->
+<!-- CONTEÚDO PRINCIPAL (MESMO HTML) -->
 <div class="container-fluid">
   <ul class="nav nav-tabs" id="mainTab">
     <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboardTab">Dashboard</button></li>
@@ -197,7 +198,7 @@
       </div>
     </div>
 
-    <!-- PESQUISAR -->
+    <!-- PESQUISAR (igual) -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card-custom">
         <div class="row g-3 mb-3">
@@ -220,7 +221,7 @@
 
     <!-- AGENDA -->
     <div class="tab-pane fade" id="agendaTab">
-      <div class="card-custom"><div class="table-responsive"><table class="table"><thead><tr><th>Cliente</th><th>Telefone</th><th>Retorno</th><th>Status</th><th>WhatsApp</th></tr></thead><tbody id="agendaBody"></tbody></table></div></div>
+      <div class="card-custom"><div class="table-responsive"><table class="table"><thead><tr><th>Cliente</th><th>Telefone</th><th>Retorno</th><th>Status</th><th>WhatsApp</th></tr></thead><tbody id="agendaBody"></tbody></tr></div></div>
     </div>
 
     <!-- CONFIGURAÇÕES -->
@@ -341,16 +342,12 @@
     saveStatuses();
   }
   function renderStatuses() {
-    // Dropdown na ficha cliente
     const cStatus = document.getElementById('cStatus');
     if (cStatus) cStatus.innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
-    // Filtro de status na pesquisa
     const filterStatus = document.getElementById('filterStatus');
     if (filterStatus) filterStatus.innerHTML = '<option value="ALL">Todos os status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    // Ações em massa - status
     const bulkStatus = document.getElementById('bulkStatus');
     if (bulkStatus) bulkStatus.innerHTML = '<option value="">Alterar status...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    // Lista de gerenciamento na aba Configurações
     const statusListDiv = document.getElementById('statusList');
     if (statusListDiv) {
       statusListDiv.innerHTML = statuses.map((s, i) => `
@@ -630,7 +627,7 @@
     });
 
     const tbody = document.getElementById('tableBody');
-    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum cliente encontrado.��</tr>'; return; }
+    if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum cliente encontrado.��</td></tr>'; return; }
     let html = '';
     for (const c of filtered) {
       const telefoneRaw = c.telefones || '';
@@ -738,7 +735,6 @@
     document.getElementById('dashSemInteresse').innerText = semInteresse;
     document.getElementById('dashConversao').innerText = taxaConversao + '%';
 
-    // Período selecionado para recuperados por mês
     const periodo = document.getElementById('periodSelect').value;
     const now = new Date();
     let meses = [];
@@ -764,7 +760,6 @@
       data: { labels: meses, datasets: [{ label: 'Recuperados (Implantados)', data: counts, backgroundColor: '#10b981' }] }
     });
 
-    // Gráfico de distribuição de status
     const statusLabels = statuses;
     const statusData = statuses.map(s => clients.filter(c => c.status === s).length);
     if (statusChart) statusChart.destroy();
@@ -796,24 +791,26 @@
     } else alert('Nenhum filtro salvo.');
   }
 
-  // ==================== CAMPO MÁGICO (CORRIGIDO) ====================
+  // ==================== CAMPO MÁGICO (MUITO ROBUSTO) ====================
   function autoFill() {
     const rawText = document.getElementById('smartPaste').value;
-    if (!rawText.trim()) return alert('Cole algum texto no campo mágico primeiro.');
+    if (!rawText.trim()) {
+      alert('Cole algum texto no campo mágico primeiro.');
+      return;
+    }
 
-    // Normaliza: remove quebras de linha excessivas, espaços duplicados
+    // Normaliza o texto: remove quebras de linha excessivas, espaços duplicados, converte para string única
     const text = rawText.replace(/\r\n/g, '\n').replace(/\s+/g, ' ').trim();
+    console.log('Texto normalizado:', text); // DEBUG
 
-    // Mapeamento de padrões para campos (flexível)
+    // Mapeamento de padrões (ordem importa: mais específico primeiro)
     const patterns = {
       cNome: [
         /Nome\s+do\s+usu[áa]rio\s*:\s*([^\n]+)/i,
-        /Nome\s*:\s*([^\n]+)/i,
-        /Nome\s+completo\s*:\s*([^\n]+)/i
+        /Nome\s+completo\s*:\s*([^\n]+)/i,
+        /Nome\s*:\s*([^\n]+)/i
       ],
-      cNomeSocial: [
-        /Nome\s+social\s*:\s*([^\n]+)/i
-      ],
+      cNomeSocial: [ /Nome\s+social\s*:\s*([^\n]+)/i ],
       cCPF: [
         /CPF\s+do\s+titular\s*:\s*([\d\.\-]+)/i,
         /CPF\s*:\s*([\d\.\-]+)/i
@@ -823,9 +820,7 @@
         /Nascimento\s*:\s*([\d\/]+)/i,
         /Nasc[^:]*:\s*([\d\/]+)/i
       ],
-      cEndereco: [
-        /Endere[çc]o\s*:\s*([^\n]+)/i
-      ],
+      cEndereco: [ /Endere[çc]o\s*:\s*([^\n]+)/i ],
       cCidade: [
         /Cidade\s*:\s*([^\n\-]+?)(?:\s*[-–]\s*|\s*$)/i,
         /Munic[íi]pio\s*:\s*([^\n\-]+)/i
@@ -835,9 +830,7 @@
         /UF\s*:\s*([A-Z]{2})/i,
         /Estado\s*:\s*([A-Z]{2})/i
       ],
-      cEmpresa: [
-        /Empresa\s*:\s*([^\n]+)/i
-      ],
+      cEmpresa: [ /Empresa\s*:\s*([^\n]+)/i ],
       cAdeEmp: [
         /Ade\s+emp\s*:\s*([^\n]+)/i,
         /Ad[eê]s[ãa]o\s+empresa\s*:\s*([^\n]+)/i
@@ -847,15 +840,9 @@
         /Rede\s*:\s*([^\n]+)/i,
         /Plano\s*:\s*([^\n]+)/i
       ],
-      cPlanoAtual: [
-        /Plano\s+atual\s*:\s*([^\n]+)/i
-      ],
-      cAcomodacao: [
-        /Acomoda[çc][ãa]o\s*:\s*([^\n]+)/i
-      ],
-      cSituacao: [
-        /Situa[çc][ãa]o\s*:\s*([^\n]+)/i
-      ],
+      cPlanoAtual: [ /Plano\s+atual\s*:\s*([^\n]+)/i ],
+      cAcomodacao: [ /Acomoda[çc][ãa]o\s*:\s*([^\n]+)/i ],
+      cSituacao: [ /Situa[çc][ãa]o\s*:\s*([^\n]+)/i ],
       cAdesao: [
         /Data\s+da\s+ades[ãa]o\s*:\s*([\d\/]+)/i,
         /Ades[ãa]o\s*:\s*([\d\/]+)/i
@@ -864,9 +851,7 @@
         /Cancelamento\s*:\s*([\d\/]+)/i,
         /Data\s+do\s+cancelamento\s*:\s*([\d\/]+)/i
       ],
-      cTempo: [
-        /Tempo\s*:\s*([\dA-Za-z\s]+?)(?:\n|$)/i
-      ],
+      cTempo: [ /Tempo\s*:\s*([\dA-Za-z\s]+?)(?:\n|$)/i ],
       cTelefones: [
         /Telefones?\s+cadastrados?\s*:\s*([^\n]+)/i,
         /Telefone\s*:\s*([\d\s\(\)\-]+)/i,
@@ -879,65 +864,71 @@
       ]
     };
 
-    // Preenche cada campo com o primeiro padrão que der match
+    let filledCount = 0;
+    // 1) Tenta extrair pelos padrões com rótulo
     for (const [fieldId, regexList] of Object.entries(patterns)) {
       const element = document.getElementById(fieldId);
       if (!element) continue;
-      let found = false;
       for (const regex of regexList) {
         const match = text.match(regex);
         if (match && match[1]) {
           let value = match[1].trim();
-          // Limpeza básica
-          if (fieldId === 'cCPF') value = value.replace(/\D/g, ''); // apenas dígitos
+          // Limpeza específica
+          if (fieldId === 'cCPF') value = value.replace(/\D/g, '');
           if (fieldId === 'cTelefones') {
-            // Extrai apenas o primeiro número se houver vários separados por vírgula ou espaço
+            // Pega apenas o primeiro número (separado por vírgula, ponto e vírgula ou espaço)
             const firstPhone = value.split(/[,;]/)[0].trim();
             value = firstPhone;
           }
           if (fieldId === 'cEmails') {
-            // Pega o primeiro email válido
             const emailMatch = value.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
             if (emailMatch) value = emailMatch[0];
           }
           element.value = value;
-          found = true;
+          filledCount++;
+          console.log(`Preenchido ${fieldId} com: ${value}`); // DEBUG
           break;
         }
       }
-      // Se não encontrou e for CPF ou telefone, tenta buscar no texto solto (sem rótulo)
-      if (!found && fieldId === 'cCPF') {
-        const cpfMatch = text.match(/\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/);
-        if (cpfMatch) element.value = cpfMatch[0].replace(/\D/g, '');
-      }
-      if (!found && fieldId === 'cTelefones') {
-        const phoneMatch = text.match(/\b\(?\d{2}\)?\s?\d{4,5}-?\d{4}\b/);
-        if (phoneMatch) element.value = phoneMatch[0];
-      }
-      if (!found && fieldId === 'cEmails') {
-        const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-        if (emailMatch) element.value = emailMatch[0];
-      }
     }
 
-    // Tratamento especial para cidade/UF quando vierem juntos (ex: "São Paulo - SP")
+    // 2) Fallback para campos sem rótulo (CPF, telefone, email) no texto bruto
+    const cpfElement = document.getElementById('cCPF');
+    if (cpfElement && !cpfElement.value) {
+      const cpfMatch = rawText.match(/\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/);
+      if (cpfMatch) {
+        cpfElement.value = cpfMatch[0].replace(/\D/g, '');
+        filledCount++;
+      }
+    }
+    const phoneElement = document.getElementById('cTelefones');
+    if (phoneElement && !phoneElement.value) {
+      const phoneMatch = rawText.match(/\b\(?\d{2}\)?\s?\d{4,5}-?\d{4}\b/);
+      if (phoneMatch) phoneElement.value = phoneMatch[0];
+    }
+    const emailElement = document.getElementById('cEmails');
+    if (emailElement && !emailElement.value) {
+      const emailMatch = rawText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+      if (emailMatch) emailElement.value = emailMatch[0];
+    }
+
+    // 3) Tratamento especial para cidade e UF quando juntos
     const cidadeElem = document.getElementById('cCidade');
     const ufElem = document.getElementById('cUF');
     if (cidadeElem && !cidadeElem.value) {
-      const cidadeUfMatch = text.match(/Cidade\s*:\s*([^\n\-]+?)\s*[-–]\s*([A-Z]{2})/i);
+      const cidadeUfMatch = rawText.match(/Cidade\s*:\s*([^\n\-]+?)\s*[-–]\s*([A-Z]{2})/i);
       if (cidadeUfMatch) {
         cidadeElem.value = cidadeUfMatch[1].trim();
         if (ufElem && !ufElem.value) ufElem.value = cidadeUfMatch[2].trim();
+        filledCount += 2;
       }
     }
-
-    // Se ainda não achou UF, tenta por padrão isolado
     if (ufElem && !ufElem.value) {
-      const ufMatch = text.match(/\b([A-Z]{2})\b(?=\s*(?:\||$|,))/);
+      const ufMatch = rawText.match(/\b([A-Z]{2})\b(?=\s*(?:\||$|,))/);
       if (ufMatch) ufElem.value = ufMatch[1];
     }
 
-    alert('Campos preenchidos automaticamente! Verifique se todos os dados estão corretos.');
+    alert(`Auto preenchimento concluído. ${filledCount} campo(s) preenchido(s). Verifique os dados e complete manualmente se necessário.`);
   }
 
   function previewImage(e) {
