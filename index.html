@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recupera Health CRM - Simplificado</title>
+  <title>Recupera Health CRM - Refatorado</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -15,29 +15,150 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <style>
-    :root { --bg: #f8fafb; --card: #ffffff; --border: #e5e7eb; --text: #111827; --primary: #3b82f6; }
+    /* ========== VARIÁVEIS E ESTILOS BASE (mantidos) ========== */
+    :root {
+      --bg: #f8fafb;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --primary: #3b82f6;
+    }
     body.dark-mode { --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #f1f5f9; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; transition: background 0.3s; }
-    .navbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; }
-    .card-custom { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
-    .dashboard-card { padding: 2rem; border-radius: 16px; color: white; background: linear-gradient(135deg, var(--primary), #1e40af); }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', sans-serif;
+      transition: background 0.3s;
+    }
+    .navbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .card-custom {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .dashboard-card {
+      padding: 2rem;
+      border-radius: 16px;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), #1e40af);
+    }
     .btn { border-radius: 12px; font-weight: 600; }
     .nav-tabs { gap: 0.75rem; border: none; flex-wrap: wrap; }
-    .nav-tabs .nav-link { background: var(--card); border: 1px solid var(--border); border-radius: 12px; color: var(--text); }
-    .nav-tabs .nav-link.active { background: var(--primary); color: white; }
-    .login-screen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--primary), #1e40af); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-    .login-box { background: white; border-radius: 20px; padding: 2rem; width: 100%; max-width: 400px; }
+    .nav-tabs .nav-link {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+    }
+    .nav-tabs .nav-link.active {
+      background: var(--primary);
+      color: white;
+    }
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary), #1e40af);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .login-box {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+    }
     .container-fluid { padding: 2rem; }
     @media (max-width: 768px) { .container-fluid { padding: 1rem; } }
-    .history-log { border-left: 3px solid var(--primary); padding-left: 0.75rem; margin-bottom: 0.75rem; font-size: 0.85rem; }
-    .calendar { background: var(--card); border-radius: 16px; padding: 1rem; }
-    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
-    .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; margin-bottom: 0.5rem; }
-    .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-    .calendar-day { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; background: var(--card); }
-    .calendar-day.has-return { background: #f59e0b !important; color: white !important; }
-    .calendar-day.selected { background: var(--primary); color: white; border: 2px solid white; }
+    .history-log {
+      border-left: 3px solid var(--primary);
+      padding-left: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+    }
+    /* Estilos do calendário */
+    .calendar {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 1rem;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .calendar-day {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      background: var(--card);
+    }
+    .calendar-day.has-return {
+      background: #f59e0b !important;
+      color: white !important;
+    }
+    .calendar-day.selected {
+      background: var(--primary);
+      color: white;
+      border: 2px solid white;
+    }
+    .client-list {
+      margin-top: 1.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    /* Toast (notificações) */
+    .toast-container {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 1100;
+    }
+    .toast-custom {
+      background: #333;
+      color: white;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      margin-top: 0.5rem;
+      animation: fadeInOut 3s ease forwards;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(20px); }
+      10% { opacity: 1; transform: translateY(0); }
+      90% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-20px); }
+    }
     .tag-checkbox { margin-right: 0.5rem; margin-bottom: 0.25rem; display: inline-block; }
   </style>
 </head>
@@ -50,15 +171,21 @@
     <input type="email" id="loginEmail" class="form-control mb-3" placeholder="Email">
     <div class="input-group mb-3">
       <input type="password" id="loginPassword" class="form-control" placeholder="Senha">
-      <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()"><i class="bi bi-eye"></i></button>
+      <button class="btn btn-outline-secondary" type="button" onclick="ui.togglePassword()"><i class="bi bi-eye"></i></button>
     </div>
     <div id="loginError" class="text-danger text-center mb-2" style="display:none;"></div>
-    <button class="btn btn-primary w-100 mb-2" type="button" onclick="login()">Entrar</button>
-    <button class="btn btn-danger w-100 mb-2" type="button" onclick="googleLogin()"><i class="bi bi-google"></i> Google</button>
-    <button class="btn btn-outline-primary w-100 mb-2" type="button" onclick="showRecover()">Esqueci a senha</button>
-    <button class="btn btn-link w-100" type="button" onclick="showRegister()">Criar conta</button>
-    <div id="recoverBox" style="display:none; margin-top:1rem;"><div class="input-group"><input type="email" id="recoverEmail" class="form-control" placeholder="Seu email"><button class="btn btn-warning" type="button" onclick="recoverPassword()">Enviar</button></div></div>
-    <div id="registerBox" style="display:none; margin-top:1rem;"><input type="email" id="regEmail" class="form-control mb-2" placeholder="Email"><input type="password" id="regPassword" class="form-control mb-2" placeholder="Senha"><button class="btn btn-success w-100" type="button" onclick="register()">Cadastrar</button></div>
+    <button class="btn btn-primary w-100 mb-2" type="button" onclick="auth.login()">Entrar</button>
+    <button class="btn btn-danger w-100 mb-2" type="button" onclick="auth.googleLogin()"><i class="bi bi-google"></i> Google</button>
+    <button class="btn btn-outline-primary w-100 mb-2" type="button" onclick="ui.showRecover()">Esqueci a senha</button>
+    <button class="btn btn-link w-100" type="button" onclick="ui.showRegister()">Criar conta</button>
+    <div id="recoverBox" style="display:none; margin-top:1rem;">
+      <div class="input-group"><input type="email" id="recoverEmail" class="form-control" placeholder="Seu email"><button class="btn btn-warning" type="button" onclick="auth.recoverPassword()">Enviar</button></div>
+    </div>
+    <div id="registerBox" style="display:none; margin-top:1rem;">
+      <input type="email" id="regEmail" class="form-control mb-2" placeholder="Email">
+      <input type="password" id="regPassword" class="form-control mb-2" placeholder="Senha">
+      <button class="btn btn-success w-100" type="button" onclick="auth.register()">Cadastrar</button>
+    </div>
   </div>
 </div>
 
@@ -67,8 +194,8 @@
   <div class="container-fluid">
     <h4 class="m-0 fw-bold">Recupera Health CRM</h4>
     <div class="d-flex gap-2">
-      <button class="btn btn-outline-primary" onclick="toggleTheme()"><i class="bi bi-moon-stars-fill"></i></button>
-      <button class="btn btn-danger" onclick="logout()">Sair</button>
+      <button class="btn btn-outline-primary" onclick="ui.toggleTheme()"><i class="bi bi-moon-stars-fill"></i></button>
+      <button class="btn btn-danger" onclick="auth.logout()">Sair</button>
     </div>
   </div>
 </nav>
@@ -84,7 +211,7 @@
   </ul>
 
   <div class="tab-content">
-    <!-- DASHBOARD (simplificado, sem filtros) -->
+    <!-- DASHBOARD -->
     <div class="tab-pane fade show active" id="dashboardTab" role="tabpanel">
       <div class="row g-4 mb-4">
         <div class="col-md-3"><div class="dashboard-card"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
@@ -98,9 +225,9 @@
       </div>
     </div>
 
-    <!-- FICHA CLIENTE (com campos originais) -->
+    <!-- FICHA CLIENTE (idêntica à anterior, mas com validações) -->
     <div class="tab-pane fade" id="clientesTab" role="tabpanel">
-      <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4"></textarea><button class="btn btn-primary" onclick="autoFill()">Auto preencher</button></div>
+      <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4"></textarea><button class="btn btn-primary" onclick="ui.autoFill()">Auto preencher</button></div>
       <div class="card-custom">
         <input type="hidden" id="clientId">
         <div class="row g-3">
@@ -124,7 +251,7 @@
           <div class="col-md-6"><label>Telefones</label><input id="cTelefones" class="form-control"></div>
           <div class="col-md-6"><label>Emails</label><input id="cEmails" class="form-control"></div>
           <div class="col-md-6"><label>Retorno</label><input type="date" id="cRetorno" class="form-control"></div>
-          <div class="col-md-6"><label>Foto</label><input type="file" id="cFoto" class="form-control" accept="image/*" onchange="previewImage(event)"><img id="preview" style="max-width:100%; margin-top:0.5rem; display:none;"></div>
+          <div class="col-md-6"><label>Foto</label><input type="file" id="cFoto" class="form-control" accept="image/*" onchange="ui.previewImage(event)"><img id="preview" style="max-width:100%; margin-top:0.5rem; display:none;"></div>
           <div class="col-md-4"><label>Valor sem desconto (R$)</label><input type="number" step="0.01" id="cValorSemDesconto" class="form-control"></div>
           <div class="col-md-4"><label>Valor com desconto (R$)</label><input type="number" step="0.01" id="cValorComDesconto" class="form-control"></div>
           <div class="col-md-4"><label>Quantidade de vidas</label><input type="number" step="1" id="cVidas" class="form-control"></div>
@@ -142,49 +269,53 @@
         </ul>
         <div class="tab-content mt-2">
           <div class="tab-pane active" id="dadosTab"><p class="text-muted">Campos acima.</p></div>
-          <div class="tab-pane" id="anexosTab"><div id="anexosList"></div><input type="file" id="uploadAnexo" multiple accept="image/*,application/pdf" class="form-control mt-2"><button class="btn btn-sm btn-primary mt-2" onclick="uploadAnexos()">Enviar</button></div>
+          <div class="tab-pane" id="anexosTab"><div id="anexosList"></div><input type="file" id="uploadAnexo" multiple accept="image/*,application/pdf" class="form-control mt-2"><button class="btn btn-sm btn-primary mt-2" onclick="anexos.upload()">Enviar</button></div>
           <div class="tab-pane" id="historicoTab"><div id="historicoList"></div></div>
           <div class="tab-pane" id="statusHistoryTab"><div id="statusHistoryList"></div></div>
         </div>
         <div class="d-flex gap-2 mt-4">
-          <button class="btn btn-success" onclick="saveClient()">Salvar Cliente</button>
-          <button class="btn btn-outline-danger" onclick="clearForm()">Limpar Campos</button>
+          <button class="btn btn-success" onclick="client.save()">Salvar Cliente</button>
+          <button class="btn btn-outline-danger" onclick="ui.clearForm()">Limpar Campos</button>
         </div>
       </div>
     </div>
 
-    <!-- PESQUISAR -->
+    <!-- PESQUISAR (com paginação) -->
     <div class="tab-pane fade" id="pesquisaTab" role="tabpanel">
       <div class="card-custom">
         <div class="row g-3 mb-3">
-          <div class="col-md-3"><label>BUSCA GLOBAL</label><input type="text" id="globalSearch" class="form-control" oninput="renderTable()"></div>
-          <div class="col-md-2"><label>STATUS</label><select id="filterStatus" class="form-select" onchange="renderTable()"><option value="ALL">Todos</option></select></div>
+          <div class="col-md-3"><label>BUSCA GLOBAL</label><input type="text" id="globalSearch" class="form-control" oninput="ui.debouncedRenderTable()"></div>
+          <div class="col-md-2"><label>STATUS</label><select id="filterStatus" class="form-select" onchange="ui.renderTable()"><option value="ALL">Todos</option></select></div>
           <div class="col-md-3"><label>TAGS</label><div id="filterTagsContainer"></div></div>
-          <div class="col-md-2"><label>ORIGEM</label><select id="filterOrigem" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
-          <div class="col-md-2"><label>CAMPANHA</label><select id="filterCampanha" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
+          <div class="col-md-2"><label>ORIGEM</label><select id="filterOrigem" class="form-select" onchange="ui.renderTable()"><option value="ALL">Todas</option></select></div>
+          <div class="col-md-2"><label>CAMPANHA</label><select id="filterCampanha" class="form-select" onchange="ui.renderTable()"><option value="ALL">Todas</option></select></div>
         </div>
         <div class="row g-2 mb-3">
-          <div class="col-auto"><button class="btn btn-success btn-sm" onclick="bulkWhatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp</button></div>
-          <div class="col-auto"><button class="btn btn-danger btn-sm" onclick="bulkDelete()"><i class="bi bi-trash"></i> Excluir</button></div>
-          <div class="col-auto"><select id="bulkStatus" class="form-select form-select-sm" style="width:150px"><option value="">Mudar status...</option></select><button class="btn btn-warning btn-sm" onclick="bulkChangeStatus()">Aplicar</button></div>
-          <div class="col-auto"><input type="date" id="bulkRetorno" class="form-control form-control-sm"><button class="btn btn-info btn-sm" onclick="bulkScheduleReturn()">Agendar</button></div>
-          <div class="col-auto"><button class="btn btn-primary btn-sm" onclick="exportSelectedToCSV()"><i class="bi bi-file-earmark-excel"></i> Exportar CSV</button></div>
-          <div class="col-auto"><button class="btn btn-secondary btn-sm" onclick="importExcel()"><i class="bi bi-file-spreadsheet"></i> Importar Excel</button><input type="file" id="excelInput" accept=".xlsx,.csv" style="display:none" onchange="handleExcelUpload(event)"></div>
+          <div class="col-auto"><button class="btn btn-success btn-sm" onclick="bulk.whatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp</button></div>
+          <div class="col-auto"><button class="btn btn-danger btn-sm" onclick="bulk.delete()"><i class="bi bi-trash"></i> Excluir</button></div>
+          <div class="col-auto"><select id="bulkStatus" class="form-select form-select-sm" style="width:150px"><option value="">Mudar status...</option></select><button class="btn btn-warning btn-sm" onclick="bulk.changeStatus()">Aplicar</button></div>
+          <div class="col-auto"><input type="date" id="bulkRetorno" class="form-control form-control-sm"><button class="btn btn-info btn-sm" onclick="bulk.scheduleReturn()">Agendar</button></div>
+          <div class="col-auto"><button class="btn btn-primary btn-sm" onclick="exportCsv.selected()"><i class="bi bi-file-earmark-excel"></i> Exportar CSV</button></div>
+          <div class="col-auto"><button class="btn btn-secondary btn-sm" onclick="ui.importExcel()"><i class="bi bi-file-spreadsheet"></i> Importar Excel</button><input type="file" id="excelInput" accept=".xlsx,.csv" style="display:none"></div>
         </div>
         <div class="table-responsive">
-          <table class="table table-hover"><thead><tr><th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Origem</th><th>Retorno</th><th>Ações</th></tr></thead><tbody id="tableBody"></tbody></table>
+          <table class="table table-hover">
+            <thead><tr><th><input type="checkbox" id="selectAllCheckbox" onchange="ui.toggleSelectAll()"></th><th>Cliente</th><th>Empresa</th><th>Telefone</th><th>Status</th><th>Origem</th><th>Retorno</th><th>Ações</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
         </div>
+        <div class="text-center mt-3"><button class="btn btn-outline-primary" id="loadMoreBtn" onclick="ui.loadMore()" style="display:none;">Carregar mais</button></div>
       </div>
     </div>
 
-    <!-- AGENDA (calendário) -->
+    <!-- AGENDA (calendário corrigido) -->
     <div class="tab-pane fade" id="agendaTab" role="tabpanel">
       <div class="card-custom">
         <div class="calendar">
           <div class="calendar-header">
-            <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i> Mês anterior</button>
-            <div class="d-flex gap-2"><select id="monthSelect" class="form-select form-select-sm" onchange="goToMonth()"></select><select id="yearSelect" class="form-select form-select-sm" onchange="goToMonth()"></select></div>
-            <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(1)">Próximo mês <i class="bi bi-chevron-right"></i></button>
+            <button class="btn btn-sm btn-outline-primary" onclick="calendar.prevMonth()"><i class="bi bi-chevron-left"></i> Mês anterior</button>
+            <div class="d-flex gap-2"><select id="monthSelect" class="form-select form-select-sm" onchange="calendar.goToMonth()"></select><select id="yearSelect" class="form-select form-select-sm" onchange="calendar.goToMonth()"></select></div>
+            <button class="btn btn-sm btn-outline-primary" onclick="calendar.nextMonth()">Próximo mês <i class="bi bi-chevron-right"></i></button>
           </div>
           <div class="calendar-weekdays"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
           <div id="calendarDays" class="calendar-days"></div>
@@ -196,15 +327,42 @@
     <!-- CONFIGURAÇÕES -->
     <div class="tab-pane fade" id="configTab" role="tabpanel">
       <div class="row g-4">
-        <div class="col-lg-6"><div class="card-custom"><h4>Gerenciar Status</h4><div id="statusList"></div><div class="input-group mt-3"><input type="text" id="newStatus" class="form-control" placeholder="Novo status"><button class="btn btn-success" onclick="addStatus()">Adicionar</button></div></div></div>
-        <div class="col-lg-6"><div class="card-custom"><h4>Backup</h4><button class="btn btn-primary mt-2" onclick="exportAllToCSV()">Exportar CSV (todos)</button><button class="btn btn-outline-primary mt-2" onclick="exportBackup()">Backup JSON</button><button class="btn btn-outline-primary mt-2" onclick="importBackup()">Importar JSON</button><input type="file" id="backupFileInput" accept=".json" style="display:none"><hr><button class="btn btn-secondary mt-2" onclick="importExcel()">Importar Excel/CSV</button></div></div>
+        <div class="col-lg-6"><div class="card-custom"><h4>Gerenciar Status</h4><div id="statusList"></div><div class="input-group mt-3"><input type="text" id="newStatus" class="form-control" placeholder="Novo status"><button class="btn btn-success" onclick="status.add()">Adicionar</button></div></div></div>
+        <div class="col-lg-6"><div class="card-custom"><h4>Backup</h4><button class="btn btn-primary mt-2" onclick="exportCsv.all()">Exportar CSV (todos)</button><button class="btn btn-outline-primary mt-2" onclick="backup.export()">Backup JSON</button><button class="btn btn-outline-primary mt-2" onclick="backup.import()">Importar JSON</button><input type="file" id="backupFileInput" accept=".json" style="display:none"><hr><button class="btn btn-secondary mt-2" onclick="ui.importExcel()">Importar Excel/CSV</button></div></div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- TOAST NOTIFICATIONS -->
+<div class="toast-container" id="toastContainer"></div>
+
 <script>
-  // ==================== FIREBASE ====================
+  // ==================== MÓDULO DE LOG ====================
+  const logger = {
+    info: (msg, data) => console.log(`[INFO] ${msg}`, data || ''),
+    error: (msg, err) => console.error(`[ERROR] ${msg}`, err),
+    event: (action, details) => console.log(`[EVENT] ${action}`, details)
+  };
+
+  // ==================== MÓDULO DE NOTIFICAÇÕES (TOAST) ====================
+  const toast = {
+    show: (message, type = 'success') => {
+      const container = document.getElementById('toastContainer');
+      const toastEl = document.createElement('div');
+      toastEl.className = 'toast-custom';
+      toastEl.style.background = type === 'error' ? '#dc2626' : (type === 'warning' ? '#f59e0b' : '#10b981');
+      toastEl.innerText = message;
+      container.appendChild(toastEl);
+      setTimeout(() => toastEl.remove(), 3000);
+    },
+    confirm: (message) => new Promise((resolve) => {
+      const result = confirm(message);
+      resolve(result);
+    })
+  };
+
+  // ==================== MÓDULO DE FIREBASE ====================
   const firebaseConfig = {
     apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
     authDomain: "crm-recuperacao.firebaseapp.com",
@@ -214,578 +372,737 @@
     appId: "1:347011763386:web:158c1ca6f512a1cde1c683"
   };
   firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-  const storage = firebase.storage();
+  const authFirebase = firebase.auth();
+  const dbFirebase = firebase.firestore();
+  const storageFirebase = firebase.storage();
 
-  let currentUser = null;
-  let clients = [];
-  let statuses = ['Em Negociação', 'Para Enviar Documentação', 'Implantado', 'Sem Interesse'];
-  let autoBackupInterval = null, reminderInterval = null;
-  let recoveryChart, statusChart;
-  let currentDate = new Date();
-
-  // Helpers
-  const escapeHtml = (str) => { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); };
-  const formatPhoneForWhatsApp = (raw) => {
-    if (!raw) return '';
-    let digits = raw.toString().replace(/\D/g, '');
-    if (digits.length === 0) return '';
-    if (digits.startsWith('55')) digits = digits.substring(2);
-    if (digits.length >= 10) digits = '55' + digits;
-    return digits;
+  // ==================== MÓDULO DE ESTADO CENTRALIZADO ====================
+  const store = {
+    _clients: [],
+    _statuses: ['Em Negociação', 'Para Enviar Documentação', 'Implantado', 'Sem Interesse'],
+    _subscribers: [],
+    get clients() { return this._clients; },
+    set clients(value) { this._clients = value; this._notify(); },
+    get statuses() { return this._statuses; },
+    set statuses(value) { this._statuses = value; this._notify(); },
+    subscribe(fn) { this._subscribers.push(fn); },
+    _notify() { this._subscribers.forEach(fn => fn()); }
   };
-  const formatMoney = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
-  const getEffectiveValue = (client) => client.valorComDesconto && client.valorComDesconto > 0 ? client.valorComDesconto : (client.valorSemDesconto || 0);
-  const getTodayStr = () => new Date().toISOString().split('T')[0];
 
-  // ==================== AUTENTICAÇÃO ====================
-  function login() { const email = loginEmail.value, password = loginPassword.value; auth.signInWithEmailAndPassword(email, password).catch(e => { loginError.style.display = 'block'; loginError.innerText = e.message; }); }
-  function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => { loginError.style.display = 'block'; loginError.innerText = e.message; }); }
-  function register() { auth.createUserWithEmailAndPassword(regEmail.value, regPassword.value).then(() => alert('Conta criada! Faça login.')).catch(e => alert(e.message)); }
-  function recoverPassword() { auth.sendPasswordResetEmail(recoverEmail.value).then(() => alert('Email enviado!')).catch(e => alert(e.message)); }
-  function togglePassword() { loginPassword.type = loginPassword.type === 'password' ? 'text' : 'password'; }
-  function showRecover() { recoverBox.style.display = 'block'; registerBox.style.display = 'none'; }
-  function showRegister() { registerBox.style.display = 'block'; recoverBox.style.display = 'none'; }
-  function logout() { auth.signOut(); }
-  function toggleTheme() { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light'); }
-  if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+  // ==================== MÓDULO DE AUXILIARES ====================
+  const utils = {
+    escapeHtml: (str) => { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); },
+    formatPhoneForWhatsApp: (raw) => {
+      if (!raw) return '';
+      let digits = raw.toString().replace(/\D/g, '');
+      if (digits.length === 0) return '';
+      if (digits.startsWith('55')) digits = digits.substring(2);
+      if (digits.length >= 10) digits = '55' + digits;
+      return digits;
+    },
+    formatMoney: (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0),
+    getEffectiveValue: (client) => client.valorComDesconto && client.valorComDesconto > 0 ? client.valorComDesconto : (client.valorSemDesconto || 0),
+    getTodayStr: () => new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }).split('/').reverse().join('-'),
+    validateCPF: (cpf) => {
+      cpf = cpf.replace(/\D/g, '');
+      if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+      let sum = 0, rest;
+      for (let i = 1; i <= 9; i++) sum += parseInt(cpf.substring(i-1, i)) * (11 - i);
+      rest = (sum * 10) % 11;
+      if (rest === 10 || rest === 11) rest = 0;
+      if (rest !== parseInt(cpf.substring(9, 10))) return false;
+      sum = 0;
+      for (let i = 1; i <= 10; i++) sum += parseInt(cpf.substring(i-1, i)) * (12 - i);
+      rest = (sum * 10) % 11;
+      if (rest === 10 || rest === 11) rest = 0;
+      return rest === parseInt(cpf.substring(10, 11));
+    },
+    validatePhone: (phone) => {
+      const digits = phone.replace(/\D/g, '');
+      return digits.length >= 10 && digits.length <= 11;
+    },
+    validateEmail: (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  };
 
-  auth.onAuthStateChanged(async user => {
-    if (user) {
-      currentUser = user;
-      loginScreen.style.display = 'none';
-      navbar.style.display = 'flex';
-      mainContent.style.display = 'block';
-      await loadStatuses();
-      await loadClients();
-      startReminderChecker();
-      renderCalendar();
-      populateFilters();
-      setTimeout(() => updateDashboard(), 100);
-    } else {
-      loginScreen.style.display = 'flex';
-      navbar.style.display = 'none';
-      mainContent.style.display = 'none';
-      clients = [];
-    }
-  });
-
-  // ==================== STATUS ====================
-  async function loadStatuses() {
-    const doc = await db.collection('customStatuses').doc(currentUser.uid).get();
-    if (doc.exists && doc.data().statuses) statuses = doc.data().statuses;
-    renderStatuses();
-  }
-  async function saveStatuses() { await db.collection('customStatuses').doc(currentUser.uid).set({ statuses }); }
-  function addStatus() {
-    let s = newStatus.value.trim();
-    if (!s) return;
-    if (statuses.includes(s)) return alert('Status já existe.');
-    statuses.push(s);
-    renderStatuses();
-    saveStatuses();
-    newStatus.value = '';
-  }
-  function deleteStatus(i) {
-    if (!confirm('Remover este status?')) return;
-    statuses.splice(i, 1);
-    renderStatuses();
-    saveStatuses();
-  }
-  function renderStatuses() {
-    cStatus.innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
-    filterStatus.innerHTML = '<option value="ALL">Todos status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    bulkStatus.innerHTML = '<option value="">Mudar status...</option>' + statuses.map(s => `<option>${s}</option>`).join('');
-    statusList.innerHTML = statuses.map((s, i) => `<div class="d-flex justify-content-between align-items-center mb-2"><span>${s}</span><button class="btn btn-sm btn-danger" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
-  }
-
-  // ==================== CLIENTES ====================
-  async function loadClients() {
-    const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
-    clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderTable();
-    updatePlanosFilter();
-    renderCalendar();
-    populateFilters();
-    updateDashboard();
-  }
-
-  async function saveClient() {
-    const id = clientId.value;
-    let vidasRaw = parseInt(cVidas.value) || 0;
-    const vidas = Math.max(0, vidasRaw);
-    let dataPagamento = cDataPagamento.value;
-    const status = cStatus.value;
-    const hoje = getTodayStr();
-
-    // Regra: se status for "Implantado" e dataPagamento estiver vazia, preencher com hoje
-    if (status === 'Implantado' && !dataPagamento) {
-      dataPagamento = hoje;
-    }
-
-    const data = {
-      nome: cNome.value.trim(),
-      nomeSocial: cNomeSocial.value.trim(),
-      cpf: cCPF.value.trim(),
-      nascimento: cNascimento.value.trim(),
-      endereco: cEndereco.value.trim(),
-      cidade: cCidade.value.trim(),
-      uf: cUF.value.trim(),
-      empresa: cEmpresa.value.trim(),
-      adeEmp: cAdeEmp.value.trim(),
-      redePlano: cRedePlano.value.trim(),
-      planoAtual: cPlanoAtual.value.trim(),
-      acomodacao: cAcomodacao.value.trim(),
-      situacao: cSituacao.value.trim(),
-      status: status,
-      adesao: cAdesao.value.trim(),
-      cancelamento: cCancelamento.value.trim(),
-      tempo: cTempo.value.trim(),
-      telefones: cTelefones.value.trim(),
-      emails: cEmails.value.trim(),
-      retorno: cRetorno.value,
-      anotacoes: cAnotacoes.value.trim(),
-      valorSemDesconto: parseFloat(cValorSemDesconto.value) || 0,
-      valorComDesconto: parseFloat(cValorComDesconto.value) || 0,
-      vidas: vidas,
-      dataImplantacao: cDataImplantacao.value || null,
-      dataPagamento: dataPagamento || null,
-      origem: cOrigem.value.trim(),
-      campanha: cCampanha.value.trim(),
-      userId: currentUser.uid,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    if (!id) data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-    if (!data.nome) return alert('Nome obrigatório.');
-
-    try {
-      if (id) {
-        await db.collection('clients').doc(id).update(data);
-        await addLog(id, 'edit', 'Cliente atualizado');
-        alert('Cliente atualizado!');
-      } else {
-        await db.collection('clients').add(data);
-        await addLog('new', 'create', 'Novo cliente cadastrado');
-        alert('Cliente cadastrado!');
-      }
-      clearForm();
-      document.querySelector('[data-bs-target="#dashboardTab"]').click();
-      await loadClients();
-    } catch (e) { alert('Erro: ' + e.message); }
-  }
-
-  async function addLog(clientId, action, details) {
-    if (!currentUser) return;
-    await db.collection('interactionLogs').add({ clientId, userId: currentUser.uid, action, details, timestamp: firebase.firestore.FieldValue.serverTimestamp(), userEmail: currentUser.email });
-  }
-
-  async function loadHistorico(clientId) {
-    const snap = await db.collection('interactionLogs').where('clientId', '==', clientId).orderBy('timestamp', 'desc').limit(50).get();
-    const logs = snap.docs.map(d => d.data());
-    historicoList.innerHTML = logs.length ? logs.map(l => `<div class="history-log"><small>${l.timestamp ? new Date(l.timestamp.toDate()).toLocaleString() : ''}</small><br><strong>${l.action}</strong><br>${l.details}</div>`).join('') : '<p class="text-muted">Nenhuma interação.</p>';
-  }
-
-  async function loadStatusHistory(clientId) {
-    const snap = await db.collection('interactionLogs').where('clientId', '==', clientId).get();
-    const logs = snap.docs.map(d => d.data()).filter(l => l.action === 'edit' && l.details.includes('Status alterado'));
-    statusHistoryList.innerHTML = logs.length ? logs.map(l => `<div class="history-log"><small>${new Date(l.timestamp.toDate()).toLocaleString()}</small><br>${l.details}</div>`).join('') : '<p class="text-muted">Nenhuma alteração de status.</p>';
-  }
-
-  function editClient(id) {
-    const c = clients.find(c => c.id === id);
-    if (!c) return;
-    clientId.value = id;
-    const fields = ['nome','nomeSocial','cpf','nascimento','endereco','cidade','uf','empresa','adeEmp','redePlano','planoAtual','acomodacao','situacao','status','adesao','cancelamento','tempo','telefones','emails','retorno','anotacoes','valorSemDesconto','valorComDesconto','vidas','dataImplantacao','dataPagamento','origem','campanha'];
-    fields.forEach(k => {
-      const input = document.getElementById(`c${k.charAt(0).toUpperCase() + k.slice(1)}`);
-      if (input) input.value = c[k] !== undefined ? c[k] : '';
-    });
-    loadAnexos(id);
-    loadHistorico(id);
-    loadStatusHistory(id);
-    new bootstrap.Tab(document.getElementById('clientes-tab')).show();
-  }
-  window.editClient = editClient;
-
-  function clearForm() {
-    if (!confirm('Limpar todos os campos?')) return;
-    clientId.value = '';
-    ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes','cValorSemDesconto','cValorComDesconto','cVidas','cDataImplantacao','cDataPagamento','cOrigem','cCampanha'].forEach(id => document.getElementById(id).value = '');
-    cStatus.selectedIndex = 0;
-    preview.style.display = 'none';
-    anexosList.innerHTML = '';
-    historicoList.innerHTML = '';
-    smartPaste.value = '';
-  }
-
-  function autoFill() {
-    const text = smartPaste.value;
-    if (!text.trim()) return;
-    const mappings = [
-      { label: 'Nome do usuário:', fieldId: 'cNome' }, { label: 'Nome social:', fieldId: 'cNomeSocial' },
-      { label: 'CPF do titular:', fieldId: 'cCPF' }, { label: 'Data de nascimento:', fieldId: 'cNascimento' },
-      { label: 'Endereço:', fieldId: 'cEndereco' }, { label: 'Cidade:', fieldId: 'cCidade' },
-      { label: 'UF:', fieldId: 'cUF' }, { label: 'Empresa:', fieldId: 'cEmpresa' },
-      { label: 'Ade emp:', fieldId: 'cAdeEmp' }, { label: 'Rede/plano:', fieldId: 'cRedePlano' },
-      { label: 'Plano atual:', fieldId: 'cPlanoAtual' }, { label: 'Acomodação:', fieldId: 'cAcomodacao' },
-      { label: 'Situação:', fieldId: 'cSituacao' }, { label: 'Data da adesão:', fieldId: 'cAdesao' },
-      { label: 'Data do cancelamento:', fieldId: 'cCancelamento' }, { label: 'Tempo:', fieldId: 'cTempo' },
-      { label: 'Telefones cadastrados:', fieldId: 'cTelefones' }, { label: 'Endereços eletrônicos:', fieldId: 'cEmails' }
-    ];
-    for (const m of mappings) {
-      const regex = new RegExp(`${m.label}\\s*(.*?)$`, 'im');
-      const match = text.match(regex);
-      if (match && match[1].trim()) {
-        let val = match[1].trim();
-        if (m.fieldId === 'cCPF') val = val.replace(/\D/g, '');
-        if (m.fieldId === 'cTelefones') val = val.split(/[,;]/)[0].trim();
-        if (m.fieldId === 'cEmails') { const emailMatch = val.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/); if (emailMatch) val = emailMatch[0]; else continue; }
-        document.getElementById(m.fieldId).value = val;
-      }
-    }
-    alert('Campos preenchidos automaticamente!');
-  }
-
-  function previewImage(e) { const reader = new FileReader(); reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; }; reader.readAsDataURL(e.target.files[0]); }
-
-  // ==================== ANEXOS ====================
-  async function loadAnexos(clientId) {
-    anexosList.innerHTML = 'Carregando...';
-    const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}`);
-    let items = [];
-    try { const res = await ref.listAll(); items = res.items; } catch(e) { anexosList.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
-    if (items.length === 0) { anexosList.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
-    let html = '';
-    for (const item of items) {
-      const url = await item.getDownloadURL();
-      html += `<div class="d-flex justify-content-between align-items-center mb-2"><a href="${url}" target="_blank">${item.name}</a><button class="btn btn-sm btn-danger" onclick="deleteAnexo('${clientId}','${item.name}')">Excluir</button></div>`;
-    }
-    anexosList.innerHTML = html;
-  }
-  async function uploadAnexos() {
-    const clientId = clientId.value;
-    if (!clientId) return alert('Salve o cliente primeiro!');
-    const files = uploadAnexo.files;
-    if (!files.length) return;
-    for (const file of files) {
-      if (!file.type.match(/image.*|application\/pdf/)) { alert(`Tipo inválido: ${file.name}`); continue; }
-      const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}/${Date.now()}_${file.name}`);
-      await ref.put(file);
-    }
-    alert('Arquivos enviados!');
-    loadAnexos(clientId);
-  }
-  async function deleteAnexo(clientId, fileName) {
-    if (!confirm('Excluir anexo?')) return;
-    const ref = storage.ref(`anexos/${currentUser.uid}/${clientId}/${fileName}`);
-    await ref.delete();
-    loadAnexos(clientId);
-  }
-
-  // ==================== PESQUISA ====================
-  function populateFilters() {
-    const allTags = new Set();
-    clients.forEach(c => { if (c.tags) c.tags.forEach(t => allTags.add(t)); });
-    filterTagsContainer.innerHTML = '';
-    allTags.forEach(tag => {
-      const cb = document.createElement('div');
-      cb.className = 'form-check form-check-inline';
-      cb.innerHTML = `<input class="form-check-input tag-checkbox" type="checkbox" value="${escapeHtml(tag)}" id="tag_${tag}" onchange="renderTable()"><label class="form-check-label" for="tag_${tag}">${escapeHtml(tag)}</label>`;
-      filterTagsContainer.appendChild(cb);
-    });
-    const origens = new Set(clients.map(c => c.origem).filter(o => o));
-    filterOrigem.innerHTML = '<option value="ALL">Todas</option>' + [...origens].sort().map(o => `<option>${escapeHtml(o)}</option>`).join('');
-    const campanhas = new Set(clients.map(c => c.campanha).filter(ca => ca));
-    filterCampanha.innerHTML = '<option value="ALL">Todas</option>' + [...campanhas].sort().map(ca => `<option>${escapeHtml(ca)}</option>`).join('');
-  }
-
-  function renderTable() {
-    const search = globalSearch.value.toLowerCase();
-    const status = filterStatus.value;
-    const origem = filterOrigem.value;
-    const campanha = filterCampanha.value;
-    const selectedTags = Array.from(document.querySelectorAll('.tag-checkbox:checked')).map(cb => cb.value);
-    const filtered = clients.filter(c => {
-      const matchSearch = !search || (c.nome && c.nome.toLowerCase().includes(search)) || (c.empresa && c.empresa.toLowerCase().includes(search)) || (c.telefones && c.telefones.includes(search));
-      const matchStatus = status === 'ALL' || c.status === status;
-      const matchOrigem = origem === 'ALL' || c.origem === origem;
-      const matchCampanha = campanha === 'ALL' || c.campanha === campanha;
-      const matchTags = selectedTags.length === 0 || (c.tags && selectedTags.every(tag => c.tags.includes(tag)));
-      return matchSearch && matchStatus && matchOrigem && matchCampanha && matchTags;
-    });
-    if (filtered.length === 0) { tableBody.innerHTML = '<table><td colspan="8" class="text-center">Nenhum cliente encontrado.��堆</table>'; return; }
-    let html = '';
-    for (const c of filtered) {
-      const waLink = `https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`;
-      html += `<tr>
-        <td><input type="checkbox" class="client-checkbox" value="${c.id}"></td>
-        <td><div class="fw-bold">${escapeHtml(c.nome || '')}</div><div class="small text-muted">${escapeHtml(c.cpf || '')}</div></td>
-        <td>${escapeHtml(c.empresa || '')}</td>
-        <td>${escapeHtml(c.telefones || '')}</td>
-        <td><span class="badge bg-primary">${escapeHtml(c.status || '')}</span></td>
-        <td>${escapeHtml(c.origem || '-')}</td>
-        <td>${c.retorno || '-'}</td>
-        <td class="text-center"><div class="d-flex gap-2 justify-content-center"><button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button><a href="${waLink}" target="_blank" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a></div></td>
-      </tr>`;
-    }
-    tableBody.innerHTML = html;
-  }
-
-  // ==================== DASHBOARD (simplificado, sem filtro) ====================
-  function updateDashboard() {
-    const totalClientes = clients.length;
-    const implantados = clients.filter(c => c.status === 'Implantado');
-    const totalVidas = implantados.reduce((acc, c) => acc + Math.max(0, c.vidas || 0), 0);
-    const valorTotal = implantados.reduce((acc, c) => acc + getEffectiveValue(c), 0);
-    const taxaConversao = totalClientes > 0 ? ((implantados.length / totalClientes) * 100).toFixed(1) : 0;
-    dashTotal.innerText = totalClientes;
-    dashVidas.innerText = totalVidas;
-    dashValor.innerHTML = formatMoney(valorTotal);
-    dashConversao.innerText = `${taxaConversao}%`;
-
-    // Gráfico de recuperados por mês (últimos 6 meses, baseado em updatedAt quando status se tornou Implantado)
-    const now = new Date();
-    let meses = [];
-    let counts = new Array(6).fill(0);
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      meses.push(d.toLocaleString('default', { month: 'short' }));
-    }
-    clients.forEach(c => {
-      if (c.status === 'Implantado' && c.updatedAt) {
-        let implantDate = c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt);
-        let diffMeses = (now.getFullYear() - implantDate.getFullYear()) * 12 + (now.getMonth() - implantDate.getMonth());
-        if (diffMeses >= 0 && diffMeses < 6) {
-          counts[5 - diffMeses]++;
-        }
-      }
-    });
-    if (recoveryChart) recoveryChart.destroy();
-    recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels: meses, datasets: [{ label: 'Implantados', data: counts, backgroundColor: '#10b981' }] } });
-
-    // Gráfico de distribuição por status
-    const statusData = statuses.map(s => clients.filter(c => c.status === s).length);
-    if (statusChart) statusChart.destroy();
-    statusChart = new Chart(document.getElementById('statusChart'), { type: 'doughnut', data: { labels: statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] } });
-  }
-
-  // ==================== BACKUP E IMPORTAÇÃO ====================
-  function exportBackup() {
-    const dataToExport = clients.map(c => { const { updatedAt, createdAt, ...rest } = c; return rest; });
-    const blob = new Blob([JSON.stringify(dataToExport)], { type: 'application/json' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); URL.revokeObjectURL(a.href);
-  }
-  function importBackup() { backupFileInput.click(); }
-  async function handleBackupFile(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async ev => {
+  // ==================== MÓDULO DE AUTENTICAÇÃO ====================
+  const auth = {
+    currentUser: null,
+    login: async () => {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
       try {
-        const parsed = JSON.parse(ev.target.result);
-        let arr = Array.isArray(parsed) ? parsed : (parsed.clients && Array.isArray(parsed.clients) ? parsed.clients : null);
-        if (!arr) throw new Error('Formato inválido');
-        if (!confirm(`Importar ${arr.length} clientes?`)) return;
-        let adicionados = 0, ignorados = 0;
-        for (const c of arr) {
-          const { id, ...d } = c;
-          d.userId = currentUser.uid;
-          if (!d.createdAt) d.createdAt = new Date().toISOString();
-          if (!d.nome) { ignorados++; continue; }
-          try {
-            await db.collection('clients').add(d);
-            adicionados++;
-          } catch (err) { ignorados++; }
-        }
-        alert(`Importação: ${adicionados} adicionados, ${ignorados} ignorados.`);
-        await loadClients();
-      } catch (er) { alert('Erro: ' + er.message); }
-    };
-    reader.readAsText(file);
-  }
-  backupFileInput.addEventListener('change', handleBackupFile);
-
-  function exportAllToCSV() {
-    const rows = [['Nome', 'Telefone', 'Email', 'Status', 'Empresa', 'Origem', 'Campanha', 'Vidas', 'Valor Pago']];
-    for (const c of clients) {
-      const esc = (s) => `"${(s || '').replace(/"/g, '""')}"`;
-      const valorPago = getEffectiveValue(c);
-      rows.push([esc(c.nome || ''), esc(c.telefones || ''), esc(c.emails || ''), esc(c.status || ''), esc(c.empresa || ''), esc(c.origem || ''), esc(c.campanha || ''), esc(c.vidas || 0), esc(valorPago)]);
-    }
-    const csv = rows.map(r => r.join(',')).join('\n');
-    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `contatos_${new Date().toISOString().slice(0,19)}.csv`; a.click(); URL.revokeObjectURL(a.href);
-  }
-
-  function exportSelectedToCSV() {
-    const checkboxes = document.querySelectorAll('.client-checkbox:checked');
-    if (checkboxes.length === 0) { alert('Nenhum cliente selecionado.'); return; }
-    const selectedIds = Array.from(checkboxes).map(cb => cb.value);
-    const selectedClients = clients.filter(c => selectedIds.includes(c.id));
-    const rows = [['Nome', 'Telefone']];
-    for (const c of selectedClients) {
-      const nome = (c.nome || '').replace(/,/g, ' ');
-      const telefone = formatPhoneForWhatsApp(c.telefones);
-      if (telefone) rows.push([`"${nome}"`, telefone]);
-    }
-    const csv = rows.map(r => r.join(',')).join('\n');
-    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `selecionados_${new Date().toISOString().slice(0,19)}.csv`; a.click(); URL.revokeObjectURL(a.href);
-  }
-
-  function importExcel() { excelInput.click(); }
-  async function handleExcelUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const data = await file.arrayBuffer();
-    const workbook = XLSX.read(data);
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(sheet);
-    if (!rows.length) return alert('Nenhum dado encontrado.');
-    let imported = 0, errors = 0;
-    for (const row of rows) {
-      const nome = row['Nome'] || row['nome'] || row['Cliente'];
-      if (!nome) continue;
-      const cliente = {
-        nome, nomeSocial: row['Nome social'] || '', cpf: row['CPF'] || '', nascimento: row['Nascimento'] || '',
-        endereco: row['Endereço'] || '', cidade: row['Cidade'] || '', uf: row['UF'] || '', empresa: row['Empresa'] || '',
-        adeEmp: row['Ade emp'] || '', redePlano: row['Rede/plano'] || '', planoAtual: row['Plano atual'] || '',
-        acomodacao: row['Acomodação'] || '', situacao: row['Situação'] || '', status: row['Status'] || 'Em Negociação',
-        adesao: row['Adesão'] || '', cancelamento: row['Cancelamento'] || '', tempo: row['Tempo'] || '',
-        telefones: row['Telefones'] || '', emails: row['Emails'] || '', retorno: row['Retorno'] || '',
-        anotacoes: row['Anotações'] || '', valorSemDesconto: parseFloat(row['Valor sem desconto']) || 0,
-        valorComDesconto: parseFloat(row['Valor com desconto']) || 0, vidas: parseInt(row['Vidas']) || 0,
-        dataImplantacao: row['Data implantação'] || null, dataPagamento: row['Data pagamento'] || null,
-        origem: row['Origem'] || '', campanha: row['Campanha'] || '',
-        userId: currentUser.uid, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-      };
-      try {
-        await db.collection('clients').add(cliente);
-        imported++;
-      } catch (err) { errors++; }
-    }
-    alert(`Importação concluída: ${imported} adicionados, ${errors} erros.`);
-    await loadClients();
-  }
-  excelInput.addEventListener('change', handleExcelUpload);
-
-  // ==================== AÇÕES EM MASSA ====================
-  function getSelectedIds() { return Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value); }
-  function toggleSelectAll() { const all = selectAllCheckbox.checked; document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = all); }
-
-  async function bulkWhatsApp() {
-    const ids = getSelectedIds();
-    if (!ids.length) return alert('Selecione ao menos um cliente.');
-    for (const id of ids) {
-      const c = clients.find(c => c.id === id);
-      if (c?.telefones) window.open(`https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`, '_blank');
-      await addLog(id, 'bulk_whatsapp', 'Disparo em massa');
-    }
-  }
-  async function bulkDelete() {
-    const ids = getSelectedIds();
-    if (!ids.length) return alert('Selecione ao menos um cliente.');
-    if (!confirm(`Excluir permanentemente ${ids.length} cliente(s)?`)) return;
-    for (const id of ids) await db.collection('clients').doc(id).delete();
-    await loadClients();
-    alert(`${ids.length} cliente(s) removido(s).`);
-  }
-  async function bulkChangeStatus() {
-    const newStatus = bulkStatus.value;
-    if (!newStatus) return alert('Selecione um status');
-    const ids = getSelectedIds();
-    if (!ids.length) return alert('Selecione ao menos um cliente.');
-    if (!confirm(`Alterar status de ${ids.length} cliente(s) para "${newStatus}"?`)) return;
-    const hoje = getTodayStr();
-    for (const id of ids) {
-      const updateData = { status: newStatus };
-      if (newStatus === 'Implantado') {
-        const client = clients.find(c => c.id === id);
-        if (client && !client.dataPagamento) updateData.dataPagamento = hoje;
+        await authFirebase.signInWithEmailAndPassword(email, password);
+        logger.event('login', email);
+        toast.show('Login realizado com sucesso!');
+      } catch (e) {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('loginError').innerText = e.message;
+        toast.show(e.message, 'error');
       }
-      await db.collection('clients').doc(id).update(updateData);
-      await addLog(id, 'bulk_status', `Status alterado em massa para ${newStatus}`);
-    }
-    await loadClients();
-    alert(`${ids.length} cliente(s) atualizado(s).`);
-  }
-  async function bulkScheduleReturn() {
-    const date = bulkRetorno.value;
-    if (!date) return alert('Selecione uma data');
-    const ids = getSelectedIds();
-    if (!ids.length) return alert('Selecione ao menos um cliente.');
-    if (!confirm(`Agendar retorno para ${ids.length} cliente(s) na data ${date}?`)) return;
-    for (const id of ids) await db.collection('clients').doc(id).update({ retorno: date });
-    await loadClients();
-    alert(`${ids.length} cliente(s) com retorno agendado.`);
-  }
-
-  // ==================== CALENDÁRIO ====================
-  function renderCalendar() {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    if (monthSelect.children.length === 0) {
-      for (let i = 0; i < 12; i++) { const opt = document.createElement('option'); opt.value = i; opt.text = new Date(year, i, 1).toLocaleString('default', { month: 'long' }); monthSelect.appendChild(opt); }
-    }
-    monthSelect.value = month;
-    if (yearSelect.children.length === 0) {
-      const cy = new Date().getFullYear();
-      for (let i = cy - 5; i <= cy + 5; i++) { const opt = document.createElement('option'); opt.value = i; opt.text = i; yearSelect.appendChild(opt); }
-    }
-    yearSelect.value = year;
-    calendarDays.innerHTML = '';
-    for (let i = 0; i < firstDay; i++) { const empty = document.createElement('div'); empty.className = 'calendar-day empty'; calendarDays.appendChild(empty); }
-    const todayStr = getTodayStr();
-    for (let d = 1; d <= daysInMonth; d++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-      const hasReturn = clients.some(c => c.retorno === dateStr);
-      const dayDiv = document.createElement('div'); dayDiv.className = 'calendar-day'; if (hasReturn) dayDiv.classList.add('has-return'); if (dateStr === todayStr) dayDiv.style.border = '2px solid var(--primary)'; dayDiv.innerText = d; dayDiv.onclick = () => selectDay(dateStr); calendarDays.appendChild(dayDiv);
-    }
-  }
-  function selectDay(dateStr) {
-    document.querySelectorAll('.calendar-day').forEach(day => day.classList.remove('selected'));
-    const dayDivs = document.querySelectorAll('.calendar-day');
-    const dayNum = parseInt(dateStr.split('-')[2]);
-    for (let div of dayDivs) { if (div.innerText == dayNum && !div.classList.contains('empty')) { div.classList.add('selected'); break; } }
-    const clientsOnDay = clients.filter(c => c.retorno === dateStr);
-    if (clientsOnDay.length === 0) { selectedDayClients.innerHTML = '<div class="alert alert-info">Nenhum cliente com retorno nesta data.</div>'; return; }
-    let html = '';
-    for (const c of clientsOnDay) {
-      const whatsLink = `https://wa.me/${formatPhoneForWhatsApp(c.telefones)}`;
-      html += `<div class="list-group-item d-flex justify-content-between align-items-center"><div><strong>${escapeHtml(c.nome)}</strong><br><small>${escapeHtml(c.telefones)}</small></div><a target="_blank" href="${whatsLink}" class="btn btn-sm btn-success"><i class="bi bi-whatsapp"></i> WhatsApp</a></div>`;
-    }
-    selectedDayClients.innerHTML = html;
-  }
-  function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); renderCalendar(); selectedDayClients.innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>'; }
-  function goToMonth() { const newMonth = parseInt(monthSelect.value); const newYear = parseInt(yearSelect.value); currentDate = new Date(newYear, newMonth, 1); renderCalendar(); selectedDayClients.innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>'; }
-
-  function updatePlanosFilter() {
-    const planos = new Set();
-    clients.forEach(c => { if (c.planoAtual) planos.add(c.planoAtual); if (c.redePlano) planos.add(c.redePlano); });
-    filterPlano.innerHTML = '<option value="ALL">Todos os planos</option>' + [...planos].sort().map(p => `<option>${escapeHtml(p)}</option>`).join('');
-  }
-
-  function startReminderChecker() {
-    if (reminderInterval) clearInterval(reminderInterval);
-    reminderInterval = setInterval(() => {
-      const today = getTodayStr();
-      clients.forEach(async c => {
-        if (c.retorno === today) {
-          if (Notification.permission === 'granted') new Notification(`Lembrete: ${c.nome}`, { body: `Retorno hoje. Tel: ${c.telefones}` });
-          if (c.emails) window.open(`mailto:${c.emails}?subject=Lembrete%20de%20retorno&body=Olá ${c.nome}, seu retorno está agendado para hoje.`);
-          await addLog(c.id, 'lembrete', `Lembrete enviado (${today})`);
+    },
+    googleLogin: async () => {
+      try {
+        await authFirebase.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+        toast.show('Login com Google realizado!');
+      } catch (e) { toast.show(e.message, 'error'); }
+    },
+    register: async () => {
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPassword').value;
+      try {
+        await authFirebase.createUserWithEmailAndPassword(email, password);
+        toast.show('Conta criada! Faça login.');
+        ui.showRegister();
+      } catch (e) { toast.show(e.message, 'error'); }
+    },
+    recoverPassword: async () => {
+      const email = document.getElementById('recoverEmail').value;
+      try {
+        await authFirebase.sendPasswordResetEmail(email);
+        toast.show('Email de recuperação enviado!');
+      } catch (e) { toast.show(e.message, 'error'); }
+    },
+    logout: () => authFirebase.signOut(),
+    init: () => {
+      authFirebase.onAuthStateChanged(async user => {
+        if (user) {
+          auth.currentUser = user;
+          document.getElementById('loginScreen').style.display = 'none';
+          document.getElementById('navbar').style.display = 'flex';
+          document.getElementById('mainContent').style.display = 'block';
+          await status.load();
+          await client.loadRealtime(); // sincronização em tempo real
+          calendar.init();
+          ui.populateFilters();
+          setTimeout(() => ui.updateDashboard(), 100);
+        } else {
+          document.getElementById('loginScreen').style.display = 'flex';
+          document.getElementById('navbar').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'none';
+          store.clients = [];
         }
       });
-    }, 3600000);
-    if (Notification.permission === 'default') Notification.requestPermission();
+    }
+  };
+
+  // ==================== MÓDULO DE STATUS ====================
+  const status = {
+    load: async () => {
+      const doc = await dbFirebase.collection('customStatuses').doc(auth.currentUser.uid).get();
+      if (doc.exists && doc.data().statuses) store.statuses = doc.data().statuses;
+      status.render();
+    },
+    save: async () => {
+      await dbFirebase.collection('customStatuses').doc(auth.currentUser.uid).set({ statuses: store.statuses });
+    },
+    add: () => {
+      const s = document.getElementById('newStatus').value.trim();
+      if (!s) return;
+      if (store.statuses.includes(s)) return toast.show('Status já existe.', 'warning');
+      store.statuses.push(s);
+      status.render();
+      status.save();
+      document.getElementById('newStatus').value = '';
+    },
+    delete: (index) => {
+      if (!confirm('Remover este status?')) return;
+      store.statuses.splice(index, 1);
+      status.render();
+      status.save();
+    },
+    render: () => {
+      document.getElementById('cStatus').innerHTML = store.statuses.map(s => `<option>${s}</option>`).join('');
+      document.getElementById('filterStatus').innerHTML = '<option value="ALL">Todos status</option>' + store.statuses.map(s => `<option>${s}</option>`).join('');
+      document.getElementById('bulkStatus').innerHTML = '<option value="">Mudar status...</option>' + store.statuses.map(s => `<option>${s}</option>`).join('');
+      document.getElementById('statusList').innerHTML = store.statuses.map((s, i) => `<div class="d-flex justify-content-between align-items-center mb-2"><span>${s}</span><button class="btn btn-sm btn-danger" onclick="status.delete(${i})">Excluir</button></div>`).join('');
+    }
+  };
+
+  // ==================== MÓDULO DE CLIENTES (CRUD + Sincronização) ====================
+  let unsubscribeClients = null;
+  let currentPage = 0;
+  const PAGE_SIZE = 50;
+  let allFilteredIds = []; // para paginação
+
+  const client = {
+    loadRealtime: () => {
+      if (unsubscribeClients) unsubscribeClients();
+      unsubscribeClients = dbFirebase.collection('clients').where('userId', '==', auth.currentUser.uid)
+        .onSnapshot(snapshot => {
+          store.clients = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+          ui.renderTable();
+          ui.updateDashboard();
+          calendar.render();
+          ui.populateFilters();
+        }, error => toast.show('Erro ao sincronizar: ' + error.message, 'error'));
+    },
+    save: async () => {
+      const id = document.getElementById('clientId').value;
+      let vidasRaw = parseInt(document.getElementById('cVidas').value) || 0;
+      const vidas = Math.max(0, vidasRaw);
+      let dataPagamento = document.getElementById('cDataPagamento').value;
+      const statusVal = document.getElementById('cStatus').value;
+      const hoje = utils.getTodayStr();
+
+      if (statusVal === 'Implantado' && !dataPagamento) dataPagamento = hoje;
+
+      // Validações
+      const cpf = document.getElementById('cCPF').value.trim();
+      if (cpf && !utils.validateCPF(cpf)) return toast.show('CPF inválido', 'error');
+      const telefone = document.getElementById('cTelefones').value.trim();
+      if (telefone && !utils.validatePhone(telefone)) return toast.show('Telefone inválido (mínimo 10 dígitos)', 'error');
+      const email = document.getElementById('cEmails').value.trim();
+      if (email && !utils.validateEmail(email)) return toast.show('E-mail inválido', 'error');
+
+      const data = {
+        nome: document.getElementById('cNome').value.trim(),
+        nomeSocial: document.getElementById('cNomeSocial').value.trim(),
+        cpf, nascimento: document.getElementById('cNascimento').value.trim(),
+        endereco: document.getElementById('cEndereco').value.trim(),
+        cidade: document.getElementById('cCidade').value.trim(), uf: document.getElementById('cUF').value.trim(),
+        empresa: document.getElementById('cEmpresa').value.trim(),
+        adeEmp: document.getElementById('cAdeEmp').value.trim(),
+        redePlano: document.getElementById('cRedePlano').value.trim(),
+        planoAtual: document.getElementById('cPlanoAtual').value.trim(),
+        acomodacao: document.getElementById('cAcomodacao').value.trim(),
+        situacao: document.getElementById('cSituacao').value.trim(),
+        status: statusVal,
+        adesao: document.getElementById('cAdesao').value.trim(),
+        cancelamento: document.getElementById('cCancelamento').value.trim(),
+        tempo: document.getElementById('cTempo').value.trim(),
+        telefones: telefone, emails: email,
+        retorno: document.getElementById('cRetorno').value,
+        anotacoes: document.getElementById('cAnotacoes').value.trim(),
+        valorSemDesconto: parseFloat(document.getElementById('cValorSemDesconto').value) || 0,
+        valorComDesconto: parseFloat(document.getElementById('cValorComDesconto').value) || 0,
+        vidas,
+        dataImplantacao: document.getElementById('cDataImplantacao').value || null,
+        dataPagamento: dataPagamento || null,
+        origem: document.getElementById('cOrigem').value.trim(),
+        campanha: document.getElementById('cCampanha').value.trim(),
+        userId: auth.currentUser.uid,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      if (!id) data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      if (!data.nome) return toast.show('Nome obrigatório', 'error');
+
+      try {
+        if (id) {
+          await dbFirebase.collection('clients').doc(id).update(data);
+          await client.addLog(id, 'edit', 'Cliente atualizado');
+          toast.show('Cliente atualizado!');
+        } else {
+          await dbFirebase.collection('clients').add(data);
+          await client.addLog('new', 'create', 'Novo cliente cadastrado');
+          toast.show('Cliente cadastrado!');
+        }
+        ui.clearForm();
+        document.querySelector('[data-bs-target="#dashboardTab"]').click();
+      } catch (e) { toast.show('Erro ao salvar: ' + e.message, 'error'); }
+    },
+    addLog: async (clientId, action, details) => {
+      if (!auth.currentUser) return;
+      await dbFirebase.collection('interactionLogs').add({
+        clientId, userId: auth.currentUser.uid, action, details,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        userEmail: auth.currentUser.email
+      });
+    },
+    loadHistorico: async (clientId) => {
+      const snap = await dbFirebase.collection('interactionLogs').where('clientId', '==', clientId).orderBy('timestamp', 'desc').limit(50).get();
+      const logs = snap.docs.map(d => d.data());
+      const div = document.getElementById('historicoList');
+      div.innerHTML = logs.length ? logs.map(l => `<div class="history-log"><small>${l.timestamp ? new Date(l.timestamp.toDate()).toLocaleString() : ''}</small><br><strong>${l.action}</strong><br>${l.details}</div>`).join('') : '<p class="text-muted">Nenhuma interação.</p>';
+    },
+    loadStatusHistory: async (clientId) => {
+      const snap = await dbFirebase.collection('interactionLogs').where('clientId', '==', clientId).get();
+      const logs = snap.docs.map(d => d.data()).filter(l => l.action === 'edit' && l.details.includes('Status alterado'));
+      const div = document.getElementById('statusHistoryList');
+      div.innerHTML = logs.length ? logs.map(l => `<div class="history-log"><small>${new Date(l.timestamp.toDate()).toLocaleString()}</small><br>${l.details}</div>`).join('') : '<p class="text-muted">Nenhuma alteração de status.</p>';
+    }
+  };
+
+  // ==================== MÓDULO DE ANEXOS ====================
+  const anexos = {
+    load: async (clientId) => {
+      const listDiv = document.getElementById('anexosList');
+      listDiv.innerHTML = 'Carregando...';
+      const ref = storageFirebase.ref(`anexos/${auth.currentUser.uid}/${clientId}`);
+      let items = [];
+      try { const res = await ref.listAll(); items = res.items; } catch(e) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
+      if (items.length === 0) { listDiv.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; }
+      let html = '';
+      for (const item of items) {
+        const url = await item.getDownloadURL();
+        html += `<div class="d-flex justify-content-between align-items-center mb-2"><a href="${url}" target="_blank">${item.name}</a><button class="btn btn-sm btn-danger" onclick="anexos.delete('${clientId}','${item.name}')">Excluir</button></div>`;
+      }
+      listDiv.innerHTML = html;
+    },
+    upload: async () => {
+      const clientId = document.getElementById('clientId').value;
+      if (!clientId) return toast.show('Salve o cliente primeiro!', 'warning');
+      const files = document.getElementById('uploadAnexo').files;
+      if (!files.length) return;
+      for (const file of files) {
+        if (!file.type.match(/image.*|application\/pdf/)) { toast.show(`Tipo inválido: ${file.name}`, 'error'); continue; }
+        const ref = storageFirebase.ref(`anexos/${auth.currentUser.uid}/${clientId}/${Date.now()}_${file.name}`);
+        await ref.put(file);
+      }
+      toast.show('Arquivos enviados!');
+      anexos.load(clientId);
+    },
+    delete: async (clientId, fileName) => {
+      if (!confirm('Excluir anexo?')) return;
+      const ref = storageFirebase.ref(`anexos/${auth.currentUser.uid}/${clientId}/${fileName}`);
+      await ref.delete();
+      anexos.load(clientId);
+    }
+  };
+
+  // ==================== MÓDULO DA INTERFACE (UI) ====================
+  const ui = {
+    debouncedRenderTable: debounce(() => ui.renderTable(), 300),
+    renderTable: () => {
+      const search = document.getElementById('globalSearch').value.toLowerCase();
+      const status = document.getElementById('filterStatus').value;
+      const origem = document.getElementById('filterOrigem').value;
+      const campanha = document.getElementById('filterCampanha').value;
+      const selectedTags = Array.from(document.querySelectorAll('.tag-checkbox:checked')).map(cb => cb.value);
+      const filtered = store.clients.filter(c => {
+        const matchSearch = !search || (c.nome && c.nome.toLowerCase().includes(search)) || (c.empresa && c.empresa.toLowerCase().includes(search)) || (c.telefones && c.telefones.includes(search));
+        const matchStatus = status === 'ALL' || c.status === status;
+        const matchOrigem = origem === 'ALL' || c.origem === origem;
+        const matchCampanha = campanha === 'ALL' || c.campanha === campanha;
+        const matchTags = selectedTags.length === 0 || (c.tags && selectedTags.every(tag => c.tags.includes(tag)));
+        return matchSearch && matchStatus && matchOrigem && matchCampanha && matchTags;
+      });
+      allFilteredIds = filtered.map(c => c.id);
+      currentPage = 0;
+      ui.renderPage();
+    },
+    renderPage: () => {
+      const start = currentPage * PAGE_SIZE;
+      const end = start + PAGE_SIZE;
+      const pageClients = store.clients.filter(c => allFilteredIds.includes(c.id)).slice(start, end);
+      const tbody = document.getElementById('tableBody');
+      if (pageClients.length === 0 && currentPage === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum cliente encontrado.��堆</tr>'; return; }
+      let html = '';
+      for (const c of pageClients) {
+        const waLink = `https://wa.me/${utils.formatPhoneForWhatsApp(c.telefones)}`;
+        html += `<tr>
+          <td><input type="checkbox" class="client-checkbox" value="${c.id}"></td>
+          <td><div class="fw-bold">${utils.escapeHtml(c.nome || '')}</div><div class="small text-muted">${utils.escapeHtml(c.cpf || '')}</div></td>
+          <td>${utils.escapeHtml(c.empresa || '')}</td>
+          <td>${utils.escapeHtml(c.telefones || '')}</td>
+          <td><span class="badge bg-primary">${utils.escapeHtml(c.status || '')}</span></td>
+          <td>${utils.escapeHtml(c.origem || '-')}</td>
+          <td>${c.retorno || '-'}</td>
+          <td class="text-center"><div class="d-flex gap-2 justify-content-center"><button class="btn btn-warning btn-sm" onclick="client.edit('${c.id}')"><i class="bi bi-pencil"></i></button><a href="${waLink}" target="_blank" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a></div></td>
+        </tr>`;
+      }
+      tbody.innerHTML = html;
+      document.getElementById('loadMoreBtn').style.display = (end < allFilteredIds.length) ? 'block' : 'none';
+    },
+    loadMore: () => { currentPage++; ui.renderPage(); },
+    populateFilters: () => {
+      const allTags = new Set();
+      store.clients.forEach(c => { if (c.tags) c.tags.forEach(t => allTags.add(t)); });
+      const container = document.getElementById('filterTagsContainer');
+      container.innerHTML = '';
+      allTags.forEach(tag => {
+        const cb = document.createElement('div');
+        cb.className = 'form-check form-check-inline';
+        cb.innerHTML = `<input class="form-check-input tag-checkbox" type="checkbox" value="${utils.escapeHtml(tag)}" id="tag_${tag}" onchange="ui.renderTable()"><label class="form-check-label" for="tag_${tag}">${utils.escapeHtml(tag)}</label>`;
+        container.appendChild(cb);
+      });
+      const origens = new Set(store.clients.map(c => c.origem).filter(o => o));
+      const selectOrigem = document.getElementById('filterOrigem');
+      selectOrigem.innerHTML = '<option value="ALL">Todas</option>' + [...origens].sort().map(o => `<option>${utils.escapeHtml(o)}</option>`).join('');
+      const campanhas = new Set(store.clients.map(c => c.campanha).filter(ca => ca));
+      const selectCamp = document.getElementById('filterCampanha');
+      selectCamp.innerHTML = '<option value="ALL">Todas</option>' + [...campanhas].sort().map(ca => `<option>${utils.escapeHtml(ca)}</option>`).join('');
+    },
+    updateDashboard: () => {
+      const total = store.clients.length;
+      const implantados = store.clients.filter(c => c.status === 'Implantado');
+      const totalVidas = implantados.reduce((acc, c) => acc + Math.max(0, c.vidas || 0), 0);
+      const valorTotal = implantados.reduce((acc, c) => acc + utils.getEffectiveValue(c), 0);
+      const taxa = total ? ((implantados.length / total) * 100).toFixed(1) : 0;
+      document.getElementById('dashTotal').innerText = total;
+      document.getElementById('dashVidas').innerText = totalVidas;
+      document.getElementById('dashValor').innerHTML = utils.formatMoney(valorTotal);
+      document.getElementById('dashConversao').innerText = `${taxa}%`;
+
+      const now = new Date();
+      let meses = [], counts = new Array(6).fill(0);
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        meses.push(d.toLocaleString('default', { month: 'short' }));
+      }
+      store.clients.forEach(c => {
+        if (c.status === 'Implantado' && c.updatedAt) {
+          let implantDate = c.updatedAt.toDate ? c.updatedAt.toDate() : new Date(c.updatedAt);
+          let diff = (now.getFullYear() - implantDate.getFullYear()) * 12 + (now.getMonth() - implantDate.getMonth());
+          if (diff >= 0 && diff < 6) counts[5 - diff]++;
+        }
+      });
+      if (window.recoveryChart) window.recoveryChart.destroy();
+      window.recoveryChart = new Chart(document.getElementById('recoveryChart'), { type: 'bar', data: { labels: meses, datasets: [{ label: 'Implantados', data: counts, backgroundColor: '#10b981' }] } });
+      const statusData = store.statuses.map(s => store.clients.filter(c => c.status === s).length);
+      if (window.statusChart) window.statusChart.destroy();
+      window.statusChart = new Chart(document.getElementById('statusChart'), { type: 'doughnut', data: { labels: store.statuses, datasets: [{ data: statusData, backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'] }] } });
+    },
+    editClient: (id) => {
+      const c = store.clients.find(c => c.id === id);
+      if (!c) return;
+      document.getElementById('clientId').value = id;
+      const fields = ['nome','nomeSocial','cpf','nascimento','endereco','cidade','uf','empresa','adeEmp','redePlano','planoAtual','acomodacao','situacao','status','adesao','cancelamento','tempo','telefones','emails','retorno','anotacoes','valorSemDesconto','valorComDesconto','vidas','dataImplantacao','dataPagamento','origem','campanha'];
+      fields.forEach(k => {
+        const input = document.getElementById(`c${k.charAt(0).toUpperCase() + k.slice(1)}`);
+        if (input) input.value = c[k] !== undefined ? c[k] : '';
+      });
+      anexos.load(id);
+      client.loadHistorico(id);
+      client.loadStatusHistory(id);
+      new bootstrap.Tab(document.getElementById('clientes-tab')).show();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    clearForm: async () => {
+      if (!await toast.confirm('Limpar todos os campos?')) return;
+      document.getElementById('clientId').value = '';
+      const campos = ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes','cValorSemDesconto','cValorComDesconto','cVidas','cDataImplantacao','cDataPagamento','cOrigem','cCampanha'];
+      campos.forEach(id => document.getElementById(id).value = '');
+      document.getElementById('cStatus').selectedIndex = 0;
+      document.getElementById('preview').style.display = 'none';
+      document.getElementById('anexosList').innerHTML = '';
+      document.getElementById('historicoList').innerHTML = '';
+      document.getElementById('smartPaste').value = '';
+    },
+    autoFill: () => {
+      const text = document.getElementById('smartPaste').value;
+      if (!text.trim()) return;
+      const mappings = [
+        { label: 'Nome do usuário:', fieldId: 'cNome' }, { label: 'Nome social:', fieldId: 'cNomeSocial' },
+        { label: 'CPF do titular:', fieldId: 'cCPF' }, { label: 'Data de nascimento:', fieldId: 'cNascimento' },
+        { label: 'Endereço:', fieldId: 'cEndereco' }, { label: 'Cidade:', fieldId: 'cCidade' },
+        { label: 'UF:', fieldId: 'cUF' }, { label: 'Empresa:', fieldId: 'cEmpresa' },
+        { label: 'Ade emp:', fieldId: 'cAdeEmp' }, { label: 'Rede/plano:', fieldId: 'cRedePlano' },
+        { label: 'Plano atual:', fieldId: 'cPlanoAtual' }, { label: 'Acomodação:', fieldId: 'cAcomodacao' },
+        { label: 'Situação:', fieldId: 'cSituacao' }, { label: 'Data da adesão:', fieldId: 'cAdesao' },
+        { label: 'Data do cancelamento:', fieldId: 'cCancelamento' }, { label: 'Tempo:', fieldId: 'cTempo' },
+        { label: 'Telefones cadastrados:', fieldId: 'cTelefones' }, { label: 'Endereços eletrônicos:', fieldId: 'cEmails' }
+      ];
+      for (const m of mappings) {
+        const regex = new RegExp(`${m.label}\\s*(.*?)$`, 'im');
+        const match = text.match(regex);
+        if (match && match[1].trim()) {
+          let val = match[1].trim();
+          if (m.fieldId === 'cCPF') val = val.replace(/\D/g, '');
+          if (m.fieldId === 'cTelefones') val = val.split(/[,;]/)[0].trim();
+          if (m.fieldId === 'cEmails') { const emailMatch = val.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/); if (emailMatch) val = emailMatch[0]; else continue; }
+          document.getElementById(m.fieldId).value = val;
+        }
+      }
+      toast.show('Campos preenchidos automaticamente!');
+    },
+    previewImage: (e) => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        document.getElementById('preview').src = ev.target.result;
+        document.getElementById('preview').style.display = 'block';
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    },
+    toggleSelectAll: () => {
+      const all = document.getElementById('selectAllCheckbox').checked;
+      document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = all);
+    },
+    getSelectedIds: () => Array.from(document.querySelectorAll('.client-checkbox:checked')).map(cb => cb.value),
+    importExcel: () => document.getElementById('excelInput').click(),
+    handleExcelUpload: async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet);
+      if (!rows.length) return toast.show('Nenhum dado encontrado.', 'error');
+      let imported = 0, errors = 0;
+      for (const row of rows) {
+        const nome = row['Nome'] || row['nome'] || row['Cliente'];
+        if (!nome) continue;
+        const cliente = {
+          nome, nomeSocial: row['Nome social'] || '', cpf: row['CPF'] || '', nascimento: row['Nascimento'] || '',
+          endereco: row['Endereço'] || '', cidade: row['Cidade'] || '', uf: row['UF'] || '', empresa: row['Empresa'] || '',
+          adeEmp: row['Ade emp'] || '', redePlano: row['Rede/plano'] || '', planoAtual: row['Plano atual'] || '',
+          acomodacao: row['Acomodação'] || '', situacao: row['Situação'] || '', status: row['Status'] || 'Em Negociação',
+          adesao: row['Adesão'] || '', cancelamento: row['Cancelamento'] || '', tempo: row['Tempo'] || '',
+          telefones: row['Telefones'] || '', emails: row['Emails'] || '', retorno: row['Retorno'] || '',
+          anotacoes: row['Anotações'] || '', valorSemDesconto: parseFloat(row['Valor sem desconto']) || 0,
+          valorComDesconto: parseFloat(row['Valor com desconto']) || 0, vidas: parseInt(row['Vidas']) || 0,
+          dataImplantacao: row['Data implantação'] || null, dataPagamento: row['Data pagamento'] || null,
+          origem: row['Origem'] || '', campanha: row['Campanha'] || '',
+          userId: auth.currentUser.uid, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+        };
+        try {
+          await dbFirebase.collection('clients').add(cliente);
+          imported++;
+        } catch (err) { errors++; }
+      }
+      toast.show(`Importação concluída: ${imported} adicionados, ${errors} erros.`);
+    },
+    toggleTheme: () => {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    },
+    showRecover: () => {
+      document.getElementById('recoverBox').style.display = 'block';
+      document.getElementById('registerBox').style.display = 'none';
+    },
+    showRegister: () => {
+      document.getElementById('registerBox').style.display = 'block';
+      document.getElementById('recoverBox').style.display = 'none';
+    },
+    togglePassword: () => {
+      const pwd = document.getElementById('loginPassword');
+      pwd.type = pwd.type === 'password' ? 'text' : 'password';
+    }
+  };
+
+  // ==================== MÓDULO DE CALENDÁRIO ====================
+  const calendar = {
+    currentDate: new Date(),
+    init: () => { calendar.render(); },
+    render: () => {
+      const year = calendar.currentDate.getFullYear();
+      const month = calendar.currentDate.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const monthSelect = document.getElementById('monthSelect');
+      const yearSelect = document.getElementById('yearSelect');
+      if (monthSelect.children.length === 0) {
+        for (let i = 0; i < 12; i++) { const opt = document.createElement('option'); opt.value = i; opt.text = new Date(year, i, 1).toLocaleString('default', { month: 'long' }); monthSelect.appendChild(opt); }
+      }
+      monthSelect.value = month;
+      if (yearSelect.children.length === 0) {
+        const cy = new Date().getFullYear();
+        for (let i = cy - 5; i <= cy + 5; i++) { const opt = document.createElement('option'); opt.value = i; opt.text = i; yearSelect.appendChild(opt); }
+      }
+      yearSelect.value = year;
+      const daysContainer = document.getElementById('calendarDays');
+      daysContainer.innerHTML = '';
+      for (let i = 0; i < firstDay; i++) { const empty = document.createElement('div'); empty.className = 'calendar-day empty'; daysContainer.appendChild(empty); }
+      const todayStr = utils.getTodayStr();
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const hasReturn = store.clients.some(c => c.retorno === dateStr);
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+        if (hasReturn) dayDiv.classList.add('has-return');
+        if (dateStr === todayStr) dayDiv.style.border = '2px solid var(--primary)';
+        dayDiv.innerText = d;
+        dayDiv.onclick = () => calendar.selectDay(dateStr);
+        daysContainer.appendChild(dayDiv);
+      }
+    },
+    selectDay: (dateStr) => {
+      document.querySelectorAll('.calendar-day').forEach(day => day.classList.remove('selected'));
+      const dayDivs = document.querySelectorAll('.calendar-day');
+      const dayNum = parseInt(dateStr.split('-')[2]);
+      for (let div of dayDivs) { if (div.innerText == dayNum && !div.classList.contains('empty')) { div.classList.add('selected'); break; } }
+      const clientsOnDay = store.clients.filter(c => c.retorno === dateStr);
+      const container = document.getElementById('selectedDayClients');
+      if (clientsOnDay.length === 0) { container.innerHTML = '<div class="alert alert-info">Nenhum cliente com retorno nesta data.</div>'; return; }
+      let html = '';
+      for (const c of clientsOnDay) {
+        const whatsLink = `https://wa.me/${utils.formatPhoneForWhatsApp(c.telefones)}`;
+        html += `<div class="list-group-item d-flex justify-content-between align-items-center"><div><strong>${utils.escapeHtml(c.nome)}</strong><br><small>${utils.escapeHtml(c.telefones)}</small></div><a target="_blank" href="${whatsLink}" class="btn btn-sm btn-success"><i class="bi bi-whatsapp"></i> WhatsApp</a></div>`;
+      }
+      container.innerHTML = html;
+    },
+    prevMonth: () => {
+      calendar.currentDate.setMonth(calendar.currentDate.getMonth() - 1);
+      calendar.render();
+      document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>';
+    },
+    nextMonth: () => {
+      calendar.currentDate.setMonth(calendar.currentDate.getMonth() + 1);
+      calendar.render();
+      document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>';
+    },
+    goToMonth: () => {
+      const newMonth = parseInt(document.getElementById('monthSelect').value);
+      const newYear = parseInt(document.getElementById('yearSelect').value);
+      calendar.currentDate = new Date(newYear, newMonth, 1);
+      calendar.render();
+      document.getElementById('selectedDayClients').innerHTML = '<div class="alert alert-info">Selecione um dia para ver os retornos.</div>';
+    }
+  };
+
+  // ==================== MÓDULO DE BACKUP E EXPORTAÇÃO ====================
+  const backup = {
+    export: () => {
+      const dataToExport = store.clients.map(c => { const { updatedAt, createdAt, ...rest } = c; return rest; });
+      const blob = new Blob([JSON.stringify(dataToExport)], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); URL.revokeObjectURL(a.href);
+      toast.show('Backup JSON exportado');
+    },
+    import: () => document.getElementById('backupFileInput').click(),
+    handleImport: async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async ev => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          let arr = Array.isArray(parsed) ? parsed : (parsed.clients && Array.isArray(parsed.clients) ? parsed.clients : null);
+          if (!arr) throw new Error('Formato inválido');
+          if (!await toast.confirm(`Importar ${arr.length} clientes?`)) return;
+          let adicionados = 0, ignorados = 0;
+          for (const c of arr) {
+            const { id, ...d } = c;
+            d.userId = auth.currentUser.uid;
+            if (!d.createdAt) d.createdAt = new Date().toISOString();
+            if (!d.nome) { ignorados++; continue; }
+            try {
+              await dbFirebase.collection('clients').add(d);
+              adicionados++;
+            } catch (err) { ignorados++; }
+          }
+          toast.show(`Importação: ${adicionados} adicionados, ${ignorados} ignorados.`);
+        } catch (er) { toast.show('Erro ao importar: ' + er.message, 'error'); }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const exportCsv = {
+    all: () => {
+      const rows = [['Nome', 'Telefone', 'Email', 'Status', 'Empresa', 'Origem', 'Campanha', 'Vidas', 'Valor Pago']];
+      for (const c of store.clients) {
+        const esc = (s) => `"${(s || '').replace(/"/g, '""')}"`;
+        const valorPago = utils.getEffectiveValue(c);
+        rows.push([esc(c.nome || ''), esc(c.telefones || ''), esc(c.emails || ''), esc(c.status || ''), esc(c.empresa || ''), esc(c.origem || ''), esc(c.campanha || ''), esc(c.vidas || 0), esc(valorPago)]);
+      }
+      const csv = rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `contatos_${new Date().toISOString().slice(0,19)}.csv`; a.click(); URL.revokeObjectURL(a.href);
+      toast.show('CSV exportado');
+    },
+    selected: () => {
+      const selectedIds = ui.getSelectedIds();
+      if (selectedIds.length === 0) return toast.show('Nenhum cliente selecionado.', 'warning');
+      const selectedClients = store.clients.filter(c => selectedIds.includes(c.id));
+      const rows = [['Nome', 'Telefone']];
+      for (const c of selectedClients) {
+        const nome = (c.nome || '').replace(/,/g, ' ');
+        const telefone = utils.formatPhoneForWhatsApp(c.telefones);
+        if (telefone) rows.push([`"${nome}"`, telefone]);
+      }
+      const csv = rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `selecionados_${new Date().toISOString().slice(0,19)}.csv`; a.click(); URL.revokeObjectURL(a.href);
+      toast.show('CSV dos selecionados exportado');
+    }
+  };
+
+  // ==================== MÓDULO DE AÇÕES EM MASSA (OTIMIZADO) ====================
+  const bulk = {
+    whatsApp: async () => {
+      const ids = ui.getSelectedIds();
+      if (!ids.length) return toast.show('Selecione ao menos um cliente.', 'warning');
+      for (const id of ids) {
+        const c = store.clients.find(c => c.id === id);
+        if (c?.telefones) window.open(`https://wa.me/${utils.formatPhoneForWhatsApp(c.telefones)}`, '_blank');
+        await client.addLog(id, 'bulk_whatsapp', 'Disparo em massa');
+      }
+    },
+    delete: async () => {
+      const ids = ui.getSelectedIds();
+      if (!ids.length) return toast.show('Selecione ao menos um cliente.', 'warning');
+      if (!await toast.confirm(`Excluir permanentemente ${ids.length} cliente(s)?`)) return;
+      const BATCH_SIZE = 500;
+      for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+        const batch = dbFirebase.batch();
+        const chunk = ids.slice(i, i + BATCH_SIZE);
+        for (const id of chunk) {
+          batch.delete(dbFirebase.collection('clients').doc(id));
+          await client.addLog(id, 'bulk_delete', 'Cliente removido em massa');
+        }
+        await batch.commit();
+      }
+      toast.show(`${ids.length} cliente(s) removido(s).`);
+    },
+    changeStatus: async () => {
+      const newStatus = document.getElementById('bulkStatus').value;
+      if (!newStatus) return toast.show('Selecione um status', 'warning');
+      const ids = ui.getSelectedIds();
+      if (!ids.length) return toast.show('Selecione ao menos um cliente.', 'warning');
+      if (!await toast.confirm(`Alterar status de ${ids.length} cliente(s) para "${newStatus}"?`)) return;
+      const hoje = utils.getTodayStr();
+      const BATCH_SIZE = 500;
+      for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+        const batch = dbFirebase.batch();
+        const chunk = ids.slice(i, i + BATCH_SIZE);
+        for (const id of chunk) {
+          const updateData = { status: newStatus };
+          if (newStatus === 'Implantado') {
+            const client = store.clients.find(c => c.id === id);
+            if (client && !client.dataPagamento) updateData.dataPagamento = hoje;
+          }
+          batch.update(dbFirebase.collection('clients').doc(id), updateData);
+          await client.addLog(id, 'bulk_status', `Status alterado em massa para ${newStatus}`);
+        }
+        await batch.commit();
+      }
+      toast.show(`${ids.length} cliente(s) atualizado(s).`);
+    },
+    scheduleReturn: async () => {
+      const date = document.getElementById('bulkRetorno').value;
+      if (!date) return toast.show('Selecione uma data', 'warning');
+      const ids = ui.getSelectedIds();
+      if (!ids.length) return toast.show('Selecione ao menos um cliente.', 'warning');
+      if (!await toast.confirm(`Agendar retorno para ${ids.length} cliente(s) na data ${date}?`)) return;
+      const BATCH_SIZE = 500;
+      for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+        const batch = dbFirebase.batch();
+        const chunk = ids.slice(i, i + BATCH_SIZE);
+        for (const id of chunk) {
+          batch.update(dbFirebase.collection('clients').doc(id), { retorno: date });
+          await client.addLog(id, 'bulk_retorno', `Retorno agendado em massa para ${date}`);
+        }
+        await batch.commit();
+      }
+      toast.show(`${ids.length} cliente(s) com retorno agendado.`);
+    }
+  };
+
+  // ==================== INICIALIZAÇÃO ====================
+  function debounce(func, delay) {
+    let timeout;
+    return function(...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), delay);
+    };
   }
 
-  window.applyFiltersAndRender = renderTable;
-  window.renderTable = renderTable;
-  window.updateDashboard = updateDashboard;
+  // Atalhos globais para acesso a partir do HTML (onclick)
+  window.client = client;
+  window.ui = ui;
+  window.status = status;
+  window.bulk = bulk;
+  window.exportCsv = exportCsv;
+  window.backup = backup;
+  window.calendar = calendar;
+  window.anexos = anexos;
+  window.auth = auth;
+  window.toast = toast;
+
+  // Configuração inicial
+  if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+  document.getElementById('backupFileInput').addEventListener('change', backup.handleImport);
+  document.getElementById('excelInput').addEventListener('change', ui.handleExcelUpload);
+  auth.init();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
