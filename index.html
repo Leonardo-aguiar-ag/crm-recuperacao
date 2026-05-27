@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recupera Health CRM - Refatorado</title>
+  <title>Recupera Health CRM - Refatorado (corrigido)</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -15,7 +15,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <style>
-    /* ========== VARIÁVEIS E ESTILOS BASE (mantidos) ========== */
+    /* (mesmo CSS do código anterior, mantido) */
     :root {
       --bg: #f8fafb;
       --card: #ffffff;
@@ -25,140 +25,30 @@
     }
     body.dark-mode { --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #f1f5f9; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Segoe UI', sans-serif;
-      transition: background 0.3s;
-    }
-    .navbar {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .card-custom {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .dashboard-card {
-      padding: 2rem;
-      border-radius: 16px;
-      color: white;
-      background: linear-gradient(135deg, var(--primary), #1e40af);
-    }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; transition: background 0.3s; }
+    .navbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; }
+    .card-custom { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .dashboard-card { padding: 2rem; border-radius: 16px; color: white; background: linear-gradient(135deg, var(--primary), #1e40af); }
     .btn { border-radius: 12px; font-weight: 600; }
     .nav-tabs { gap: 0.75rem; border: none; flex-wrap: wrap; }
-    .nav-tabs .nav-link {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
-    }
-    .nav-tabs .nav-link.active {
-      background: var(--primary);
-      color: white;
-    }
-    .login-screen {
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(135deg, var(--primary), #1e40af);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    .login-box {
-      background: white;
-      border-radius: 20px;
-      padding: 2rem;
-      width: 100%;
-      max-width: 400px;
-    }
+    .nav-tabs .nav-link { background: var(--card); border: 1px solid var(--border); border-radius: 12px; color: var(--text); }
+    .nav-tabs .nav-link.active { background: var(--primary); color: white; }
+    .login-screen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--primary), #1e40af); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    .login-box { background: white; border-radius: 20px; padding: 2rem; width: 100%; max-width: 400px; }
     .container-fluid { padding: 2rem; }
     @media (max-width: 768px) { .container-fluid { padding: 1rem; } }
-    .history-log {
-      border-left: 3px solid var(--primary);
-      padding-left: 0.75rem;
-      margin-bottom: 0.75rem;
-      font-size: 0.85rem;
-    }
-    /* Estilos do calendário */
-    .calendar {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 1rem;
-    }
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .calendar-weekdays {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      text-align: center;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
-    .calendar-days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-    }
-    .calendar-day {
-      aspect-ratio: 1 / 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      cursor: pointer;
-      background: var(--card);
-    }
-    .calendar-day.has-return {
-      background: #f59e0b !important;
-      color: white !important;
-    }
-    .calendar-day.selected {
-      background: var(--primary);
-      color: white;
-      border: 2px solid white;
-    }
-    .client-list {
-      margin-top: 1.5rem;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    /* Toast (notificações) */
-    .toast-container {
-      position: fixed;
-      bottom: 1rem;
-      right: 1rem;
-      z-index: 1100;
-    }
-    .toast-custom {
-      background: #333;
-      color: white;
-      border-radius: 8px;
-      padding: 0.75rem 1.5rem;
-      margin-top: 0.5rem;
-      animation: fadeInOut 3s ease forwards;
-    }
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: translateY(20px); }
-      10% { opacity: 1; transform: translateY(0); }
-      90% { opacity: 1; }
-      100% { opacity: 0; transform: translateY(-20px); }
-    }
+    .history-log { border-left: 3px solid var(--primary); padding-left: 0.75rem; margin-bottom: 0.75rem; font-size: 0.85rem; }
+    .calendar { background: var(--card); border-radius: 16px; padding: 1rem; }
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+    .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; margin-bottom: 0.5rem; }
+    .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .calendar-day { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; background: var(--card); }
+    .calendar-day.has-return { background: #f59e0b !important; color: white !important; }
+    .calendar-day.selected { background: var(--primary); color: white; border: 2px solid white; }
+    .client-list { margin-top: 1.5rem; max-height: 300px; overflow-y: auto; }
+    .toast-container { position: fixed; bottom: 1rem; right: 1rem; z-index: 1100; }
+    .toast-custom { background: #333; color: white; border-radius: 8px; padding: 0.75rem 1.5rem; margin-top: 0.5rem; animation: fadeInOut 3s ease forwards; }
+    @keyframes fadeInOut { 0% { opacity: 0; transform: translateY(20px); } 10% { opacity: 1; transform: translateY(0); } 90% { opacity: 1; } 100% { opacity: 0; transform: translateY(-20px); } }
     .tag-checkbox { margin-right: 0.5rem; margin-bottom: 0.25rem; display: inline-block; }
   </style>
 </head>
@@ -225,7 +115,7 @@
       </div>
     </div>
 
-    <!-- FICHA CLIENTE (idêntica à anterior, mas com validações) -->
+    <!-- FICHA CLIENTE -->
     <div class="tab-pane fade" id="clientesTab" role="tabpanel">
       <div class="card-custom"><h5>Campo Mágico</h5><textarea id="smartPaste" class="form-control mb-3" rows="4"></textarea><button class="btn btn-primary" onclick="ui.autoFill()">Auto preencher</button></div>
       <div class="card-custom">
@@ -280,7 +170,7 @@
       </div>
     </div>
 
-    <!-- PESQUISAR (com paginação) -->
+    <!-- PESQUISAR -->
     <div class="tab-pane fade" id="pesquisaTab" role="tabpanel">
       <div class="card-custom">
         <div class="row g-3 mb-3">
@@ -308,7 +198,7 @@
       </div>
     </div>
 
-    <!-- AGENDA (calendário corrigido) -->
+    <!-- AGENDA -->
     <div class="tab-pane fade" id="agendaTab" role="tabpanel">
       <div class="card-custom">
         <div class="calendar">
@@ -334,7 +224,6 @@
   </div>
 </div>
 
-<!-- TOAST NOTIFICATIONS -->
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
@@ -362,7 +251,7 @@
     })
   };
 
-  // ==================== MÓDULO DE FIREBASE ====================
+  // ==================== FIREBASE ====================
   const firebaseConfig = {
     apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
     authDomain: "crm-recuperacao.firebaseapp.com",
@@ -376,7 +265,7 @@
   const dbFirebase = firebase.firestore();
   const storageFirebase = firebase.storage();
 
-  // ==================== MÓDULO DE ESTADO CENTRALIZADO ====================
+  // ==================== ESTADO CENTRALIZADO ====================
   const store = {
     _clients: [],
     _statuses: ['Em Negociação', 'Para Enviar Documentação', 'Implantado', 'Sem Interesse'],
@@ -389,7 +278,7 @@
     _notify() { this._subscribers.forEach(fn => fn()); }
   };
 
-  // ==================== MÓDULO DE AUXILIARES ====================
+  // ==================== AUXILIARES ====================
   const utils = {
     escapeHtml: (str) => { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); },
     formatPhoneForWhatsApp: (raw) => {
@@ -424,7 +313,7 @@
     validateEmail: (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   };
 
-  // ==================== MÓDULO DE AUTENTICAÇÃO ====================
+  // ==================== AUTENTICAÇÃO ====================
   const auth = {
     currentUser: null,
     login: async () => {
@@ -432,8 +321,7 @@
       const password = document.getElementById('loginPassword').value;
       try {
         await authFirebase.signInWithEmailAndPassword(email, password);
-        logger.event('login', email);
-        toast.show('Login realizado com sucesso!');
+        toast.show('Login realizado!');
       } catch (e) {
         document.getElementById('loginError').style.display = 'block';
         document.getElementById('loginError').innerText = e.message;
@@ -471,7 +359,7 @@
           document.getElementById('navbar').style.display = 'flex';
           document.getElementById('mainContent').style.display = 'block';
           await status.load();
-          await client.loadRealtime(); // sincronização em tempo real
+          await client.loadRealtime();
           calendar.init();
           ui.populateFilters();
           setTimeout(() => ui.updateDashboard(), 100);
@@ -485,16 +373,14 @@
     }
   };
 
-  // ==================== MÓDULO DE STATUS ====================
+  // ==================== STATUS ====================
   const status = {
     load: async () => {
       const doc = await dbFirebase.collection('customStatuses').doc(auth.currentUser.uid).get();
       if (doc.exists && doc.data().statuses) store.statuses = doc.data().statuses;
       status.render();
     },
-    save: async () => {
-      await dbFirebase.collection('customStatuses').doc(auth.currentUser.uid).set({ statuses: store.statuses });
-    },
+    save: async () => { await dbFirebase.collection('customStatuses').doc(auth.currentUser.uid).set({ statuses: store.statuses }); },
     add: () => {
       const s = document.getElementById('newStatus').value.trim();
       if (!s) return;
@@ -518,11 +404,11 @@
     }
   };
 
-  // ==================== MÓDULO DE CLIENTES (CRUD + Sincronização) ====================
+  // ==================== CLIENTES ====================
   let unsubscribeClients = null;
   let currentPage = 0;
   const PAGE_SIZE = 50;
-  let allFilteredIds = []; // para paginação
+  let allFilteredIds = [];
 
   const client = {
     loadRealtime: () => {
@@ -546,7 +432,6 @@
 
       if (statusVal === 'Implantado' && !dataPagamento) dataPagamento = hoje;
 
-      // Validações
       const cpf = document.getElementById('cCPF').value.trim();
       if (cpf && !utils.validateCPF(cpf)) return toast.show('CPF inválido', 'error');
       const telefone = document.getElementById('cTelefones').value.trim();
@@ -622,7 +507,7 @@
     }
   };
 
-  // ==================== MÓDULO DE ANEXOS ====================
+  // ==================== ANEXOS ====================
   const anexos = {
     load: async (clientId) => {
       const listDiv = document.getElementById('anexosList');
@@ -659,7 +544,7 @@
     }
   };
 
-  // ==================== MÓDULO DA INTERFACE (UI) ====================
+  // ==================== INTERFACE ====================
   const ui = {
     debouncedRenderTable: debounce(() => ui.renderTable(), 300),
     renderTable: () => {
@@ -685,7 +570,7 @@
       const end = start + PAGE_SIZE;
       const pageClients = store.clients.filter(c => allFilteredIds.includes(c.id)).slice(start, end);
       const tbody = document.getElementById('tableBody');
-      if (pageClients.length === 0 && currentPage === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum cliente encontrado.��堆</tr>'; return; }
+      if (pageClients.length === 0 && currentPage === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum cliente encontrado.��堆</td>'; return; }
       let html = '';
       for (const c of pageClients) {
         const waLink = `https://wa.me/${utils.formatPhoneForWhatsApp(c.telefones)}`;
@@ -697,7 +582,7 @@
           <td><span class="badge bg-primary">${utils.escapeHtml(c.status || '')}</span></td>
           <td>${utils.escapeHtml(c.origem || '-')}</td>
           <td>${c.retorno || '-'}</td>
-          <td class="text-center"><div class="d-flex gap-2 justify-content-center"><button class="btn btn-warning btn-sm" onclick="client.edit('${c.id}')"><i class="bi bi-pencil"></i></button><a href="${waLink}" target="_blank" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a></div></td>
+          <td class="text-center"><div class="d-flex gap-2 justify-content-center"><button class="btn btn-warning btn-sm" onclick="ui.editClient('${c.id}')"><i class="bi bi-pencil"></i></button><a href="${waLink}" target="_blank" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a></div></td>
         </tr>`;
       }
       tbody.innerHTML = html;
@@ -869,7 +754,7 @@
     }
   };
 
-  // ==================== MÓDULO DE CALENDÁRIO ====================
+  // ==================== CALENDÁRIO ====================
   const calendar = {
     currentDate: new Date(),
     init: () => { calendar.render(); },
@@ -939,7 +824,7 @@
     }
   };
 
-  // ==================== MÓDULO DE BACKUP E EXPORTAÇÃO ====================
+  // ==================== BACKUP E EXPORTAÇÃO ====================
   const backup = {
     export: () => {
       const dataToExport = store.clients.map(c => { const { updatedAt, createdAt, ...rest } = c; return rest; });
@@ -1006,7 +891,7 @@
     }
   };
 
-  // ==================== MÓDULO DE AÇÕES EM MASSA (OTIMIZADO) ====================
+  // ==================== AÇÕES EM MASSA ====================
   const bulk = {
     whatsApp: async () => {
       const ids = ui.getSelectedIds();
@@ -1086,7 +971,6 @@
     };
   }
 
-  // Atalhos globais para acesso a partir do HTML (onclick)
   window.client = client;
   window.ui = ui;
   window.status = status;
@@ -1098,7 +982,6 @@
   window.auth = auth;
   window.toast = toast;
 
-  // Configuração inicial
   if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
   document.getElementById('backupFileInput').addEventListener('change', backup.handleImport);
   document.getElementById('excelInput').addEventListener('change', ui.handleExcelUpload);
