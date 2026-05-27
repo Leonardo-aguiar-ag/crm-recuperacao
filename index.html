@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recupera Health CRM - Refatorado (corrigido)</title>
+  <title>Recupere Ai</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -15,7 +15,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <style>
-    /* (mesmo CSS do código anterior, mantido) */
     :root {
       --bg: #f8fafb;
       --card: #ffffff;
@@ -142,8 +141,9 @@
           <div class="col-md-6"><label>Emails</label><input id="cEmails" class="form-control"></div>
           <div class="col-md-6"><label>Retorno</label><input type="date" id="cRetorno" class="form-control"></div>
           <div class="col-md-6"><label>Foto</label><input type="file" id="cFoto" class="form-control" accept="image/*" onchange="ui.previewImage(event)"><img id="preview" style="max-width:100%; margin-top:0.5rem; display:none;"></div>
-          <div class="col-md-4"><label>Valor sem desconto (R$)</label><input type="number" step="0.01" id="cValorSemDesconto" class="form-control"></div>
-          <div class="col-md-4"><label>Valor com desconto (R$)</label><input type="number" step="0.01" id="cValorComDesconto" class="form-control"></div>
+          <!-- Campos de valor (text para aceitar vírgula) -->
+          <div class="col-md-4"><label>Valor sem desconto (R$)</label><input type="text" id="cValorSemDesconto" class="form-control" placeholder="0,00" oninput="this.value = this.value.replace(/[^0-9,]/g, '')"></div>
+          <div class="col-md-4"><label>Valor com desconto (R$)</label><input type="text" id="cValorComDesconto" class="form-control" placeholder="0,00" oninput="this.value = this.value.replace(/[^0-9,]/g, '')"></div>
           <div class="col-md-4"><label>Quantidade de vidas</label><input type="number" step="1" id="cVidas" class="form-control"></div>
           <div class="col-md-4"><label>Data implantação</label><input type="date" id="cDataImplantacao" class="form-control"></div>
           <div class="col-md-4"><label>Data pagamento</label><input type="date" id="cDataPagamento" class="form-control"></div>
@@ -292,6 +292,20 @@
     formatMoney: (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0),
     getEffectiveValue: (client) => client.valorComDesconto && client.valorComDesconto > 0 ? client.valorComDesconto : (client.valorSemDesconto || 0),
     getTodayStr: () => new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }).split('/').reverse().join('-'),
+    // Converte string brasileira "1.234,56" ou "1234,56" para número
+    parseMoney: (value) => {
+      if (!value) return 0;
+      let str = value.toString().trim();
+      // Remove pontos de milhar e substitui vírgula por ponto
+      str = str.replace(/\./g, '').replace(',', '.');
+      let num = parseFloat(str);
+      return isNaN(num) ? 0 : num;
+    },
+    // Formata número para exibição no formato brasileiro
+    formatMoneyDisplay: (value) => {
+      if (value === undefined || value === null) return '';
+      return value.toFixed(2).replace('.', ',');
+    },
     validateCPF: (cpf) => {
       cpf = cpf.replace(/\D/g, '');
       if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
@@ -439,6 +453,10 @@
       const email = document.getElementById('cEmails').value.trim();
       if (email && !utils.validateEmail(email)) return toast.show('E-mail inválido', 'error');
 
+      // Converte valores monetários do formato brasileiro para número
+      const valorSemDesconto = utils.parseMoney(document.getElementById('cValorSemDesconto').value);
+      const valorComDesconto = utils.parseMoney(document.getElementById('cValorComDesconto').value);
+
       const data = {
         nome: document.getElementById('cNome').value.trim(),
         nomeSocial: document.getElementById('cNomeSocial').value.trim(),
@@ -458,8 +476,7 @@
         telefones: telefone, emails: email,
         retorno: document.getElementById('cRetorno').value,
         anotacoes: document.getElementById('cAnotacoes').value.trim(),
-        valorSemDesconto: parseFloat(document.getElementById('cValorSemDesconto').value) || 0,
-        valorComDesconto: parseFloat(document.getElementById('cValorComDesconto').value) || 0,
+        valorSemDesconto, valorComDesconto,
         vidas,
         dataImplantacao: document.getElementById('cDataImplantacao').value || null,
         dataPagamento: dataPagamento || null,
@@ -570,11 +587,11 @@
       const end = start + PAGE_SIZE;
       const pageClients = store.clients.filter(c => allFilteredIds.includes(c.id)).slice(start, end);
       const tbody = document.getElementById('tableBody');
-      if (pageClients.length === 0 && currentPage === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum cliente encontrado.��堆</td>'; return; }
+      if (pageClients.length === 0 && currentPage === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum cliente encontrado.��堆<table>'; return; }
       let html = '';
       for (const c of pageClients) {
         const waLink = `https://wa.me/${utils.formatPhoneForWhatsApp(c.telefones)}`;
-        html += `<tr>
+        html += `<td>
           <td><input type="checkbox" class="client-checkbox" value="${c.id}"></td>
           <td><div class="fw-bold">${utils.escapeHtml(c.nome || '')}</div><div class="small text-muted">${utils.escapeHtml(c.cpf || '')}</div></td>
           <td>${utils.escapeHtml(c.empresa || '')}</td>
@@ -641,11 +658,17 @@
       const c = store.clients.find(c => c.id === id);
       if (!c) return;
       document.getElementById('clientId').value = id;
-      const fields = ['nome','nomeSocial','cpf','nascimento','endereco','cidade','uf','empresa','adeEmp','redePlano','planoAtual','acomodacao','situacao','status','adesao','cancelamento','tempo','telefones','emails','retorno','anotacoes','valorSemDesconto','valorComDesconto','vidas','dataImplantacao','dataPagamento','origem','campanha'];
+      const fields = ['nome','nomeSocial','cpf','nascimento','endereco','cidade','uf','empresa','adeEmp','redePlano','planoAtual','acomodacao','situacao','status','adesao','cancelamento','tempo','telefones','emails','retorno','anotacoes','vidas','dataImplantacao','dataPagamento','origem','campanha'];
       fields.forEach(k => {
         const input = document.getElementById(`c${k.charAt(0).toUpperCase() + k.slice(1)}`);
         if (input) input.value = c[k] !== undefined ? c[k] : '';
       });
+      // Exibir valores monetários no formato brasileiro
+      const semDesc = document.getElementById('cValorSemDesconto');
+      if (semDesc) semDesc.value = c.valorSemDesconto !== undefined ? utils.formatMoneyDisplay(c.valorSemDesconto) : '';
+      const comDesc = document.getElementById('cValorComDesconto');
+      if (comDesc) comDesc.value = c.valorComDesconto !== undefined ? utils.formatMoneyDisplay(c.valorComDesconto) : '';
+      
       anexos.load(id);
       client.loadHistorico(id);
       client.loadStatusHistory(id);
@@ -723,8 +746,10 @@
           acomodacao: row['Acomodação'] || '', situacao: row['Situação'] || '', status: row['Status'] || 'Em Negociação',
           adesao: row['Adesão'] || '', cancelamento: row['Cancelamento'] || '', tempo: row['Tempo'] || '',
           telefones: row['Telefones'] || '', emails: row['Emails'] || '', retorno: row['Retorno'] || '',
-          anotacoes: row['Anotações'] || '', valorSemDesconto: parseFloat(row['Valor sem desconto']) || 0,
-          valorComDesconto: parseFloat(row['Valor com desconto']) || 0, vidas: parseInt(row['Vidas']) || 0,
+          anotacoes: row['Anotações'] || '',
+          valorSemDesconto: utils.parseMoney(row['Valor sem desconto']),
+          valorComDesconto: utils.parseMoney(row['Valor com desconto']),
+          vidas: parseInt(row['Vidas']) || 0,
           dataImplantacao: row['Data implantação'] || null, dataPagamento: row['Data pagamento'] || null,
           origem: row['Origem'] || '', campanha: row['Campanha'] || '',
           userId: auth.currentUser.uid, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
