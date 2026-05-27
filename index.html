@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recupere Ai</title>
+  <title>Recupera Health CRM - Campo Mágico com Validação e Formatação</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -292,19 +292,33 @@
     formatMoney: (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0),
     getEffectiveValue: (client) => client.valorComDesconto && client.valorComDesconto > 0 ? client.valorComDesconto : (client.valorSemDesconto || 0),
     getTodayStr: () => new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }).split('/').reverse().join('-'),
-    // Converte string brasileira "1.234,56" ou "1234,56" para número
     parseMoney: (value) => {
       if (!value) return 0;
       let str = value.toString().trim();
-      // Remove pontos de milhar e substitui vírgula por ponto
       str = str.replace(/\./g, '').replace(',', '.');
       let num = parseFloat(str);
       return isNaN(num) ? 0 : num;
     },
-    // Formata número para exibição no formato brasileiro
     formatMoneyDisplay: (value) => {
       if (value === undefined || value === null) return '';
       return value.toFixed(2).replace('.', ',');
+    },
+    // Formatação de CPF: 12345678900 -> 123.456.789-00
+    formatCpf: (value) => {
+      let digits = value.replace(/\D/g, '');
+      if (digits.length !== 11) return value;
+      return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    },
+    // Formatação de telefone: 11999999999 -> (11) 99999-9999
+    formatPhone: (value) => {
+      let digits = value.replace(/\D/g, '');
+      if (digits.length === 0) return value;
+      if (digits.length === 10) {
+        return digits.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+      } else if (digits.length === 11) {
+        return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+      }
+      return value;
     },
     validateCPF: (cpf) => {
       cpf = cpf.replace(/\D/g, '');
@@ -446,23 +460,41 @@
 
       if (statusVal === 'Implantado' && !dataPagamento) dataPagamento = hoje;
 
-      const cpf = document.getElementById('cCPF').value.trim();
-      if (cpf && !utils.validateCPF(cpf)) return toast.show('CPF inválido', 'error');
-      const telefone = document.getElementById('cTelefones').value.trim();
-      if (telefone && !utils.validatePhone(telefone)) return toast.show('Telefone inválido (mínimo 10 dígitos)', 'error');
-      const email = document.getElementById('cEmails').value.trim();
-      if (email && !utils.validateEmail(email)) return toast.show('E-mail inválido', 'error');
+      const cpfRaw = document.getElementById('cCPF').value.trim();
+      const telefoneRaw = document.getElementById('cTelefones').value.trim();
+      const emailRaw = document.getElementById('cEmails').value.trim();
+      const nomeRaw = document.getElementById('cNome').value.trim();
 
-      // Converte valores monetários do formato brasileiro para número
+      // Validações de formato
+      if (cpfRaw && !utils.validateCPF(cpfRaw)) return toast.show('CPF inválido', 'error');
+      if (telefoneRaw && !utils.validatePhone(telefoneRaw)) return toast.show('Telefone inválido', 'error');
+      if (emailRaw && !utils.validateEmail(emailRaw)) return toast.show('E-mail inválido', 'error');
+
+      // Validação de duplicidade (apenas para novos cadastros)
+      if (!id) {
+        const duplicate = store.clients.find(c => {
+          const cpfMatch = c.cpf && cpfRaw && c.cpf.replace(/\D/g, '') === cpfRaw.replace(/\D/g, '');
+          const phoneMatch = c.telefones && telefoneRaw && c.telefones.replace(/\D/g, '') === telefoneRaw.replace(/\D/g, '');
+          const nameMatch = c.nome && nomeRaw && c.nome.toLowerCase() === nomeRaw.toLowerCase();
+          return cpfMatch || phoneMatch || nameMatch;
+        });
+        if (duplicate) {
+          const msg = `Cliente já cadastrado: ${duplicate.nome}. Deseja continuar?`;
+          if (!await toast.confirm(msg)) return;
+        }
+      }
+
       const valorSemDesconto = utils.parseMoney(document.getElementById('cValorSemDesconto').value);
       const valorComDesconto = utils.parseMoney(document.getElementById('cValorComDesconto').value);
 
       const data = {
-        nome: document.getElementById('cNome').value.trim(),
+        nome: nomeRaw,
         nomeSocial: document.getElementById('cNomeSocial').value.trim(),
-        cpf, nascimento: document.getElementById('cNascimento').value.trim(),
+        cpf: cpfRaw,
+        nascimento: document.getElementById('cNascimento').value.trim(),
         endereco: document.getElementById('cEndereco').value.trim(),
-        cidade: document.getElementById('cCidade').value.trim(), uf: document.getElementById('cUF').value.trim(),
+        cidade: document.getElementById('cCidade').value.trim(),
+        uf: document.getElementById('cUF').value.trim(),
         empresa: document.getElementById('cEmpresa').value.trim(),
         adeEmp: document.getElementById('cAdeEmp').value.trim(),
         redePlano: document.getElementById('cRedePlano').value.trim(),
@@ -473,7 +505,8 @@
         adesao: document.getElementById('cAdesao').value.trim(),
         cancelamento: document.getElementById('cCancelamento').value.trim(),
         tempo: document.getElementById('cTempo').value.trim(),
-        telefones: telefone, emails: email,
+        telefones: telefoneRaw,
+        emails: emailRaw,
         retorno: document.getElementById('cRetorno').value,
         anotacoes: document.getElementById('cAnotacoes').value.trim(),
         valorSemDesconto, valorComDesconto,
@@ -587,11 +620,11 @@
       const end = start + PAGE_SIZE;
       const pageClients = store.clients.filter(c => allFilteredIds.includes(c.id)).slice(start, end);
       const tbody = document.getElementById('tableBody');
-      if (pageClients.length === 0 && currentPage === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum cliente encontrado.��堆<table>'; return; }
+      if (pageClients.length === 0 && currentPage === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum cliente encontrado.��堆</td>'; return; }
       let html = '';
       for (const c of pageClients) {
         const waLink = `https://wa.me/${utils.formatPhoneForWhatsApp(c.telefones)}`;
-        html += `<td>
+        html += `<tr>
           <td><input type="checkbox" class="client-checkbox" value="${c.id}"></td>
           <td><div class="fw-bold">${utils.escapeHtml(c.nome || '')}</div><div class="small text-muted">${utils.escapeHtml(c.cpf || '')}</div></td>
           <td>${utils.escapeHtml(c.empresa || '')}</td>
@@ -668,7 +701,7 @@
       if (semDesc) semDesc.value = c.valorSemDesconto !== undefined ? utils.formatMoneyDisplay(c.valorSemDesconto) : '';
       const comDesc = document.getElementById('cValorComDesconto');
       if (comDesc) comDesc.value = c.valorComDesconto !== undefined ? utils.formatMoneyDisplay(c.valorComDesconto) : '';
-      
+
       anexos.load(id);
       client.loadHistorico(id);
       client.loadStatusHistory(id);
@@ -686,9 +719,11 @@
       document.getElementById('historicoList').innerHTML = '';
       document.getElementById('smartPaste').value = '';
     },
-    autoFill: () => {
+    // Campo Mágico com formatação de CPF/Telefone e verificação de duplicidade
+    autoFill: async () => {
       const text = document.getElementById('smartPaste').value;
-      if (!text.trim()) return;
+      if (!text.trim()) return toast.show('Nenhum texto para processar.', 'warning');
+
       const mappings = [
         { label: 'Nome do usuário:', fieldId: 'cNome' }, { label: 'Nome social:', fieldId: 'cNomeSocial' },
         { label: 'CPF do titular:', fieldId: 'cCPF' }, { label: 'Data de nascimento:', fieldId: 'cNascimento' },
@@ -700,18 +735,76 @@
         { label: 'Data do cancelamento:', fieldId: 'cCancelamento' }, { label: 'Tempo:', fieldId: 'cTempo' },
         { label: 'Telefones cadastrados:', fieldId: 'cTelefones' }, { label: 'Endereços eletrônicos:', fieldId: 'cEmails' }
       ];
+
+      // Limpa campos antes de preencher (opcional)
+      // ui.clearForm(); // cuidado: isso apagaria dados já preenchidos manualmente. Melhor não limpar.
+      
+      let preenchidos = false;
       for (const m of mappings) {
         const regex = new RegExp(`${m.label}\\s*(.*?)$`, 'im');
         const match = text.match(regex);
         if (match && match[1].trim()) {
           let val = match[1].trim();
-          if (m.fieldId === 'cCPF') val = val.replace(/\D/g, '');
-          if (m.fieldId === 'cTelefones') val = val.split(/[,;]/)[0].trim();
-          if (m.fieldId === 'cEmails') { const emailMatch = val.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/); if (emailMatch) val = emailMatch[0]; else continue; }
+          if (m.fieldId === 'cCPF') {
+            // Valida e formata CPF
+            val = val.replace(/\D/g, '');
+            if (val.length === 11 && utils.validateCPF(val)) {
+              val = utils.formatCpf(val);
+            } else {
+              toast.show('CPF extraído é inválido', 'warning');
+            }
+          } else if (m.fieldId === 'cTelefones') {
+            // Pega o primeiro telefone e formata
+            let phoneRaw = val.split(/[,;]/)[0].trim();
+            phoneRaw = phoneRaw.replace(/\D/g, '');
+            if (utils.validatePhone(phoneRaw)) {
+              val = utils.formatPhone(phoneRaw);
+            } else {
+              toast.show('Telefone extraído inválido', 'warning');
+            }
+          } else if (m.fieldId === 'cEmails') {
+            const emailMatch = val.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+            if (emailMatch) val = emailMatch[0];
+            else continue;
+          }
           document.getElementById(m.fieldId).value = val;
+          preenchidos = true;
         }
       }
-      toast.show('Campos preenchidos automaticamente!');
+
+      if (!preenchidos) {
+        toast.show('Nenhum campo reconhecido foi preenchido.', 'warning');
+        return;
+      }
+
+      // Verificar duplicidade após preenchimento
+      const cpfRaw = document.getElementById('cCPF').value.trim();
+      const telefoneRaw = document.getElementById('cTelefones').value.trim();
+      const nomeRaw = document.getElementById('cNome').value.trim();
+
+      // Se não tem nome, nem CPF, nem telefone, não há como verificar duplicidade
+      if (!nomeRaw && !cpfRaw && !telefoneRaw) return;
+
+      const duplicate = store.clients.find(c => {
+        const cpfMatch = c.cpf && cpfRaw && c.cpf.replace(/\D/g, '') === cpfRaw.replace(/\D/g, '');
+        const phoneMatch = c.telefones && telefoneRaw && c.telefones.replace(/\D/g, '') === telefoneRaw.replace(/\D/g, '');
+        const nameMatch = c.nome && nomeRaw && c.nome.toLowerCase() === nomeRaw.toLowerCase();
+        return cpfMatch || phoneMatch || nameMatch;
+      });
+
+      if (duplicate) {
+        const msg = `⚠️ Cliente já cadastrado:\nNome: ${duplicate.nome}\nCPF: ${duplicate.cpf || 'não informado'}\nTelefone: ${duplicate.telefones || 'não informado'}\n\nDeseja continuar o cadastro deste novo cliente?`;
+        const continuar = await toast.confirm(msg);
+        if (!continuar) {
+          // Limpa os campos preenchidos (ou pode apenas manter, mas melhor limpar para evitar cadastro acidental)
+          ui.clearForm();
+          toast.show('Operação cancelada. Campos limpos.', 'info');
+        } else {
+          toast.show('Cliente duplicado será cadastrado, mas fique atento.', 'warning');
+        }
+      } else {
+        toast.show('Campos preenchidos e nenhum cliente duplicado encontrado.', 'success');
+      }
     },
     previewImage: (e) => {
       const reader = new FileReader();
