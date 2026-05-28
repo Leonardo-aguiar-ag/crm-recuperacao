@@ -1,5 +1,5 @@
 <!-- ===================================================== --> 
-<!-- CRM RECUPERAÇÃO COMPLETO FINAL – NOVOS CAMPOS, PRAÇAS, ADMINISTRADORAS -->
+<!-- CRM RECUPERAÇÃO COMPLETO FINAL – CORRIGIDO (LOGIN 100%) -->
 <!-- ===================================================== -->
 
 <!DOCTYPE html>
@@ -75,7 +75,7 @@
 </head>
 <body>
 
-  <!-- LOGIN -->
+  <!-- ==================== LOGIN ==================== -->
   <div class="login-screen" id="loginScreen">
     <div class="login-box">
       <h3 class="text-center mb-4">CRM Recuperação</h3>
@@ -115,12 +115,41 @@
     </ul>
 
     <div class="tab-content">
-      <!-- DASHBOARD (mantido como estava) -->
+      <!-- DASHBOARD (mantido) -->
       <div class="tab-pane fade show active" id="dashboardTab">
-        <!-- ... exatamente igual ao último código fornecido ... -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <label>Período</label>
+            <select id="periodoFiltro" class="form-select" onchange="updateDashboard()">
+              <option value="30">Últimos 30 dias</option>
+              <option value="60">Últimos 60 dias</option>
+              <option value="90">Últimos 90 dias</option>
+              <option value="120">Últimos 120 dias</option>
+              <option value="180">Últimos 180 dias</option>
+              <option value="mes">Mês atual</option>
+              <option value="especifico">Mês específico</option>
+            </select>
+          </div>
+          <div class="col-md-2" id="mesEspecificoDiv" style="display:none;">
+            <label>Escolha o mês</label>
+            <input type="month" id="mesEspecifico" class="form-control" onchange="updateDashboard()">
+          </div>
+        </div>
+        <div class="row g-4 mb-4">
+          <div class="col-md-2"><div class="dashboard-card bg-primary"><h6>Total Propostas</h6><h2 id="dashTotal">0</h2></div></div>
+          <div class="col-md-2"><div class="dashboard-card bg-success"><h6>Implantadas</h6><h2 id="dashImplantados">0</h2></div></div>
+          <div class="col-md-2"><div class="dashboard-card bg-warning"><h6>Total Processado</h6><h2 id="dashProcessado">R$ 0</h2></div></div>
+          <div class="col-md-2"><div class="dashboard-card bg-info"><h6>Ticket Médio</h6><h2 id="dashTicket">R$ 0</h2></div></div>
+          <div class="col-md-2"><div class="dashboard-card bg-success"><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
+        </div>
+        <div class="row g-4">
+          <div class="col-lg-6"><div class="card card-custom p-4"><h5 class="mb-4">Distribuição por Status</h5><canvas id="statusChart"></canvas></div></div>
+          <div class="col-lg-6"><div class="card card-custom p-4"><h5 class="mb-4">Top 5 Administradoras</h5><canvas id="adminChart"></canvas></div></div>
+          <div class="col-12"><div class="card card-custom p-4"><h5 class="mb-4">Evolução de Propostas</h5><canvas id="timeChart"></canvas></div></div>
+        </div>
       </div>
 
-      <!-- ==================== NOVA FICHA CLIENTE ==================== -->
+      <!-- FICHA CLIENTE (completa) -->
       <div class="tab-pane fade" id="clientesTab">
         <div class="card card-custom p-4 mb-4">
           <h5 class="mb-3">Campo Mágico</h5>
@@ -134,7 +163,6 @@
             <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dependentesTab">Dependentes</button></li>
           </ul>
           <div class="tab-content">
-            <!-- DADOS PRINCIPAIS -->
             <div class="tab-pane fade show active" id="dadosPrincipais">
               <div class="row g-3">
                 <div class="col-md-3"><label>Data</label><input type="date" id="cData" class="form-control"></div>
@@ -161,7 +189,6 @@
                 <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="2"></textarea></div>
               </div>
             </div>
-            <!-- DEPENDENTES -->
             <div class="tab-pane fade" id="dependentesTab">
               <div class="row g-3 mb-4">
                 <div class="col-md-3"><input type="text" id="depNome" class="form-control" placeholder="Nome"></div>
@@ -182,7 +209,7 @@
         </div>
       </div>
 
-      <!-- PESQUISA (com busca por proposta) -->
+      <!-- PESQUISA -->
       <div class="tab-pane fade" id="pesquisaTab">
         <div class="card card-custom p-4">
           <div class="row g-3 mb-4">
@@ -198,12 +225,30 @@
         </div>
       </div>
 
-      <!-- AGENDA (inalterado) -->
+      <!-- AGENDA -->
       <div class="tab-pane fade" id="agendaTab">
-        <!-- ... igual ao anterior ... -->
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <div class="card card-custom p-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i></button>
+                <h5 id="calendarioTitulo" class="m-0"></h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(1)"><i class="bi bi-chevron-right"></i></button>
+              </div>
+              <div class="mini-calendar" id="miniCalendario"></div>
+              <button class="btn btn-info w-100 mt-4" onclick="abrirModalTarefa()"><i class="bi bi-plus-circle"></i> Nova Tarefa</button>
+            </div>
+          </div>
+          <div class="col-lg-8">
+            <div class="card card-custom p-4">
+              <h5>Compromissos: <span id="dataSelecionada"></span></h5>
+              <div id="compromissosLista"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- CONFIGURAÇÃO (com Praças e Administradoras) -->
+      <!-- CONFIGURAÇÃO -->
       <div class="tab-pane fade" id="configTab">
         <div class="row g-4">
           <div class="col-lg-4">
@@ -252,39 +297,111 @@
     </div>
   </div>
 
-  <!-- Modal Tarefa (inalterado) -->
+  <!-- Modal Nova Tarefa -->
   <div class="modal fade" id="modalTarefa" tabindex="-1">
-    <!-- ... igual ao anterior ... -->
+    <div class="modal-dialog">
+      <div class="modal-content" style="background:var(--card);color:var(--text);">
+        <div class="modal-header">
+          <h5 class="modal-title">Nova Tarefa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="tarefaTitulo" class="form-control mb-3" placeholder="Título da tarefa">
+          <input type="date" id="tarefaData" class="form-control mb-3">
+          <input type="time" id="tarefaHora" class="form-control mb-3">
+          <textarea id="tarefaDesc" class="form-control" rows="3" placeholder="Descrição (opcional)"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-primary" onclick="salvarTarefa()">Salvar Tarefa</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
-    // Firebase (mesma config)
-    const firebaseConfig = { ... };
+    // ==================== FIREBASE ====================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
+      authDomain: "crm-recuperacao.firebaseapp.com",
+      projectId: "crm-recuperacao",
+      storageBucket: "crm-recuperacao.firebasestorage.app",
+      messagingSenderId: "347011763386",
+      appId: "1:347011763386:web:158c1ca6f512a1cde1c683",
+      measurementId: "G-1XHHFXHN4G"
+    };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // ==================== VARIÁVEIS GLOBAIS ====================
     let currentUser = null;
     let clients = [];
     let tarefas = [];
     let dependentesTemp = [];
     let statuses = ['Em análise', 'Implantada', 'Cancelada', 'Pendente'];
-    let pracas = [];          // lista carregada do Firestore
-    let administradoras = []; // idem
-
-    // Charts, calendário...
-    let charts = { status: null, company: null, time: null };
+    let pracas = [];
+    let administradoras = [];
+    let charts = { status: null, admin: null, time: null };
     let calendarioMes = new Date().getMonth();
     let calendarioAno = new Date().getFullYear();
     let diaSelecionado = new Date().toISOString().split('T')[0];
 
-    // Auth
+    // ==================== AUTH ====================
     auth.onAuthStateChanged(user => {
-      if (user) { currentUser = user; document.getElementById('loginScreen').style.display = 'none'; loadAll(); }
-      else { document.getElementById('loginScreen').style.display = 'flex'; }
+      if (user) {
+        currentUser = user;
+        document.getElementById('loginScreen').style.display = 'none';
+        loadAll();
+      } else {
+        document.getElementById('loginScreen').style.display = 'flex';
+      }
     });
-    // ... funções de login/registro iguais ...
 
+    function login() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      auth.signInWithEmailAndPassword(email, password).catch(err => {
+        document.getElementById('loginError').innerText = err.message;
+      });
+    }
+
+    function googleLogin() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(err => {
+        document.getElementById('loginError').innerText = err.message;
+      });
+    }
+
+    function register() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      auth.createUserWithEmailAndPassword(email, password).catch(err => {
+        document.getElementById('loginError').innerText = err.message;
+      });
+    }
+
+    function recoverPassword() {
+      const email = document.getElementById('loginEmail').value;
+      if (!email) { alert('Digite seu email'); return; }
+      auth.sendPasswordResetEmail(email).then(() => alert('Email enviado!'));
+    }
+
+    function togglePassword() {
+      const input = document.getElementById('loginPassword');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function logout() { auth.signOut(); }
+
+    // ==================== TEMA ====================
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+
+    // ==================== CARREGAMENTO INICIAL ====================
     async function loadAll() {
       await Promise.all([loadClients(), loadTarefas(), loadPracas(), loadAdministradoras()]);
       updateDashboard();
@@ -302,65 +419,133 @@
       updateFilterOptions();
     }
 
+    async function loadTarefas() {
+      const snap = await db.collection('tarefas').where('userId', '==', currentUser.uid).get();
+      tarefas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    }
+
     async function loadPracas() {
       const snap = await db.collection('pracas').where('userId', '==', currentUser.uid).get();
       pracas = snap.docs.map(d => ({ id: d.id, nome: d.data().nome }));
       populateSelect('cPraca', pracas);
-      renderPracasList();
     }
 
     async function loadAdministradoras() {
       const snap = await db.collection('administradoras').where('userId', '==', currentUser.uid).get();
       administradoras = snap.docs.map(d => ({ id: d.id, nome: d.data().nome }));
       populateSelect('cAdministradora', administradoras);
-      renderAdministradorasList();
     }
 
     function populateSelect(elementId, items) {
       const select = document.getElementById(elementId);
+      if (!select) return;
       select.innerHTML = '<option value="">Selecione...</option>';
       items.forEach(item => select.innerHTML += `<option value="${item.nome}">${item.nome}</option>`);
     }
 
-    function renderPracasList() {
-      const list = document.getElementById('pracasList');
-      list.innerHTML = pracas.map(p => `<div class="status-item"><span>${p.nome}</span><button class="btn btn-danger btn-sm" onclick="deletePraca('${p.id}')">Excluir</button></div>`).join('');
+    // ==================== DASHBOARD ====================
+    function handlePeriodoChange() {
+      const div = document.getElementById('mesEspecificoDiv');
+      if (periodoFiltro.value === 'especifico') {
+        div.style.display = 'block';
+        if (!document.getElementById('mesEspecifico').value) {
+          document.getElementById('mesEspecifico').value = new Date().toISOString().slice(0,7);
+        }
+      } else {
+        div.style.display = 'none';
+      }
+      updateDashboard();
     }
 
-    function renderAdministradorasList() {
-      const list = document.getElementById('administradorasList');
-      list.innerHTML = administradoras.map(a => `<div class="status-item"><span>${a.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteAdministradora('${a.id}')">Excluir</button></div>`).join('');
+    function updateDashboard() {
+      const periodo = periodoFiltro.value;
+      let dataLimiteInicio, dataLimiteFim;
+      const hoje = new Date();
+      if (periodo === 'especifico') {
+        const mesAno = document.getElementById('mesEspecifico').value;
+        if (!mesAno) {
+          dataLimiteInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+          dataLimiteFim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+        } else {
+          const [ano, mes] = mesAno.split('-').map(Number);
+          dataLimiteInicio = new Date(ano, mes - 1, 1);
+          dataLimiteFim = new Date(ano, mes, 0);
+        }
+      } else if (periodo === 'mes') {
+        dataLimiteInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+        dataLimiteFim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+      } else {
+        const dias = parseInt(periodo);
+        dataLimiteInicio = new Date();
+        dataLimiteInicio.setDate(dataLimiteInicio.getDate() - dias);
+        dataLimiteFim = new Date();
+      }
+      const inicioStr = dataLimiteInicio.toISOString().split('T')[0];
+      const fimStr = dataLimiteFim.toISOString().split('T')[0];
+
+      const filtrados = clients.filter(c => {
+        const dataRef = c.dataPagamento || c.dataImplantacao || c.data || c.createdAt || '';
+        return dataRef >= inicioStr && dataRef <= fimStr;
+      });
+
+      const total = filtrados.length;
+      const implantados = filtrados.filter(c => c.status === 'Implantada').length;
+      const somaValores = filtrados.reduce((s, c) => s + (parseFloat(c.valorComDesconto) || parseFloat(c.valorSemDesconto) || 0), 0);
+      const ticketMedio = total ? (somaValores / total).toFixed(2) : '0';
+      const totalProcessado = somaValores.toFixed(2);
+      const taxaConversao = total ? ((implantados / total) * 100).toFixed(1) : '0';
+
+      document.getElementById('dashTotal').innerText = total;
+      document.getElementById('dashImplantados').innerText = implantados;
+      document.getElementById('dashProcessado').innerText = 'R$ ' + totalProcessado;
+      document.getElementById('dashTicket').innerText = 'R$ ' + ticketMedio;
+      document.getElementById('dashConversao').innerText = taxaConversao + '%';
+
+      renderCharts(filtrados);
     }
 
-    async function addPraca() {
-      const nome = document.getElementById('novaPraca').value.trim();
-      if (!nome) return;
-      await db.collection('pracas').add({ nome, userId: currentUser.uid });
-      document.getElementById('novaPraca').value = '';
-      await loadPracas();
+    function renderCharts(filtrados) {
+      // Gráfico de status (doughnut)
+      const ctxStatus = document.getElementById('statusChart')?.getContext('2d');
+      if (ctxStatus) {
+        const statusCounts = {};
+        statuses.forEach(s => statusCounts[s] = 0);
+        filtrados.forEach(c => { if (statusCounts[c.status] !== undefined) statusCounts[c.status]++; });
+        if (charts.status) charts.status.destroy();
+        charts.status = new Chart(ctxStatus, {
+          type: 'doughnut',
+          data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#3b82f6','#10b981','#ef4444','#f59e0b','#8b5cf6'] }] },
+          options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+      }
+      // Gráfico de administradoras (bar)
+      const ctxAdmin = document.getElementById('adminChart')?.getContext('2d');
+      if (ctxAdmin) {
+        const adminCounts = {};
+        filtrados.forEach(c => { if (c.administradora) adminCounts[c.administradora] = (adminCounts[c.administradora] || 0) + 1; });
+        const top = Object.entries(adminCounts).sort((a,b) => b[1]-a[1]).slice(0,5);
+        if (charts.admin) charts.admin.destroy();
+        charts.admin = new Chart(ctxAdmin, {
+          type: 'bar',
+          data: { labels: top.map(t=>t[0]), datasets: [{ data: top.map(t=>t[1]), backgroundColor: '#3b82f6' }] },
+          options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        });
+      }
+      // Evolução temporal
+      const ctxTime = document.getElementById('timeChart')?.getContext('2d');
+      if (ctxTime) {
+        const last7 = [...Array(7)].map((_,i) => { const d = new Date(); d.setDate(d.getDate()-i); return d.toISOString().split('T')[0]; }).reverse();
+        const timeData = last7.map(d => filtrados.filter(c => (c.createdAt||'').split('T')[0] === d).length);
+        if (charts.time) charts.time.destroy();
+        charts.time = new Chart(ctxTime, {
+          type: 'line',
+          data: { labels: last7.map(d => d.slice(5)), datasets: [{ data: timeData, borderColor: '#3b82f6', fill: true, tension: 0.4 }] },
+          options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        });
+      }
     }
 
-    async function deletePraca(id) {
-      if (!confirm('Remover praça?')) return;
-      await db.collection('pracas').doc(id).delete();
-      await loadPracas();
-    }
-
-    async function addAdministradora() {
-      const nome = document.getElementById('novaAdministradora').value.trim();
-      if (!nome) return;
-      await db.collection('administradoras').add({ nome, userId: currentUser.uid });
-      document.getElementById('novaAdministradora').value = '';
-      await loadAdministradoras();
-    }
-
-    async function deleteAdministradora(id) {
-      if (!confirm('Remover administradora?')) return;
-      await db.collection('administradoras').doc(id).delete();
-      await loadAdministradoras();
-    }
-
-    // Cliente
+    // ==================== CLIENTES ====================
     async function saveClient() {
       const data = {
         data: document.getElementById('cData').value,
@@ -448,28 +633,27 @@
       const email = document.getElementById('depEmail').value.trim();
       if (!nome) return alert('Nome obrigatório');
       dependentesTemp.push({ nome, cpf, telefone, email });
-      document.getElementById('depNome').value = '';
-      document.getElementById('depCPF').value = '';
-      document.getElementById('depTelefone').value = '';
-      document.getElementById('depEmail').value = '';
+      ['depNome','depCPF','depTelefone','depEmail'].forEach(id => document.getElementById(id).value = '');
       renderDependentes();
     }
+
     function removeDependente(index) { dependentesTemp.splice(index, 1); renderDependentes(); }
+
     function renderDependentes() {
       const tbody = document.getElementById('dependentesBody');
       tbody.innerHTML = dependentesTemp.map((d, i) => 
         `<tr><td>${d.nome}</td><td>${d.cpf}</td><td>${d.telefone}</td><td>${d.email}</td><td><button class="btn btn-danger btn-sm" onclick="removeDependente(${i})">Remover</button></td></tr>`).join('');
     }
 
-    // Pesquisa (filtros atualizados)
+    // ==================== PESQUISA ====================
     function renderTable() {
       const s = document.getElementById('search').value.toLowerCase();
       const fs = document.getElementById('filterStatus').value;
       const fm = document.getElementById('filterModalidade').value;
       const fp = document.getElementById('filterPraca').value;
       const fa = document.getElementById('filterAdministradora').value;
-
-      document.getElementById('tableBody').innerHTML = '';
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
       clients.filter(c => {
         const matchSearch = !s || (c.nomeTitular||'').toLowerCase().includes(s) || (c.numeroProposta||'').toLowerCase().includes(s);
         const matchStatus = fs === 'ALL' || c.status === fs;
@@ -478,7 +662,7 @@
         const matchAdmin = fa === 'ALL' || c.administradora === fa;
         return matchSearch && matchStatus && matchModal && matchPraca && matchAdmin;
       }).forEach(c => {
-        document.getElementById('tableBody').innerHTML += `<tr>
+        tbody.innerHTML += `<tr>
           <td>${c.numeroProposta || ''}</td><td>${c.nomeTitular || ''}</td><td>${c.cpfTitular || ''}</td>
           <td>${c.modalidadePlano || ''}</td><td>${c.status || ''}</td><td>R$ ${c.valorComDesconto || c.valorSemDesconto || '0'}</td>
           <td>${c.praca || ''}</td><td>${c.administradora || ''}</td>
@@ -489,24 +673,159 @@
     }
 
     function updateFilterOptions() {
-      // Modalidade
-      const modSet = new Set();
-      clients.forEach(c => { if (c.modalidadePlano) modSet.add(c.modalidadePlano); });
+      const modSet = new Set(); clients.forEach(c => { if (c.modalidadePlano) modSet.add(c.modalidadePlano); });
       document.getElementById('filterModalidade').innerHTML = '<option value="ALL">Modalidade</option>' + [...modSet].sort().map(m => `<option>${m}</option>`).join('');
-      // Praça
-      const pracaSet = new Set();
-      clients.forEach(c => { if (c.praca) pracaSet.add(c.praca); });
+      const pracaSet = new Set(); clients.forEach(c => { if (c.praca) pracaSet.add(c.praca); });
       document.getElementById('filterPraca').innerHTML = '<option value="ALL">Praça</option>' + [...pracaSet].sort().map(p => `<option>${p}</option>`).join('');
-      // Administradora
-      const adminSet = new Set();
-      clients.forEach(c => { if (c.administradora) adminSet.add(c.administradora); });
+      const adminSet = new Set(); clients.forEach(c => { if (c.administradora) adminSet.add(c.administradora); });
       document.getElementById('filterAdministradora').innerHTML = '<option value="ALL">Administradora</option>' + [...adminSet].sort().map(a => `<option>${a}</option>`).join('');
     }
 
-    // ... restante (agenda, backup, exportação, etc.) mantido, mas com adaptações mínimas ...
-    // A exportação Excel deve incluir as novas colunas; vou manter a essência.
+    async function deleteClient(id) { if (confirm('Tem certeza?')) { await db.collection('clients').doc(id).delete(); loadAll(); } }
 
-    // Exportar Excel (atualizado com novos campos)
+    // ==================== AGENDA / CALENDÁRIO ====================
+    function renderCalendario() {
+      const diasSemana = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+      const primeiroDia = new Date(calendarioAno, calendarioMes, 1).getDay();
+      const ultimoDia = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
+      const hoje = new Date().toISOString().split('T')[0];
+      calendarioTitulo.innerText = new Date(calendarioAno, calendarioMes).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      let html = diasSemana.map(d => `<div class="fw-bold">${d}</div>`).join('');
+      for (let i = 0; i < primeiroDia; i++) html += '<div></div>';
+      for (let dia = 1; dia <= ultimoDia; dia++) {
+        const dataStr = `${calendarioAno}-${String(calendarioMes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+        const temRetorno = clients.some(c => c.dataImplantacao === dataStr || c.dataPagamento === dataStr);
+        const temTarefa = tarefas.some(t => t.data === dataStr);
+        const isHoje = dataStr === hoje;
+        const isSel = dataStr === diaSelecionado;
+        let cls = 'day';
+        if (isHoje) cls += ' today';
+        if (temRetorno || temTarefa) cls += ' has-event';
+        html += `<div class="${cls}" onclick="selecionarDia('${dataStr}')" style="${isSel ? 'background:var(--primary);color:white;' : ''}">${dia}</div>`;
+      }
+      miniCalendario.innerHTML = html;
+    }
+
+    function changeMonth(delta) {
+      calendarioMes += delta;
+      if (calendarioMes < 0) { calendarioMes = 11; calendarioAno--; }
+      if (calendarioMes > 11) { calendarioMes = 0; calendarioAno++; }
+      renderCalendario();
+    }
+
+    function selecionarDia(data) {
+      diaSelecionado = data;
+      renderCalendario();
+      renderCompromissos(data);
+    }
+
+    function renderCompromissos(data) {
+      const compromissos = clients.filter(c => c.dataImplantacao === data || c.dataPagamento === data);
+      const tarefasDia = tarefas.filter(t => t.data === data);
+      let html = '';
+      if (compromissos.length) {
+        html += '<h6>Propostas</h6>';
+        compromissos.forEach(c => html += `<div class="status-item"><strong>${c.nomeTitular}</strong> (${c.numeroProposta})</div>`);
+      }
+      if (tarefasDia.length) {
+        html += '<h6 class="mt-3">Tarefas</h6>';
+        tarefasDia.forEach(t => html += `<div class="status-item"><div><strong>${t.titulo}</strong><br><small>${t.hora || ''} - ${t.desc || ''}</small></div><button class="btn btn-danger btn-sm" onclick="deleteTarefa('${t.id}')">Excluir</button></div>`);
+      }
+      if (!html) html = '<p class="text-muted">Nenhum compromisso.</p>';
+      compromissosLista.innerHTML = html;
+      dataSelecionada.innerText = new Date(data + 'T00:00').toLocaleDateString('pt-BR');
+    }
+
+    function abrirModalTarefa() {
+      tarefaData.value = diaSelecionado;
+      tarefaHora.value = ''; tarefaTitulo.value = ''; tarefaDesc.value = '';
+      new bootstrap.Modal(document.getElementById('modalTarefa')).show();
+    }
+
+    async function salvarTarefa() {
+      const titulo = tarefaTitulo.value.trim();
+      if (!titulo) return alert('Título obrigatório');
+      await db.collection('tarefas').add({
+        titulo, data: tarefaData.value, hora: tarefaHora.value, desc: tarefaDesc.value,
+        userId: currentUser.uid, createdAt: new Date().toISOString()
+      });
+      document.querySelector('#modalTarefa .btn-close').click();
+      await loadTarefas();
+      renderCalendario();
+      renderCompromissos(diaSelecionado);
+    }
+
+    async function deleteTarefa(id) {
+      if (!confirm('Excluir tarefa?')) return;
+      await db.collection('tarefas').doc(id).delete();
+      await loadTarefas();
+      renderCalendario();
+      renderCompromissos(diaSelecionado);
+    }
+
+    // ==================== ETIQUETAS ====================
+    function addStatus() { const s = prompt('Novo status'); if (s) { statuses.push(s); renderStatuses(); } }
+    function deleteStatus(i) { statuses.splice(i,1); renderStatuses(); }
+    function renderStatuses() {
+      const select = document.getElementById('cStatus');
+      const filter = document.getElementById('filterStatus');
+      select.innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
+      filter.innerHTML = '<option value="ALL">Status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+      document.getElementById('statusList').innerHTML = statuses.map((s,i) => `<div class="status-item"><strong>${s}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
+    }
+
+    // ==================== PRAÇAS / ADMINISTRADORAS ====================
+    async function addPraca() {
+      const nome = novaPraca.value.trim();
+      if (!nome) return;
+      await db.collection('pracas').add({ nome, userId: currentUser.uid });
+      novaPraca.value = '';
+      await loadPracas();
+    }
+    async function deletePraca(id) { if (confirm('Remover?')) { await db.collection('pracas').doc(id).delete(); await loadPracas(); } }
+    function renderPracasList() {
+      pracasList.innerHTML = pracas.map(p => `<div class="status-item"><span>${p.nome}</span><button class="btn btn-danger btn-sm" onclick="deletePraca('${p.id}')">Excluir</button></div>`).join('');
+    }
+
+    async function addAdministradora() {
+      const nome = novaAdministradora.value.trim();
+      if (!nome) return;
+      await db.collection('administradoras').add({ nome, userId: currentUser.uid });
+      novaAdministradora.value = '';
+      await loadAdministradoras();
+    }
+    async function deleteAdministradora(id) { if (confirm('Remover?')) { await db.collection('administradoras').doc(id).delete(); await loadAdministradoras(); } }
+    function renderAdministradorasList() {
+      administradorasList.innerHTML = administradoras.map(a => `<div class="status-item"><span>${a.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteAdministradora('${a.id}')">Excluir</button></div>`).join('');
+    }
+
+    // ==================== BACKUP / EXCEL ====================
+    function exportBackup() {
+      const blob = new Blob([JSON.stringify({ clients, tarefas, pracas, administradoras })], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup-crm.json'; a.click();
+    }
+    function importBackup() { backupFileInput.click(); }
+    function handleBackupFile(e) {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (!confirm('Importar backup?')) return;
+          for (const col of ['clients','tarefas','pracas','administradoras']) {
+            if (data[col]) {
+              const batch = db.batch();
+              data[col].forEach(item => { const { id, ...d } = item; d.userId = currentUser.uid; batch.set(id ? db.collection(col).doc(id) : db.collection(col).doc(), d, { merge: true }); });
+              await batch.commit();
+            }
+          }
+          alert('Importado!');
+          loadAll();
+        } catch (er) { alert('Erro: ' + er.message); }
+      };
+      reader.readAsText(file);
+    }
+
     function exportarExcel() {
       const mesInput = document.getElementById('exportMes').value;
       if (!mesInput) return alert('Selecione um mês.');
@@ -529,9 +848,9 @@
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `propostas_${ano}_${mes}.csv`; a.click();
     }
 
-    // AutoFill (adaptado para novos rótulos)
+    // ==================== CAMPO MÁGICO ====================
     function autoFill() {
-      const t = document.getElementById('smartPaste').value;
+      const t = smartPaste.value;
       const map = [
         [/N[úu]mero da proposta\s*:\s*(.*)$/im, 'cNumeroProposta'],
         [/Nome do titular\s*:\s*(.*)$/im, 'cNomeTitular'],
@@ -557,12 +876,11 @@
       map.forEach(([r, id]) => { const m = t.match(r); if (m) document.getElementById(id).value = m[1].trim(); });
     }
 
-    // ... funções de tarefas e agenda preservadas ...
-
-    // Init
-    loadAll();
+    // ==================== INIT ====================
+    renderStatuses();
+    renderCalendario();
+    dataSelecionada.innerText = new Date(diaSelecionado + 'T00:00').toLocaleDateString('pt-BR');
   </script>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
