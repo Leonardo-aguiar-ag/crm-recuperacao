@@ -1,5 +1,5 @@
 <!-- ===================================================== --> 
-<!-- CRM RECUPERAÇÃO COMPLETO FINAL - COM DEPENDENTES, AGENDA, TICKET MÉDIO -->
+<!-- CRM RECUPERAÇÃO COMPLETO FINAL - DASHBOARD ATUALIZADO -->
 <!-- ===================================================== -->
 
 <!DOCTYPE html>
@@ -133,11 +133,11 @@
             </select>
           </div>
         </div>
+        <!-- Cards ajustados: 5 cards (Total, Implantados, Total Processado, Ticket Médio, Previsão) -->
         <div class="row g-4 mb-4">
           <div class="col-md-2"><div class="dashboard-card bg-primary"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
           <div class="col-md-2"><div class="dashboard-card bg-success"><h6>Implantados</h6><h2 id="dashImplantados">0</h2></div></div>
-          <div class="col-md-2"><div class="dashboard-card bg-warning"><h6>Negociação</h6><h2 id="dashNegociacao">0</h2></div></div>
-          <div class="col-md-2"><div class="dashboard-card bg-danger"><h6>Sem Interesse</h6><h2 id="dashSemInteresse">0</h2></div></div>
+          <div class="col-md-2"><div class="dashboard-card bg-warning"><h6>Total Processado</h6><h2 id="dashProcessado">R$ 0</h2></div></div>
           <div class="col-md-2"><div class="dashboard-card bg-info"><h6>Ticket Médio</h6><h2 id="dashTicket">R$ 0</h2></div></div>
           <div class="col-md-2"><div class="dashboard-card bg-success"><h6>Prev. Próx. Mês</h6><h2 id="dashPrevisao">R$ 0</h2></div></div>
         </div>
@@ -353,7 +353,7 @@
       tarefas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     }
 
-    // Dashboard
+    // Dashboard atualizado sem Negociação e Sem Interesse
     function updateDashboard() {
       const periodo = periodoFiltro.value;
       let dataLimite = new Date();
@@ -366,10 +366,11 @@
       const filtrados = clients.filter(c => (c.dataPagamento || c.adesao || '') >= limite);
       const total = filtrados.length;
       const implantados = filtrados.filter(c => c.status === 'Implantada').length;
-      const negociacao = filtrados.filter(c => c.status === 'Em negociação').length;
-      const semInteresse = filtrados.filter(c => c.status === 'Não tem interesse').length;
-      const soma = filtrados.reduce((s, c) => s + (parseFloat(c.valor) || 0), 0);
-      const ticketMedio = total ? (soma / total).toFixed(2) : '0';
+      const somaValores = filtrados.reduce((s, c) => s + (parseFloat(c.valor) || 0), 0);
+      const ticketMedio = total ? (somaValores / total).toFixed(2) : '0';
+      // Total Processado = soma de todos os valores (substitui "Sem Interesse")
+      const totalProcessado = somaValores.toFixed(2);
+      // Previsão próximo mês
       const hoje = new Date();
       const proxMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1).toISOString().slice(0, 7);
       const previsao = clients
@@ -378,10 +379,10 @@
 
       dashTotal.innerText = total;
       dashImplantados.innerText = implantados;
-      dashNegociacao.innerText = negociacao;
-      dashSemInteresse.innerText = semInteresse;
+      dashProcessado.innerText = 'R$ ' + totalProcessado;
       dashTicket.innerText = 'R$ ' + ticketMedio;
       dashPrevisao.innerText = 'R$ ' + previsao.toFixed(2);
+
       renderCharts(filtrados);
     }
 
