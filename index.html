@@ -118,9 +118,8 @@
     </ul>
 
     <div class="tab-content">
-      <!-- ==================== DASHBOARD ==================== -->
+      <!-- DASHBOARD -->
       <div class="tab-pane fade show active" id="dashboardTab">
-        <!-- Filtros -->
         <div class="row g-3 mb-4">
           <div class="col-md-3">
             <label>Período</label>
@@ -134,7 +133,6 @@
             </select>
           </div>
         </div>
-        <!-- Cards principais -->
         <div class="row g-4 mb-4">
           <div class="col-md-2"><div class="dashboard-card bg-primary"><h6>Total Clientes</h6><h2 id="dashTotal">0</h2></div></div>
           <div class="col-md-2"><div class="dashboard-card bg-success"><h6>Implantados</h6><h2 id="dashImplantados">0</h2></div></div>
@@ -143,7 +141,6 @@
           <div class="col-md-2"><div class="dashboard-card bg-info"><h6>Ticket Médio</h6><h2 id="dashTicket">R$ 0</h2></div></div>
           <div class="col-md-2"><div class="dashboard-card bg-success"><h6>Prev. Próx. Mês</h6><h2 id="dashPrevisao">R$ 0</h2></div></div>
         </div>
-        <!-- Gráficos -->
         <div class="row g-4">
           <div class="col-lg-6"><div class="card card-custom p-4"><h5 class="mb-4">Distribuição por Status</h5><canvas id="statusChart"></canvas></div></div>
           <div class="col-lg-6"><div class="card card-custom p-4"><h5 class="mb-4">Top 5 Empresas</h5><canvas id="companyChart"></canvas></div></div>
@@ -151,7 +148,7 @@
         </div>
       </div>
 
-      <!-- ==================== FICHA CLIENTE ==================== -->
+      <!-- FICHA CLIENTE -->
       <div class="tab-pane fade" id="clientesTab">
         <div class="card card-custom p-4 mb-4">
           <h5 class="mb-3">Campo Mágico</h5>
@@ -160,13 +157,11 @@
         </div>
         <div class="card card-custom p-4">
           <input type="hidden" id="clientId">
-          <!-- Sub-abas da ficha -->
           <ul class="nav nav-tabs mb-4" id="fichaTabs">
             <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dadosPrincipais">Dados Principais</button></li>
             <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dependentesTab">Dependentes</button></li>
           </ul>
           <div class="tab-content">
-            <!-- Dados Principais -->
             <div class="tab-pane fade show active" id="dadosPrincipais">
               <div class="row g-3">
                 <div class="col-md-4"><label>Nome do usuário</label><input type="text" id="cNome" class="form-control"></div>
@@ -196,10 +191,9 @@
                   <input type="file" class="form-control" onchange="previewImage(event)">
                   <img id="preview">
                 </div>
-                <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="3" placeholder="Observações sobre este cliente..."></textarea></div>
+                <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="3" placeholder="Observações..."></textarea></div>
               </div>
             </div>
-            <!-- Dependentes -->
             <div class="tab-pane fade" id="dependentesTab">
               <div class="row g-3 mb-4">
                 <div class="col-md-4"><input type="text" id="depNome" class="form-control" placeholder="Nome do dependente"></div>
@@ -219,7 +213,7 @@
         </div>
       </div>
 
-      <!-- ==================== PESQUISA ==================== -->
+      <!-- PESQUISA -->
       <div class="tab-pane fade" id="pesquisaTab">
         <div class="card card-custom p-4">
           <div class="row g-3 mb-4">
@@ -233,10 +227,9 @@
         </div>
       </div>
 
-      <!-- ==================== AGENDA ==================== -->
+      <!-- AGENDA -->
       <div class="tab-pane fade" id="agendaTab">
         <div class="row g-4">
-          <!-- Mini Calendário + Botão tarefa -->
           <div class="col-lg-4">
             <div class="card card-custom p-4">
               <div class="d-flex justify-content-between align-items-center mb-3">
@@ -248,7 +241,6 @@
               <button class="btn btn-info w-100 mt-4" onclick="abrirModalTarefa()"><i class="bi bi-plus-circle"></i> Nova Tarefa</button>
             </div>
           </div>
-          <!-- Compromissos do dia -->
           <div class="col-lg-8">
             <div class="card card-custom p-4">
               <h5>Compromissos: <span id="dataSelecionada"></span></h5>
@@ -258,7 +250,7 @@
         </div>
       </div>
 
-      <!-- ==================== CONFIG ==================== -->
+      <!-- CONFIG -->
       <div class="tab-pane fade" id="configTab">
         <div class="row g-4">
           <div class="col-lg-6">
@@ -323,14 +315,14 @@
     let currentUser = null;
     let clients = [];
     let tarefas = [];
-    let dependentesTemp = []; // Array temporário para dependentes do cliente sendo editado
+    let dependentesTemp = [];
     let statuses = ['Em negociação', 'Fechou o plano', 'Não tem interesse', 'Implantada'];
     let charts = { status: null, company: null, time: null };
     let calendarioMes = new Date().getMonth();
     let calendarioAno = new Date().getFullYear();
     let diaSelecionado = new Date().toISOString().split('T')[0];
 
-    /* AUTH */
+    // Auth
     auth.onAuthStateChanged(user => {
       if (user) { currentUser = user; document.getElementById('loginScreen').style.display = 'none'; loadAll(); }
       else { document.getElementById('loginScreen').style.display = 'flex'; }
@@ -344,33 +336,31 @@
     function toggleTheme() { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light'); }
     if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
 
-    /* LOAD ALL */
+    // Load
     async function loadAll() {
       await Promise.all([loadClients(), loadTarefas()]);
       updateDashboard();
       renderCalendario();
       renderCompromissos(diaSelecionado);
     }
-
     async function loadClients() {
       const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
       clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderTable(); updatePlanosFilter(); renderStatuses();
     }
-
     async function loadTarefas() {
       const snap = await db.collection('tarefas').where('userId', '==', currentUser.uid).get();
       tarefas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     }
 
-    /* DASHBOARD */
+    // Dashboard
     function updateDashboard() {
-      const dias = parseInt(periodoFiltro.value) || 30;
-      const dataLimite = new Date();
-      if (periodoFiltro.value === 'mes') {
-        dataLimite.setDate(0); // último dia do mês anterior
+      const periodo = periodoFiltro.value;
+      let dataLimite = new Date();
+      if (periodo === 'mes') {
+        dataLimite = new Date(dataLimite.getFullYear(), dataLimite.getMonth(), 1);
       } else {
-        dataLimite.setDate(dataLimite.getDate() - dias);
+        dataLimite.setDate(dataLimite.getDate() - parseInt(periodo));
       }
       const limite = dataLimite.toISOString().split('T')[0];
       const filtrados = clients.filter(c => (c.dataPagamento || c.adesao || '') >= limite);
@@ -378,14 +368,12 @@
       const implantados = filtrados.filter(c => c.status === 'Implantada').length;
       const negociacao = filtrados.filter(c => c.status === 'Em negociação').length;
       const semInteresse = filtrados.filter(c => c.status === 'Não tem interesse').length;
-      const somaValores = filtrados.reduce((s, c) => s + (parseFloat(c.valor) || 0), 0);
-      const ticketMedio = total > 0 ? (somaValores / total).toFixed(2) : 0;
-      // Previsão: soma dos valores dos clientes com status "Implantada" cujo próximo pagamento está no mês seguinte
+      const soma = filtrados.reduce((s, c) => s + (parseFloat(c.valor) || 0), 0);
+      const ticketMedio = total ? (soma / total).toFixed(2) : '0';
       const hoje = new Date();
-      const proxMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1);
-      const proxMesStr = proxMes.toISOString().slice(0, 7);
+      const proxMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1).toISOString().slice(0, 7);
       const previsao = clients
-        .filter(c => c.status === 'Implantada' && (c.dataPagamento || '').startsWith(proxMesStr))
+        .filter(c => c.status === 'Implantada' && (c.dataPagamento || '').startsWith(proxMes))
         .reduce((s, c) => s + (parseFloat(c.valor) || 0), 0);
 
       dashTotal.innerText = total;
@@ -405,10 +393,7 @@
       if (charts.status) charts.status.destroy();
       charts.status = new Chart(ctxStatus, {
         type: 'doughnut',
-        data: {
-          labels: Object.keys(statusCounts),
-          datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#3b82f6','#10b981','#ef4444','#f59e0b','#8b5cf6'] }]
-        },
+        data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#3b82f6','#10b981','#ef4444','#f59e0b','#8b5cf6'] }] },
         options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
       });
 
@@ -419,8 +404,8 @@
       if (charts.company) charts.company.destroy();
       charts.company = new Chart(ctxCompany, {
         type: 'bar',
-        data: { labels: top.map(t=>t[0]), datasets: [{ label: 'Clientes', data: top.map(t=>t[1]), backgroundColor: '#3b82f6' }] },
-        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+        data: { labels: top.map(t=>t[0]), datasets: [{ data: top.map(t=>t[1]), backgroundColor: '#3b82f6' }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
       });
 
       const ctxTime = document.getElementById('timeChart').getContext('2d');
@@ -434,7 +419,7 @@
       });
     }
 
-    /* FICHA CLIENTE */
+    // Cliente
     async function saveClient() {
       const data = {
         nome: cNome.value, nomeSocial: cNomeSocial.value, cpf: cCPF.value, nascimento: cNascimento.value,
@@ -459,9 +444,10 @@
 
     function clearForm() {
       clientId.value = ''; dependentesTemp = [];
-      ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes','cValor','cDataPagamento'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-      cStatus.selectedIndex = 0;
-      preview.src = ''; preview.style.display = 'none';
+      const ids = ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes','cValor','cDataPagamento'];
+      ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      document.getElementById('cStatus').selectedIndex = 0;
+      const preview = document.getElementById('preview'); if (preview) { preview.src = ''; preview.style.display = 'none'; }
       const fi = document.querySelector('#clientesTab input[type="file"]'); if (fi) fi.value = '';
       smartPaste.value = '';
       renderDependentes();
@@ -490,16 +476,13 @@
       depNome.value = ''; depCPF.value = ''; depNascimento.value = '';
       renderDependentes();
     }
-
     function removeDependente(index) { dependentesTemp.splice(index, 1); renderDependentes(); }
-
     function renderDependentes() {
       dependentesBody.innerHTML = dependentesTemp.map((d, i) => 
-        `<tr><td>${d.nome}</td><td>${d.cpf}</td><td>${d.nascimento}</td><td><button class="btn btn-danger btn-sm" onclick="removeDependente(${i})">Remover</button></td></tr>`
-      ).join('');
+        `<tr><td>${d.nome}</td><td>${d.cpf}</td><td>${d.nascimento}</td><td><button class="btn btn-danger btn-sm" onclick="removeDependente(${i})">Remover</button></td></tr>`).join('');
     }
 
-    /* PESQUISA */
+    // Pesquisa
     function renderTable() {
       const s = search.value.toLowerCase(), fs = filterStatus.value, fp = filterPlano.value;
       tableBody.innerHTML = '';
@@ -520,22 +503,19 @@
           </div></td></tr>`;
       });
     }
-
     async function deleteClient(id) { if (confirm('Tem certeza?')) { await db.collection('clients').doc(id).delete(); loadAll(); } }
-
     function updatePlanosFilter() {
       const s = new Set(); clients.forEach(c => { if (c.planoAtual) s.add(c.planoAtual); if (c.redePlano) s.add(c.redePlano); });
       filterPlano.innerHTML = '<option value="ALL">Todos os planos</option>' + [...s].sort().map(p => `<option>${p}</option>`).join('');
     }
 
-    /* AGENDA / CALENDÁRIO */
+    // Agenda
     function renderCalendario() {
       const diasSemana = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
       const primeiroDia = new Date(calendarioAno, calendarioMes, 1).getDay();
       const ultimoDia = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
       const hoje = new Date().toISOString().split('T')[0];
       calendarioTitulo.innerText = new Date(calendarioAno, calendarioMes).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-
       let html = diasSemana.map(d => `<div class="fw-bold">${d}</div>`).join('');
       for (let i = 0; i < primeiroDia; i++) html += '<div></div>';
       for (let dia = 1; dia <= ultimoDia; dia++) {
@@ -543,45 +523,41 @@
         const temRetorno = clients.some(c => c.retorno === dataStr);
         const temTarefa = tarefas.some(t => t.data === dataStr);
         const isHoje = dataStr === hoje;
-        const isSelecionado = dataStr === diaSelecionado;
+        const isSel = dataStr === diaSelecionado;
         let cls = 'day';
         if (isHoje) cls += ' today';
         if (temRetorno || temTarefa) cls += ' has-event';
-        html += `<div class="${cls}" onclick="selecionarDia('${dataStr}')" style="${isSelecionado ? 'background:var(--primary);color:white;' : ''}">${dia}</div>`;
+        html += `<div class="${cls}" onclick="selecionarDia('${dataStr}')" style="${isSel ? 'background:var(--primary);color:white;' : ''}">${dia}</div>`;
       }
       miniCalendario.innerHTML = html;
     }
-
     function changeMonth(delta) {
       calendarioMes += delta;
       if (calendarioMes < 0) { calendarioMes = 11; calendarioAno--; }
       if (calendarioMes > 11) { calendarioMes = 0; calendarioAno++; }
       renderCalendario();
     }
-
     function selecionarDia(data) {
       diaSelecionado = data;
-      dataSelecionada.innerText = new Date(data + 'T00:00').toLocaleDateString('pt-BR');
       renderCalendario();
       renderCompromissos(data);
     }
-
     function renderCompromissos(data) {
       const retornos = clients.filter(c => c.retorno === data);
-      const tarefasDoDia = tarefas.filter(t => t.data === data);
+      const tarefasDia = tarefas.filter(t => t.data === data);
       let html = '';
-      if (retornos.length === 0 && tarefasDoDia.length === 0) {
-        html = '<p class="text-muted">Nenhum compromisso para este dia.</p>';
+      if (!retornos.length && !tarefasDia.length) {
+        html = '<p class="text-muted">Nenhum compromisso.</p>';
       } else {
-        if (retornos.length > 0) {
+        if (retornos.length) {
           html += '<h6>Retornos de Clientes</h6>';
           retornos.forEach(c => {
             html += `<div class="status-item"><div><strong>${c.nome}</strong><br><small>${c.telefones}</small></div><a target="_blank" href="https://wa.me/55${(c.telefones||'').replace(/\D/g,'')}" class="btn btn-success btn-sm">WhatsApp</a></div>`;
           });
         }
-        if (tarefasDoDia.length > 0) {
+        if (tarefasDia.length) {
           html += '<h6 class="mt-3">Tarefas</h6>';
-          tarefasDoDia.forEach(t => {
+          tarefasDia.forEach(t => {
             html += `<div class="status-item"><div><strong>${t.titulo}</strong><br><small>${t.hora || ''} - ${t.desc || ''}</small></div><button class="btn btn-danger btn-sm" onclick="deleteTarefa('${t.id}')">Excluir</button></div>`;
           });
         }
@@ -589,15 +565,11 @@
       compromissosLista.innerHTML = html;
       dataSelecionada.innerText = new Date(data + 'T00:00').toLocaleDateString('pt-BR');
     }
-
     function abrirModalTarefa() {
       tarefaData.value = diaSelecionado;
-      tarefaHora.value = '';
-      tarefaTitulo.value = '';
-      tarefaDesc.value = '';
+      tarefaHora.value = ''; tarefaTitulo.value = ''; tarefaDesc.value = '';
       new bootstrap.Modal(document.getElementById('modalTarefa')).show();
     }
-
     async function salvarTarefa() {
       const titulo = tarefaTitulo.value.trim();
       if (!titulo) return alert('Título obrigatório');
@@ -610,7 +582,6 @@
       renderCalendario();
       renderCompromissos(diaSelecionado);
     }
-
     async function deleteTarefa(id) {
       if (!confirm('Excluir tarefa?')) return;
       await db.collection('tarefas').doc(id).delete();
@@ -619,7 +590,7 @@
       renderCompromissos(diaSelecionado);
     }
 
-    /* STATUS */
+    // Status
     function addStatus() { const s = prompt('Novo status'); if (s) { statuses.push(s); renderStatuses(); } }
     function deleteStatus(i) { statuses.splice(i,1); renderStatuses(); }
     function renderStatuses() {
@@ -628,7 +599,7 @@
       statusList.innerHTML = statuses.map((s,i) => `<div class="status-item"><strong>${s}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
     }
 
-    /* BACKUP */
+    // Backup
     function exportBackup() {
       const blob = new Blob([JSON.stringify({ clients, tarefas })], { type: 'application/json' });
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup-crm.json'; a.click();
@@ -640,7 +611,7 @@
       reader.onload = async (ev) => {
         try {
           const data = JSON.parse(ev.target.result);
-          if (!confirm('Importar backup? Isso pode sobrescrever dados.')) return;
+          if (!confirm('Importar backup? Pode sobrescrever dados.')) return;
           if (data.clients) {
             const batch = db.batch();
             data.clients.forEach(c => { const { id, ...d } = c; d.userId = currentUser.uid; batch.set(id ? db.collection('clients').doc(id) : db.collection('clients').doc(), d, { merge: true }); });
@@ -658,14 +629,14 @@
       reader.readAsText(file);
     }
 
-    /* FOTO */
+    // Foto
     function previewImage(e) {
       const reader = new FileReader();
-      reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; };
+      reader.onload = ev => { const preview = document.getElementById('preview'); preview.src = ev.target.result; preview.style.display = 'block'; };
       reader.readAsDataURL(e.target.files[0]);
     }
 
-    /* CAMPO MÁGICO */
+    // Campo Mágico
     function autoFill() {
       const t = smartPaste.value;
       const map = [
@@ -679,15 +650,18 @@
         [/Telefones?\s+cadastrados?\s*:\s*(.*)$/im, 'cTelefones'], [/Endereços?\s+eletr[ôo]nicos?\s*:\s*(.*)$/im, 'cEmails']
       ];
       map.forEach(([r, id]) => { const m = t.match(r); if (m) document.getElementById(id).value = m[1].trim(); });
-      const cm = t.match(/Cidade\s*:\s*(.*)$/im);
+      const cm = t.match(/^Cidade\s*:\s*(.*)$/im);
       if (cm) {
         const parts = cm[1].split(/[|\-–]/);
-        cCidade.value = (parts[0]||'').trim();
-        if (parts[1]) { const uf = parts[1].match(/UF\s*:\s*(.*)/i); cUF.value = uf ? uf[1].trim() : parts[1].trim(); }
+        document.getElementById('cCidade').value = (parts[0]||'').trim();
+        if (parts[1]) {
+          const ufMatch = parts[1].match(/UF\s*:\s*(.*)/i);
+          document.getElementById('cUF').value = ufMatch ? ufMatch[1].trim() : parts[1].trim();
+        }
       }
     }
 
-    // Inicial
+    // Init
     renderStatuses();
     renderCalendario();
     dataSelecionada.innerText = new Date(diaSelecionado + 'T00:00').toLocaleDateString('pt-BR');
