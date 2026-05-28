@@ -1,5 +1,5 @@
 <!-- ===================================================== --> 
-<!-- CRM RECUPERAÇÃO COMPLETO FINAL - CORRIGIDO E ESTÁVEL -->
+<!-- CRM RECUPERAÇÃO COMPLETO FINAL – COM EXCLUSÃO EM LOTE E AUTO‑REFRESH -->
 <!-- ===================================================== -->
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -295,13 +295,20 @@
     </div>
   </div>
 
-  <!-- Modal Ação em Lote -->
+  <!-- Modal Ação em Lote (com excluir) -->
   <div class="modal fade" id="modalLote" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content" style="background:var(--card);color:var(--text);">
         <div class="modal-header"><h5 class="modal-title">Ação em Lote</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">
-          <div class="mb-3"><label>Selecione a ação</label><select id="acaoLote" class="form-select" onchange="handleAcaoLoteChange()"><option value="">Escolha...</option><option value="status">Alterar Status</option><option value="praca">Alterar Praça</option><option value="administradora">Alterar Administradora</option><option value="dataPagamento">Definir Data de Pagamento</option></select></div>
+          <div class="mb-3"><label>Selecione a ação</label><select id="acaoLote" class="form-select" onchange="handleAcaoLoteChange()">
+            <option value="">Escolha...</option>
+            <option value="status">Alterar Status</option>
+            <option value="praca">Alterar Praça</option>
+            <option value="administradora">Alterar Administradora</option>
+            <option value="dataPagamento">Definir Data de Pagamento</option>
+            <option value="excluir">Excluir Selecionados</option>
+          </select></div>
           <div id="parametrosLote"></div>
         </div>
         <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="executarAcaoLote()">Aplicar</button></div>
@@ -374,19 +381,25 @@
 
     // ==================== CARREGAMENTO ====================
     async function loadAll() {
-      await Promise.all([
-        loadClients(), loadTarefas(), loadPracas(), loadAdministradoras(),
-        loadAcomodacoes(), loadCoparticipacoes(), loadModalidades(), loadFontesVenda()
-      ]);
-      updateDashboard();
-      renderCalendario();
-      renderCompromissos(diaSelecionado);
-      renderStatuses();
-      renderPracasList(); renderAdministradorasList();
-      renderAcomodacoesList(); renderCoparticipacoesList();
-      renderModalidadesList(); renderFontesVendaList();
-      selectedIds.clear(); updateLoteButton();
-      renderTable();
+      try {
+        await Promise.all([
+          loadClients(), loadTarefas(), loadPracas(), loadAdministradoras(),
+          loadAcomodacoes(), loadCoparticipacoes(), loadModalidades(), loadFontesVenda()
+        ]);
+        updateDashboard();
+        renderCalendario();
+        renderCompromissos(diaSelecionado);
+        renderStatuses();
+        renderPracasList(); renderAdministradorasList();
+        renderAcomodacoesList(); renderCoparticipacoesList();
+        renderModalidadesList(); renderFontesVendaList();
+        selectedIds.clear(); updateLoteButton();
+        renderTable();  // Garante que a tabela de pesquisa esteja atualizada
+      } catch (e) {
+        console.error('Erro ao carregar dados:', e);
+        alert('Erro ao atualizar dados. A página será recarregada.');
+        location.reload();
+      }
     }
 
     async function loadClients() {
@@ -656,7 +669,7 @@
       try { await db.collection('clients').doc(id).delete(); alert('Excluída!'); await loadAll(); } catch (e) { alert('Erro: ' + e.message); }
     }
 
-    // Ações em Lote
+    // ==================== AÇÕES EM LOTE (com excluir) ====================
     function abrirModalLote() { document.getElementById('acaoLote').value = ''; document.getElementById('parametrosLote').innerHTML = ''; new bootstrap.Modal(document.getElementById('modalLote')).show(); }
     function handleAcaoLoteChange() {
       const acao = document.getElementById('acaoLote').value;
@@ -665,17 +678,33 @@
       else if (acao === 'praca') container.innerHTML = `<label>Nova Praça</label><select id="lotePraca" class="form-select"><option value="">Selecione...</option>${pracas.map(p => `<option value="${p.nome}">${p.nome}</option>`).join('')}</select>`;
       else if (acao === 'administradora') container.innerHTML = `<label>Nova Administradora</label><select id="loteAdministradora" class="form-select"><option value="">Selecione...</option>${administradoras.map(a => `<option value="${a.nome}">${a.nome}</option>`).join('')}</select>`;
       else if (acao === 'dataPagamento') container.innerHTML = `<label>Nova Data de Pagamento</label><input type="date" id="loteDataPagamento" class="form-control">`;
+      else if (acao === 'excluir') container.innerHTML = `<p class="text-danger">Tem certeza que deseja excluir todos os clientes selecionados?</p>`;
     }
     async function executarAcaoLote() {
       const acao = document.getElementById('acaoLote').value; if (!acao) return alert('Selecione uma ação.');
       const ids = Array.from(selectedIds); if (!ids.length) return;
+      if (acao === 'excluir') {
+        if (!confirm(`Tem certeza que deseja excluir ${ids.length} proposta(s)?`)) return;
+        const batch = db.batch();
+        ids.forEach(id => batch.delete(db.collection('clients').doc(id)));
+        try {
+          await batch.commit();
+          alert('Propostas excluídas com sucesso!');
+          bootstrap.Modal.getInstance(document.getElementById('modalLote')).hide();
+          await loadAll();
+        } catch (e) { alert('Erro ao excluir: ' + e.message); }
+        return;
+      }
       const batch = db.batch();
       try {
         if (acao === 'status') { const v = document.getElementById('loteStatus').value; ids.forEach(id => batch.update(db.collection('clients').doc(id), { status: v, updatedAt: new Date().toISOString() })); }
         else if (acao === 'praca') { const v = document.getElementById('lotePraca').value; if (!v) return alert('Selecione uma praça.'); ids.forEach(id => batch.update(db.collection('clients').doc(id), { praca: v, updatedAt: new Date().toISOString() })); }
         else if (acao === 'administradora') { const v = document.getElementById('loteAdministradora').value; if (!v) return alert('Selecione uma administradora.'); ids.forEach(id => batch.update(db.collection('clients').doc(id), { administradora: v, updatedAt: new Date().toISOString() })); }
         else if (acao === 'dataPagamento') { const v = document.getElementById('loteDataPagamento').value; if (!v) return alert('Selecione uma data.'); ids.forEach(id => batch.update(db.collection('clients').doc(id), { dataPagamento: v, updatedAt: new Date().toISOString() })); }
-        await batch.commit(); alert('Ação aplicada!'); bootstrap.Modal.getInstance(document.getElementById('modalLote')).hide(); await loadAll();
+        await batch.commit();
+        alert('Ação aplicada!');
+        bootstrap.Modal.getInstance(document.getElementById('modalLote')).hide();
+        await loadAll();
       } catch (e) { alert('Erro: ' + e.message); }
     }
 
