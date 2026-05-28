@@ -1,5 +1,5 @@
 <!-- ===================================================== --> 
-<!-- CRM RECUPERAÇÃO COMPLETO FINAL – CORRIGIDO E FUNCIONAL -->
+<!-- CRM RECUPERAÇÃO COMPLETO FINAL - CORRIGIDO E ESTÁVEL -->
 <!-- ===================================================== -->
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -19,17 +19,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <style>
-    :root {
-      --bg: #f8fafb; --card: #ffffff; --border: #e5e7eb; --text: #111827;
-      --text-secondary: #6b7280; --primary: #3b82f6; --primary-dark: #1e40af;
-      --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --input: #ffffff;
-      --table-head: #f9fafb; --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1); --radius-md: 12px; --radius-lg: 16px;
-    }
-    body.dark-mode {
-      --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #f1f5f9;
-      --text-secondary: #cbd5e1; --input: #0f172a; --table-head: #0f172a;
-    }
+    :root { --bg: #f8fafb; --card: #ffffff; --border: #e5e7eb; --text: #111827; --text-secondary: #6b7280; --primary: #3b82f6; --primary-dark: #1e40af; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --input: #ffffff; --table-head: #f9fafb; --shadow-sm: 0 1px 2px rgba(0,0,0,0.05); --shadow-md: 0 4px 6px rgba(0,0,0,0.1); --radius-md: 12px; --radius-lg: 16px; }
+    body.dark-mode { --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #f1f5f9; --text-secondary: #cbd5e1; --input: #0f172a; --table-head: #0f172a; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.6; transition: 0.3s; }
     .navbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; }
@@ -299,10 +290,7 @@
           <input type="time" id="tarefaHora" class="form-control mb-3">
           <textarea id="tarefaDesc" class="form-control" rows="3" placeholder="Descrição (opcional)"></textarea>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button class="btn btn-primary" onclick="salvarTarefa()">Salvar Tarefa</button>
-        </div>
+        <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="salvarTarefa()">Salvar Tarefa</button></div>
       </div>
     </div>
   </div>
@@ -316,10 +304,7 @@
           <div class="mb-3"><label>Selecione a ação</label><select id="acaoLote" class="form-select" onchange="handleAcaoLoteChange()"><option value="">Escolha...</option><option value="status">Alterar Status</option><option value="praca">Alterar Praça</option><option value="administradora">Alterar Administradora</option><option value="dataPagamento">Definir Data de Pagamento</option></select></div>
           <div id="parametrosLote"></div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button class="btn btn-primary" onclick="executarAcaoLote()">Aplicar</button>
-        </div>
+        <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="executarAcaoLote()">Aplicar</button></div>
       </div>
     </div>
   </div>
@@ -363,11 +348,26 @@
       if (user) { currentUser = user; document.getElementById('loginScreen').style.display = 'none'; loadAll(); }
       else { document.getElementById('loginScreen').style.display = 'flex'; }
     });
-    function login() { auth.signInWithEmailAndPassword(loginEmail.value, loginPassword.value).catch(e => loginError.innerText = e.message); }
-    function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => loginError.innerText = e.message); }
-    function register() { auth.createUserWithEmailAndPassword(loginEmail.value, loginPassword.value).catch(e => loginError.innerText = e.message); }
-    function recoverPassword() { auth.sendPasswordResetEmail(loginEmail.value).then(() => alert('Email enviado!')); }
-    function togglePassword() { loginPassword.type = loginPassword.type === 'password' ? 'text' : 'password'; }
+    function login() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      auth.signInWithEmailAndPassword(email, password).catch(e => document.getElementById('loginError').innerText = e.message);
+    }
+    function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => document.getElementById('loginError').innerText = e.message); }
+    function register() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      auth.createUserWithEmailAndPassword(email, password).catch(e => document.getElementById('loginError').innerText = e.message);
+    }
+    function recoverPassword() {
+      const email = document.getElementById('loginEmail').value;
+      if (!email) { alert('Digite seu email'); return; }
+      auth.sendPasswordResetEmail(email).then(() => alert('Email enviado!'));
+    }
+    function togglePassword() {
+      const input = document.getElementById('loginPassword');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
     function logout() { auth.signOut(); }
     function toggleTheme() { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light'); }
     if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
@@ -389,8 +389,15 @@
       renderTable();
     }
 
-    async function loadClients() { const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get(); clients = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderTable(); updateFilterOptions(); }
-    async function loadTarefas() { const snap = await db.collection('tarefas').where('userId', '==', currentUser.uid).get(); tarefas = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
+    async function loadClients() {
+      const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
+      clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderTable(); updateFilterOptions();
+    }
+    async function loadTarefas() {
+      const snap = await db.collection('tarefas').where('userId', '==', currentUser.uid).get();
+      tarefas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    }
     async function loadPracas() { const snap = await db.collection('pracas').where('userId', '==', currentUser.uid).get(); pracas = snap.docs.map(d => ({ id: d.id, nome: d.data().nome })); populateSelect('cPraca', pracas); }
     async function loadAdministradoras() { const snap = await db.collection('administradoras').where('userId', '==', currentUser.uid).get(); administradoras = snap.docs.map(d => ({ id: d.id, nome: d.data().nome })); populateSelect('cAdministradora', administradoras); }
     async function loadAcomodacoes() { const snap = await db.collection('acomodacoes').where('userId', '==', currentUser.uid).get(); acomodacoes = snap.docs.map(d => ({ id: d.id, nome: d.data().nome })); populateSelect('cAcomodacao', acomodacoes); }
@@ -406,18 +413,31 @@
 
     // ==================== DASHBOARD ====================
     function handlePeriodoChange() {
+      const periodoFiltro = document.getElementById('periodoFiltro');
       document.getElementById('mesEspecificoDiv').style.display = (periodoFiltro.value === 'especifico') ? 'block' : 'none';
-      if (periodoFiltro.value === 'especifico' && !mesEspecifico.value) mesEspecifico.value = new Date().toISOString().slice(0,7);
+      if (periodoFiltro.value === 'especifico' && !document.getElementById('mesEspecifico').value) {
+        document.getElementById('mesEspecifico').value = new Date().toISOString().slice(0,7);
+      }
       updateDashboard();
     }
     function updateDashboard() {
-      const periodo = periodoFiltro.value; let inicio, fim; const hoje = new Date();
-      if (periodo === 'especifico') { const [a,m] = mesEspecifico.value.split('-').map(Number); inicio = new Date(a, m-1, 1); fim = new Date(a, m, 0); }
-      else if (periodo === 'mes') { inicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1); fim = new Date(hoje.getFullYear(), hoje.getMonth()+1, 0); }
-      else { inicio = new Date(); inicio.setDate(inicio.getDate()-parseInt(periodo)); fim = new Date(); }
+      const periodoFiltro = document.getElementById('periodoFiltro');
+      const periodo = periodoFiltro.value;
+      let inicio, fim;
+      const hoje = new Date();
+      if (periodo === 'especifico') {
+        const val = document.getElementById('mesEspecifico').value;
+        if (!val) { inicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1); fim = new Date(hoje.getFullYear(), hoje.getMonth()+1, 0); }
+        else { const [a,m] = val.split('-').map(Number); inicio = new Date(a, m-1, 1); fim = new Date(a, m, 0); }
+      } else if (periodo === 'mes') {
+        inicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1); fim = new Date(hoje.getFullYear(), hoje.getMonth()+1, 0);
+      } else {
+        inicio = new Date(); inicio.setDate(inicio.getDate() - parseInt(periodo)); fim = new Date();
+      }
       const ini = inicio.toISOString().split('T')[0], fi = fim.toISOString().split('T')[0];
       const filtrados = clients.filter(c => { const d = c.dataPagamento || c.dataImplantacao || c.data || c.createdAt || ''; return d >= ini && d <= fi; });
-      const total = filtrados.length, implantados = filtrados.filter(c => c.status === 'Implantada').length;
+      const total = filtrados.length;
+      const implantados = filtrados.filter(c => c.status === 'Implantada').length;
       const soma = filtrados.reduce((s,c) => s + (Number(c.valorComDesconto) || Number(c.valorSemDesconto) || 0), 0);
       document.getElementById('dashTotal').innerText = total;
       document.getElementById('dashImplantados').innerText = implantados;
@@ -428,214 +448,365 @@
     }
     function renderCharts(filtrados) {
       const ctxStatus = document.getElementById('statusChart')?.getContext('2d');
-      if (ctxStatus) { const counts = {}; statuses.forEach(s => counts[s]=0); filtrados.forEach(c => { if (counts[c.status] !== undefined) counts[c.status]++; }); if (charts.status) charts.status.destroy(); charts.status = new Chart(ctxStatus, { type:'doughnut', data:{labels:Object.keys(counts), datasets:[{data:Object.values(counts), backgroundColor:['#3b82f6','#10b981','#ef4444','#f59e0b','#8b5cf6']}]} }); }
+      if (ctxStatus) {
+        const counts = {}; statuses.forEach(s => counts[s]=0);
+        filtrados.forEach(c => { if (counts[c.status] !== undefined) counts[c.status]++; });
+        if (charts.status) charts.status.destroy();
+        charts.status = new Chart(ctxStatus, { type:'doughnut', data:{labels:Object.keys(counts), datasets:[{data:Object.values(counts), backgroundColor:['#3b82f6','#10b981','#ef4444','#f59e0b','#8b5cf6']}]} });
+      }
       const ctxAdmin = document.getElementById('adminChart')?.getContext('2d');
-      if (ctxAdmin) { const adminCounts = {}; filtrados.forEach(c => { if (c.administradora) adminCounts[c.administradora] = (adminCounts[c.administradora]||0)+1; }); const top = Object.entries(adminCounts).sort((a,b)=>b[1]-a[1]).slice(0,5); if (charts.admin) charts.admin.destroy(); charts.admin = new Chart(ctxAdmin, { type:'bar', data:{labels:top.map(t=>t[0]), datasets:[{data:top.map(t=>t[1]), backgroundColor:'#3b82f6'}]}, options:{scales:{y:{beginAtZero:true}}} }); }
+      if (ctxAdmin) {
+        const adminCounts = {}; filtrados.forEach(c => { if (c.administradora) adminCounts[c.administradora] = (adminCounts[c.administradora]||0)+1; });
+        const top = Object.entries(adminCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+        if (charts.admin) charts.admin.destroy();
+        charts.admin = new Chart(ctxAdmin, { type:'bar', data:{labels:top.map(t=>t[0]), datasets:[{data:top.map(t=>t[1]), backgroundColor:'#3b82f6'}]}, options:{scales:{y:{beginAtZero:true}}} });
+      }
+      const ctxTime = document.getElementById('timeChart')?.getContext('2d');
+      if (ctxTime) {
+        const last7 = [...Array(7)].map((_,i) => { const d = new Date(); d.setDate(d.getDate()-i); return d.toISOString().split('T')[0]; }).reverse();
+        const timeData = last7.map(d => filtrados.filter(c => (c.createdAt||'').split('T')[0] === d).length);
+        if (charts.time) charts.time.destroy();
+        charts.time = new Chart(ctxTime, { type:'line', data:{labels:last7.map(d=>d.slice(5)), datasets:[{data:timeData, borderColor:'#3b82f6', fill:true, tension:0.4}]}, options:{scales:{y:{beginAtZero:true}}} });
+      }
     }
 
     // ==================== CLIENTE ====================
     async function saveClient() {
       const data = {
-        data: cData.value, numeroProposta: cNumeroProposta.value, nomeTitular: cNomeTitular.value,
-        cpfTitular: cCpfTitular.value, cnpjTitular: cCnpjTitular.value, telefoneTitular: cTelefoneTitular.value,
-        emailTitular: cEmailTitular.value, qtdVidas: cQtdVidas.value,
+        data: document.getElementById('cData').value,
+        numeroProposta: document.getElementById('cNumeroProposta').value,
+        nomeTitular: document.getElementById('cNomeTitular').value,
+        cpfTitular: document.getElementById('cCpfTitular').value,
+        cnpjTitular: document.getElementById('cCnpjTitular').value,
+        telefoneTitular: document.getElementById('cTelefoneTitular').value,
+        emailTitular: document.getElementById('cEmailTitular').value,
+        qtdVidas: document.getElementById('cQtdVidas').value,
         modalidadePlano: document.getElementById('cModalidadePlano').value,
         coparticipacao: document.getElementById('cCoparticipacao').value,
-        status: cStatus.value, dataImplantacao: cDataImplantacao.value, dataPagamento: cDataPagamento.value,
+        status: document.getElementById('cStatus').value,
+        dataImplantacao: document.getElementById('cDataImplantacao').value,
+        dataPagamento: document.getElementById('cDataPagamento').value,
         fonteVenda: document.getElementById('cFonteVenda').value,
-        valorSemDesconto: Number(cValorSemDesconto.value) || 0,
-        valorComDesconto: Number(cValorComDesconto.value) || 0,
-        praca: cPraca.value, administradora: cAdministradora.value,
-        codigo: cCodigo.value, acomodacao: document.getElementById('cAcomodacao').value,
-        vigencia: cVigencia.value, anotacoes: cAnotacoes.value,
-        dependentes: dependentesTemp, anexos: anexosTemp,
-        userId: currentUser.uid, updatedAt: new Date().toISOString()
+        valorSemDesconto: Number(document.getElementById('cValorSemDesconto').value) || 0,
+        valorComDesconto: Number(document.getElementById('cValorComDesconto').value) || 0,
+        praca: document.getElementById('cPraca').value,
+        administradora: document.getElementById('cAdministradora').value,
+        codigo: document.getElementById('cCodigo').value,
+        acomodacao: document.getElementById('cAcomodacao').value,
+        vigencia: document.getElementById('cVigencia').value,
+        anotacoes: document.getElementById('cAnotacoes').value,
+        dependentes: dependentesTemp,
+        anexos: anexosTemp,
+        userId: currentUser.uid,
+        updatedAt: new Date().toISOString()
       };
       try {
-        if (clientId.value) await db.collection('clients').doc(clientId.value).update(data);
-        else { data.createdAt = new Date().toISOString(); await db.collection('clients').add(data); }
-        alert('Proposta salva!'); clearForm();
+        const clientIdEl = document.getElementById('clientId');
+        if (clientIdEl.value) {
+          await db.collection('clients').doc(clientIdEl.value).update(data);
+        } else {
+          data.createdAt = new Date().toISOString();
+          await db.collection('clients').add(data);
+        }
+        alert('Proposta salva!');
+        clearForm();
         new bootstrap.Tab(document.querySelector('[data-bs-target="#dashboardTab"]')).show();
         await loadAll();
       } catch(e) { alert('Erro: ' + e.message); }
     }
 
     function clearForm() {
-      clientId.value = ''; dependentesTemp = []; anexosTemp = [];
-      ['cData','cNumeroProposta','cNomeTitular','cCpfTitular','cCnpjTitular','cTelefoneTitular','cEmailTitular','cQtdVidas','cDataImplantacao','cDataPagamento','cValorSemDesconto','cValorComDesconto','cCodigo','cVigencia','cAnotacoes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-      cStatus.selectedIndex = 0; cPraca.selectedIndex = 0; cAdministradora.selectedIndex = 0;
-      document.getElementById('cModalidadePlano').selectedIndex = 0; document.getElementById('cCoparticipacao').selectedIndex = 0;
-      document.getElementById('cFonteVenda').selectedIndex = 0; document.getElementById('cAcomodacao').selectedIndex = 0;
+      document.getElementById('clientId').value = ''; dependentesTemp = []; anexosTemp = [];
+      const ids = ['cData','cNumeroProposta','cNomeTitular','cCpfTitular','cCnpjTitular','cTelefoneTitular','cEmailTitular','cQtdVidas','cDataImplantacao','cDataPagamento','cValorSemDesconto','cValorComDesconto','cCodigo','cVigencia','cAnotacoes'];
+      ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      document.getElementById('cStatus').selectedIndex = 0;
+      document.getElementById('cPraca').selectedIndex = 0;
+      document.getElementById('cAdministradora').selectedIndex = 0;
+      document.getElementById('cModalidadePlano').selectedIndex = 0;
+      document.getElementById('cCoparticipacao').selectedIndex = 0;
+      document.getElementById('cFonteVenda').selectedIndex = 0;
+      document.getElementById('cAcomodacao').selectedIndex = 0;
       renderDependentes(); renderAnexosPreview();
     }
 
     function editClient(id) {
       const c = clients.find(c => c.id === id); if (!c) return;
-      clientId.value = id; dependentesTemp = c.dependentes || []; anexosTemp = c.anexos || [];
-      cData.value = c.data || ''; cNumeroProposta.value = c.numeroProposta || ''; cNomeTitular.value = c.nomeTitular || '';
-      cCpfTitular.value = c.cpfTitular || ''; cCnpjTitular.value = c.cnpjTitular || ''; cTelefoneTitular.value = c.telefoneTitular || '';
-      cEmailTitular.value = c.emailTitular || ''; cQtdVidas.value = c.qtdVidas || '1';
-      document.getElementById('cModalidadePlano').value = c.modalidadePlano || ''; document.getElementById('cCoparticipacao').value = c.coparticipacao || '';
-      cStatus.value = c.status || ''; cDataImplantacao.value = c.dataImplantacao || ''; cDataPagamento.value = c.dataPagamento || '';
+      document.getElementById('clientId').value = id;
+      dependentesTemp = c.dependentes || []; anexosTemp = c.anexos || [];
+      document.getElementById('cData').value = c.data || '';
+      document.getElementById('cNumeroProposta').value = c.numeroProposta || '';
+      document.getElementById('cNomeTitular').value = c.nomeTitular || '';
+      document.getElementById('cCpfTitular').value = c.cpfTitular || '';
+      document.getElementById('cCnpjTitular').value = c.cnpjTitular || '';
+      document.getElementById('cTelefoneTitular').value = c.telefoneTitular || '';
+      document.getElementById('cEmailTitular').value = c.emailTitular || '';
+      document.getElementById('cQtdVidas').value = c.qtdVidas || '1';
+      document.getElementById('cModalidadePlano').value = c.modalidadePlano || '';
+      document.getElementById('cCoparticipacao').value = c.coparticipacao || '';
+      document.getElementById('cStatus').value = c.status || '';
+      document.getElementById('cDataImplantacao').value = c.dataImplantacao || '';
+      document.getElementById('cDataPagamento').value = c.dataPagamento || '';
       document.getElementById('cFonteVenda').value = c.fonteVenda || '';
-      cValorSemDesconto.value = c.valorSemDesconto || ''; cValorComDesconto.value = c.valorComDesconto || '';
-      cPraca.value = c.praca || ''; cAdministradora.value = c.administradora || '';
-      cCodigo.value = c.codigo || ''; document.getElementById('cAcomodacao').value = c.acomodacao || '';
-      cVigencia.value = c.vigencia || ''; cAnotacoes.value = c.anotacoes || '';
+      document.getElementById('cValorSemDesconto').value = c.valorSemDesconto || '';
+      document.getElementById('cValorComDesconto').value = c.valorComDesconto || '';
+      document.getElementById('cPraca').value = c.praca || '';
+      document.getElementById('cAdministradora').value = c.administradora || '';
+      document.getElementById('cCodigo').value = c.codigo || '';
+      document.getElementById('cAcomodacao').value = c.acomodacao || '';
+      document.getElementById('cVigencia').value = c.vigencia || '';
+      document.getElementById('cAnotacoes').value = c.anotacoes || '';
       renderDependentes(); renderAnexosPreview();
       new bootstrap.Tab(document.querySelector('[data-bs-target="#clientesTab"]')).show();
       new bootstrap.Tab(document.querySelector('[data-bs-target="#dadosPrincipais"]')).show();
     }
 
     // Dependentes e Anexos
-    function addDependente() { const n=depNome.value.trim(), c=depCPF.value.trim(), t=depTelefone.value.trim(), e=depEmail.value.trim(); if(!n) return alert('Nome obrigatório'); dependentesTemp.push({nome:n,cpf:c,telefone:t,email:e}); ['depNome','depCPF','depTelefone','depEmail'].forEach(id=>document.getElementById(id).value=''); renderDependentes(); }
-    function removeDependente(i) { dependentesTemp.splice(i,1); renderDependentes(); }
-    function renderDependentes() { dependentesBody.innerHTML = dependentesTemp.map((d,i)=>`<tr><td>${d.nome}</td><td>${d.cpf}</td><td>${d.telefone}</td><td>${d.email}</td><td><button class="btn btn-danger btn-sm" onclick="removeDependente(${i})">Remover</button></td></tr>`).join(''); }
-    function adicionarAnexo(event) { const file = event.target.files[0]; if(!file) return; if(file.size>5*1024*1024){ alert('Arquivo muito grande (máx. 5MB)'); event.target.value=''; return; } const reader = new FileReader(); reader.onload = e => { anexosTemp.push({nome:file.name, tipo:file.type, base64:e.target.result}); renderAnexosPreview(); }; reader.readAsDataURL(file); event.target.value=''; }
-    function removerAnexo(i) { anexosTemp.splice(i,1); renderAnexosPreview(); }
-    function renderAnexosPreview() { const container = document.getElementById('anexosPreview'); container.innerHTML = ''; anexosTemp.forEach((a,i)=>{ const div = document.createElement('div'); div.className='position-relative d-inline-block'; if(a.tipo.startsWith('image/')){ const img=document.createElement('img'); img.src=a.base64; img.className='attachment-thumb'; img.title=a.nome; div.appendChild(img); } else { const icon=document.createElement('i'); icon.className='bi bi-file-earmark-pdf fs-1 text-danger'; icon.title=a.nome; div.appendChild(icon); } const btn=document.createElement('button'); btn.className='btn btn-danger btn-sm position-absolute top-0 end-0'; btn.innerHTML='×'; btn.onclick=()=>removerAnexo(i); div.appendChild(btn); container.appendChild(div); }); }
+    function addDependente() {
+      const n = document.getElementById('depNome').value.trim();
+      const c = document.getElementById('depCPF').value.trim();
+      const t = document.getElementById('depTelefone').value.trim();
+      const e = document.getElementById('depEmail').value.trim();
+      if (!n) return alert('Nome obrigatório');
+      dependentesTemp.push({ nome: n, cpf: c, telefone: t, email: e });
+      ['depNome','depCPF','depTelefone','depEmail'].forEach(id => document.getElementById(id).value = '');
+      renderDependentes();
+    }
+    function removeDependente(index) { dependentesTemp.splice(index, 1); renderDependentes(); }
+    function renderDependentes() {
+      document.getElementById('dependentesBody').innerHTML = dependentesTemp.map((d, i) => `<tr><td>${d.nome}</td><td>${d.cpf}</td><td>${d.telefone}</td><td>${d.email}</td><td><button class="btn btn-danger btn-sm" onclick="removeDependente(${i})">Remover</button></td></tr>`).join('');
+    }
+    function adicionarAnexo(event) {
+      const file = event.target.files[0]; if (!file) return;
+      if (file.size > 5*1024*1024) { alert('Arquivo muito grande (máx. 5MB)'); event.target.value = ''; return; }
+      const reader = new FileReader();
+      reader.onload = e => { anexosTemp.push({ nome: file.name, tipo: file.type, base64: e.target.result }); renderAnexosPreview(); };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    }
+    function removerAnexo(index) { anexosTemp.splice(index, 1); renderAnexosPreview(); }
+    function renderAnexosPreview() {
+      const container = document.getElementById('anexosPreview'); container.innerHTML = '';
+      anexosTemp.forEach((a, i) => {
+        const div = document.createElement('div'); div.className = 'position-relative d-inline-block';
+        if (a.tipo.startsWith('image/')) {
+          const img = document.createElement('img'); img.src = a.base64; img.className = 'attachment-thumb'; img.title = a.nome; div.appendChild(img);
+        } else {
+          const icon = document.createElement('i'); icon.className = 'bi bi-file-earmark-pdf fs-1 text-danger'; icon.title = a.nome; div.appendChild(icon);
+        }
+        const btn = document.createElement('button'); btn.className = 'btn btn-danger btn-sm position-absolute top-0 end-0'; btn.innerHTML = '×';
+        btn.onclick = () => removerAnexo(i); div.appendChild(btn); container.appendChild(div);
+      });
+    }
 
     // ==================== PESQUISA ====================
     function renderTable() {
-      const s = search.value.toLowerCase(), fs = filterStatus.value, fm = filterModalidade.value, fp = filterPraca.value, fa = filterAdministradora.value;
-      tableBody.innerHTML = '';
-      clients.filter(c => { const ms = !s || (c.nomeTitular||'').toLowerCase().includes(s) || (c.numeroProposta||'').toLowerCase().includes(s); return ms && (fs==='ALL'||c.status===fs) && (fm==='ALL'||c.modalidadePlano===fm) && (fp==='ALL'||c.praca===fp) && (fa==='ALL'||c.administradora===fa); })
-      .forEach(c => {
+      const s = document.getElementById('search').value.toLowerCase();
+      const fs = document.getElementById('filterStatus').value;
+      const fm = document.getElementById('filterModalidade').value;
+      const fp = document.getElementById('filterPraca').value;
+      const fa = document.getElementById('filterAdministradora').value;
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      clients.filter(c => {
+        const ms = !s || (c.nomeTitular||'').toLowerCase().includes(s) || (c.numeroProposta||'').toLowerCase().includes(s);
+        return ms && (fs==='ALL'||c.status===fs) && (fm==='ALL'||c.modalidadePlano===fm) && (fp==='ALL'||c.praca===fp) && (fa==='ALL'||c.administradora===fa);
+      }).forEach(c => {
         const valor = Number(c.valorComDesconto) || Number(c.valorSemDesconto) || 0;
-        tableBody.innerHTML += `<tr>
-          <td><input type="checkbox" class="cliente-checkbox" value="${c.id}" ${selectedIds.has(c.id)?'checked':''} onchange="toggleCliente('${c.id}', this.checked)"></td>
-          <td>${c.numeroProposta||''}</td><td>${c.nomeTitular||''}</td><td>${c.cpfTitular||''}</td><td>${c.modalidadePlano||''}</td><td>${c.status||''}</td><td>R$ ${valor.toFixed(2)}</td><td>${c.praca||''}</td><td>${c.administradora||''}</td>
-          <td><button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button><button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button></td>
+        const checked = selectedIds.has(c.id) ? 'checked' : '';
+        tbody.innerHTML += `<tr>
+          <td><input type="checkbox" class="cliente-checkbox" value="${c.id}" ${checked} onchange="toggleCliente('${c.id}', this.checked)"></td>
+          <td>${c.numeroProposta||''}</td><td>${c.nomeTitular||''}</td><td>${c.cpfTitular||''}</td>
+          <td>${c.modalidadePlano||''}</td><td>${c.status||''}</td><td>R$ ${valor.toFixed(2)}</td>
+          <td>${c.praca||''}</td><td>${c.administradora||''}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button>
+          </td>
         </tr>`;
       });
       updateSelectAllCheckbox(); updateLoteButton();
     }
 
-    function toggleCliente(id, checked) { if(checked) selectedIds.add(id); else selectedIds.delete(id); updateLoteButton(); updateSelectAllCheckbox(); }
-    function toggleSelectAll() { const check = selectAll.checked; document.querySelectorAll('.cliente-checkbox').forEach(cb => { cb.checked = check; if(check) selectedIds.add(cb.value); else selectedIds.delete(cb.value); }); updateLoteButton(); }
-    function updateSelectAllCheckbox() { const cbs = document.querySelectorAll('.cliente-checkbox'); selectAll.checked = cbs.length>0 && Array.from(cbs).every(cb=>cb.checked); selectAll.indeterminate = !selectAll.checked && Array.from(cbs).some(cb=>cb.checked); }
-    function updateLoteButton() { const btn = document.getElementById('btnAcaoLote'); btn.disabled = selectedIds.size===0; document.getElementById('selecionadosCount').innerText = selectedIds.size ? `${selectedIds.size} selecionado(s)` : ''; }
-    function updateFilterOptions() {
-      const sets = {modalidade:new Set(), praca:new Set(), administradora:new Set()};
-      clients.forEach(c => { if(c.modalidadePlano) sets.modalidade.add(c.modalidadePlano); if(c.praca) sets.praca.add(c.praca); if(c.administradora) sets.administradora.add(c.administradora); });
-      document.getElementById('filterModalidade').innerHTML = '<option value="ALL">Modalidade</option>'+[...sets.modalidade].sort().map(m=>`<option>${m}</option>`).join('');
-      document.getElementById('filterPraca').innerHTML = '<option value="ALL">Praça</option>'+[...sets.praca].sort().map(p=>`<option>${p}</option>`).join('');
-      document.getElementById('filterAdministradora').innerHTML = '<option value="ALL">Administradora</option>'+[...sets.administradora].sort().map(a=>`<option>${a}</option>`).join('');
+    function toggleCliente(id, checked) { if (checked) selectedIds.add(id); else selectedIds.delete(id); updateLoteButton(); updateSelectAllCheckbox(); }
+    function toggleSelectAll() {
+      const check = document.getElementById('selectAll').checked;
+      document.querySelectorAll('.cliente-checkbox').forEach(cb => { cb.checked = check; if (check) selectedIds.add(cb.value); else selectedIds.delete(cb.value); });
+      updateLoteButton();
     }
-    async function deleteClient(id) { if(!confirm('Excluir proposta?')) return; try { await db.collection('clients').doc(id).delete(); alert('Excluída!'); await loadAll(); } catch(e){ alert('Erro: '+e.message); } }
+    function updateSelectAllCheckbox() {
+      const cbs = document.querySelectorAll('.cliente-checkbox');
+      const all = cbs.length > 0 && Array.from(cbs).every(cb => cb.checked);
+      document.getElementById('selectAll').checked = all;
+      document.getElementById('selectAll').indeterminate = !all && Array.from(cbs).some(cb => cb.checked);
+    }
+    function updateLoteButton() {
+      const btn = document.getElementById('btnAcaoLote');
+      btn.disabled = selectedIds.size === 0;
+      document.getElementById('selecionadosCount').innerText = selectedIds.size ? `${selectedIds.size} selecionado(s)` : '';
+    }
+    function updateFilterOptions() {
+      const sets = { modalidade: new Set(), praca: new Set(), administradora: new Set() };
+      clients.forEach(c => { if (c.modalidadePlano) sets.modalidade.add(c.modalidadePlano); if (c.praca) sets.praca.add(c.praca); if (c.administradora) sets.administradora.add(c.administradora); });
+      document.getElementById('filterModalidade').innerHTML = '<option value="ALL">Modalidade</option>' + [...sets.modalidade].sort().map(m => `<option>${m}</option>`).join('');
+      document.getElementById('filterPraca').innerHTML = '<option value="ALL">Praça</option>' + [...sets.praca].sort().map(p => `<option>${p}</option>`).join('');
+      document.getElementById('filterAdministradora').innerHTML = '<option value="ALL">Administradora</option>' + [...sets.administradora].sort().map(a => `<option>${a}</option>`).join('');
+    }
+    async function deleteClient(id) {
+      if (!confirm('Excluir proposta?')) return;
+      try { await db.collection('clients').doc(id).delete(); alert('Excluída!'); await loadAll(); } catch (e) { alert('Erro: ' + e.message); }
+    }
 
-    // ==================== AÇÕES EM LOTE ====================
-    function abrirModalLote() { document.getElementById('acaoLote').value=''; document.getElementById('parametrosLote').innerHTML=''; new bootstrap.Modal(document.getElementById('modalLote')).show(); }
+    // Ações em Lote
+    function abrirModalLote() { document.getElementById('acaoLote').value = ''; document.getElementById('parametrosLote').innerHTML = ''; new bootstrap.Modal(document.getElementById('modalLote')).show(); }
     function handleAcaoLoteChange() {
-      const acao = document.getElementById('acaoLote').value; const container = document.getElementById('parametrosLote'); container.innerHTML='';
-      if(acao==='status') container.innerHTML = `<label>Novo Status</label><select id="loteStatus" class="form-select">${statuses.map(s=>`<option>${s}</option>`).join('')}</select>`;
-      else if(acao==='praca') container.innerHTML = `<label>Nova Praça</label><select id="lotePraca" class="form-select"><option value="">Selecione...</option>${pracas.map(p=>`<option value="${p.nome}">${p.nome}</option>`).join('')}</select>`;
-      else if(acao==='administradora') container.innerHTML = `<label>Nova Administradora</label><select id="loteAdministradora" class="form-select"><option value="">Selecione...</option>${administradoras.map(a=>`<option value="${a.nome}">${a.nome}</option>`).join('')}</select>`;
-      else if(acao==='dataPagamento') container.innerHTML = `<label>Nova Data de Pagamento</label><input type="date" id="loteDataPagamento" class="form-control">`;
+      const acao = document.getElementById('acaoLote').value;
+      const container = document.getElementById('parametrosLote'); container.innerHTML = '';
+      if (acao === 'status') container.innerHTML = `<label>Novo Status</label><select id="loteStatus" class="form-select">${statuses.map(s => `<option>${s}</option>`).join('')}</select>`;
+      else if (acao === 'praca') container.innerHTML = `<label>Nova Praça</label><select id="lotePraca" class="form-select"><option value="">Selecione...</option>${pracas.map(p => `<option value="${p.nome}">${p.nome}</option>`).join('')}</select>`;
+      else if (acao === 'administradora') container.innerHTML = `<label>Nova Administradora</label><select id="loteAdministradora" class="form-select"><option value="">Selecione...</option>${administradoras.map(a => `<option value="${a.nome}">${a.nome}</option>`).join('')}</select>`;
+      else if (acao === 'dataPagamento') container.innerHTML = `<label>Nova Data de Pagamento</label><input type="date" id="loteDataPagamento" class="form-control">`;
     }
     async function executarAcaoLote() {
-      const acao = document.getElementById('acaoLote').value; if(!acao) return alert('Selecione uma ação.');
-      const ids = Array.from(selectedIds); if(!ids.length) return;
+      const acao = document.getElementById('acaoLote').value; if (!acao) return alert('Selecione uma ação.');
+      const ids = Array.from(selectedIds); if (!ids.length) return;
       const batch = db.batch();
       try {
-        if(acao==='status') { const v = document.getElementById('loteStatus').value; ids.forEach(id=>batch.update(db.collection('clients').doc(id), {status:v, updatedAt:new Date().toISOString()})); }
-        else if(acao==='praca') { const v = document.getElementById('lotePraca').value; if(!v) return alert('Selecione uma praça.'); ids.forEach(id=>batch.update(db.collection('clients').doc(id), {praca:v, updatedAt:new Date().toISOString()})); }
-        else if(acao==='administradora') { const v = document.getElementById('loteAdministradora').value; if(!v) return alert('Selecione uma administradora.'); ids.forEach(id=>batch.update(db.collection('clients').doc(id), {administradora:v, updatedAt:new Date().toISOString()})); }
-        else if(acao==='dataPagamento') { const v = document.getElementById('loteDataPagamento').value; if(!v) return alert('Selecione uma data.'); ids.forEach(id=>batch.update(db.collection('clients').doc(id), {dataPagamento:v, updatedAt:new Date().toISOString()})); }
+        if (acao === 'status') { const v = document.getElementById('loteStatus').value; ids.forEach(id => batch.update(db.collection('clients').doc(id), { status: v, updatedAt: new Date().toISOString() })); }
+        else if (acao === 'praca') { const v = document.getElementById('lotePraca').value; if (!v) return alert('Selecione uma praça.'); ids.forEach(id => batch.update(db.collection('clients').doc(id), { praca: v, updatedAt: new Date().toISOString() })); }
+        else if (acao === 'administradora') { const v = document.getElementById('loteAdministradora').value; if (!v) return alert('Selecione uma administradora.'); ids.forEach(id => batch.update(db.collection('clients').doc(id), { administradora: v, updatedAt: new Date().toISOString() })); }
+        else if (acao === 'dataPagamento') { const v = document.getElementById('loteDataPagamento').value; if (!v) return alert('Selecione uma data.'); ids.forEach(id => batch.update(db.collection('clients').doc(id), { dataPagamento: v, updatedAt: new Date().toISOString() })); }
         await batch.commit(); alert('Ação aplicada!'); bootstrap.Modal.getInstance(document.getElementById('modalLote')).hide(); await loadAll();
-      } catch(e) { alert('Erro: '+e.message); }
+      } catch (e) { alert('Erro: ' + e.message); }
     }
 
     // ==================== AGENDA ====================
     function renderCalendario() {
-      const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']; const primeiro = new Date(calendarioAno, calendarioMes, 1).getDay(); const ultimo = new Date(calendarioAno, calendarioMes+1, 0).getDate();
-      const hoje = new Date().toISOString().split('T')[0]; calendarioTitulo.innerText = new Date(calendarioAno, calendarioMes).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
-      let html = dias.map(d=>`<div class="fw-bold">${d}</div>`).join('');
-      for(let i=0;i<primeiro;i++) html+='<div></div>';
-      for(let d=1;d<=ultimo;d++) { const data = `${calendarioAno}-${String(calendarioMes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; const ev = clients.some(c=>c.dataImplantacao===data||c.dataPagamento===data) || tarefas.some(t=>t.data===data); html+=`<div class="day${data===hoje?' today':''}${ev?' has-event':''}" onclick="selecionarDia('${data}')" style="${data===diaSelecionado?'background:var(--primary);color:white;':''}">${d}</div>`; }
-      miniCalendario.innerHTML = html;
+      const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+      const primeiro = new Date(calendarioAno, calendarioMes, 1).getDay();
+      const ultimo = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
+      const hoje = new Date().toISOString().split('T')[0];
+      document.getElementById('calendarioTitulo').innerText = new Date(calendarioAno, calendarioMes).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      let html = dias.map(d => `<div class="fw-bold">${d}</div>`).join('');
+      for (let i = 0; i < primeiro; i++) html += '<div></div>';
+      for (let dia = 1; dia <= ultimo; dia++) {
+        const data = `${calendarioAno}-${String(calendarioMes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+        const ev = clients.some(c => c.dataImplantacao === data || c.dataPagamento === data) || tarefas.some(t => t.data === data);
+        html += `<div class="day${data === hoje ? ' today' : ''}${ev ? ' has-event' : ''}" onclick="selecionarDia('${data}')" style="${data === diaSelecionado ? 'background:var(--primary);color:white;' : ''}">${dia}</div>`;
+      }
+      document.getElementById('miniCalendario').innerHTML = html;
     }
-    function changeMonth(delta) { calendarioMes+=delta; if(calendarioMes<0){calendarioMes=11;calendarioAno--;} if(calendarioMes>11){calendarioMes=0;calendarioAno++;} renderCalendario(); }
-    function selecionarDia(data) { diaSelecionado=data; renderCalendario(); renderCompromissos(data); }
+    function changeMonth(delta) {
+      calendarioMes += delta;
+      if (calendarioMes < 0) { calendarioMes = 11; calendarioAno--; }
+      if (calendarioMes > 11) { calendarioMes = 0; calendarioAno++; }
+      renderCalendario();
+    }
+    function selecionarDia(data) { diaSelecionado = data; renderCalendario(); renderCompromissos(data); }
     function renderCompromissos(data) {
-      const ret = clients.filter(c=>c.dataImplantacao===data||c.dataPagamento===data); const tar = tarefas.filter(t=>t.data===data); let html='';
-      if(ret.length){ html+='<h6>Propostas</h6>'; ret.forEach(c=>html+=`<div class="status-item"><strong>${c.nomeTitular}</strong> (${c.numeroProposta})</div>`); }
-      if(tar.length){ html+='<h6 class="mt-3">Tarefas</h6>'; tar.forEach(t=>html+=`<div class="status-item"><div><strong>${t.titulo}</strong><br><small>${t.hora||''} - ${t.desc||''}</small></div><button class="btn btn-danger btn-sm" onclick="deleteTarefa('${t.id}')">Excluir</button></div>`); }
-      if(!html) html='<p class="text-muted">Nenhum compromisso.</p>';
-      compromissosLista.innerHTML = html; dataSelecionada.innerText = new Date(data+'T00:00').toLocaleDateString('pt-BR');
+      const ret = clients.filter(c => c.dataImplantacao === data || c.dataPagamento === data);
+      const tar = tarefas.filter(t => t.data === data);
+      let html = '';
+      if (ret.length) { html += '<h6>Propostas</h6>'; ret.forEach(c => html += `<div class="status-item"><strong>${c.nomeTitular}</strong> (${c.numeroProposta})</div>`); }
+      if (tar.length) { html += '<h6 class="mt-3">Tarefas</h6>'; tar.forEach(t => html += `<div class="status-item"><div><strong>${t.titulo}</strong><br><small>${t.hora || ''} - ${t.desc || ''}</small></div><button class="btn btn-danger btn-sm" onclick="deleteTarefa('${t.id}')">Excluir</button></div>`); }
+      if (!html) html = '<p class="text-muted">Nenhum compromisso.</p>';
+      document.getElementById('compromissosLista').innerHTML = html;
+      document.getElementById('dataSelecionada').innerText = new Date(data + 'T00:00').toLocaleDateString('pt-BR');
     }
-    function abrirModalTarefa() { tarefaData.value=diaSelecionado; tarefaHora.value=''; tarefaTitulo.value=''; tarefaDesc.value=''; new bootstrap.Modal(document.getElementById('modalTarefa')).show(); }
-    async function salvarTarefa() { const titulo = tarefaTitulo.value.trim(); if(!titulo) return alert('Título obrigatório'); await db.collection('tarefas').add({titulo, data:tarefaData.value, hora:tarefaHora.value, desc:tarefaDesc.value, userId:currentUser.uid, createdAt:new Date().toISOString()}); bootstrap.Modal.getInstance(document.getElementById('modalTarefa')).hide(); await loadTarefas(); renderCalendario(); renderCompromissos(diaSelecionado); }
-    async function deleteTarefa(id) { if(!confirm('Excluir tarefa?')) return; await db.collection('tarefas').doc(id).delete(); await loadTarefas(); renderCalendario(); renderCompromissos(diaSelecionado); }
+    function abrirModalTarefa() {
+      document.getElementById('tarefaData').value = diaSelecionado;
+      document.getElementById('tarefaHora').value = '';
+      document.getElementById('tarefaTitulo').value = '';
+      document.getElementById('tarefaDesc').value = '';
+      new bootstrap.Modal(document.getElementById('modalTarefa')).show();
+    }
+    async function salvarTarefa() {
+      const titulo = document.getElementById('tarefaTitulo').value.trim();
+      if (!titulo) return alert('Título obrigatório');
+      await db.collection('tarefas').add({
+        titulo: titulo,
+        data: document.getElementById('tarefaData').value,
+        hora: document.getElementById('tarefaHora').value,
+        desc: document.getElementById('tarefaDesc').value,
+        userId: currentUser.uid,
+        createdAt: new Date().toISOString()
+      });
+      bootstrap.Modal.getInstance(document.getElementById('modalTarefa')).hide();
+      await loadTarefas();
+      renderCalendario();
+      renderCompromissos(diaSelecionado);
+    }
+    async function deleteTarefa(id) {
+      if (!confirm('Excluir tarefa?')) return;
+      await db.collection('tarefas').doc(id).delete();
+      await loadTarefas();
+      renderCalendario();
+      renderCompromissos(diaSelecionado);
+    }
 
     // ==================== CONFIGURAÇÃO ====================
-    function addStatus() { const s = prompt('Novo status'); if(s){ statuses.push(s); renderStatuses(); } }
-    function deleteStatus(i) { statuses.splice(i,1); renderStatuses(); }
+    function addStatus() { const s = prompt('Novo status'); if (s) { statuses.push(s); renderStatuses(); } }
+    function deleteStatus(i) { statuses.splice(i, 1); renderStatuses(); }
     function renderStatuses() {
-      cStatus.innerHTML = statuses.map(s=>`<option>${s}</option>`).join('');
-      filterStatus.innerHTML = '<option value="ALL">Status</option>'+statuses.map(s=>`<option>${s}</option>`).join('');
-      statusList.innerHTML = statuses.map((s,i)=>`<div class="status-item"><strong>${s}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
+      document.getElementById('cStatus').innerHTML = statuses.map(s => `<option>${s}</option>`).join('');
+      document.getElementById('filterStatus').innerHTML = '<option value="ALL">Status</option>' + statuses.map(s => `<option>${s}</option>`).join('');
+      document.getElementById('statusList').innerHTML = statuses.map((s, i) => `<div class="status-item"><strong>${s}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
     }
-    // Praças
-    async function addPraca() { const n = novaPraca.value.trim(); if(!n) return; await db.collection('pracas').add({nome:n, userId:currentUser.uid}); novaPraca.value=''; await loadPracas(); renderPracasList(); }
-    async function deletePraca(id) { if(confirm('Remover?')){ await db.collection('pracas').doc(id).delete(); await loadPracas(); renderPracasList(); } }
-    function renderPracasList() { pracasList.innerHTML = pracas.map(p=>`<div class="status-item"><span>${p.nome}</span><button class="btn btn-danger btn-sm" onclick="deletePraca('${p.id}')">Excluir</button></div>`).join(''); }
-    // Administradoras
-    async function addAdministradora() { const n = novaAdministradora.value.trim(); if(!n) return; await db.collection('administradoras').add({nome:n, userId:currentUser.uid}); novaAdministradora.value=''; await loadAdministradoras(); renderAdministradorasList(); }
-    async function deleteAdministradora(id) { if(confirm('Remover?')){ await db.collection('administradoras').doc(id).delete(); await loadAdministradoras(); renderAdministradorasList(); } }
-    function renderAdministradorasList() { administradorasList.innerHTML = administradoras.map(a=>`<div class="status-item"><span>${a.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteAdministradora('${a.id}')">Excluir</button></div>`).join(''); }
-    // Acomodações
-    async function addAcomodacao() { const n = novaAcomodacao.value.trim(); if(!n) return; await db.collection('acomodacoes').add({nome:n, userId:currentUser.uid}); novaAcomodacao.value=''; await loadAcomodacoes(); renderAcomodacoesList(); }
-    async function deleteAcomodacao(id) { if(confirm('Remover?')){ await db.collection('acomodacoes').doc(id).delete(); await loadAcomodacoes(); renderAcomodacoesList(); } }
-    function renderAcomodacoesList() { acomodacoesList.innerHTML = acomodacoes.map(a=>`<div class="status-item"><span>${a.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteAcomodacao('${a.id}')">Excluir</button></div>`).join(''); }
-    // Coparticipações
-    async function addCoparticipacao() { const n = novaCoparticipacao.value.trim(); if(!n) return; await db.collection('coparticipacoes').add({nome:n, userId:currentUser.uid}); novaCoparticipacao.value=''; await loadCoparticipacoes(); renderCoparticipacoesList(); }
-    async function deleteCoparticipacao(id) { if(confirm('Remover?')){ await db.collection('coparticipacoes').doc(id).delete(); await loadCoparticipacoes(); renderCoparticipacoesList(); } }
-    function renderCoparticipacoesList() { coparticipacoesList.innerHTML = coparticipacoes.map(c=>`<div class="status-item"><span>${c.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteCoparticipacao('${c.id}')">Excluir</button></div>`).join(''); }
-    // Modalidades
-    async function addModalidade() { const n = novaModalidade.value.trim(); if(!n) return; await db.collection('modalidades').add({nome:n, userId:currentUser.uid}); novaModalidade.value=''; await loadModalidades(); renderModalidadesList(); }
-    async function deleteModalidade(id) { if(confirm('Remover?')){ await db.collection('modalidades').doc(id).delete(); await loadModalidades(); renderModalidadesList(); } }
-    function renderModalidadesList() { modalidadesList.innerHTML = modalidades.map(m=>`<div class="status-item"><span>${m.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteModalidade('${m.id}')">Excluir</button></div>`).join(''); }
-    // Fontes de Venda
-    async function addFonteVenda() { const n = novaFonteVenda.value.trim(); if(!n) return; await db.collection('fontesVenda').add({nome:n, userId:currentUser.uid}); novaFonteVenda.value=''; await loadFontesVenda(); renderFontesVendaList(); }
-    async function deleteFonteVenda(id) { if(confirm('Remover?')){ await db.collection('fontesVenda').doc(id).delete(); await loadFontesVenda(); renderFontesVendaList(); } }
-    function renderFontesVendaList() { fontesVendaList.innerHTML = fontesVenda.map(f=>`<div class="status-item"><span>${f.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteFonteVenda('${f.id}')">Excluir</button></div>`).join(''); }
+    async function addPraca() { const n = document.getElementById('novaPraca').value.trim(); if (!n) return; await db.collection('pracas').add({ nome: n, userId: currentUser.uid }); document.getElementById('novaPraca').value = ''; await loadPracas(); renderPracasList(); }
+    async function deletePraca(id) { if (confirm('Remover?')) { await db.collection('pracas').doc(id).delete(); await loadPracas(); renderPracasList(); } }
+    function renderPracasList() { document.getElementById('pracasList').innerHTML = pracas.map(p => `<div class="status-item"><span>${p.nome}</span><button class="btn btn-danger btn-sm" onclick="deletePraca('${p.id}')">Excluir</button></div>`).join(''); }
+    async function addAdministradora() { const n = document.getElementById('novaAdministradora').value.trim(); if (!n) return; await db.collection('administradoras').add({ nome: n, userId: currentUser.uid }); document.getElementById('novaAdministradora').value = ''; await loadAdministradoras(); renderAdministradorasList(); }
+    async function deleteAdministradora(id) { if (confirm('Remover?')) { await db.collection('administradoras').doc(id).delete(); await loadAdministradoras(); renderAdministradorasList(); } }
+    function renderAdministradorasList() { document.getElementById('administradorasList').innerHTML = administradoras.map(a => `<div class="status-item"><span>${a.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteAdministradora('${a.id}')">Excluir</button></div>`).join(''); }
+    async function addAcomodacao() { const n = document.getElementById('novaAcomodacao').value.trim(); if (!n) return; await db.collection('acomodacoes').add({ nome: n, userId: currentUser.uid }); document.getElementById('novaAcomodacao').value = ''; await loadAcomodacoes(); renderAcomodacoesList(); }
+    async function deleteAcomodacao(id) { if (confirm('Remover?')) { await db.collection('acomodacoes').doc(id).delete(); await loadAcomodacoes(); renderAcomodacoesList(); } }
+    function renderAcomodacoesList() { document.getElementById('acomodacoesList').innerHTML = acomodacoes.map(a => `<div class="status-item"><span>${a.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteAcomodacao('${a.id}')">Excluir</button></div>`).join(''); }
+    async function addCoparticipacao() { const n = document.getElementById('novaCoparticipacao').value.trim(); if (!n) return; await db.collection('coparticipacoes').add({ nome: n, userId: currentUser.uid }); document.getElementById('novaCoparticipacao').value = ''; await loadCoparticipacoes(); renderCoparticipacoesList(); }
+    async function deleteCoparticipacao(id) { if (confirm('Remover?')) { await db.collection('coparticipacoes').doc(id).delete(); await loadCoparticipacoes(); renderCoparticipacoesList(); } }
+    function renderCoparticipacoesList() { document.getElementById('coparticipacoesList').innerHTML = coparticipacoes.map(c => `<div class="status-item"><span>${c.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteCoparticipacao('${c.id}')">Excluir</button></div>`).join(''); }
+    async function addModalidade() { const n = document.getElementById('novaModalidade').value.trim(); if (!n) return; await db.collection('modalidades').add({ nome: n, userId: currentUser.uid }); document.getElementById('novaModalidade').value = ''; await loadModalidades(); renderModalidadesList(); }
+    async function deleteModalidade(id) { if (confirm('Remover?')) { await db.collection('modalidades').doc(id).delete(); await loadModalidades(); renderModalidadesList(); } }
+    function renderModalidadesList() { document.getElementById('modalidadesList').innerHTML = modalidades.map(m => `<div class="status-item"><span>${m.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteModalidade('${m.id}')">Excluir</button></div>`).join(''); }
+    async function addFonteVenda() { const n = document.getElementById('novaFonteVenda').value.trim(); if (!n) return; await db.collection('fontesVenda').add({ nome: n, userId: currentUser.uid }); document.getElementById('novaFonteVenda').value = ''; await loadFontesVenda(); renderFontesVendaList(); }
+    async function deleteFonteVenda(id) { if (confirm('Remover?')) { await db.collection('fontesVenda').doc(id).delete(); await loadFontesVenda(); renderFontesVendaList(); } }
+    function renderFontesVendaList() { document.getElementById('fontesVendaList').innerHTML = fontesVenda.map(f => `<div class="status-item"><span>${f.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteFonteVenda('${f.id}')">Excluir</button></div>`).join(''); }
 
     // Backup / Excel
-    function exportBackup() { const blob = new Blob([JSON.stringify({clients,tarefas,pracas,administradoras,acomodacoes,coparticipacoes,modalidades,fontesVenda})],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='backup-crm.json'; a.click(); }
-    function importBackup() { backupFileInput.click(); }
+    function exportBackup() { const blob = new Blob([JSON.stringify({ clients, tarefas, pracas, administradoras, acomodacoes, coparticipacoes, modalidades, fontesVenda })], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup-crm.json'; a.click(); }
+    function importBackup() { document.getElementById('backupFileInput').click(); }
     function handleBackupFile(e) {
-      const file = e.target.files[0]; if(!file) return;
+      const file = e.target.files[0]; if (!file) return;
       const reader = new FileReader();
       reader.onload = async (ev) => {
         try {
           const data = JSON.parse(ev.target.result);
-          if(!confirm('Importar backup?')) return;
-          for(const col of ['clients','tarefas','pracas','administradoras','acomodacoes','coparticipacoes','modalidades','fontesVenda']) {
-            if(data[col]) { const batch = db.batch(); data[col].forEach(item => { const {id,...d}=item; d.userId=currentUser.uid; batch.set(id?db.collection(col).doc(id):db.collection(col).doc(), d, {merge:true}); }); await batch.commit(); }
+          if (!confirm('Importar backup?')) return;
+          for (const col of ['clients','tarefas','pracas','administradoras','acomodacoes','coparticipacoes','modalidades','fontesVenda']) {
+            if (data[col]) { const batch = db.batch(); data[col].forEach(item => { const { id, ...d } = item; d.userId = currentUser.uid; batch.set(id ? db.collection(col).doc(id) : db.collection(col).doc(), d, { merge: true }); }); await batch.commit(); }
           }
           alert('Importado!'); loadAll();
-        } catch(er) { alert('Erro: '+er.message); }
+        } catch (er) { alert('Erro: ' + er.message); }
       };
       reader.readAsText(file);
     }
     function exportarExcel() {
-      const mesInput = exportMes.value; if(!mesInput) return alert('Selecione um mês.');
-      const [ano,mes] = mesInput.split('-'); const prefixo = `${ano}-${mes.padStart(2,'0')}`;
-      const filtrados = clients.filter(c => (c.dataPagamento||'').startsWith(prefixo) || (c.dataImplantacao||'').startsWith(prefixo));
-      if(!filtrados.length) { alert('Nenhum cliente no mês.'); return; }
+      const mesInput = document.getElementById('exportMes').value;
+      if (!mesInput) return alert('Selecione um mês.');
+      const [ano, mes] = mesInput.split('-'); const prefixo = `${ano}-${mes.padStart(2,'0')}`;
+      const filtrados = clients.filter(c => (c.dataPagamento || '').startsWith(prefixo) || (c.dataImplantacao || '').startsWith(prefixo));
+      if (!filtrados.length) { alert('Nenhum cliente no mês.'); return; }
       const headers = ['Data','Proposta','Titular','CPF Titular','CNPJ Titular','Tel Titular','Email Titular','Qtd Vidas','Modalidade','Coparticipação','Status','Implantação','Pagamento','Fonte','Valor s/ Desc.','Valor c/ Desc.','Praça','Administradora','Código','Acomodação','Vigência','Anotações','Dependentes'];
       const linhas = filtrados.map(c => {
-        const depStr = (c.dependentes||[]).map(d => `${d.nome} (CPF:${d.cpf} Tel:${d.telefone} Email:${d.email})`).join('; ');
-        return [c.data,c.numeroProposta,c.nomeTitular,c.cpfTitular,c.cnpjTitular,c.telefoneTitular,c.emailTitular,c.qtdVidas,c.modalidadePlano,c.coparticipacao,c.status,c.dataImplantacao,c.dataPagamento,c.fonteVenda,c.valorSemDesconto,c.valorComDesconto,c.praca,c.administradora,c.codigo,c.acomodacao,c.vigencia,c.anotacoes,depStr].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(',');
+        const depStr = (c.dependentes || []).map(d => `${d.nome} (CPF:${d.cpf} Tel:${d.telefone} Email:${d.email})`).join('; ');
+        return [c.data, c.numeroProposta, c.nomeTitular, c.cpfTitular, c.cnpjTitular, c.telefoneTitular, c.emailTitular, c.qtdVidas, c.modalidadePlano, c.coparticipacao, c.status, c.dataImplantacao, c.dataPagamento, c.fonteVenda, c.valorSemDesconto, c.valorComDesconto, c.praca, c.administradora, c.codigo, c.acomodacao, c.vigencia, c.anotacoes, depStr].map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(',');
       });
-      const csv = '\uFEFF'+headers.join(',')+'\n'+linhas.join('\n');
-      const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`propostas_${ano}_${mes}.csv`; a.click();
+      const csv = '\uFEFF' + headers.join(',') + '\n' + linhas.join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `propostas_${ano}_${mes}.csv`; a.click();
     }
 
     // Campo Mágico
     function autoFill() {
-      const t = smartPaste.value;
+      const t = document.getElementById('smartPaste').value;
       const map = [
         [/N[úu]mero da proposta\s*:\s*(.*)$/im, 'cNumeroProposta'], [/Nome do titular\s*:\s*(.*)$/im, 'cNomeTitular'],
         [/CPF do titular\s*:\s*(.*)$/im, 'cCpfTitular'], [/CNPJ[\/]?CAEPF do titular\s*:\s*(.*)$/im, 'cCnpjTitular'],
@@ -648,11 +819,13 @@
         [/Administradora\s*:\s*(.*)$/im, 'cAdministradora'], [/C[óo]digo\s*:\s*(.*)$/im, 'cCodigo'],
         [/Acomoda[çc][ãa]o\s*:\s*(.*)$/im, 'cAcomodacao'], [/Vig[êe]ncia\s*:\s*(.*)$/im, 'cVigencia']
       ];
-      map.forEach(([r,id]) => { const m = t.match(r); if(m) document.getElementById(id).value = m[1].trim(); });
+      map.forEach(([r, id]) => { const m = t.match(r); if (m) document.getElementById(id).value = m[1].trim(); });
     }
 
     // Init
-    renderStatuses(); renderCalendario(); dataSelecionada.innerText = new Date(diaSelecionado+'T00:00').toLocaleDateString('pt-BR');
+    renderStatuses();
+    renderCalendario();
+    document.getElementById('dataSelecionada').innerText = new Date(diaSelecionado + 'T00:00').toLocaleDateString('pt-BR');
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
