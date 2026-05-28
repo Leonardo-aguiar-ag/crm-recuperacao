@@ -1,5 +1,5 @@
 <!-- ===================================================== --> 
-<!-- CRM RECUPERAÇÃO COMPLETO FINAL – COM EXCLUSÃO EM LOTE E AUTO‑REFRESH -->
+<!-- CRM RECUPERAÇÃO COMPLETO FINAL – CORRIGIDO E FUNCIONAL -->
 <!-- ===================================================== -->
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -295,7 +295,7 @@
     </div>
   </div>
 
-  <!-- Modal Ação em Lote (com excluir) -->
+  <!-- Modal Ação em Lote -->
   <div class="modal fade" id="modalLote" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content" style="background:var(--card);color:var(--text);">
@@ -394,7 +394,7 @@
         renderAcomodacoesList(); renderCoparticipacoesList();
         renderModalidadesList(); renderFontesVendaList();
         selectedIds.clear(); updateLoteButton();
-        renderTable();  // Garante que a tabela de pesquisa esteja atualizada
+        renderTable();
       } catch (e) {
         console.error('Erro ao carregar dados:', e);
         alert('Erro ao atualizar dados. A página será recarregada.');
@@ -669,7 +669,7 @@
       try { await db.collection('clients').doc(id).delete(); alert('Excluída!'); await loadAll(); } catch (e) { alert('Erro: ' + e.message); }
     }
 
-    // ==================== AÇÕES EM LOTE (com excluir) ====================
+    // ==================== AÇÕES EM LOTE ====================
     function abrirModalLote() { document.getElementById('acaoLote').value = ''; document.getElementById('parametrosLote').innerHTML = ''; new bootstrap.Modal(document.getElementById('modalLote')).show(); }
     function handleAcaoLoteChange() {
       const acao = document.getElementById('acaoLote').value;
