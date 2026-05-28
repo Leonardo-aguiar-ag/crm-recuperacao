@@ -1,5 +1,5 @@
 <!-- ===================================================== --> 
-<!-- CRM RECUPERAÇÃO COMPLETO FINAL - COM CORREÇÕES -->
+<!-- CRM RECUPERAÇÃO COMPLETO FINAL - COM FILTRO DE MÊS E TAXA DE CONVERSÃO -->
 <!-- ===================================================== -->
 
 <!DOCTYPE html>
@@ -119,17 +119,22 @@
     <div class="tab-content">
       <!-- DASHBOARD -->
       <div class="tab-pane fade show active" id="dashboardTab">
-        <div class="row g-3 mb-4">
-          <div class="col-md-3">
+        <div class="row g-3 mb-4 align-items-end">
+          <div class="col-md-2">
             <label>Período</label>
-            <select id="periodoFiltro" class="form-select" onchange="updateDashboard()">
+            <select id="periodoFiltro" class="form-select" onchange="handlePeriodoChange()">
               <option value="30">Últimos 30 dias</option>
               <option value="60">Últimos 60 dias</option>
               <option value="90">Últimos 90 dias</option>
               <option value="120">Últimos 120 dias</option>
               <option value="180">Últimos 180 dias</option>
               <option value="mes">Mês atual</option>
+              <option value="especifico">Mês específico</option>
             </select>
+          </div>
+          <div class="col-md-2" id="mesEspecificoDiv" style="display:none;">
+            <label>Escolha o mês</label>
+            <input type="month" id="mesEspecifico" class="form-control" onchange="updateDashboard()">
           </div>
         </div>
         <div class="row g-4 mb-4">
@@ -137,7 +142,7 @@
           <div class="col-md-2"><div class="dashboard-card bg-success"><h6>Implantados</h6><h2 id="dashImplantados">0</h2></div></div>
           <div class="col-md-2"><div class="dashboard-card bg-warning"><h6>Total Processado</h6><h2 id="dashProcessado">R$ 0</h2></div></div>
           <div class="col-md-2"><div class="dashboard-card bg-info"><h6>Ticket Médio</h6><h2 id="dashTicket">R$ 0</h2></div></div>
-          <div class="col-md-2"><div class="dashboard-card bg-success"><h6>Prev. Próx. Mês</h6><h2 id="dashPrevisao">R$ 0</h2></div></div>
+          <div class="col-md-2"><div class="dashboard-card bg-success"><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
         </div>
         <div class="row g-4">
           <div class="col-lg-6"><div class="card card-custom p-4"><h5 class="mb-4">Distribuição por Status</h5><canvas id="statusChart"></canvas></div></div>
@@ -187,6 +192,7 @@
                 <div class="col-md-4">
                   <label>Foto</label>
                   <input type="file" class="form-control" onchange="previewImage(event)">
+                  <input type="hidden" id="fotoBase64">
                   <img id="preview">
                 </div>
                 <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="3" placeholder="Observações..."></textarea></div>
@@ -268,7 +274,6 @@
               <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleBackupFile(event)">
             </div>
           </div>
-          <!-- Exportar Planilha -->
           <div class="col-12">
             <div class="card card-custom p-4">
               <h4>Exportar Planilha</h4>
@@ -367,32 +372,65 @@
     }
 
     // Dashboard
+    function handlePeriodoChange() {
+      const div = document.getElementById('mesEspecificoDiv');
+      if (periodoFiltro.value === 'especifico') {
+        div.style.display = 'block';
+        if (!document.getElementById('mesEspecifico').value) {
+          document.getElementById('mesEspecifico').value = new Date().toISOString().slice(0,7);
+        }
+      } else {
+        div.style.display = 'none';
+      }
+      updateDashboard();
+    }
+
     function updateDashboard() {
       const periodo = periodoFiltro.value;
-      let dataLimite = new Date();
-      if (periodo === 'mes') {
-        dataLimite = new Date(dataLimite.getFullYear(), dataLimite.getMonth(), 1);
+      let dataLimiteInicio, dataLimiteFim;
+      const hoje = new Date();
+      if (periodo === 'especifico') {
+        const mesAno = document.getElementById('mesEspecifico').value; // YYYY-MM
+        if (!mesAno) {
+          // Se não preencheu, usar mês atual
+          dataLimiteInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+          dataLimiteFim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+        } else {
+          const [ano, mes] = mesAno.split('-').map(Number);
+          dataLimiteInicio = new Date(ano, mes - 1, 1);
+          dataLimiteFim = new Date(ano, mes, 0);
+        }
+      } else if (periodo === 'mes') {
+        dataLimiteInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+        dataLimiteFim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
       } else {
-        dataLimite.setDate(dataLimite.getDate() - parseInt(periodo));
+        const dias = parseInt(periodo);
+        dataLimiteInicio = new Date();
+        dataLimiteInicio.setDate(dataLimiteInicio.getDate() - dias);
+        dataLimiteFim = new Date(); // até hoje
       }
-      const limite = dataLimite.toISOString().split('T')[0];
-      const filtrados = clients.filter(c => (c.dataPagamento || c.adesao || '') >= limite);
+      const inicioStr = dataLimiteInicio.toISOString().split('T')[0];
+      const fimStr = dataLimiteFim.toISOString().split('T')[0];
+
+      const filtrados = clients.filter(c => {
+        const dataRef = c.dataPagamento || c.adesao || c.createdAt || '';
+        return dataRef >= inicioStr && dataRef <= fimStr;
+      });
+
       const total = filtrados.length;
       const implantados = filtrados.filter(c => c.status === 'Implantada').length;
       const somaValores = filtrados.reduce((s, c) => s + (parseFloat(c.valor) || 0), 0);
       const ticketMedio = total ? (somaValores / total).toFixed(2) : '0';
       const totalProcessado = somaValores.toFixed(2);
-      const hoje = new Date();
-      const proxMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1).toISOString().slice(0, 7);
-      const previsao = clients
-        .filter(c => c.status === 'Implantada' && (c.dataPagamento || '').startsWith(proxMes))
-        .reduce((s, c) => s + (parseFloat(c.valor) || 0), 0);
+      // Taxa de conversão: (total / total geral?) Vou considerar (implantados / total) * 100, ou se total=0 fica 0
+      const taxaConversao = total ? ((implantados / total) * 100).toFixed(1) : '0';
 
       dashTotal.innerText = total;
       dashImplantados.innerText = implantados;
       dashProcessado.innerText = 'R$ ' + totalProcessado;
       dashTicket.innerText = 'R$ ' + ticketMedio;
-      dashPrevisao.innerText = 'R$ ' + previsao.toFixed(2);
+      dashConversao.innerText = taxaConversao + '%';
+
       renderCharts(filtrados);
     }
 
@@ -441,6 +479,7 @@
         telefones: cTelefones.value, emails: cEmails.value, retorno: cRetorno.value,
         valor: cValor.value, dataPagamento: cDataPagamento.value,
         anotacoes: cAnotacoes.value, dependentes: dependentesTemp,
+        fotoBase64: document.getElementById('fotoBase64').value,
         userId: currentUser.uid, updatedAt: new Date().toISOString()
       };
       try {
@@ -448,39 +487,61 @@
         else { data.createdAt = new Date().toISOString(); await db.collection('clients').add(data); }
         alert('Cliente salvo!');
         clearForm();
-        // Muda para aba Dashboard
-        const dashboardTrigger = document.querySelector('[data-bs-target="#dashboardTab"]');
-        if (dashboardTrigger) {
-          const tab = new bootstrap.Tab(dashboardTrigger);
-          tab.show();
-        }
-        // Recarrega tudo
+        new bootstrap.Tab(document.querySelector('[data-bs-target="#dashboardTab"]')).show();
         await loadAll();
-      } catch (e) { alert('Erro: ' + e.message); }
+      } catch (e) { alert('Erro: ' + e.message); console.error(e); }
     }
 
     function clearForm() {
       clientId.value = ''; dependentesTemp = [];
-      const ids = ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes','cValor','cDataPagamento'];
+      const ids = ['cNome','cNomeSocial','cCPF','cNascimento','cEndereco','cCidade','cUF','cEmpresa','cAdeEmp','cRedePlano','cPlanoAtual','cAcomodacao','cSituacao','cAdesao','cCancelamento','cTempo','cTelefones','cEmails','cRetorno','cAnotacoes','cValor','cDataPagamento','fotoBase64'];
       ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
       document.getElementById('cStatus').selectedIndex = 0;
-      const preview = document.getElementById('preview'); if (preview) { preview.src = ''; preview.style.display = 'none'; }
-      const fi = document.querySelector('#clientesTab input[type="file"]'); if (fi) fi.value = '';
+      const preview = document.getElementById('preview');
+      if (preview) { preview.src = ''; preview.style.display = 'none'; }
+      const fi = document.querySelector('#clientesTab input[type="file"]');
+      if (fi) fi.value = '';
       smartPaste.value = '';
       renderDependentes();
     }
 
     function editClient(id) {
-      const c = clients.find(c => c.id === id); if (!c) return;
-      clientId.value = id; dependentesTemp = c.dependentes || [];
-      cNome.value = c.nome || ''; cNomeSocial.value = c.nomeSocial || ''; cCPF.value = c.cpf || '';
-      cNascimento.value = c.nascimento || ''; cEndereco.value = c.endereco || ''; cCidade.value = c.cidade || '';
-      cUF.value = c.uf || ''; cEmpresa.value = c.empresa || ''; cAdeEmp.value = c.adeEmp || '';
-      cRedePlano.value = c.redePlano || ''; cPlanoAtual.value = c.planoAtual || ''; cAcomodacao.value = c.acomodacao || '';
-      cSituacao.value = c.situacao || ''; cStatus.value = c.status || ''; cAdesao.value = c.adesao || '';
-      cCancelamento.value = c.cancelamento || ''; cTempo.value = c.tempo || ''; cTelefones.value = c.telefones || '';
-      cEmails.value = c.emails || ''; cRetorno.value = c.retorno || ''; cAnotacoes.value = c.anotacoes || '';
-      cValor.value = c.valor || ''; cDataPagamento.value = c.dataPagamento || '';
+      const c = clients.find(c => c.id === id);
+      if (!c) return;
+      clientId.value = id;
+      dependentesTemp = c.dependentes || [];
+      cNome.value = c.nome || '';
+      cNomeSocial.value = c.nomeSocial || '';
+      cCPF.value = c.cpf || '';
+      cNascimento.value = c.nascimento || '';
+      cEndereco.value = c.endereco || '';
+      cCidade.value = c.cidade || '';
+      cUF.value = c.uf || '';
+      cEmpresa.value = c.empresa || '';
+      cAdeEmp.value = c.adeEmp || '';
+      cRedePlano.value = c.redePlano || '';
+      cPlanoAtual.value = c.planoAtual || '';
+      cAcomodacao.value = c.acomodacao || '';
+      cSituacao.value = c.situacao || '';
+      cStatus.value = c.status || '';
+      cAdesao.value = c.adesao || '';
+      cCancelamento.value = c.cancelamento || '';
+      cTempo.value = c.tempo || '';
+      cTelefones.value = c.telefones || '';
+      cEmails.value = c.emails || '';
+      cRetorno.value = c.retorno || '';
+      cAnotacoes.value = c.anotacoes || '';
+      cValor.value = c.valor || '';
+      cDataPagamento.value = c.dataPagamento || '';
+      if (c.fotoBase64) {
+        document.getElementById('preview').src = c.fotoBase64;
+        document.getElementById('preview').style.display = 'block';
+        document.getElementById('fotoBase64').value = c.fotoBase64;
+      } else {
+        document.getElementById('preview').src = '';
+        document.getElementById('preview').style.display = 'none';
+        document.getElementById('fotoBase64').value = '';
+      }
       renderDependentes();
       new bootstrap.Tab(document.querySelector('[data-bs-target="#clientesTab"]')).show();
       new bootstrap.Tab(document.querySelector('[data-bs-target="#dadosPrincipais"]')).show();
@@ -527,7 +588,7 @@
       filterPlano.innerHTML = '<option value="ALL">Todos os planos</option>' + [...s].sort().map(p => `<option>${p}</option>`).join('');
     }
 
-    // Agenda (sem WhatsApp)
+    // Agenda
     function renderCalendario() {
       const diasSemana = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
       const primeiroDia = new Date(calendarioAno, calendarioMes, 1).getDay();
@@ -649,9 +710,15 @@
 
     // Foto
     function previewImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
       const reader = new FileReader();
-      reader.onload = ev => { const preview = document.getElementById('preview'); preview.src = ev.target.result; preview.style.display = 'block'; };
-      reader.readAsDataURL(e.target.files[0]);
+      reader.onload = ev => {
+        document.getElementById('preview').src = ev.target.result;
+        document.getElementById('preview').style.display = 'block';
+        document.getElementById('fotoBase64').value = ev.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
     // Campo Mágico
@@ -679,55 +746,22 @@
       }
     }
 
-    // Exportar Excel (CSV)
+    // Exportar Excel
     function exportarExcel() {
-      const mesInput = document.getElementById('exportMes').value; // formato "YYYY-MM"
+      const mesInput = document.getElementById('exportMes').value;
       if (!mesInput) return alert('Selecione um mês.');
-
       const [ano, mes] = mesInput.split('-');
-      const mesFormatado = mes.padStart(2, '0');
-      const prefixo = `${ano}-${mesFormatado}`;
-
-      // Filtra clientes cujo campo dataPagamento ou adesao comece com o prefixo do mês
-      const clientesFiltrados = clients.filter(c => {
-        return (c.dataPagamento || '').startsWith(prefixo) || (c.adesao || '').startsWith(prefixo);
-      });
-
-      if (clientesFiltrados.length === 0) {
-        alert('Nenhum cliente encontrado para o mês selecionado.');
-        return;
-      }
-
-      // Cabeçalho do CSV
-      const headers = [
-        'Nome', 'Nome Social', 'CPF', 'Nascimento', 'Endereço', 'Cidade', 'UF', 'Empresa',
-        'Ade Emp', 'Rede/Plano', 'Plano Atual', 'Acomodação', 'Situação', 'Status CRM',
-        'Data Adesão', 'Cancelamento', 'Tempo', 'Telefones', 'Emails', 'Retorno',
-        'Valor', 'Data Pagamento', 'Anotações', 'Dependentes'
-      ];
-
-      // Converte cada cliente para uma linha CSV
+      const prefixo = `${ano}-${mes.padStart(2,'0')}`;
+      const clientesFiltrados = clients.filter(c => (c.dataPagamento || '').startsWith(prefixo) || (c.adesao || '').startsWith(prefixo));
+      if (!clientesFiltrados.length) { alert('Nenhum cliente para o mês selecionado.'); return; }
+      const headers = ['Nome','Nome Social','CPF','Nascimento','Endereço','Cidade','UF','Empresa','Ade Emp','Rede/Plano','Plano Atual','Acomodação','Situação','Status CRM','Data Adesão','Cancelamento','Tempo','Telefones','Emails','Retorno','Valor','Data Pagamento','Anotações','Dependentes'];
       const linhas = clientesFiltrados.map(c => {
-        const dependentesStr = (c.dependentes || []).map(d => `${d.nome} (CPF: ${d.cpf}, Nasc: ${d.nascimento})`).join('; ');
-        return [
-          c.nome || '', c.nomeSocial || '', c.cpf || '', c.nascimento || '', c.endereco || '', c.cidade || '', c.uf || '',
-          c.empresa || '', c.adeEmp || '', c.redePlano || '', c.planoAtual || '', c.acomodacao || '', c.situacao || '',
-          c.status || '', c.adesao || '', c.cancelamento || '', c.tempo || '', c.telefones || '', c.emails || '',
-          c.retorno || '', c.valor || '', c.dataPagamento || '', c.anotacoes || '', dependentesStr
-        ].map(v => `"${(v+'').replace(/"/g, '""')}"`).join(',');
+        const dependentesStr = (c.dependentes||[]).map(d => `${d.nome} (CPF: ${d.cpf}, Nasc: ${d.nascimento})`).join('; ');
+        return [c.nome,c.nomeSocial,c.cpf,c.nascimento,c.endereco,c.cidade,c.uf,c.empresa,c.adeEmp,c.redePlano,c.planoAtual,c.acomodacao,c.situacao,c.status,c.adesao,c.cancelamento,c.tempo,c.telefones,c.emails,c.retorno,c.valor,c.dataPagamento,c.anotacoes,dependentesStr].map(v => `"${(v+'').replace(/"/g,'""')}"`).join(',');
       });
-
-      // Conteúdo CSV
       const csvContent = '\uFEFF' + headers.join(',') + '\n' + linhas.join('\n');
-
-      // Download
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `clientes_${ano}_${mesFormatado}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `clientes_${ano}_${mes.padStart(2,'0')}.csv`; a.click();
     }
 
     // Init
