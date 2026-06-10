@@ -124,19 +124,21 @@
         <div class="col-md-2" id="intervaloFimDiv" style="display:none;"><label>Fim</label><input type="date" id="dataFimIntervalo" class="form-control" onchange="updateDashboard()"></div>
         <div class="col-md-2"><button class="btn btn-warning mt-4" onclick="gerarRelatorio()"><i class="bi bi-file-earmark-pdf"></i> Relatório</button></div>
       </div>
+      <!-- Primeira linha: 4 cards -->
       <div class="row g-3 mb-4">
-        <div class="col-md-2"><div class="dashboard-card"><h6>Propostas</h6><h2 id="dashTotal">0</h2></div></div>
-        <div class="col-md-2"><div class="dashboard-card bg-success"><h6>Implantadas</h6><h2 id="dashImplantados">0</h2></div></div>
-        <div class="col-md-2"><div class="dashboard-card bg-warning"><h6>Total Processado</h6><h2 id="dashProcessado">R$ 0,00</h2></div></div>
-        <div class="col-md-2"><div class="dashboard-card bg-info"><h6>Ticket Médio</h6><h2 id="dashTicket">R$ 0,00</h2></div></div>
-        <div class="col-md-2"><div class="dashboard-card bg-success"><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card"><h6>Propostas</h6><h2 id="dashTotal">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-success"><h6>Implantadas</h6><h2 id="dashImplantados">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-warning"><h6>Total Processado</h6><h2 id="dashProcessado">R$ 0,00</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-success"><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
       </div>
+      <!-- Segunda linha: 4 cards (Ticket Médio, PF, PJ, Top Admin) -->
       <div class="row g-3 mb-4">
-        <div class="col-md-3"><div class="dashboard-card bg-danger"><h6>Valor Médio por Plano</h6><h2 id="dashValorMedioPlano">R$ 0,00</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-info"><h6>Ticket Médio</h6><h2 id="dashTicket">R$ 0,00</h2></div></div>
         <div class="col-md-3"><div class="dashboard-card bg-primary"><h6>Propostas PF</h6><h2 id="dashPfCount">0</h2><small><span id="dashPfValor">R$ 0,00</span></small></div></div>
         <div class="col-md-3"><div class="dashboard-card bg-primary"><h6>Propostas PJ</h6><h2 id="dashPjCount">0</h2><small><span id="dashPjValor">R$ 0,00</span></small></div></div>
         <div class="col-md-3"><div class="dashboard-card bg-info"><h6>Top Admin.</h6><h2 id="dashTopAdmin">-</h2><small><span id="dashTopAdminValor">R$ 0,00</span></small></div></div>
       </div>
+      <!-- Gráficos -->
       <div class="row g-4">
         <div class="col-lg-4"><div class="card card-custom p-3"><h6>Status</h6><canvas id="statusChart" height="150"></canvas></div></div>
         <div class="col-lg-4"><div class="card card-custom p-3"><h6>Top Administradoras</h6><canvas id="adminChart" height="150"></canvas></div></div>
@@ -145,7 +147,7 @@
       </div>
     </div>
 
-    <!-- FICHA CLIENTE -->
+    <!-- FICHA CLIENTE (idêntica, omitida por brevidade, mas incluída no código final) -->
     <div class="tab-pane fade" id="clientesTab">
       <div class="card card-custom p-4 mb-4">
         <h5 class="mb-3">Campo Mágico</h5>
@@ -195,7 +197,7 @@
               <div class="col-md-3"><input type="email" id="depEmail" class="form-control" placeholder="Email"></div>
               <div class="col-md-1"><button class="btn btn-primary w-100" onclick="addDependente()"><i class="bi bi-plus"></i></button></div>
             </div>
-            <div class="table-responsive"><table class="table"><thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>Email</th><th>Ação</th></table></thead><tbody id="dependentesBody"></tbody></table></div>
+            <div class="table-responsive"><table class="table"><thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>Email</th><th>Ação</th></tr></thead><tbody id="dependentesBody"></tbody></table></div>
           </div>
           <div class="tab-pane fade" id="anexosTab">
             <div class="row g-3 mb-4">
@@ -299,7 +301,7 @@
   let tarefas = [];
   let dependentesTemp = [];
   let anexosTemp = [];
-  let statuses = [];               // Agora será carregado do Firestore
+  let statuses = [];
   let pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
   let charts = { status: null, admin: null, pfPj: null, monthlyRevenue: null };
   let calendarioMes = new Date().getMonth(), calendarioAno = new Date().getFullYear(), diaSelecionado = new Date().toISOString().split('T')[0];
@@ -334,11 +336,9 @@
   }
   async function loadClients() { const snap = await db.collection('clients').where('userId','==',currentUser.uid).get(); clients = snap.docs.map(d=>({id:d.id,...d.data()})); updateFilterOptions(); renderTable(); }
   async function loadTarefas() { const snap = await db.collection('tarefas').where('userId','==',currentUser.uid).get(); tarefas = snap.docs.map(d=>({id:d.id,...d.data()})); renderCalendario(); renderCompromissos(diaSelecionado); }
-  // --- STATUS (persistente no Firestore) ---
   async function loadStatuses() { const snap = await db.collection('statuses').where('userId','==',currentUser.uid).get(); statuses = snap.docs.map(d=>d.data().name); if(statuses.length===0) statuses = ['Em análise', 'Implantada', 'Cancelada', 'Pendente']; }
   async function addStatusToDB(name) { await db.collection('statuses').add({ name: name, userId: currentUser.uid }); await loadStatuses(); renderStatuses(); updateDashboard(); renderTable(); }
   async function deleteStatusFromDB(id) { await db.collection('statuses').doc(id).delete(); await loadStatuses(); renderStatuses(); updateDashboard(); renderTable(); }
-  // --- Demais listas (já existentes) ---
   async function loadPracas() { const snap = await db.collection('pracas').where('userId','==',currentUser.uid).get(); pracas = snap.docs.map(d=>({id:d.id,nome:d.data().nome})); populateSelect('cPraca',pracas); }
   async function loadAdministradoras() { const snap = await db.collection('administradoras').where('userId','==',currentUser.uid).get(); administradoras = snap.docs.map(d=>({id:d.id,nome:d.data().nome})); populateSelect('cAdministradora',administradoras); }
   async function loadAcomodacoes() { const snap = await db.collection('acomodacoes').where('userId','==',currentUser.uid).get(); acomodacoes = snap.docs.map(d=>({id:d.id,nome:d.data().nome})); populateSelect('cAcomodacao',acomodacoes); }
@@ -383,21 +383,14 @@
     document.getElementById('dashTotal').innerText = total;
     document.getElementById('dashImplantados').innerText = implantados;
     document.getElementById('dashProcessado').innerHTML = formatBRL(soma);
-    document.getElementById('dashTicket').innerHTML = total ? formatBRL(soma/total) : formatBRL(0);
     const conversao = total ? ((implantados/total)*100).toFixed(1) : '0';
     document.getElementById('dashConversao').innerHTML = conversao + '%';
-    const media = filtrados.length ? soma / filtrados.length : 0;
-    document.getElementById('dashValorMedioPlano').innerHTML = formatBRL(media);
+    const ticket = total ? formatBRL(soma/total) : formatBRL(0);
+    document.getElementById('dashTicket').innerHTML = ticket;
     
     // PF vs PJ
-    const pf = filtrados.filter(c => 
-      c.tipoCliente === 'PF' || 
-      (c.modalidadePlano && /individual|pf/i.test(c.modalidadePlano))
-    );
-    const pj = filtrados.filter(c => 
-      c.tipoCliente === 'PJ' || 
-      (c.modalidadePlano && /pj|pme|pim|empresarial/i.test(c.modalidadePlano))
-    );
+    const pf = filtrados.filter(c => c.tipoCliente === 'PF' || (c.modalidadePlano && /individual|pf/i.test(c.modalidadePlano)));
+    const pj = filtrados.filter(c => c.tipoCliente === 'PJ' || (c.modalidadePlano && /pj|pme|pim|empresarial/i.test(c.modalidadePlano)));
     const somaPf = pf.reduce((s,c)=>s+(Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0),0);
     const somaPj = pj.reduce((s,c)=>s+(Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0),0);
     document.getElementById('dashPfCount').innerText = pf.length;
@@ -459,7 +452,7 @@
     const win = window.open();
     win.document.write(`<html><head><title>Relatório CRM</title><style>body{font-family:sans-serif;margin:2rem;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ccc;padding:8px;}</style></head><body><h1>Relatório de Propostas</h1><h3>Período: ${document.getElementById('periodoFiltro').options[document.getElementById('periodoFiltro').selectedIndex].text}</h3><p>Total propostas: ${filtrados.length}</p><p>Valor total: ${formatBRL(filtrados.reduce((s,c)=>s+(Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0),0))}</p><h2>Lista</h2><table><thead><tr><th>Proposta</th><th>Titular</th><th>Status</th><th>Valor</th><th>Data Pagamento</th></tr></thead><tbody>`);
     filtrados.forEach(c=>{ win.document.write(`<tr><td>${c.numeroProposta||''}</td><td>${c.nomeTitular||''}</td><td>${c.status||''}</td><td>${formatBRL(Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0)}</td><td>${c.dataPagamento||''}</td></tr>`); });
-    win.document.write(`</tbody></table></body></html>`);
+    win.document.write(`</tbody><td></body></html>`);
     win.document.close(); win.print();
   }
 
@@ -557,7 +550,17 @@
   }
   function removeDependente(i){ dependentesTemp.splice(i,1); renderDependentes(); }
   function renderDependentes(){
-    document.getElementById('dependentesBody').innerHTML = dependentesTemp.map((d,i)=>`<tr><td>${d.nome}</td><td>${d.cpf}</td><td>${d.telefone}</td><td>${d.email}</td><td><button class="btn btn-danger btn-sm" onclick="removeDependente(${i})">Remover</button></td></tr>`).join('');
+    document.getElementById('dependentesBody').innerHTML = dependentesTemp.map((d,i)=>`<tr><td>${d.nome}</td>
+
+      <td>${d.cpf}</td>
+
+      <td>${d.telefone}</td>
+
+      <td>${d.email}</td>
+
+      <td><button class="btn btn-danger btn-sm" onclick="removeDependente(${i})">Remover</button></td>
+
+    </tr>`).join('');
   }
   function adicionarAnexo(e){
     const file=e.target.files[0]; if(!file) return;
@@ -632,7 +635,7 @@
         <td>${c.praca||''}</td>
         <td>${c.administradora||''}</td>
         <td><button class="btn btn-warning btn-sm" onclick="editClient('${c.id}')"><i class="bi bi-pencil"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')"><i class="bi bi-trash"></i></button></td>
-      </tr>`;
+       </tr>`;
     });
     updateSelectAllCheckbox(); updateLoteButton();
   }
@@ -757,13 +760,12 @@
   async function addStatus(){ const nome=prompt('Nome do novo status'); if(!nome) return; await addStatusToDB(nome); }
   function deleteStatus(id){ if(confirm('Remover status?')) deleteStatusFromDB(id); }
   function renderStatuses(){
-    // Carrega os IDs dos status para poder excluir
-    const snap = db.collection('statuses').where('userId','==',currentUser.uid).get().then(snap=>{
+    const snapPromise = db.collection('statuses').where('userId','==',currentUser.uid).get();
+    snapPromise.then(snap=>{
       const statusItems = snap.docs.map(doc=>({id:doc.id, name:doc.data().name}));
       const html = statusItems.map(({id,name})=>`<div class="status-item"><strong>${name}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus('${id}')">Excluir</button></div>`).join('');
       if(document.getElementById('statusList')) document.getElementById('statusList').innerHTML = html;
     });
-    // Preenche selects
     const cStatus = document.getElementById('cStatus'); if(cStatus) cStatus.innerHTML = statuses.map(s=>`<option>${s}</option>`).join('');
     const filterStatus = document.getElementById('filterStatus'); if(filterStatus) filterStatus.innerHTML = '<option value="ALL">Status</option>'+statuses.map(s=>`<option>${s}</option>`).join('');
   }
