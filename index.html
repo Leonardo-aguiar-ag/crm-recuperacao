@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Recuperação - Completo</title>
+  <title>CRM Recuperação - Versão Estável</title>
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
@@ -71,6 +71,7 @@
     .login-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); z-index: 9999; }
     .login-box { background: var(--card); border-radius: 1.5rem; padding: 2rem; width: 100%; max-width: 400px; }
     @media (max-width: 768px) { .container-fluid { padding: 1rem; } }
+    .attachment-thumb { width: 80px; height: 80px; object-fit: cover; border-radius: 0.5rem; border: 1px solid var(--border); margin-right: 0.5rem; margin-bottom: 0.5rem; }
   </style>
 </head>
 <body>
@@ -82,7 +83,7 @@
     <input type="email" id="loginEmail" class="form-control mb-3" placeholder="Seu email">
     <div class="input-group mb-3">
       <input type="password" id="loginPassword" class="form-control" placeholder="Senha">
-      <button class="btn btn-outline-secondary" onclick="togglePassword()"><i class="bi bi-eye"></i></button>
+      <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()"><i class="bi bi-eye"></i></button>
     </div>
     <button class="btn btn-primary w-100 mb-2" onclick="login()">Entrar</button>
     <button class="btn btn-danger w-100 mb-2" onclick="googleLogin()"><i class="bi bi-google"></i> Entrar com Google</button>
@@ -198,7 +199,7 @@
           </div>
           <div class="tab-pane fade" id="anexosTab">
             <div class="row g-3 mb-4">
-              <div class="col-md-4"><button class="btn btn-outline-primary w-100" onclick="document.getElementById('arquivoAnexo').click()"><i class="bi bi-paperclip"></i> Anexar Arquivo</button><input type="file" id="arquivoAnexo" style="display:none" onchange="adicionarAnexo(event)"></div>
+              <div class="col-md-4"><button class="btn btn-outline-primary w-100" onclick="document.getElementById('arquivoAnexo').click()"><i class="bi bi-paperclip"></i> Anexar Arquivo</button><input type="file" id="arquivoAnexo" accept="image/*,application/pdf" style="display:none" onchange="adicionarAnexo(event)"></div>
               <div class="col-md-4"><button class="btn btn-outline-primary w-100" onclick="document.getElementById('cameraAnexo').click()"><i class="bi bi-camera"></i> Tirar Foto</button><input type="file" id="cameraAnexo" accept="image/*" capture="environment" style="display:none" onchange="adicionarAnexo(event)"></div>
             </div>
             <div id="anexosPreview" class="d-flex flex-wrap"></div>
@@ -239,7 +240,7 @@
       </div>
     </div>
 
-    <!-- AGENDA MELHORADA -->
+    <!-- AGENDA -->
     <div class="tab-pane fade" id="agendaTab">
       <div class="row g-4">
         <div class="col-lg-4">
@@ -278,7 +279,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // ==================== CONFIGURAÇÃO FIREBASE ====================
+  // ==================== FIREBASE CONFIG ====================
   const firebaseConfig = {
     apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
     authDomain: "crm-recuperacao.firebaseapp.com",
@@ -314,13 +315,13 @@
   function login() { const email = document.getElementById('loginEmail').value, pwd = document.getElementById('loginPassword').value; auth.signInWithEmailAndPassword(email, pwd).catch(e => document.getElementById('loginError').innerText = e.message); }
   function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => document.getElementById('loginError').innerText = e.message); }
   function register() { const email = document.getElementById('loginEmail').value, pwd = document.getElementById('loginPassword').value; auth.createUserWithEmailAndPassword(email, pwd).catch(e => document.getElementById('loginError').innerText = e.message); }
-  function recoverPassword() { const email = document.getElementById('loginEmail').value; if(email) auth.sendPasswordResetEmail(email).then(()=>alert('Email enviado!')); else alert('Digite seu email'); }
+  function recoverPassword() { const email = document.getElementById('loginEmail').value; if(email) auth.sendPasswordResetEmail(email).then(()=>alert('Email enviado!')).catch(e=>alert(e.message)); else alert('Digite seu email'); }
   function togglePassword() { const inp = document.getElementById('loginPassword'); inp.type = inp.type==='password'?'text':'password'; }
   function logout() { auth.signOut(); }
   function toggleTheme() { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode')?'dark':'light'); }
   if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark-mode');
 
-  // ==================== CARREGAMENTO DE DADOS ====================
+  // ==================== CARREGAMENTO ====================
   async function loadAll() {
     try {
       await Promise.all([loadClients(), loadTarefas(), loadPracas(), loadAdministradoras(), loadAcomodacoes(), loadCoparticipacoes(), loadModalidades(), loadFontesVenda()]);
@@ -329,7 +330,7 @@
       renderStatuses(); renderPracasList(); renderAdministradorasList(); renderAcomodacoesList(); renderCoparticipacoesList(); renderModalidadesList(); renderFontesVendaList();
       selectedIds.clear(); updateLoteButton();
       renderTable();
-    } catch(e) { alert('Erro ao carregar: '+e.message); }
+    } catch(e) { console.error(e); alert('Erro ao carregar dados: '+e.message); }
   }
   async function loadClients() { const snap = await db.collection('clients').where('userId','==',currentUser.uid).get(); clients = snap.docs.map(d=>({id:d.id,...d.data()})); updateFilterOptions(); renderTable(); }
   async function loadTarefas() { const snap = await db.collection('tarefas').where('userId','==',currentUser.uid).get(); tarefas = snap.docs.map(d=>({id:d.id,...d.data()})); renderCalendario(); renderCompromissos(diaSelecionado); }
@@ -379,11 +380,8 @@
     document.getElementById('dashProcessado').innerText = formatBRL(soma);
     document.getElementById('dashTicket').innerText = total?formatBRL(soma/total):formatBRL(0);
     document.getElementById('dashConversao').innerText = total?((implantados/total)*100).toFixed(1):'0'+'%';
-    // Valor médio
-    const valores = filtrados.map(c=>Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0);
-    const media = valores.length?valores.reduce((a,b)=>a+b,0)/valores.length:0;
+    const media = filtrados.length?filtrados.reduce((s,c)=>s+(Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0),0)/filtrados.length:0;
     document.getElementById('dashValorMedioPlano').innerText = formatBRL(media);
-    // PF vs PJ
     const pf = filtrados.filter(c=>c.tipoCliente==='PF' || (c.modalidadePlano && (c.modalidadePlano.toLowerCase().includes('pf')||c.modalidadePlano.toLowerCase().includes('individual'))));
     const pj = filtrados.filter(c=>c.tipoCliente==='PJ' || (c.modalidadePlano && (c.modalidadePlano.toLowerCase().includes('pj')||c.modalidadePlano.toLowerCase().includes('pme')||c.modalidadePlano.toLowerCase().includes('empresarial'))));
     const somaPf = pf.reduce((s,c)=>s+(Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0),0);
@@ -392,7 +390,6 @@
     document.getElementById('dashPjCount').innerText = pj.length;
     document.getElementById('dashPfValor').innerHTML = formatBRL(somaPf);
     document.getElementById('dashPjValor').innerHTML = formatBRL(somaPj);
-    // Top admin
     const adminMap = {};
     filtrados.forEach(c=>{ if(c.administradora) adminMap[c.administradora] = (adminMap[c.administradora]||0)+(Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0); });
     let topAdmin='', topValor=0; for(let a in adminMap) if(adminMap[a]>topValor){ topAdmin=a; topValor=adminMap[a]; }
@@ -401,7 +398,6 @@
     renderCharts(filtrados);
   }
   function renderCharts(filtrados){
-    // Status
     const ctxStatus = document.getElementById('statusChart')?.getContext('2d');
     if(ctxStatus){
       const counts={}; statuses.forEach(s=>counts[s]=0);
@@ -409,7 +405,6 @@
       if(charts.status) charts.status.destroy();
       charts.status = new Chart(ctxStatus, { type:'doughnut', data:{labels:Object.keys(counts), datasets:[{data:Object.values(counts), backgroundColor:['#3b82f6','#10b981','#ef4444','#f59e0b']}]} });
     }
-    // Top admin
     const ctxAdmin = document.getElementById('adminChart')?.getContext('2d');
     if(ctxAdmin){
       const adminCounts={}; filtrados.forEach(c=>{ if(c.administradora) adminCounts[c.administradora]=(adminCounts[c.administradora]||0)+1; });
@@ -417,7 +412,6 @@
       if(charts.admin) charts.admin.destroy();
       charts.admin = new Chart(ctxAdmin, { type:'bar', data:{labels:top.map(t=>t[0]), datasets:[{data:top.map(t=>t[1]), backgroundColor:'#3b82f6'}]}, options:{scales:{y:{beginAtZero:true}}} });
     }
-    // PF vs PJ
     const ctxPfPj = document.getElementById('pfPjChart')?.getContext('2d');
     if(ctxPfPj){
       const pfCount = filtrados.filter(c=>c.tipoCliente==='PF'||(c.modalidadePlano&&(c.modalidadePlano.toLowerCase().includes('pf')||c.modalidadePlano.toLowerCase().includes('individual')))).length;
@@ -425,7 +419,6 @@
       if(charts.pfPj) charts.pfPj.destroy();
       charts.pfPj = new Chart(ctxPfPj, { type:'pie', data:{labels:['PF','PJ'], datasets:[{data:[pfCount,pjCount], backgroundColor:['#3b82f6','#f59e0b']}]} });
     }
-    // Evolução mensal
     const ctxMonthly = document.getElementById('monthlyRevenueChart')?.getContext('2d');
     if(ctxMonthly){
       const monthly={};
@@ -454,7 +447,7 @@
     win.document.close(); win.print();
   }
 
-  // ==================== FICHA CLIENTE (CRUD) ====================
+  // ==================== CRUD CLIENTE ====================
   function saveClient(){
     const data = {
       data: document.getElementById('cData').value,
@@ -539,7 +532,6 @@
     document.getElementById('cAcomodacao').selectedIndex=0;
     renderDependentes(); renderAnexosPreview();
   }
-  // Dependentes
   function addDependente(){
     const n=document.getElementById('depNome').value.trim(), c=document.getElementById('depCPF').value.trim(), t=document.getElementById('depTelefone').value.trim(), e=document.getElementById('depEmail').value.trim();
     if(!n) return alert('Nome obrigatório');
@@ -551,7 +543,6 @@
   function renderDependentes(){
     document.getElementById('dependentesBody').innerHTML = dependentesTemp.map((d,i)=>`<tr><td>${d.nome}</td><td>${d.cpf}</td><td>${d.telefone}</td><td>${d.email}</td><td><button class="btn btn-danger btn-sm" onclick="removeDependente(${i})">Remover</button></td></tr>`).join('');
   }
-  // Anexos
   function adicionarAnexo(e){
     const file=e.target.files[0]; if(!file) return;
     if(file.size>5*1024*1024){ alert('Máx 5MB'); return; }
@@ -562,15 +553,15 @@
   }
   function removerAnexo(i){ anexosTemp.splice(i,1); renderAnexosPreview(); }
   function renderAnexosPreview(){
-    const container=document.getElementById('anexosPreview'); container.innerHTML='';
+    const container=document.getElementById('anexosPreview'); if(!container) return;
+    container.innerHTML='';
     anexosTemp.forEach((a,i)=>{
       const div=document.createElement('div'); div.className='position-relative d-inline-block m-1';
-      if(a.tipo.startsWith('image/')){ const img=document.createElement('img'); img.src=a.base64; img.className='attachment-thumb'; img.style.width='80px'; img.style.borderRadius='8px'; div.appendChild(img); }
+      if(a.tipo.startsWith('image/')){ const img=document.createElement('img'); img.src=a.base64; img.className='attachment-thumb'; div.appendChild(img); }
       else{ const icon=document.createElement('i'); icon.className='bi bi-file-earmark-pdf fs-1 text-danger'; div.appendChild(icon); }
       const btn=document.createElement('button'); btn.className='btn btn-danger btn-sm position-absolute top-0 end-0'; btn.innerHTML='×'; btn.onclick=()=>removerAnexo(i); div.appendChild(btn); container.appendChild(div);
     });
   }
-  // Campo mágico
   function autoFill(){
     const txt=document.getElementById('smartPaste').value;
     const map=[
@@ -585,7 +576,7 @@
       [/Administradora\s*:\s*(.*)$/im, 'cAdministradora'],[/C[óo]digo\s*:\s*(.*)$/im, 'cCodigo'],
       [/Acomoda[çc][ãa]o\s*:\s*(.*)$/im, 'cAcomodacao'],[/Vig[êe]ncia\s*:\s*(.*)$/im, 'cVigencia']
     ];
-    map.forEach(([reg,id])=>{ const m=txt.match(reg); if(m) document.getElementById(id).value=m[1].trim(); });
+    map.forEach(([reg,id])=>{ const m=txt.match(reg); if(m && document.getElementById(id)) document.getElementById(id).value=m[1].trim(); });
   }
 
   // ==================== PESQUISA ====================
@@ -609,7 +600,8 @@
       if(sortDir==='asc') return av>bv?1:-1;
       else return av<bv?1:-1;
     });
-    const tbody = document.getElementById('tableBody'); tbody.innerHTML='';
+    const tbody = document.getElementById('tableBody'); if(!tbody) return;
+    tbody.innerHTML='';
     filtered.forEach(c=>{
       const valor = Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0;
       const checked = selectedIds.has(c.id);
@@ -620,18 +612,18 @@
   function updateFilterOptions(){
     const sets = { modalidade: new Set(), praca: new Set(), administradora: new Set(), fonte: new Set() };
     clients.forEach(c=>{ if(c.modalidadePlano) sets.modalidade.add(c.modalidadePlano); if(c.praca) sets.praca.add(c.praca); if(c.administradora) sets.administradora.add(c.administradora); if(c.fonteVenda) sets.fonte.add(c.fonteVenda); });
-    document.getElementById('filterModalidade').innerHTML='<option value="ALL">Modalidade</option>'+[...sets.modalidade].sort().map(m=>`<option>${m}</option>`).join('');
-    document.getElementById('filterPraca').innerHTML='<option value="ALL">Praça</option>'+[...sets.praca].sort().map(p=>`<option>${p}</option>`).join('');
-    document.getElementById('filterAdministradora').innerHTML='<option value="ALL">Admin.</option>'+[...sets.administradora].sort().map(a=>`<option>${a}</option>`).join('');
-    document.getElementById('filterFonte').innerHTML='<option value="ALL">Fonte</option>'+[...sets.fonte].sort().map(f=>`<option>${f}</option>`).join('');
+    if(document.getElementById('filterModalidade')) document.getElementById('filterModalidade').innerHTML='<option value="ALL">Modalidade</option>'+[...sets.modalidade].sort().map(m=>`<option>${m}</option>`).join('');
+    if(document.getElementById('filterPraca')) document.getElementById('filterPraca').innerHTML='<option value="ALL">Praça</option>'+[...sets.praca].sort().map(p=>`<option>${p}</option>`).join('');
+    if(document.getElementById('filterAdministradora')) document.getElementById('filterAdministradora').innerHTML='<option value="ALL">Admin.</option>'+[...sets.administradora].sort().map(a=>`<option>${a}</option>`).join('');
+    if(document.getElementById('filterFonte')) document.getElementById('filterFonte').innerHTML='<option value="ALL">Fonte</option>'+[...sets.fonte].sort().map(f=>`<option>${f}</option>`).join('');
   }
   async function deleteClient(id){ if(confirm('Excluir?')){ await db.collection('clients').doc(id).delete(); await loadAll(); } }
   function toggleCliente(id,chk){ if(chk) selectedIds.add(id); else selectedIds.delete(id); updateLoteButton(); updateSelectAllCheckbox(); }
   function toggleSelectAll(){ const chk=document.getElementById('selectAll').checked; document.querySelectorAll('.cliente-checkbox').forEach(cb=>{ cb.checked=chk; if(chk) selectedIds.add(cb.value); else selectedIds.delete(cb.value); }); updateLoteButton(); }
-  function updateSelectAllCheckbox(){ const cbs=document.querySelectorAll('.cliente-checkbox'); const all=cbs.length>0 && Array.from(cbs).every(cb=>cb.checked); document.getElementById('selectAll').checked=all; }
-  function updateLoteButton(){ const btn=document.getElementById('btnAcaoLote'); btn.disabled=selectedIds.size===0; document.getElementById('selecionadosCount').innerText=selectedIds.size?`${selectedIds.size} selecionado(s)`:''; }
+  function updateSelectAllCheckbox(){ const cbs=document.querySelectorAll('.cliente-checkbox'); const all=cbs.length>0 && Array.from(cbs).every(cb=>cb.checked); const selectAll=document.getElementById('selectAll'); if(selectAll) selectAll.checked=all; }
+  function updateLoteButton(){ const btn=document.getElementById('btnAcaoLote'); if(btn) btn.disabled=selectedIds.size===0; const span=document.getElementById('selecionadosCount'); if(span) span.innerText=selectedIds.size?`${selectedIds.size} selecionado(s)`:''; }
 
-  // Ações em lote (resumido)
+  // Ações em lote
   function abrirModalLote(){ document.getElementById('acaoLote').value=''; document.getElementById('parametrosLote').innerHTML=''; new bootstrap.Modal(document.getElementById('modalLote')).show(); }
   function handleAcaoLoteChange(){ const acao=document.getElementById('acaoLote').value; const container=document.getElementById('parametrosLote'); container.innerHTML=''; if(acao==='status') container.innerHTML=`<label>Novo Status</label><select id="loteStatus" class="form-select">${statuses.map(s=>`<option>${s}</option>`).join('')}</select>`; else if(acao==='praca') container.innerHTML=`<label>Nova Praça</label><select id="lotePraca" class="form-select"><option>Selecione</option>${pracas.map(p=>`<option>${p.nome}</option>`).join('')}</select>`; else if(acao==='administradora') container.innerHTML=`<label>Nova Admin</label><select id="loteAdministradora" class="form-select">${administradoras.map(a=>`<option>${a.nome}</option>`).join('')}</select>`; else if(acao==='dataPagamento') container.innerHTML=`<label>Data Pagamento</label><input type="date" id="loteDataPagamento" class="form-control">`; else if(acao==='excluir') container.innerHTML=`<p class="text-danger">Excluir permanentemente?</p>`; }
   async function executarAcaoLote(){
@@ -738,28 +730,28 @@
   function addStatus(){ const s=prompt('Novo status'); if(s){ statuses.push(s); renderStatuses(); } }
   function deleteStatus(i){ statuses.splice(i,1); renderStatuses(); }
   function renderStatuses(){
-    document.getElementById('cStatus').innerHTML = statuses.map(s=>`<option>${s}</option>`).join('');
-    document.getElementById('filterStatus').innerHTML = '<option value="ALL">Status</option>'+statuses.map(s=>`<option>${s}</option>`).join('');
-    document.getElementById('statusList').innerHTML = statuses.map((s,i)=>`<div class="status-item"><strong>${s}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
+    const cStatus=document.getElementById('cStatus'); if(cStatus) cStatus.innerHTML = statuses.map(s=>`<option>${s}</option>`).join('');
+    const filterStatus=document.getElementById('filterStatus'); if(filterStatus) filterStatus.innerHTML = '<option value="ALL">Status</option>'+statuses.map(s=>`<option>${s}</option>`).join('');
+    const statusList=document.getElementById('statusList'); if(statusList) statusList.innerHTML = statuses.map((s,i)=>`<div class="status-item"><strong>${s}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
   }
   async function addPraca(){ const n=document.getElementById('novaPraca').value.trim(); if(n){ await db.collection('pracas').add({nome:n, userId:currentUser.uid}); document.getElementById('novaPraca').value=''; await loadPracas(); renderPracasList(); } }
   async function deletePraca(id){ if(confirm('Remover?')){ await db.collection('pracas').doc(id).delete(); await loadPracas(); renderPracasList(); } }
-  function renderPracasList(){ document.getElementById('pracasList').innerHTML=pracas.map(p=>`<div class="status-item"><span>${p.nome}</span><button class="btn btn-danger btn-sm" onclick="deletePraca('${p.id}')">Excluir</button></div>`).join(''); }
+  function renderPracasList(){ const el=document.getElementById('pracasList'); if(el) el.innerHTML=pracas.map(p=>`<div class="status-item"><span>${p.nome}</span><button class="btn btn-danger btn-sm" onclick="deletePraca('${p.id}')">Excluir</button></div>`).join(''); }
   async function addAdministradora(){ const n=document.getElementById('novaAdministradora').value.trim(); if(n){ await db.collection('administradoras').add({nome:n, userId:currentUser.uid}); document.getElementById('novaAdministradora').value=''; await loadAdministradoras(); renderAdministradorasList(); } }
   async function deleteAdministradora(id){ if(confirm('Remover?')){ await db.collection('administradoras').doc(id).delete(); await loadAdministradoras(); renderAdministradorasList(); } }
-  function renderAdministradorasList(){ document.getElementById('administradorasList').innerHTML=administradoras.map(a=>`<div class="status-item"><span>${a.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteAdministradora('${a.id}')">Excluir</button></div>`).join(''); }
+  function renderAdministradorasList(){ const el=document.getElementById('administradorasList'); if(el) el.innerHTML=administradoras.map(a=>`<div class="status-item"><span>${a.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteAdministradora('${a.id}')">Excluir</button></div>`).join(''); }
   async function addAcomodacao(){ const n=document.getElementById('novaAcomodacao').value.trim(); if(n){ await db.collection('acomodacoes').add({nome:n, userId:currentUser.uid}); document.getElementById('novaAcomodacao').value=''; await loadAcomodacoes(); renderAcomodacoesList(); } }
   async function deleteAcomodacao(id){ if(confirm('Remover?')){ await db.collection('acomodacoes').doc(id).delete(); await loadAcomodacoes(); renderAcomodacoesList(); } }
-  function renderAcomodacoesList(){ document.getElementById('acomodacoesList').innerHTML=acomodacoes.map(a=>`<div class="status-item"><span>${a.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteAcomodacao('${a.id}')">Excluir</button></div>`).join(''); }
+  function renderAcomodacoesList(){ const el=document.getElementById('acomodacoesList'); if(el) el.innerHTML=acomodacoes.map(a=>`<div class="status-item"><span>${a.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteAcomodacao('${a.id}')">Excluir</button></div>`).join(''); }
   async function addCoparticipacao(){ const n=document.getElementById('novaCoparticipacao').value.trim(); if(n){ await db.collection('coparticipacoes').add({nome:n, userId:currentUser.uid}); document.getElementById('novaCoparticipacao').value=''; await loadCoparticipacoes(); renderCoparticipacoesList(); } }
   async function deleteCoparticipacao(id){ if(confirm('Remover?')){ await db.collection('coparticipacoes').doc(id).delete(); await loadCoparticipacoes(); renderCoparticipacoesList(); } }
-  function renderCoparticipacoesList(){ document.getElementById('coparticipacoesList').innerHTML=coparticipacoes.map(c=>`<div class="status-item"><span>${c.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteCoparticipacao('${c.id}')">Excluir</button></div>`).join(''); }
+  function renderCoparticipacoesList(){ const el=document.getElementById('coparticipacoesList'); if(el) el.innerHTML=coparticipacoes.map(c=>`<div class="status-item"><span>${c.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteCoparticipacao('${c.id}')">Excluir</button></div>`).join(''); }
   async function addModalidade(){ const n=document.getElementById('novaModalidade').value.trim(); if(n){ await db.collection('modalidades').add({nome:n, userId:currentUser.uid}); document.getElementById('novaModalidade').value=''; await loadModalidades(); renderModalidadesList(); } }
   async function deleteModalidade(id){ if(confirm('Remover?')){ await db.collection('modalidades').doc(id).delete(); await loadModalidades(); renderModalidadesList(); } }
-  function renderModalidadesList(){ document.getElementById('modalidadesList').innerHTML=modalidades.map(m=>`<div class="status-item"><span>${m.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteModalidade('${m.id}')">Excluir</button></div>`).join(''); }
+  function renderModalidadesList(){ const el=document.getElementById('modalidadesList'); if(el) el.innerHTML=modalidades.map(m=>`<div class="status-item"><span>${m.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteModalidade('${m.id}')">Excluir</button></div>`).join(''); }
   async function addFonteVenda(){ const n=document.getElementById('novaFonteVenda').value.trim(); if(n){ await db.collection('fontesVenda').add({nome:n, userId:currentUser.uid}); document.getElementById('novaFonteVenda').value=''; await loadFontesVenda(); renderFontesVendaList(); } }
   async function deleteFonteVenda(id){ if(confirm('Remover?')){ await db.collection('fontesVenda').doc(id).delete(); await loadFontesVenda(); renderFontesVendaList(); } }
-  function renderFontesVendaList(){ document.getElementById('fontesVendaList').innerHTML=fontesVenda.map(f=>`<div class="status-item"><span>${f.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteFonteVenda('${f.id}')">Excluir</button></div>`).join(''); }
+  function renderFontesVendaList(){ const el=document.getElementById('fontesVendaList'); if(el) el.innerHTML=fontesVenda.map(f=>`<div class="status-item"><span>${f.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteFonteVenda('${f.id}')">Excluir</button></div>`).join(''); }
 
   // Backup / Excel
   function exportBackup(){ const blob = new Blob([JSON.stringify({clients,tarefas,pracas,administradoras,acomodacoes,coparticipacoes,modalidades,fontesVenda})],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='backup-crm.json'; a.click(); }
