@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Recupera Ai</title>
+  <title>CRM Recuperação - Versão Estável</title>
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
@@ -195,7 +195,7 @@
               <div class="col-md-3"><input type="email" id="depEmail" class="form-control" placeholder="Email"></div>
               <div class="col-md-1"><button class="btn btn-primary w-100" onclick="addDependente()"><i class="bi bi-plus"></i></button></div>
             </div>
-            <div class="table-responsive"><table class="table"><thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>Email</th><th>Ação</th></tr></thead><tbody id="dependentesBody"></tbody></table></div>
+            <div class="table-responsive"><table class="table"><thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>Email</th><th>Ação</th></table></thead><tbody id="dependentesBody"></tbody></table></div>
           </div>
           <div class="tab-pane fade" id="anexosTab">
             <div class="row g-3 mb-4">
@@ -299,7 +299,7 @@
   let tarefas = [];
   let dependentesTemp = [];
   let anexosTemp = [];
-  let statuses = ['Em análise', 'Implantada', 'Cancelada', 'Pendente'];
+  let statuses = [];               // Agora será carregado do Firestore
   let pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
   let charts = { status: null, admin: null, pfPj: null, monthlyRevenue: null };
   let calendarioMes = new Date().getMonth(), calendarioAno = new Date().getFullYear(), diaSelecionado = new Date().toISOString().split('T')[0];
@@ -324,7 +324,7 @@
   // ==================== CARREGAMENTO ====================
   async function loadAll() {
     try {
-      await Promise.all([loadClients(), loadTarefas(), loadPracas(), loadAdministradoras(), loadAcomodacoes(), loadCoparticipacoes(), loadModalidades(), loadFontesVenda()]);
+      await Promise.all([loadClients(), loadTarefas(), loadStatuses(), loadPracas(), loadAdministradoras(), loadAcomodacoes(), loadCoparticipacoes(), loadModalidades(), loadFontesVenda()]);
       updateDashboard();
       renderCalendario(); renderCompromissos(diaSelecionado);
       renderStatuses(); renderPracasList(); renderAdministradorasList(); renderAcomodacoesList(); renderCoparticipacoesList(); renderModalidadesList(); renderFontesVendaList();
@@ -334,6 +334,11 @@
   }
   async function loadClients() { const snap = await db.collection('clients').where('userId','==',currentUser.uid).get(); clients = snap.docs.map(d=>({id:d.id,...d.data()})); updateFilterOptions(); renderTable(); }
   async function loadTarefas() { const snap = await db.collection('tarefas').where('userId','==',currentUser.uid).get(); tarefas = snap.docs.map(d=>({id:d.id,...d.data()})); renderCalendario(); renderCompromissos(diaSelecionado); }
+  // --- STATUS (persistente no Firestore) ---
+  async function loadStatuses() { const snap = await db.collection('statuses').where('userId','==',currentUser.uid).get(); statuses = snap.docs.map(d=>d.data().name); if(statuses.length===0) statuses = ['Em análise', 'Implantada', 'Cancelada', 'Pendente']; }
+  async function addStatusToDB(name) { await db.collection('statuses').add({ name: name, userId: currentUser.uid }); await loadStatuses(); renderStatuses(); updateDashboard(); renderTable(); }
+  async function deleteStatusFromDB(id) { await db.collection('statuses').doc(id).delete(); await loadStatuses(); renderStatuses(); updateDashboard(); renderTable(); }
+  // --- Demais listas (já existentes) ---
   async function loadPracas() { const snap = await db.collection('pracas').where('userId','==',currentUser.uid).get(); pracas = snap.docs.map(d=>({id:d.id,nome:d.data().nome})); populateSelect('cPraca',pracas); }
   async function loadAdministradoras() { const snap = await db.collection('administradoras').where('userId','==',currentUser.uid).get(); administradoras = snap.docs.map(d=>({id:d.id,nome:d.data().nome})); populateSelect('cAdministradora',administradoras); }
   async function loadAcomodacoes() { const snap = await db.collection('acomodacoes').where('userId','==',currentUser.uid).get(); acomodacoes = snap.docs.map(d=>({id:d.id,nome:d.data().nome})); populateSelect('cAcomodacao',acomodacoes); }
@@ -384,7 +389,7 @@
     const media = filtrados.length ? soma / filtrados.length : 0;
     document.getElementById('dashValorMedioPlano').innerHTML = formatBRL(media);
     
-    // PF vs PJ (inclui PIM/PME)
+    // PF vs PJ
     const pf = filtrados.filter(c => 
       c.tipoCliente === 'PF' || 
       (c.modalidadePlano && /individual|pf/i.test(c.modalidadePlano))
@@ -400,7 +405,6 @@
     document.getElementById('dashPfValor').innerHTML = formatBRL(somaPf);
     document.getElementById('dashPjValor').innerHTML = formatBRL(somaPj);
     
-    // Top administradora
     const adminMap = {};
     filtrados.forEach(c=>{ if(c.administradora){ const valor = Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0; adminMap[c.administradora] = (adminMap[c.administradora]||0)+valor; } });
     let topAdmin='', topValor=0; for(let a in adminMap) if(adminMap[a]>topValor){ topAdmin=a; topValor=adminMap[a]; }
@@ -646,7 +650,7 @@
   function updateSelectAllCheckbox(){ const cbs=document.querySelectorAll('.cliente-checkbox'); const all=cbs.length>0 && Array.from(cbs).every(cb=>cb.checked); const selectAll=document.getElementById('selectAll'); if(selectAll) selectAll.checked=all; }
   function updateLoteButton(){ const btn=document.getElementById('btnAcaoLote'); if(btn) btn.disabled=selectedIds.size===0; const span=document.getElementById('selecionadosCount'); if(span) span.innerText=selectedIds.size?`${selectedIds.size} selecionado(s)`:''; }
 
-  // Ações em lote
+  // ==================== AÇÕES EM LOTE ====================
   function abrirModalLote(){ document.getElementById('acaoLote').value=''; document.getElementById('parametrosLote').innerHTML=''; new bootstrap.Modal(document.getElementById('modalLote')).show(); }
   function handleAcaoLoteChange(){ const acao=document.getElementById('acaoLote').value; const container=document.getElementById('parametrosLote'); container.innerHTML=''; if(acao==='status') container.innerHTML=`<label>Novo Status</label><select id="loteStatus" class="form-select">${statuses.map(s=>`<option>${s}</option>`).join('')}</select>`; else if(acao==='praca') container.innerHTML=`<label>Nova Praça</label><select id="lotePraca" class="form-select"><option>Selecione</option>${pracas.map(p=>`<option>${p.nome}</option>`).join('')}</select>`; else if(acao==='administradora') container.innerHTML=`<label>Nova Admin</label><select id="loteAdministradora" class="form-select">${administradoras.map(a=>`<option>${a.nome}</option>`).join('')}</select>`; else if(acao==='dataPagamento') container.innerHTML=`<label>Data Pagamento</label><input type="date" id="loteDataPagamento" class="form-control">`; else if(acao==='excluir') container.innerHTML=`<p class="text-danger">Excluir permanentemente?</p>`; }
   async function executarAcaoLote(){
@@ -750,12 +754,18 @@
   function changeMonth(delta){ calendarioMes+=delta; if(calendarioMes<0){ calendarioMes=11; calendarioAno--; } if(calendarioMes>11){ calendarioMes=0; calendarioAno++; } renderCalendario(); }
 
   // ==================== CONFIGURAÇÕES ====================
-  function addStatus(){ const s=prompt('Novo status'); if(s){ statuses.push(s); renderStatuses(); } }
-  function deleteStatus(i){ statuses.splice(i,1); renderStatuses(); }
+  async function addStatus(){ const nome=prompt('Nome do novo status'); if(!nome) return; await addStatusToDB(nome); }
+  function deleteStatus(id){ if(confirm('Remover status?')) deleteStatusFromDB(id); }
   function renderStatuses(){
-    const cStatus=document.getElementById('cStatus'); if(cStatus) cStatus.innerHTML = statuses.map(s=>`<option>${s}</option>`).join('');
-    const filterStatus=document.getElementById('filterStatus'); if(filterStatus) filterStatus.innerHTML = '<option value="ALL">Status</option>'+statuses.map(s=>`<option>${s}</option>`).join('');
-    const statusList=document.getElementById('statusList'); if(statusList) statusList.innerHTML = statuses.map((s,i)=>`<div class="status-item"><strong>${s}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus(${i})">Excluir</button></div>`).join('');
+    // Carrega os IDs dos status para poder excluir
+    const snap = db.collection('statuses').where('userId','==',currentUser.uid).get().then(snap=>{
+      const statusItems = snap.docs.map(doc=>({id:doc.id, name:doc.data().name}));
+      const html = statusItems.map(({id,name})=>`<div class="status-item"><strong>${name}</strong><button class="btn btn-danger btn-sm" onclick="deleteStatus('${id}')">Excluir</button></div>`).join('');
+      if(document.getElementById('statusList')) document.getElementById('statusList').innerHTML = html;
+    });
+    // Preenche selects
+    const cStatus = document.getElementById('cStatus'); if(cStatus) cStatus.innerHTML = statuses.map(s=>`<option>${s}</option>`).join('');
+    const filterStatus = document.getElementById('filterStatus'); if(filterStatus) filterStatus.innerHTML = '<option value="ALL">Status</option>'+statuses.map(s=>`<option>${s}</option>`).join('');
   }
   async function addPraca(){ const n=document.getElementById('novaPraca').value.trim(); if(n){ await db.collection('pracas').add({nome:n, userId:currentUser.uid}); document.getElementById('novaPraca').value=''; await loadPracas(); renderPracasList(); } }
   async function deletePraca(id){ if(confirm('Remover?')){ await db.collection('pracas').doc(id).delete(); await loadPracas(); renderPracasList(); } }
@@ -777,14 +787,14 @@
   function renderFontesVendaList(){ const el=document.getElementById('fontesVendaList'); if(el) el.innerHTML=fontesVenda.map(f=>`<div class="status-item"><span>${f.nome}</span><button class="btn btn-danger btn-sm" onclick="deleteFonteVenda('${f.id}')">Excluir</button></div>`).join(''); }
 
   // Backup / Excel
-  function exportBackup(){ const blob = new Blob([JSON.stringify({clients,tarefas,pracas,administradoras,acomodacoes,coparticipacoes,modalidades,fontesVenda})],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='backup-crm.json'; a.click(); }
+  function exportBackup(){ const blob = new Blob([JSON.stringify({clients,tarefas,pracas,administradoras,acomodacoes,coparticipacoes,modalidades,fontesVenda,statuses})],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='backup-crm.json'; a.click(); }
   function importBackup(){ document.getElementById('backupFileInput').click(); }
-  function handleBackupFile(e){ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=async(ev)=>{ const data=JSON.parse(ev.target.result); if(confirm('Importar backup?')){ for(const col of ['clients','tarefas','pracas','administradoras','acomodacoes','coparticipacoes','modalidades','fontesVenda']){ if(data[col]){ const batch=db.batch(); data[col].forEach(item=>{ const {id,...d}=item; d.userId=currentUser.uid; batch.set(id?db.collection(col).doc(id):db.collection(col).doc(), d, {merge:true}); }); await batch.commit(); } } alert('Importado!'); loadAll(); } }; reader.readAsText(file); }
+  function handleBackupFile(e){ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=async(ev)=>{ const data=JSON.parse(ev.target.result); if(confirm('Importar backup?')){ for(const col of ['clients','tarefas','pracas','administradoras','acomodacoes','coparticipacoes','modalidades','fontesVenda','statuses']){ if(data[col]){ const batch=db.batch(); data[col].forEach(item=>{ const {id,...d}=item; d.userId=currentUser.uid; batch.set(id?db.collection(col).doc(id):db.collection(col).doc(), d, {merge:true}); }); await batch.commit(); } } alert('Importado!'); loadAll(); } }; reader.readAsText(file); }
   function exportarExcel(){ const mesInput=document.getElementById('exportMes').value; if(!mesInput) return alert('Selecione mês'); const [ano,mes]=mesInput.split('-'); const prefixo=`${ano}-${mes.padStart(2,'0')}`; const filtrados=clients.filter(c=>(c.dataPagamento||'').startsWith(prefixo)||(c.dataImplantacao||'').startsWith(prefixo)); if(!filtrados.length){ alert('Nenhum dado'); return; } const headers=['Data','Proposta','Titular','CPF','Valor','Status']; const linhas=filtrados.map(c=>[c.data||'',c.numeroProposta||'',c.nomeTitular||'',c.cpfTitular||'',(Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0).toFixed(2),c.status||'']); const csv='\uFEFF'+headers.join(',')+'\n'+linhas.map(l=>l.map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`propostas_${ano}_${mes}.csv`; a.click(); }
 
   document.getElementById('backupFileInput').addEventListener('change', handleBackupFile);
   document.querySelectorAll('#pesquisaTable thead th[data-col]').forEach(th=>th.addEventListener('click',()=>{ const col=th.getAttribute('data-col'); if(sortColumn===col) sortDir=sortDir==='asc'?'desc':'asc'; else { sortColumn=col; sortDir='asc'; } renderTable(); }));
-  renderStatuses(); renderCalendario(); document.getElementById('dataSelecionada').innerText = new Date(diaSelecionado+'T00:00').toLocaleDateString('pt-BR');
+  renderCalendario(); document.getElementById('dataSelecionada').innerText = new Date(diaSelecionado+'T00:00').toLocaleDateString('pt-BR');
 </script>
 </body>
 </html>
