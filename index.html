@@ -737,11 +737,20 @@
   function formatBRL(v){ return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
   function handlePeriodoChange() {
     const periodo = document.getElementById('periodoFiltro').value;
-    document.getElementById('intervaloDiv').style.display = periodo==='intervalo'?'block':'none';
-    document.getElementById('intervaloFimDiv').style.display = periodo==='intervalo'?'block':'none';
-    if(periodo==='intervalo'){ const hoje=new Date(); const inicio=new Date(); inicio.setDate(inicio.getDate()-30); document.getElementById('dataInicioIntervalo').value=inicio.toISOString().split('T')[0]; document.getElementById('dataFimIntervalo').value=hoje.toISOString().split('T')[0]; }
-    // Atualiza o filtro de praça com o valor do select
-    filtroPraca = document.getElementById('filtroPraca').value;
+    document.getElementById('intervaloDiv').style.display = periodo === 'intervalo' ? 'block' : 'none';
+    document.getElementById('intervaloFimDiv').style.display = periodo === 'intervalo' ? 'block' : 'none';
+
+    // 🔥 RESETAR FILTRO DE PRAÇA
+    document.getElementById('filtroPraca').value = '';
+    filtroPraca = '';
+
+    if (periodo === 'intervalo') {
+      const hoje = new Date();
+      const inicio = new Date();
+      inicio.setDate(inicio.getDate() - 30);
+      document.getElementById('dataInicioIntervalo').value = inicio.toISOString().split('T')[0];
+      document.getElementById('dataFimIntervalo').value = hoje.toISOString().split('T')[0];
+    }
     updateDashboard();
   }
   function getFilteredClients(){
