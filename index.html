@@ -4,98 +4,65 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CRM Recupera AI</title>
-  <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <!-- Google Fonts (Inter) -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <!-- Chart.js -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
     /* ============================================================
-       CSS REFORMULADO – CRM RECUPERA AI
+       REDESIGN RADICAL – CORES FORTES, LAYOUT MODERNO
        ============================================================ */
     :root {
-      /* Cores principais */
-      --bg: #f0f4f9;
+      --bg: #f0f2f8;
       --card: #ffffff;
-      --border: #e9edf4;
-      --text: #1a2332;
-      --text-secondary: #5a6e85;
-      --text-muted: #8a9bb0;
-
-      /* Cores de status */
-      --primary: #4f7df3;
-      --primary-dark: #3a5fc7;
-      --primary-light: #eef3fe;
-      --success: #2ecc71;
-      --success-dark: #27ae60;
-      --success-light: #eafaf1;
-      --warning: #f39c12;
-      --warning-dark: #d68910;
-      --warning-light: #fef9e7;
-      --danger: #e74c3c;
-      --danger-dark: #c0392b;
-      --danger-light: #fdedec;
-      --info: #3498db;
-      --info-dark: #2e86c1;
-      --info-light: #ebf5fb;
-      --purple: #9b59b6;
-      --purple-dark: #7d3c98;
-      --purple-light: #f4ecf7;
-      --pink: #e74c8b;
-      --pink-dark: #c0396b;
-      --pink-light: #fdedf4;
-
-      /* Sombras */
-      --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
-      --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
-      --shadow-lg: 0 16px 48px rgba(0,0,0,0.08);
-      --shadow-hover: 0 12px 32px rgba(0,0,0,0.10);
-
-      /* Bordas */
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 20px;
-      --radius-xl: 28px;
-
-      /* Transições */
-      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --border: #e5e9f0;
+      --text: #0b1a2e;
+      --text-secondary: #4a5a72;
+      --primary: #6c5ce7;
+      --primary-dark: #5a4bd1;
+      --primary-light: #ede9fe;
+      --success: #00b894;
+      --success-dark: #00a381;
+      --warning: #fdcb6e;
+      --warning-dark: #f9a825;
+      --danger: #e17055;
+      --danger-dark: #d63031;
+      --info: #0984e3;
+      --info-dark: #0770c4;
+      --purple: #a29bfe;
+      --purple-dark: #6c5ce7;
+      --pink: #fd79a8;
+      --pink-dark: #e84393;
+      --radius: 20px;
+      --radius-sm: 12px;
+      --shadow: 0 12px 40px rgba(108, 92, 231, 0.10);
+      --shadow-hover: 0 20px 50px rgba(108, 92, 231, 0.18);
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Modo escuro */
     body.dark-mode {
-      --bg: #121826;
-      --card: #1e2739;
+      --bg: #0f1421;
+      --card: #1a2335;
       --border: #2d3748;
       --text: #e8edf5;
       --text-secondary: #94a3b8;
-      --text-muted: #64748b;
-      --primary-light: #1a2744;
-      --success-light: #0f2a1a;
-      --warning-light: #2a1f0a;
-      --danger-light: #2a1412;
-      --info-light: #0a1f2a;
-      --purple-light: #1a122a;
-      --pink-light: #2a1220;
-      --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
-      --shadow-md: 0 8px 24px rgba(0,0,0,0.3);
-      --shadow-lg: 0 16px 48px rgba(0,0,0,0.4);
+      --primary: #8b7cf7;
+      --primary-dark: #7c6df0;
+      --primary-light: #1f1a3a;
+      --shadow: 0 12px 40px rgba(0,0,0,0.3);
+      --shadow-hover: 0 20px 50px rgba(0,0,0,0.5);
     }
 
-    /* Reset e base */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Inter', -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      font-size: 0.875rem;
-      line-height: 1.6;
+      font-size: 0.9rem;
+      line-height: 1.5;
       transition: background var(--transition), color var(--transition);
       min-height: 100vh;
     }
@@ -103,217 +70,190 @@
     /* ===== NAVBAR ===== */
     .navbar {
       background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 0.75rem 1.5rem;
+      border-bottom: 2px solid var(--border);
+      padding: 0.6rem 1.8rem;
       position: sticky;
       top: 0;
       z-index: 100;
       backdrop-filter: blur(12px);
-      transition: background var(--transition), border-color var(--transition);
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow);
     }
     .navbar .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
     .navbar .brand i {
-      font-size: 1.6rem;
+      font-size: 2rem;
       color: var(--primary);
       background: var(--primary-light);
-      padding: 6px;
+      padding: 8px;
       border-radius: var(--radius-sm);
     }
     .navbar .brand span {
-      font-weight: 700;
-      font-size: 1.2rem;
-      letter-spacing: -0.5px;
-      color: var(--text);
+      font-weight: 900;
+      font-size: 1.4rem;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--primary), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     .navbar .brand span small {
       font-weight: 400;
       font-size: 0.7rem;
-      color: var(--text-secondary);
-      letter-spacing: 0.3px;
+      letter-spacing: 0.5px;
+      -webkit-text-fill-color: var(--text-secondary);
+      background: none;
     }
     .navbar .nav-actions {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
     }
+    .navbar .nav-actions .btn {
+      border-radius: 60px;
+      padding: 0.4rem 1rem;
+      font-weight: 600;
+    }
 
-    /* ===== CARDS GERAIS ===== */
+    /* ===== CARDS ===== */
     .card-custom {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       transition: all var(--transition);
+      padding: 1.2rem;
     }
     .card-custom:hover {
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
     }
 
     /* ===== DASHBOARD CARDS ===== */
     .dashboard-card {
-      padding: 1.25rem 1.5rem;
-      border-radius: var(--radius-lg);
+      padding: 1.4rem 1.6rem;
+      border-radius: var(--radius);
       color: white;
       height: 100%;
       position: relative;
       overflow: hidden;
-      transition: transform var(--transition), box-shadow var(--transition);
-      box-shadow: var(--shadow-sm);
+      transition: all var(--transition);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
     }
     .dashboard-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-hover);
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.12);
     }
     .dashboard-card .icon {
       position: absolute;
       right: 16px;
       top: 16px;
-      font-size: 2rem;
-      opacity: 0.2;
+      font-size: 2.6rem;
+      opacity: 0.15;
+      transition: transform var(--transition);
+    }
+    .dashboard-card:hover .icon {
+      transform: scale(1.2) rotate(-6deg);
     }
     .dashboard-card h6 {
-      font-weight: 500;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-size: 0.7rem;
-      opacity: 0.85;
-      margin-bottom: 4px;
+      letter-spacing: 0.8px;
+      font-size: 0.65rem;
+      opacity: 0.8;
+      margin-bottom: 6px;
     }
     .dashboard-card h2 {
-      font-weight: 700;
-      font-size: 1.8rem;
+      font-weight: 800;
+      font-size: 2.2rem;
       margin: 0;
-      line-height: 1.2;
+      line-height: 1.1;
     }
     .dashboard-card .sub {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       opacity: 0.8;
-      margin-top: 4px;
+      margin-top: 6px;
       display: block;
+      font-weight: 500;
     }
 
-    /* Cores dos cards */
-    .dashboard-card.bg-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
-    .dashboard-card.bg-success { background: linear-gradient(135deg, var(--success), var(--success-dark)); }
-    .dashboard-card.bg-warning { background: linear-gradient(135deg, var(--warning), var(--warning-dark)); }
-    .dashboard-card.bg-info { background: linear-gradient(135deg, var(--info), var(--info-dark)); }
-    .dashboard-card.bg-danger { background: linear-gradient(135deg, var(--danger), var(--danger-dark)); }
-    .dashboard-card.bg-purple { background: linear-gradient(135deg, var(--purple), var(--purple-dark)); }
-    .dashboard-card.bg-pink { background: linear-gradient(135deg, var(--pink), var(--pink-dark)); }
-
-    /* ===== FORMULÁRIOS ===== */
-    .form-control, .form-select {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      color: var(--text);
-      border-radius: var(--radius-sm);
-      padding: 0.6rem 0.9rem;
-      font-size: 0.85rem;
-      transition: border-color var(--transition), box-shadow var(--transition);
-    }
-    .form-control:focus, .form-select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(79, 125, 243, 0.15);
-      outline: none;
-    }
-    .form-control::placeholder {
-      color: var(--text-muted);
-      font-weight: 400;
-    }
-    label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 0.3rem;
-      display: block;
-      letter-spacing: 0.3px;
-    }
+    /* Cores dos cards – gradientes ousados */
+    .dashboard-card.bg-primary { background: linear-gradient(145deg, #6c5ce7, #a29bfe); }
+    .dashboard-card.bg-success { background: linear-gradient(145deg, #00b894, #00cec9); }
+    .dashboard-card.bg-warning { background: linear-gradient(145deg, #fdcb6e, #f9a825); color: #2d3436; }
+    .dashboard-card.bg-info { background: linear-gradient(145deg, #0984e3, #74b9ff); }
+    .dashboard-card.bg-danger { background: linear-gradient(145deg, #e17055, #fd79a8); }
+    .dashboard-card.bg-purple { background: linear-gradient(145deg, #6c5ce7, #a29bfe); }
+    .dashboard-card.bg-pink { background: linear-gradient(145deg, #fd79a8, #e84393); }
 
     /* ===== BOTÕES ===== */
     .btn {
-      border-radius: var(--radius-sm);
-      padding: 0.5rem 1.2rem;
-      font-weight: 600;
+      border-radius: 60px;
+      padding: 0.5rem 1.4rem;
+      font-weight: 700;
       font-size: 0.8rem;
       border: none;
       transition: all var(--transition);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
     }
-    .btn-primary {
-      background: var(--primary);
-      color: white;
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(108,92,231,0.3); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: var(--success-dark); transform: translateY(-2px); }
+    .btn-warning { background: var(--warning); color: #2d3436; }
+    .btn-warning:hover { background: var(--warning-dark); transform: translateY(-2px); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: var(--danger-dark); transform: translateY(-2px); }
+    .btn-outline-primary { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+    .btn-outline-primary:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+
+    /* ===== TABELAS ===== */
+    .table {
+      color: var(--text);
+      font-size: 0.8rem;
+      border-collapse: separate;
+      border-spacing: 0 6px;
     }
-    .btn-primary:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(79, 125, 243, 0.3);
+    .table thead th {
+      background: var(--primary-light);
+      padding: 0.7rem 0.9rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      text-transform: uppercase;
+      font-size: 0.6rem;
+      letter-spacing: 0.8px;
+      border: none;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
     }
-    .btn-success {
-      background: var(--success);
-      color: white;
+    .table tbody td {
+      padding: 0.7rem 0.9rem;
+      border: none;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
     }
-    .btn-success:hover {
-      background: var(--success-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
-    }
-    .btn-warning {
-      background: var(--warning);
-      color: #1a2332;
-    }
-    .btn-warning:hover {
-      background: var(--warning-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
-    }
-    .btn-danger {
-      background: var(--danger);
-      color: white;
-    }
-    .btn-danger:hover {
-      background: var(--danger-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
-    }
-    .btn-outline-primary {
-      background: transparent;
-      color: var(--primary);
-      border: 1.5px solid var(--primary);
-    }
-    .btn-outline-primary:hover {
-      background: var(--primary);
-      color: white;
-      transform: translateY(-1px);
-    }
-    .btn-sm {
-      padding: 0.3rem 0.8rem;
-      font-size: 0.75rem;
+    .table tbody tr:hover td {
+      background: var(--primary-light);
     }
 
     /* ===== ABAS ===== */
     .nav-tabs {
       border: none;
-      gap: 6px;
+      gap: 8px;
       flex-wrap: wrap;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.8rem;
     }
     .nav-tabs .nav-link {
       background: transparent;
       border: none;
       color: var(--text-secondary);
-      border-radius: var(--radius-xl);
-      padding: 0.5rem 1.2rem;
-      font-weight: 600;
+      border-radius: 60px;
+      padding: 0.6rem 1.5rem;
+      font-weight: 700;
       font-size: 0.8rem;
       transition: all var(--transition);
-      cursor: pointer;
     }
     .nav-tabs .nav-link:hover {
       background: var(--primary-light);
@@ -322,108 +262,58 @@
     .nav-tabs .nav-link.active {
       background: var(--primary);
       color: white;
-      box-shadow: 0 4px 12px rgba(79, 125, 243, 0.25);
+      box-shadow: 0 6px 20px rgba(108,92,231,0.3);
     }
 
-    /* ===== TABELAS ===== */
-    .table {
-      color: var(--text);
-      font-size: 0.8rem;
-      border-collapse: separate;
-      border-spacing: 0 4px;
-    }
-    .table thead th {
-      background: var(--bg);
-      padding: 0.6rem 0.8rem;
-      font-weight: 700;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      font-size: 0.65rem;
-      letter-spacing: 0.5px;
-      border: none;
-      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-    }
-    .table tbody td {
-      padding: 0.6rem 0.8rem;
-      border: none;
+    /* ===== FORMULÁRIOS ===== */
+    .form-control, .form-select {
       background: var(--card);
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
-    .table tbody tr {
-      transition: background var(--transition);
-    }
-    .table tbody tr:hover td {
-      background: var(--primary-light);
-    }
-    .table tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    /* ===== STATUS ITEMS (config) ===== */
-    .status-item {
-      background: var(--bg);
-      border: 1px solid var(--border);
+      border: 2px solid var(--border);
+      color: var(--text);
       border-radius: var(--radius-sm);
       padding: 0.6rem 1rem;
-      margin-bottom: 0.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: background var(--transition);
+      font-size: 0.85rem;
+      transition: all var(--transition);
     }
-    .status-item:hover {
-      background: var(--primary-light);
-    }
-    .status-item strong {
-      color: var(--text);
-      font-weight: 600;
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-light);
     }
 
     /* ===== CALENDÁRIO ===== */
     .mini-calendar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
+      gap: 6px;
       text-align: center;
       font-size: 0.7rem;
       margin-top: 1rem;
     }
     .mini-calendar .day {
-      padding: 0.4rem 0.2rem;
+      padding: 0.5rem 0.2rem;
       border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: background var(--transition), color var(--transition);
-      font-weight: 500;
+      font-weight: 600;
+      transition: all var(--transition);
     }
-    .mini-calendar .day:hover {
-      background: var(--primary);
-      color: white;
+    .mini-calendar .day:hover { background: var(--primary); color: white; transform: scale(1.05); }
+    .mini-calendar .day.today { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(108,92,231,0.3); }
+    .mini-calendar .day.has-event::after { content: '•'; display: block; color: var(--warning); font-size: 1.2rem; line-height: 0; margin-top: 2px; }
+    .mini-calendar .day.selected { background: var(--primary); color: white; }
+
+    /* ===== STATUS ITEMS ===== */
+    .status-item {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 1rem;
+      margin-bottom: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all var(--transition);
     }
-    .mini-calendar .day.today {
-      background: var(--primary);
-      color: white;
-      font-weight: 700;
-    }
-    .mini-calendar .day.has-event {
-      position: relative;
-    }
-    .mini-calendar .day.has-event::after {
-      content: '';
-      position: absolute;
-      bottom: 4px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 6px;
-      height: 6px;
-      background: var(--warning);
-      border-radius: 50%;
-    }
-    .mini-calendar .day.selected {
-      background: var(--primary);
-      color: white;
-      font-weight: 700;
-    }
+    .status-item:hover { background: var(--primary-light); border-color: var(--primary); }
 
     /* ===== LOGIN ===== */
     .login-screen {
@@ -432,52 +322,30 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      background: linear-gradient(145deg, #6c5ce7, #a29bfe);
       z-index: 9999;
-      backdrop-filter: blur(4px);
     }
     .login-box {
       background: var(--card);
-      border-radius: var(--radius-lg);
-      padding: 2.5rem;
+      border-radius: var(--radius);
+      padding: 2.8rem;
       width: 100%;
       max-width: 400px;
-      box-shadow: var(--shadow-lg);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.2);
       animation: fadeUp 0.6s ease;
     }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(40px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ===== ANEXOS ===== */
-    .attachment-thumb {
-      width: 80px;
-      height: 80px;
-      object-fit: cover;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      margin-right: 0.5rem;
-      margin-bottom: 0.5rem;
-      transition: transform var(--transition);
-      cursor: pointer;
-    }
-    .attachment-thumb:hover {
-      transform: scale(1.05);
     }
 
     /* ===== RESPONSIVIDADE ===== */
     @media (max-width: 768px) {
       .container-fluid { padding: 1rem; }
-      .dashboard-card h2 { font-size: 1.4rem; }
+      .dashboard-card h2 { font-size: 1.6rem; }
       .dashboard-card { padding: 1rem; }
-      .navbar .brand span { font-size: 1rem; }
-      .nav-tabs .nav-link { padding: 0.4rem 0.9rem; font-size: 0.75rem; }
-      .table { font-size: 0.7rem; }
-    }
-    @media (max-width: 576px) {
-      .dashboard-card .icon { display: none; }
-      .login-box { padding: 1.5rem; margin: 1rem; }
+      .navbar .brand span { font-size: 1.1rem; }
+      .nav-tabs .nav-link { padding: 0.4rem 1rem; font-size: 0.7rem; }
     }
   </style>
 </head>
@@ -505,10 +373,10 @@
   <div class="container-fluid">
     <div class="brand">
       <i class="bi bi-robot"></i>
-      <span>CRM Recupera AI <small>· v2.0</small></span>
+      <span>CRM Recupera AI <small>· v3.0</small></span>
     </div>
     <div class="nav-actions">
-      <button class="btn btn-outline-primary btn-sm" onclick="toggleTheme()" title="Alternar tema"><i class="bi bi-moon-stars-fill"></i></button>
+      <button class="btn btn-outline-primary btn-sm" onclick="toggleTheme()"><i class="bi bi-moon-stars-fill"></i></button>
       <button class="btn btn-success btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i></button>
       <button class="btn btn-danger btn-sm" onclick="logout()"><i class="bi bi-box-arrow-right"></i></button>
     </div>
@@ -526,7 +394,7 @@
   </ul>
 
   <div class="tab-content">
-    <!-- ===== DASHBOARD ===== -->
+    <!-- DASHBOARD -->
     <div class="tab-pane fade show active" id="dashboardTab">
       <div class="row g-3 mb-4 align-items-end">
         <div class="col-md-2"><label>Período</label><select id="periodoFiltro" class="form-select" onchange="handlePeriodoChange()"><option value="30">Últimos 30 dias</option><option value="60">Últimos 60 dias</option><option value="90">Últimos 90 dias</option><option value="120">Últimos 120 dias</option><option value="180">Últimos 180 dias</option><option value="mes">Mês atual</option><option value="intervalo">Intervalo personalizado</option></select></div>
@@ -535,7 +403,7 @@
         <div class="col-md-2"><button class="btn btn-warning mt-4" onclick="gerarRelatorio()"><i class="bi bi-file-earmark-pdf"></i> Relatório</button></div>
       </div>
 
-      <!-- Linha 1: Propostas, Implantadas, Total Processado, Taxa Conversão -->
+      <!-- Linha 1 -->
       <div class="row g-3 mb-4">
         <div class="col-md-3">
           <div class="dashboard-card bg-primary">
@@ -567,7 +435,7 @@
         </div>
       </div>
 
-      <!-- Linha 2: Ticket Médio, PF, PJ, Top Admin -->
+      <!-- Linha 2 -->
       <div class="row g-3 mb-4">
         <div class="col-md-3">
           <div class="dashboard-card bg-info">
@@ -602,7 +470,7 @@
         </div>
       </div>
 
-      <!-- Linha 3: Status específicos -->
+      <!-- Linha 3: Status -->
       <div class="row g-3 mb-4">
         <div class="col-md-3">
           <div class="dashboard-card bg-purple">
@@ -636,21 +504,21 @@
 
       <!-- Gráficos -->
       <div class="row g-4">
-        <div class="col-lg-4"><div class="card card-custom p-3"><h6 class="fw-bold mb-3">Status</h6><canvas id="statusChart" height="150"></canvas></div></div>
-        <div class="col-lg-4"><div class="card card-custom p-3"><h6 class="fw-bold mb-3">Top Administradoras</h6><canvas id="adminChart" height="150"></canvas></div></div>
-        <div class="col-lg-4"><div class="card card-custom p-3"><h6 class="fw-bold mb-3">PF vs PJ</h6><canvas id="pfPjChart" height="150"></canvas></div></div>
-        <div class="col-12"><div class="card card-custom p-3"><h6 class="fw-bold mb-3">Evolução Mensal de Faturamento</h6><canvas id="monthlyRevenueChart" height="200"></canvas></div></div>
+        <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Status</h6><canvas id="statusChart" height="150"></canvas></div></div>
+        <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Top Administradoras</h6><canvas id="adminChart" height="150"></canvas></div></div>
+        <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">PF vs PJ</h6><canvas id="pfPjChart" height="150"></canvas></div></div>
+        <div class="col-12"><div class="card card-custom"><h6 class="fw-bold mb-3">Evolução Mensal</h6><canvas id="monthlyRevenueChart" height="200"></canvas></div></div>
       </div>
     </div>
 
-    <!-- ===== FICHA CLIENTE ===== -->
+    <!-- FICHA CLIENTE -->
     <div class="tab-pane fade" id="clientesTab">
-      <div class="card card-custom p-4 mb-4">
+      <div class="card card-custom mb-4">
         <h5 class="fw-bold mb-3"><i class="bi bi-magic me-2"></i>Campo Mágico</h5>
         <textarea id="smartPaste" class="form-control mb-3" rows="3" placeholder="Cole o texto da proposta aqui..."></textarea>
         <button class="btn btn-primary" onclick="autoFill()">Auto preencher</button>
       </div>
-      <div class="card card-custom p-4">
+      <div class="card card-custom">
         <input type="hidden" id="clientId">
         <ul class="nav nav-tabs mb-4">
           <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dadosPrincipais">Dados da Proposta</button></li>
@@ -668,7 +536,7 @@
               <div class="col-md-3"><label>Telefone</label><input type="text" id="cTelefoneTitular" class="form-control"></div>
               <div class="col-md-3"><label>Email</label><input type="email" id="cEmailTitular" class="form-control"></div>
               <div class="col-md-2"><label>Qtd Vidas</label><input type="number" id="cQtdVidas" class="form-control" min="1" value="1"></div>
-              <div class="col-md-2"><label>Tipo Cliente</label><select id="cTipoCliente" class="form-select"><option value="">Selecione</option><option value="PF">Pessoa Física (Individual)</option><option value="PJ">Pessoa Jurídica (PJ/PME/PIM)</option></select></div>
+              <div class="col-md-2"><label>Tipo Cliente</label><select id="cTipoCliente" class="form-select"><option value="">Selecione</option><option value="PF">Pessoa Física</option><option value="PJ">Pessoa Jurídica</option></select></div>
               <div class="col-md-4"><label>Modalidade</label><select id="cModalidadePlano" class="form-select"></select></div>
               <div class="col-md-3"><label>Coparticipação</label><select id="cCoparticipacao" class="form-select"></select></div>
               <div class="col-md-3"><label>Status</label><select id="cStatus" class="form-select"></select></div>
@@ -697,24 +565,24 @@
           </div>
           <div class="tab-pane fade" id="anexosTab">
             <div class="row g-3 mb-4">
-              <div class="col-md-4"><button class="btn btn-outline-primary w-100" onclick="document.getElementById('arquivoAnexo').click()"><i class="bi bi-paperclip"></i> Anexar Arquivo</button><input type="file" id="arquivoAnexo" accept="image/*,application/pdf" style="display:none" onchange="adicionarAnexo(event)"></div>
-              <div class="col-md-4"><button class="btn btn-outline-primary w-100" onclick="document.getElementById('cameraAnexo').click()"><i class="bi bi-camera"></i> Tirar Foto</button><input type="file" id="cameraAnexo" accept="image/*" capture="environment" style="display:none" onchange="adicionarAnexo(event)"></div>
+              <div class="col-md-4"><button class="btn btn-outline-primary w-100" onclick="document.getElementById('arquivoAnexo').click()"><i class="bi bi-paperclip"></i> Anexar</button><input type="file" id="arquivoAnexo" accept="image/*,application/pdf" style="display:none" onchange="adicionarAnexo(event)"></div>
+              <div class="col-md-4"><button class="btn btn-outline-primary w-100" onclick="document.getElementById('cameraAnexo').click()"><i class="bi bi-camera"></i> Foto</button><input type="file" id="cameraAnexo" accept="image/*" capture="environment" style="display:none" onchange="adicionarAnexo(event)"></div>
             </div>
             <div id="anexosPreview" class="d-flex flex-wrap"></div>
           </div>
         </div>
         <div class="d-flex gap-2 mt-4">
-          <button class="btn btn-success" onclick="saveClient()"><i class="bi bi-save"></i> Salvar Proposta</button>
+          <button class="btn btn-success" onclick="saveClient()"><i class="bi bi-save"></i> Salvar</button>
           <button class="btn btn-outline-danger" onclick="clearForm()"><i class="bi bi-eraser"></i> Limpar</button>
         </div>
       </div>
     </div>
 
-    <!-- ===== PESQUISA ===== -->
+    <!-- PESQUISA -->
     <div class="tab-pane fade" id="pesquisaTab">
-      <div class="card card-custom p-4">
+      <div class="card card-custom">
         <div class="row g-3 mb-4">
-          <div class="col-md-3"><input type="text" id="search" class="form-control" placeholder="Buscar nome, proposta, anotações..." onkeyup="renderTable()"></div>
+          <div class="col-md-3"><input type="text" id="search" class="form-control" placeholder="Buscar..." onkeyup="renderTable()"></div>
           <div class="col-md-2"><select id="filterStatus" class="form-select" onchange="renderTable()"><option value="ALL">Status</option></select></div>
           <div class="col-md-2"><select id="filterModalidade" class="form-select" onchange="renderTable()"><option value="ALL">Modalidade</option></select></div>
           <div class="col-md-2"><select id="filterPraca" class="form-select" onchange="renderTable()"><option value="ALL">Praça</option></select></div>
@@ -726,7 +594,7 @@
           <div class="col-md-2"><input type="date" id="filterDataIni" class="form-control" placeholder="Data início" onchange="renderTable()"></div>
           <div class="col-md-2"><input type="date" id="filterDataFim" class="form-control" placeholder="Data fim" onchange="renderTable()"></div>
           <div class="col-md-2"><select id="filterFonte" class="form-select" onchange="renderTable()"><option value="ALL">Fonte</option></select></div>
-          <div class="col-md-2"><select id="filterTipo" class="form-select" onchange="renderTable()"><option value="ALL">Tipo</option><option value="PF">Pessoa Física</option><option value="PJ">Pessoa Jurídica</option></select></div>
+          <div class="col-md-2"><select id="filterTipo" class="form-select" onchange="renderTable()"><option value="ALL">Tipo</option><option value="PF">PF</option><option value="PJ">PJ</option></select></div>
         </div>
         <div class="mb-3">
           <button class="btn btn-warning" onclick="abrirModalLote()" id="btnAcaoLote" disabled><i class="bi bi-stack"></i> Ações em Lote</button>
@@ -741,11 +609,11 @@
       </div>
     </div>
 
-    <!-- ===== AGENDA ===== -->
+    <!-- AGENDA -->
     <div class="tab-pane fade" id="agendaTab">
       <div class="row g-4">
         <div class="col-lg-4">
-          <div class="card card-custom p-4">
+          <div class="card card-custom">
             <div class="d-flex justify-content-between align-items-center">
               <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i></button>
               <h5 id="calendarioTitulo" class="m-0 fw-bold"></h5>
@@ -760,7 +628,7 @@
           </div>
         </div>
         <div class="col-lg-8">
-          <div class="card card-custom p-4">
+          <div class="card card-custom">
             <h5 class="fw-bold">Compromissos: <span id="dataSelecionada" class="text-primary"></span></h5>
             <div id="compromissosLista"></div>
           </div>
@@ -768,17 +636,17 @@
       </div>
     </div>
 
-    <!-- ===== CONFIGURAÇÕES ===== -->
+    <!-- CONFIGURAÇÕES -->
     <div class="tab-pane fade" id="configTab">
       <div class="row g-4">
-        <div class="col-lg-4"><div class="card card-custom p-4"><h5 class="fw-bold"><i class="bi bi-tags me-2"></i>Etiquetas CRM</h5><button class="btn btn-success mb-3 btn-sm" onclick="addStatus()"><i class="bi bi-plus"></i> Adicionar</button><div id="statusList"></div></div></div>
-        <div class="col-lg-4"><div class="card card-custom p-4"><h5 class="fw-bold"><i class="bi bi-geo-alt me-2"></i>Praças</h5><div class="input-group mb-3"><input type="text" id="novaPraca" class="form-control" placeholder="Nova praça"><button class="btn btn-primary btn-sm" onclick="addPraca()">Adicionar</button></div><div id="pracasList"></div></div></div>
-        <div class="col-lg-4"><div class="card card-custom p-4"><h5 class="fw-bold"><i class="bi bi-building me-2"></i>Administradoras</h5><div class="input-group mb-3"><input type="text" id="novaAdministradora" class="form-control" placeholder="Nova admin"><button class="btn btn-primary btn-sm" onclick="addAdministradora()">Adicionar</button></div><div id="administradorasList"></div></div></div>
-        <div class="col-lg-3"><div class="card card-custom p-4"><h5 class="fw-bold"><i class="bi bi-bed me-2"></i>Acomodações</h5><div class="input-group mb-3"><input type="text" id="novaAcomodacao" class="form-control" placeholder="Nova acomodação"><button class="btn btn-primary btn-sm" onclick="addAcomodacao()">Adicionar</button></div><div id="acomodacoesList"></div></div></div>
-        <div class="col-lg-3"><div class="card card-custom p-4"><h5 class="fw-bold"><i class="bi bi-percent me-2"></i>Coparticipações</h5><div class="input-group mb-3"><input type="text" id="novaCoparticipacao" class="form-control" placeholder="Nova coparticipação"><button class="btn btn-primary btn-sm" onclick="addCoparticipacao()">Adicionar</button></div><div id="coparticipacoesList"></div></div></div>
-        <div class="col-lg-3"><div class="card card-custom p-4"><h5 class="fw-bold"><i class="bi bi-list-ul me-2"></i>Modalidades</h5><div class="input-group mb-3"><input type="text" id="novaModalidade" class="form-control" placeholder="Nova modalidade"><button class="btn btn-primary btn-sm" onclick="addModalidade()">Adicionar</button></div><div id="modalidadesList"></div></div></div>
-        <div class="col-lg-3"><div class="card card-custom p-4"><h5 class="fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Fontes Venda</h5><div class="input-group mb-3"><input type="text" id="novaFonteVenda" class="form-control" placeholder="Nova fonte"><button class="btn btn-primary btn-sm" onclick="addFonteVenda()">Adicionar</button></div><div id="fontesVendaList"></div></div></div>
-        <div class="col-12"><div class="card card-custom p-4"><h5 class="fw-bold"><i class="bi bi-database me-2"></i>Backup / Planilha</h5><div class="d-flex gap-3 flex-wrap"><button class="btn btn-primary btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i> Exportar Backup</button><button class="btn btn-outline-primary btn-sm" onclick="importBackup()"><i class="bi bi-upload"></i> Importar Backup</button><div class="ms-auto d-flex gap-2"><input type="month" id="exportMes" class="form-control" style="width:auto;"><button class="btn btn-success btn-sm" onclick="exportarExcel()"><i class="bi bi-file-earmark-excel"></i> Excel</button></div></div><input type="file" id="backupFileInput" accept=".json" style="display:none"></div></div>
+        <div class="col-lg-4"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-tags me-2"></i>Etiquetas</h5><button class="btn btn-success mb-3 btn-sm" onclick="addStatus()"><i class="bi bi-plus"></i> Adicionar</button><div id="statusList"></div></div></div>
+        <div class="col-lg-4"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-geo-alt me-2"></i>Praças</h5><div class="input-group mb-3"><input type="text" id="novaPraca" class="form-control" placeholder="Nova praça"><button class="btn btn-primary btn-sm" onclick="addPraca()">Adicionar</button></div><div id="pracasList"></div></div></div>
+        <div class="col-lg-4"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-building me-2"></i>Administradoras</h5><div class="input-group mb-3"><input type="text" id="novaAdministradora" class="form-control" placeholder="Nova admin"><button class="btn btn-primary btn-sm" onclick="addAdministradora()">Adicionar</button></div><div id="administradorasList"></div></div></div>
+        <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-bed me-2"></i>Acomodações</h5><div class="input-group mb-3"><input type="text" id="novaAcomodacao" class="form-control" placeholder="Nova acomodação"><button class="btn btn-primary btn-sm" onclick="addAcomodacao()">Adicionar</button></div><div id="acomodacoesList"></div></div></div>
+        <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-percent me-2"></i>Coparticipações</h5><div class="input-group mb-3"><input type="text" id="novaCoparticipacao" class="form-control" placeholder="Nova coparticipação"><button class="btn btn-primary btn-sm" onclick="addCoparticipacao()">Adicionar</button></div><div id="coparticipacoesList"></div></div></div>
+        <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-list-ul me-2"></i>Modalidades</h5><div class="input-group mb-3"><input type="text" id="novaModalidade" class="form-control" placeholder="Nova modalidade"><button class="btn btn-primary btn-sm" onclick="addModalidade()">Adicionar</button></div><div id="modalidadesList"></div></div></div>
+        <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Fontes Venda</h5><div class="input-group mb-3"><input type="text" id="novaFonteVenda" class="form-control" placeholder="Nova fonte"><button class="btn btn-primary btn-sm" onclick="addFonteVenda()">Adicionar</button></div><div id="fontesVendaList"></div></div></div>
+        <div class="col-12"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-database me-2"></i>Backup</h5><div class="d-flex gap-3 flex-wrap"><button class="btn btn-primary btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i> Exportar</button><button class="btn btn-outline-primary btn-sm" onclick="importBackup()"><i class="bi bi-upload"></i> Importar</button><div class="ms-auto d-flex gap-2"><input type="month" id="exportMes" class="form-control" style="width:auto;"><button class="btn btn-success btn-sm" onclick="exportarExcel()"><i class="bi bi-file-earmark-excel"></i> Excel</button></div></div><input type="file" id="backupFileInput" accept=".json" style="display:none"></div></div>
       </div>
     </div>
   </div>
@@ -786,7 +654,7 @@
 
 <!-- Modais -->
 <div class="modal fade" id="modalTarefa" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Nova Tarefa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="tarefaId"><input type="text" id="tarefaTitulo" class="form-control mb-3" placeholder="Título"><input type="date" id="tarefaData" class="form-control mb-3"><input type="time" id="tarefaHora" class="form-control mb-3"><textarea id="tarefaDesc" class="form-control" rows="3" placeholder="Descrição"></textarea><div class="form-check"><input class="form-check-input" type="checkbox" id="tarefaConcluida"><label class="form-check-label">Concluída</label></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="salvarTarefa()">Salvar</button></div></div></div></div>
-<div class="modal fade" id="modalLote" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Ação em Lote</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select id="acaoLote" class="form-select mb-3"><option value="">Escolha...</option><option value="status">Alterar Status</option><option value="praca">Alterar Praça</option><option value="administradora">Alterar Administradora</option><option value="dataPagamento">Definir Data de Pagamento</option><option value="excluir">Excluir Selecionados</option></select><div id="parametrosLote"></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="executarAcaoLote()">Aplicar</button></div></div></div></div>
+<div class="modal fade" id="modalLote" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Ação em Lote</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select id="acaoLote" class="form-select mb-3"><option value="">Escolha...</option><option value="status">Alterar Status</option><option value="praca">Alterar Praça</option><option value="administradora">Alterar Administradora</option><option value="dataPagamento">Definir Data</option><option value="excluir">Excluir</option></select><div id="parametrosLote"></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="executarAcaoLote()">Aplicar</button></div></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -804,7 +672,7 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // ==================== VARIÁVEIS GLOBAIS ====================
+  // ==================== VARIÁVEIS ====================
   let currentUser = null;
   let clients = [];
   let tarefas = [];
@@ -947,21 +815,21 @@
       const counts={}; statuses.forEach(s=>counts[s]=0);
       filtrados.forEach(c=>{ if(counts[c.status]!==undefined) counts[c.status]++; });
       if(charts.status) charts.status.destroy();
-      charts.status = new Chart(ctxStatus, { type:'doughnut', data:{labels:Object.keys(counts), datasets:[{data:Object.values(counts), backgroundColor:['#4f7df3','#2ecc71','#e74c3c','#f39c12','#9b59b6','#3498db','#e74c8b']}]} });
+      charts.status = new Chart(ctxStatus, { type:'doughnut', data:{labels:Object.keys(counts), datasets:[{data:Object.values(counts), backgroundColor:['#6c5ce7','#00b894','#e17055','#fdcb6e','#a29bfe','#0984e3','#fd79a8']}]} });
     }
     const ctxAdmin = document.getElementById('adminChart')?.getContext('2d');
     if(ctxAdmin){
       const adminCounts={}; filtrados.forEach(c=>{ if(c.administradora) adminCounts[c.administradora]=(adminCounts[c.administradora]||0)+1; });
       const top = Object.entries(adminCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
       if(charts.admin) charts.admin.destroy();
-      charts.admin = new Chart(ctxAdmin, { type:'bar', data:{labels:top.map(t=>t[0]), datasets:[{data:top.map(t=>t[1]), backgroundColor:'#4f7df3'}]}, options:{scales:{y:{beginAtZero:true}}} });
+      charts.admin = new Chart(ctxAdmin, { type:'bar', data:{labels:top.map(t=>t[0]), datasets:[{data:top.map(t=>t[1]), backgroundColor:'#6c5ce7'}]}, options:{scales:{y:{beginAtZero:true}}} });
     }
     const ctxPfPj = document.getElementById('pfPjChart')?.getContext('2d');
     if(ctxPfPj){
       const pfCount = filtrados.filter(c=>c.tipoCliente==='PF'||(c.modalidadePlano&&/individual|pf/i.test(c.modalidadePlano))).length;
       const pjCount = filtrados.filter(c=>c.tipoCliente==='PJ'||(c.modalidadePlano&&/pj|pme|pim|empresarial/i.test(c.modalidadePlano))).length;
       if(charts.pfPj) charts.pfPj.destroy();
-      charts.pfPj = new Chart(ctxPfPj, { type:'pie', data:{labels:['PF','PJ'], datasets:[{data:[pfCount,pjCount], backgroundColor:['#4f7df3','#f39c12']}]} });
+      charts.pfPj = new Chart(ctxPfPj, { type:'pie', data:{labels:['PF','PJ'], datasets:[{data:[pfCount,pjCount], backgroundColor:['#6c5ce7','#fdcb6e']}]} });
     }
     const ctxMonthly = document.getElementById('monthlyRevenueChart')?.getContext('2d');
     if(ctxMonthly){
@@ -977,7 +845,7 @@
       const meses = Object.keys(monthly).sort();
       const valores = meses.map(m=>monthly[m]);
       if(charts.monthlyRevenue) charts.monthlyRevenue.destroy();
-      charts.monthlyRevenue = new Chart(ctxMonthly, { type:'line', data:{labels:meses, datasets:[{data:valores, borderColor:'#4f7df3', fill:true}] }, options:{scales:{y:{beginAtZero:true, ticks:{callback:v=>formatBRL(v)}}}} });
+      charts.monthlyRevenue = new Chart(ctxMonthly, { type:'line', data:{labels:meses, datasets:[{data:valores, borderColor:'#6c5ce7', fill:true}] }, options:{scales:{y:{beginAtZero:true, ticks:{callback:v=>formatBRL(v)}}}} });
     }
   }
 
@@ -985,7 +853,7 @@
   function gerarRelatorio(){
     const filtrados = getFilteredClients();
     const win = window.open();
-    win.document.write(`<html><head><title>Relatório CRM</title><style>body{font-family:'Inter',sans-serif;margin:2rem;background:#f0f4f9;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #e9edf4;padding:8px;}</style></head><body><h1>Relatório de Propostas</h1><h3>Período: ${document.getElementById('periodoFiltro').options[document.getElementById('periodoFiltro').selectedIndex].text}</h3><p>Total propostas: ${filtrados.length}</p><p>Valor total: ${formatBRL(filtrados.reduce((s,c)=>s+(Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0),0))}</p><h2>Lista</h2><table><thead><tr><th>Proposta</th><th>Titular</th><th>Status</th><th>Valor</th><th>Data Pagamento</th></tr></thead><tbody>`);
+    win.document.write(`<html><head><title>Relatório CRM</title><style>body{font-family:'Inter',sans-serif;margin:2rem;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #e5e9f0;padding:8px;}</style></head><body><h1>Relatório de Propostas</h1><h3>Período: ${document.getElementById('periodoFiltro').options[document.getElementById('periodoFiltro').selectedIndex].text}</h3><p>Total propostas: ${filtrados.length}</p><p>Valor total: ${formatBRL(filtrados.reduce((s,c)=>s+(Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0),0))}</p><h2>Lista</h2><table><thead><tr><th>Proposta</th><th>Titular</th><th>Status</th><th>Valor</th><th>Data Pagamento</th></tr></thead><tbody>`);
     filtrados.forEach(c=>{ win.document.write(`<tr><td>${c.numeroProposta||''}</td><td>${c.nomeTitular||''}</td><td>${c.status||''}</td><td>${formatBRL(Number(c.valorComDesconto)||Number(c.valorSemDesconto)||0)}</td><td>${c.dataPagamento||''}</td></tr>`); });
     win.document.write(`</tbody></table></body></html>`);
     win.document.close(); win.print();
