@@ -13,12 +13,12 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
     /* ============================================================
-       REDESIGN RADICAL – CORES FORTES, LAYOUT MODERNO
+       CSS COMPLETO – CRM RECUPERA AI (VERSÃO LEGÍVEL)
        ============================================================ */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
-      --border: #e5e9f0;
+      --border: #d0d7e6;
       --text: #0b1a2e;
       --text-secondary: #4a5a72;
       --primary: #6c5ce7;
@@ -46,7 +46,7 @@
     body.dark-mode {
       --bg: #0c111f;
       --card: #182237;
-      --border: #2a3450;
+      --border: #3a4a66;
       --text: #eef2f8;
       --text-secondary: #b0bdd5;
       --primary-light: #1e1a3a;
@@ -179,7 +179,6 @@
       font-weight: 500;
     }
 
-    /* Cores dos cards – gradientes ousados */
     .dashboard-card.bg-primary { background: linear-gradient(145deg, #6c5ce7, #a29bfe); }
     .dashboard-card.bg-success { background: linear-gradient(145deg, #00b894, #00cec9); }
     .dashboard-card.bg-warning { background: linear-gradient(145deg, #fdcb6e, #f9a825); color: #2d3436; }
@@ -263,19 +262,56 @@
       box-shadow: 0 6px 20px rgba(108,92,231,0.3);
     }
 
-    /* ===== FORMULÁRIOS ===== */
+    /* ===== FORMULÁRIOS – CORRIGIDOS PARA LEGIBILIDADE ===== */
     .form-control, .form-select {
       background: var(--card);
-      border: 2px solid var(--border);
+      border: 2.5px solid var(--border);
       color: var(--text);
       border-radius: var(--radius-sm);
-      padding: 0.6rem 1rem;
-      font-size: 0.85rem;
+      padding: 0.7rem 1rem;
+      font-size: 0.9rem;
       transition: all var(--transition);
+      font-weight: 500;
     }
     .form-control:focus, .form-select:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 4px var(--primary-light);
+      outline: none;
+    }
+    .form-control::placeholder {
+      color: var(--text-secondary);
+      font-weight: 400;
+      opacity: 0.7;
+    }
+    .form-control:disabled, .form-select:disabled {
+      opacity: 0.6;
+    }
+    label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+      display: block;
+      letter-spacing: 0.2px;
+    }
+    /* Ajuste modo escuro */
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+      background: #0f1a2b;
+      border-color: #4a5a7a;
+      color: #eef2f8;
+    }
+    body.dark-mode .form-control::placeholder {
+      color: #8a9bb0;
+      opacity: 0.9;
+    }
+    body.dark-mode label {
+      color: #e0e8f0;
+    }
+    body.dark-mode .form-control:focus,
+    body.dark-mode .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.35);
     }
 
     /* ===== CALENDÁRIO ===== */
@@ -415,101 +451,26 @@
 
       <!-- Linha 1 -->
       <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <div class="dashboard-card bg-primary">
-            <i class="icon bi bi-file-earmark-text"></i>
-            <h6>Propostas</h6>
-            <h2 id="dashTotal">0</h2>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="dashboard-card bg-success">
-            <i class="icon bi bi-check-circle"></i>
-            <h6>Implantadas</h6>
-            <h2 id="dashImplantados">0</h2>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="dashboard-card bg-warning">
-            <i class="icon bi bi-wallet2"></i>
-            <h6>Total Processado</h6>
-            <h2 id="dashProcessado">R$ 0,00</h2>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="dashboard-card bg-info">
-            <i class="icon bi bi-graph-up"></i>
-            <h6>Taxa Conversão</h6>
-            <h2 id="dashConversao">0%</h2>
-          </div>
-        </div>
+        <div class="col-md-3"><div class="dashboard-card bg-primary"><i class="icon bi bi-file-earmark-text"></i><h6>Propostas</h6><h2 id="dashTotal">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Implantadas</h6><h2 id="dashImplantados">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-warning"><i class="icon bi bi-wallet2"></i><h6>Total Processado</h6><h2 id="dashProcessado">R$ 0,00</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-info"><i class="icon bi bi-graph-up"></i><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
       </div>
 
       <!-- Linha 2 -->
       <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <div class="dashboard-card bg-info">
-            <i class="icon bi bi-cash-stack"></i>
-            <h6>Ticket Médio</h6>
-            <h2 id="dashTicket">R$ 0,00</h2>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="dashboard-card bg-primary">
-            <i class="icon bi bi-person"></i>
-            <h6>Propostas PF</h6>
-            <h2 id="dashPfCount">0</h2>
-            <span class="sub" id="dashPfValor">R$ 0,00</span>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="dashboard-card bg-primary">
-            <i class="icon bi bi-building"></i>
-            <h6>Propostas PJ</h6>
-            <h2 id="dashPjCount">0</h2>
-            <span class="sub" id="dashPjValor">R$ 0,00</span>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="dashboard-card bg-info">
-            <i class="icon bi bi-trophy"></i>
-            <h6>Top Admin.</h6>
-            <h2 id="dashTopAdmin">-</h2>
-            <span class="sub" id="dashTopAdminValor">R$ 0,00</span>
-          </div>
-        </div>
+        <div class="col-md-3"><div class="dashboard-card bg-info"><i class="icon bi bi-cash-stack"></i><h6>Ticket Médio</h6><h2 id="dashTicket">R$ 0,00</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-primary"><i class="icon bi bi-person"></i><h6>Propostas PF</h6><h2 id="dashPfCount">0</h2><span class="sub" id="dashPfValor">R$ 0,00</span></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-primary"><i class="icon bi bi-building"></i><h6>Propostas PJ</h6><h2 id="dashPjCount">0</h2><span class="sub" id="dashPjValor">R$ 0,00</span></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-info"><i class="icon bi bi-trophy"></i><h6>Top Admin.</h6><h2 id="dashTopAdmin">-</h2><span class="sub" id="dashTopAdminValor">R$ 0,00</span></div></div>
       </div>
 
       <!-- Linha 3: Status -->
       <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <div class="dashboard-card bg-purple">
-            <i class="icon bi bi-hourglass-split"></i>
-            <h6>Aguardando Pagamento</h6>
-            <h2 id="dashAguardandoPagamento">0</h2>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="dashboard-card bg-info">
-            <i class="icon bi bi-clock-history"></i>
-            <h6>Aguardando Implantação</h6>
-            <h2 id="dashAguardandoImplantacao">0</h2>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="dashboard-card bg-pink">
-            <i class="icon bi bi-x-circle"></i>
-            <h6>Desistiu</h6>
-            <h2 id="dashDesistiu">0</h2>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="dashboard-card bg-danger">
-            <i class="icon bi bi-shield-exclamation"></i>
-            <h6>Aguardando Validação</h6>
-            <h2 id="dashAguardandoValidacao">0</h2>
-          </div>
-        </div>
+        <div class="col-md-3"><div class="dashboard-card bg-purple"><i class="icon bi bi-hourglass-split"></i><h6>Aguardando Pagamento</h6><h2 id="dashAguardandoPagamento">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-info"><i class="icon bi bi-clock-history"></i><h6>Aguardando Implantação</h6><h2 id="dashAguardandoImplantacao">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-pink"><i class="icon bi bi-x-circle"></i><h6>Desistiu</h6><h2 id="dashDesistiu">0</h2></div></div>
+        <div class="col-md-3"><div class="dashboard-card bg-danger"><i class="icon bi bi-shield-exclamation"></i><h6>Aguardando Validação</h6><h2 id="dashAguardandoValidacao">0</h2></div></div>
       </div>
 
       <!-- Gráficos -->
