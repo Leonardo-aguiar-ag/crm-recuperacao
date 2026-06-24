@@ -446,6 +446,8 @@
         <div class="col-md-2"><label>Período</label><select id="periodoFiltro" class="form-select" onchange="handlePeriodoChange()"><option value="30">Últimos 30 dias</option><option value="60">Últimos 60 dias</option><option value="90">Últimos 90 dias</option><option value="120">Últimos 120 dias</option><option value="180">Últimos 180 dias</option><option value="mes">Mês atual</option><option value="intervalo">Intervalo personalizado</option></select></div>
         <div class="col-md-2" id="intervaloDiv" style="display:none;"><label>Início</label><input type="date" id="dataInicioIntervalo" class="form-control" onchange="updateDashboard()"></div>
         <div class="col-md-2" id="intervaloFimDiv" style="display:none;"><label>Fim</label><input type="date" id="dataFimIntervalo" class="form-control" onchange="updateDashboard()"></div>
+        <!-- NOVO FILTRO POR PRAÇA -->
+        <div class="col-md-2"><label>Praça</label><select id="filtroPraca" class="form-select" onchange="updateDashboard()"><option value="">Todas as Praças</option></select></div>
         <div class="col-md-2"><button class="btn btn-warning mt-4" onclick="gerarRelatorio()"><i class="bi bi-file-earmark-pdf"></i> Relatório</button></div>
       </div>
 
@@ -657,6 +659,9 @@
   let currentView = 'month';
   let sortColumn = 'numeroProposta', sortDir = 'asc';
 
+  // Filtros do Dashboard
+  let filtroPraca = '';
+
   // ==================== AUTENTICAÇÃO ====================
   auth.onAuthStateChanged(user => {
     if (user) { currentUser = user; document.getElementById('loginScreen').style.display = 'none'; loadAll(); }
@@ -675,6 +680,8 @@
   async function loadAll() {
     try {
       await Promise.all([loadClients(), loadTarefas(), loadStatuses(), loadPracas(), loadAdministradoras(), loadAcomodacoes(), loadCoparticipacoes(), loadModalidades(), loadFontesVenda()]);
+      // Preencher o seletor de praça do dashboard
+      popularFiltroPraca();
       updateDashboard();
       renderCalendario(); renderCompromissos(diaSelecionado);
       renderStatuses(); renderPracasList(); renderAdministradorasList(); renderAcomodacoesList(); renderCoparticipacoesList(); renderModalidadesList(); renderFontesVendaList();
@@ -711,6 +718,21 @@
   async function loadFontesVenda() { const snap = await db.collection('fontesVenda').where('userId','==',currentUser.uid).get(); fontesVenda = snap.docs.map(d=>({id:d.id,nome:d.data().nome})); populateSelect('cFonteVenda',fontesVenda); }
   function populateSelect(id, items) { const sel = document.getElementById(id); if(sel){ sel.innerHTML='<option value="">Selecione...</option>'; items.forEach(i=>sel.innerHTML+=`<option value="${i.nome}">${i.nome}</option>`); } }
 
+  // ==================== POPULAR FILTRO PRAÇA DO DASHBOARD ====================
+  function popularFiltroPraca() {
+    const select = document.getElementById('filtroPraca');
+    const praças = new Set();
+    clients.forEach(c => { if (c.praca) praças.add(c.praca); });
+    select.innerHTML = '<option value="">Todas as Praças</option>';
+    [...praças].sort().forEach(p => {
+      select.innerHTML += `<option value="${p}">${p}</option>`;
+    });
+    // Se houver valor selecionado anteriormente, mantém
+    if (filtroPraca) {
+      select.value = filtroPraca;
+    }
+  }
+
   // ==================== DASHBOARD ====================
   function formatBRL(v){ return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
   function handlePeriodoChange() {
@@ -718,6 +740,8 @@
     document.getElementById('intervaloDiv').style.display = periodo==='intervalo'?'block':'none';
     document.getElementById('intervaloFimDiv').style.display = periodo==='intervalo'?'block':'none';
     if(periodo==='intervalo'){ const hoje=new Date(); const inicio=new Date(); inicio.setDate(inicio.getDate()-30); document.getElementById('dataInicioIntervalo').value=inicio.toISOString().split('T')[0]; document.getElementById('dataFimIntervalo').value=hoje.toISOString().split('T')[0]; }
+    // Atualiza o filtro de praça com o valor do select
+    filtroPraca = document.getElementById('filtroPraca').value;
     updateDashboard();
   }
   function getFilteredClients(){
@@ -737,7 +761,12 @@
       fim = new Date();
     }
     const iniStr = inicio.toISOString().split('T')[0], fimStr = fim.toISOString().split('T')[0];
-    return clients.filter(c => { const d = c.dataPagamento || c.dataImplantacao || c.data || c.createdAt || ''; return d >= iniStr && d <= fimStr; });
+    let filtrados = clients.filter(c => { const d = c.dataPagamento || c.dataImplantacao || c.data || c.createdAt || ''; return d >= iniStr && d <= fimStr; });
+    // Aplicar filtro de praça (se houver)
+    if (filtroPraca) {
+      filtrados = filtrados.filter(c => c.praca === filtroPraca);
+    }
+    return filtrados;
   }
   function updateDashboard(){
     const filtrados = getFilteredClients();
