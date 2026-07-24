@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Recupera AI - v4.0</title>
+  <title>CRM Recupera AI - v4.1</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -65,7 +65,6 @@
       min-height: 100vh;
     }
 
-    /* ===== NAVBAR ===== */
     .navbar {
       background: var(--card);
       border-bottom: 2px solid var(--border);
@@ -116,7 +115,6 @@
       font-weight: 600;
     }
 
-    /* ===== CARDS ===== */
     .card-custom {
       background: var(--card);
       border: 1px solid var(--border);
@@ -130,7 +128,6 @@
       transform: translateY(-2px);
     }
 
-    /* ===== DASHBOARD CARDS ===== */
     .dashboard-card {
       padding: 1.4rem 1.6rem;
       border-radius: var(--radius);
@@ -187,7 +184,6 @@
     .dashboard-card.bg-purple { background: linear-gradient(145deg, #6c5ce7, #a29bfe); }
     .dashboard-card.bg-pink { background: linear-gradient(145deg, #fd79a8, #e84393); }
 
-    /* ===== BOTÕES ===== */
     .btn {
       border-radius: 60px;
       padding: 0.5rem 1.4rem;
@@ -206,8 +202,8 @@
     .btn-danger:hover { background: var(--danger-dark); transform: translateY(-1px); }
     .btn-outline-primary { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
     .btn-outline-primary:hover { background: var(--primary); color: white; transform: translateY(-1px); }
+    .btn-sm { padding: 0.25rem 0.8rem; font-size: 0.7rem; }
 
-    /* ===== TABELAS ===== */
     .table {
       color: var(--text);
       font-size: 0.8rem;
@@ -235,7 +231,6 @@
       background: var(--primary-light);
     }
 
-    /* ===== ABAS ===== */
     .nav-tabs {
       border: none;
       gap: 8px;
@@ -262,7 +257,6 @@
       box-shadow: 0 6px 20px rgba(108,92,231,0.3);
     }
 
-    /* ===== FORMULÁRIOS – CORRIGIDOS PARA LEGIBILIDADE ===== */
     .form-control, .form-select {
       background: var(--card);
       border: 2.5px solid var(--border);
@@ -282,9 +276,6 @@
       color: var(--text-secondary);
       font-weight: 400;
       opacity: 0.7;
-    }
-    .form-control:disabled, .form-select:disabled {
-      opacity: 0.6;
     }
     label {
       font-size: 0.8rem;
@@ -313,28 +304,6 @@
       box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.35);
     }
 
-    /* ===== CALENDÁRIO ===== */
-    .mini-calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      text-align: center;
-      font-size: 0.7rem;
-      margin-top: 1rem;
-    }
-    .mini-calendar .day {
-      padding: 0.5rem 0.2rem;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-weight: 600;
-      transition: all var(--transition);
-    }
-    .mini-calendar .day:hover { background: var(--primary); color: white; transform: scale(1.05); }
-    .mini-calendar .day.today { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(108,92,231,0.3); }
-    .mini-calendar .day.has-event::after { content: '•'; display: block; color: var(--warning); font-size: 1.2rem; line-height: 0; margin-top: 2px; }
-    .mini-calendar .day.selected { background: var(--primary); color: white; }
-
-    /* ===== STATUS ITEMS ===== */
     .status-item {
       background: var(--bg);
       border: 2px solid var(--border);
@@ -348,7 +317,6 @@
     }
     .status-item:hover { background: var(--primary-light); border-color: var(--primary); }
 
-    /* ===== LOGIN ===== */
     .login-screen {
       position: fixed;
       inset: 0;
@@ -390,6 +358,33 @@
       .navbar .brand span { font-size: 1.1rem; }
       .nav-tabs .nav-link { padding: 0.4rem 1rem; font-size: 0.7rem; }
     }
+
+    /* Novos estilos para a sub-aba de pagamentos mensais */
+    .pagamento-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .pagamento-item .mes {
+      font-weight: 700;
+      min-width: 100px;
+    }
+    .pagamento-item .status-badge {
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .pagamento-item .status-badge.pago { background: #00b894; color: white; }
+    .pagamento-item .status-badge.pendente { background: #fdcb6e; color: #2d3436; }
+    .pagamento-item .status-badge.atrasado { background: #e17055; color: white; }
+    .pagamento-item .btn-sm { padding: 0.1rem 0.5rem; font-size: 0.6rem; }
   </style>
 </head>
 <body>
@@ -416,7 +411,7 @@
   <div class="container-fluid">
     <div class="brand">
       <i class="bi bi-robot"></i>
-      <span>CRM Recupera AI <small>· v4.0</small></span>
+      <span>CRM Recupera AI <small>· v4.1</small></span>
     </div>
     <div class="nav-actions">
       <button class="btn btn-outline-primary btn-sm" onclick="toggleTheme()"><i class="bi bi-moon-stars-fill"></i></button>
@@ -502,10 +497,12 @@
         <input type="hidden" id="clientId">
         <ul class="nav nav-tabs mb-4">
           <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dadosPrincipais">Dados da Proposta</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#pagamentosMensais">📆 Pagamentos Mensais</button></li>
           <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dependentesTab">Dependentes</button></li>
           <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#anexosTab">Anexos</button></li>
         </ul>
         <div class="tab-content">
+          <!-- Dados Principais -->
           <div class="tab-pane fade show active" id="dadosPrincipais">
             <div class="row g-3">
               <div class="col-md-3"><label>Data</label><input type="date" id="cData" class="form-control"></div>
@@ -530,13 +527,45 @@
               <div class="col-md-2"><label>Código</label><input type="text" id="cCodigo" class="form-control"></div>
               <div class="col-md-2"><label>Acomodação</label><select id="cAcomodacao" class="form-select"></select></div>
               <div class="col-md-2"><label>Vigência</label><input type="text" id="cVigencia" class="form-control" placeholder="dd/mm/aaaa"></div>
-              <!-- NOVOS CAMPOS: Vencimento e Status Pagamento -->
-              <div class="col-md-3"><label>Data de Vencimento</label><input type="date" id="cDataVencimento" class="form-control"></div>
+              <div class="col-md-3"><label>Data de Vencimento</label><input type="date" id="cDataVencimento" class="form-control" onchange="atualizarMesesEmDia()"></div>
               <div class="col-md-3"><label>Status Pagamento</label><select id="cStatusPagamento" class="form-select"><option value="Pago">Pago</option><option value="Pendente">Pendente</option><option value="Atrasado">Atrasado</option></select></div>
               <div class="col-md-3"><label>Meses em Dia</label><input type="text" id="cMesesEmDia" class="form-control" readonly></div>
               <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="2"></textarea></div>
             </div>
           </div>
+
+          <!-- SUB-ABA: Pagamentos Mensais -->
+          <div class="tab-pane fade" id="pagamentosMensais">
+            <div class="row g-3 mb-3">
+              <div class="col-md-3">
+                <label>Mês/Ano</label>
+                <input type="month" id="novoMesPagamento" class="form-control">
+              </div>
+              <div class="col-md-3">
+                <label>Status</label>
+                <select id="novoStatusPagamento" class="form-select">
+                  <option value="Pago">Pago</option>
+                  <option value="Pendente">Pendente</option>
+                  <option value="Atrasado">Atrasado</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label>Valor Pago (R$)</label>
+                <input type="number" id="novoValorPagamento" class="form-control" placeholder="0,00" step="0.01">
+              </div>
+              <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-success w-100" onclick="adicionarPagamentoMensal()"><i class="bi bi-plus"></i> Adicionar</button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table">
+                <thead><tr><th>Mês/Ano</th><th>Status</th><th>Valor</th><th>Ações</th></tr></thead>
+                <tbody id="pagamentosMensaisBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Dependentes -->
           <div class="tab-pane fade" id="dependentesTab">
             <div class="row g-3 mb-4">
               <div class="col-md-3"><input type="text" id="depNome" class="form-control" placeholder="Nome"></div>
@@ -547,6 +576,8 @@
             </div>
             <div class="table-responsive"><table class="table"><thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>Email</th><th>Ação</th></tr></thead><tbody id="dependentesBody"></tbody></table></div>
           </div>
+
+          <!-- Anexos -->
           <div class="tab-pane fade" id="anexosTab">
             <div class="row g-3 mb-4">
               <div class="col-md-4"><button class="btn btn-outline-primary w-100" onclick="document.getElementById('arquivoAnexo').click()"><i class="bi bi-paperclip"></i> Anexar</button><input type="file" id="arquivoAnexo" accept="image/*,application/pdf" style="display:none" onchange="adicionarAnexo(event)"></div>
@@ -663,6 +694,7 @@
   let tarefas = [];
   let dependentesTemp = [];
   let anexosTemp = [];
+  let pagamentosMensaisTemp = []; // Array de objetos {mes, status, valor}
   let statuses = [];
   let pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
   let charts = { status: null, admin: null, pfPj: null, monthlyRevenue: null };
@@ -908,6 +940,7 @@
       dataVencimento: document.getElementById('cDataVencimento').value,
       statusPagamento: document.getElementById('cStatusPagamento').value,
       mesesEmDia: calcularMesesEmDia(document.getElementById('cDataVencimento').value),
+      pagamentosMensais: pagamentosMensaisTemp,
       dependentes: dependentesTemp,
       anexos: anexosTemp,
       userId: currentUser.uid,
@@ -926,6 +959,7 @@
     const c = clients.find(c=>c.id===id); if(!c) return;
     document.getElementById('clientId').value = id;
     dependentesTemp = c.dependentes||[]; anexosTemp = c.anexos||[];
+    pagamentosMensaisTemp = c.pagamentosMensais||[];
     document.getElementById('cData').value = c.data||'';
     document.getElementById('cNumeroProposta').value = c.numeroProposta||'';
     document.getElementById('cNomeTitular').value = c.nomeTitular||'';
@@ -952,14 +986,14 @@
     document.getElementById('cDataVencimento').value = c.dataVencimento||'';
     document.getElementById('cStatusPagamento').value = c.statusPagamento||'Pago';
     document.getElementById('cMesesEmDia').value = calcularMesesEmDia(c.dataVencimento);
-    renderDependentes(); renderAnexosPreview();
+    renderDependentes(); renderAnexosPreview(); renderPagamentosMensais();
     new bootstrap.Tab(document.querySelector('[data-bs-target="#clientesTab"]')).show();
     new bootstrap.Tab(document.querySelector('[data-bs-target="#dadosPrincipais"]')).show();
   }
 
   function clearForm(){
     document.getElementById('clientId').value='';
-    dependentesTemp=[]; anexosTemp=[];
+    dependentesTemp=[]; anexosTemp=[]; pagamentosMensaisTemp=[];
     const ids = ['cData','cNumeroProposta','cNomeTitular','cCpfTitular','cCnpjTitular','cTelefoneTitular','cEmailTitular','cQtdVidas','cDataImplantacao','cDataPagamento','cValorSemDesconto','cValorComDesconto','cCodigo','cVigencia','cAnotacoes','cDataVencimento','cMesesEmDia'];
     ids.forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
     document.getElementById('cStatus').selectedIndex=0;
@@ -971,9 +1005,55 @@
     document.getElementById('cFonteVenda').selectedIndex=0;
     document.getElementById('cAcomodacao').selectedIndex=0;
     document.getElementById('cStatusPagamento').selectedIndex=0;
-    renderDependentes(); renderAnexosPreview();
+    renderDependentes(); renderAnexosPreview(); renderPagamentosMensais();
   }
 
+  // ==================== PAGAMENTOS MENSAIS (NOVA SUB-ABA) ====================
+  function adicionarPagamentoMensal() {
+    const mes = document.getElementById('novoMesPagamento').value;
+    const status = document.getElementById('novoStatusPagamento').value;
+    const valor = parseFloat(document.getElementById('novoValorPagamento').value) || 0;
+    if (!mes) return alert('Selecione o mês/ano');
+    // Verifica se já existe
+    const existe = pagamentosMensaisTemp.find(p => p.mes === mes);
+    if (existe) return alert('Este mês já foi registrado. Edite o existente.');
+    pagamentosMensaisTemp.push({ mes, status, valor });
+    pagamentosMensaisTemp.sort((a,b) => a.mes.localeCompare(b.mes));
+    document.getElementById('novoMesPagamento').value = '';
+    document.getElementById('novoValorPagamento').value = '';
+    renderPagamentosMensais();
+  }
+
+  function removerPagamentoMensal(index) {
+    pagamentosMensaisTemp.splice(index, 1);
+    renderPagamentosMensais();
+  }
+
+  function renderPagamentosMensais() {
+    const tbody = document.getElementById('pagamentosMensaisBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    pagamentosMensaisTemp.forEach((p, i) => {
+      const badgeClass = p.status === 'Pago' ? 'pago' : p.status === 'Pendente' ? 'pendente' : 'atrasado';
+      tbody.innerHTML += `
+        <tr>
+          <td>${p.mes}</td>
+          <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
+          <td>${formatBRL(p.valor)}</td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="removerPagamentoMensal(${i})"><i class="bi bi-trash"></i></button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  function atualizarMesesEmDia() {
+    const venc = document.getElementById('cDataVencimento').value;
+    document.getElementById('cMesesEmDia').value = calcularMesesEmDia(venc);
+  }
+
+  // ==================== DEPENDENTES ====================
   function addDependente(){
     const n=document.getElementById('depNome').value.trim(), c=document.getElementById('depCPF').value.trim(), t=document.getElementById('depTelefone').value.trim(), e=document.getElementById('depEmail').value.trim();
     if(!n) return alert('Nome obrigatório');
@@ -985,6 +1065,8 @@
   function renderDependentes(){
     document.getElementById('dependentesBody').innerHTML = dependentesTemp.map((d,i)=>`<tr><td>${d.nome}</td><td>${d.cpf}</td><td>${d.telefone}</td><td>${d.email}</td><td><button class="btn btn-danger btn-sm" onclick="removeDependente(${i})">Remover</button></td></tr>`).join('');
   }
+
+  // ==================== ANEXOS ====================
   function adicionarAnexo(e){
     const file=e.target.files[0]; if(!file) return;
     if(file.size>5*1024*1024){ alert('Máx 5MB'); return; }
@@ -1194,7 +1276,6 @@
   async function addStatus(){ const nome=prompt('Nome do novo status'); if(!nome) return; await addStatusToDB(nome); }
   function deleteStatus(id){ if(confirm('Remover status?')) deleteStatusFromDB(id); }
 
-  // ===== CORREÇÃO: renderStatuses (e não renderStataes) =====
   function renderStatuses(){
     const snapPromise = db.collection('statuses').where('userId','==',currentUser.uid).get();
     snapPromise.then(snap=>{
