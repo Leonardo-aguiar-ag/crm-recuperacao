@@ -785,7 +785,48 @@
         <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-percent me-2"></i>Coparticipações</h5><div class="input-group mb-3"><input type="text" id="novaCoparticipacao" class="form-control" placeholder="Nova coparticipação"><button class="btn btn-primary btn-sm" onclick="addCoparticipacao()">Adicionar</button></div><div id="coparticipacoesList"></div></div></div>
         <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-list-ul me-2"></i>Modalidades</h5><div class="input-group mb-3"><input type="text" id="novaModalidade" class="form-control" placeholder="Nova modalidade"><button class="btn btn-primary btn-sm" onclick="addModalidade()">Adicionar</button></div><div id="modalidadesList"></div></div></div>
         <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Fontes Venda</h5><div class="input-group mb-3"><input type="text" id="novaFonteVenda" class="form-control" placeholder="Nova fonte"><button class="btn btn-primary btn-sm" onclick="addFonteVenda()">Adicionar</button></div><div id="fontesVendaList"></div></div></div>
-        <div class="col-12"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-database me-2"></i>Backup</h5><div class="d-flex gap-3 flex-wrap"><button class="btn btn-primary btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i> Exportar</button><button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('backupFileInput').click()"><i class="bi bi-upload"></i> Importar</button><div class="ms-auto d-flex gap-2"><input type="month" id="exportMes" class="form-control" style="width:auto;"><button class="btn btn-success btn-sm" onclick="exportarExcel()"><i class="bi bi-file-earmark-excel"></i> Excel</button></div></div><input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="importBackup(event)"></div></div>
+
+        <!-- ===== NOVA SEÇÃO: BACKUP AUTOMÁTICO ===== -->
+        <div class="col-12">
+          <div class="card card-custom">
+            <h5 class="fw-bold"><i class="bi bi-clock-history me-2"></i>Backup Automático</h5>
+            <div class="row g-3 align-items-end">
+              <div class="col-md-3">
+                <label>Intervalo</label>
+                <select id="backupIntervalo" class="form-select">
+                  <option value="3600000">A cada 1 hora</option>
+                  <option value="7200000">A cada 2 horas</option>
+                  <option value="10800000">A cada 3 horas</option>
+                  <option value="21600000">A cada 6 horas</option>
+                  <option value="43200000">A cada 12 horas</option>
+                  <option value="86400000">A cada 24 horas</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label>Pasta de destino</label>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-primary btn-sm" onclick="selecionarPastaBackup()"><i class="bi bi-folder2-open"></i> Selecionar Pasta</button>
+                  <span id="pastaSelecionada" class="text-muted small align-self-center">Nenhuma pasta selecionada</span>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label>Status</label>
+                <div id="backupStatus" class="text-muted small">Inativo</div>
+              </div>
+              <div class="col-md-3">
+                <button class="btn btn-success" id="btnIniciarBackup" onclick="iniciarBackupAutomatico()"><i class="bi bi-play-circle"></i> Iniciar</button>
+                <button class="btn btn-danger" id="btnPararBackup" onclick="pararBackupAutomatico()" style="display:none;"><i class="bi bi-stop-circle"></i> Parar</button>
+              </div>
+            </div>
+            <div class="mt-2 small text-muted">
+              <span id="proximoBackupInfo">Próximo backup: --</span> | 
+              <span id="ultimoBackupInfo">Último backup: --</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backup manual existente -->
+        <div class="col-12"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-database me-2"></i>Backup Manual</h5><div class="d-flex gap-3 flex-wrap"><button class="btn btn-primary btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i> Exportar</button><button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('backupFileInput').click()"><i class="bi bi-upload"></i> Importar</button><div class="ms-auto d-flex gap-2"><input type="month" id="exportMes" class="form-control" style="width:auto;"><button class="btn btn-success btn-sm" onclick="exportarExcel()"><i class="bi bi-file-earmark-excel"></i> Excel</button></div></div><input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="importBackup(event)"></div></div>
       </div>
     </div>
 
@@ -858,6 +899,13 @@
   const leadsPorPagina = 10;
   let leadView = 'lista';
   let isLoading = false;
+
+  // ===== BACKUP AUTOMÁTICO =====
+  let backupIntervalId = null;
+  let backupFolderHandle = null;
+  let backupRunning = false;
+  let lastBackupTime = null;
+  let nextBackupTime = null;
 
   // ==================== AUTENTICAÇÃO ====================
   auth.onAuthStateChanged(user => {
@@ -1039,21 +1087,17 @@
     pracas.forEach(p => select.innerHTML += `<option value="${p.name}">${p.name}</option>`);
   }
 
-  // ==================== DASHBOARD (CORRIGIDO) ====================
+  // ==================== DASHBOARD ====================
   function updateDashboard() {
     const total = clients.length;
     const implantados = clients.filter(c => c.status === 'Implantado').length;
-
-    // Cálculo do valor total: converte string com vírgula para número
     const valorTotal = clients.reduce((acc, c) => {
       let val = c.valorComDesconto || '0';
       val = val.replace(/\./g, '').replace(',', '.');
       return acc + (parseFloat(val) || 0);
     }, 0);
-
     const inadimplentes = clients.filter(c => c.statusPagamento === 'Atrasado').length;
     const emDia = clients.filter(c => c.statusPagamento === 'Pago').length;
-    // 🔹 CORREÇÃO: usa .length para obter a quantidade
     const semInfo = clients.filter(c => !c.statusPagamento).length;
 
     document.getElementById('dashTotal').innerText = total;
@@ -1062,12 +1106,9 @@
     document.getElementById('dashConversao').innerText = total ? Math.round((implantados / total) * 100) + '%' : '0%';
     document.getElementById('dashInadimplentes').innerText = inadimplentes;
     document.getElementById('dashEmDia').innerText = emDia;
-    document.getElementById('dashSemInfo').innerText = semInfo;  // ← agora é um número
-
-    // Médias (exemplo simples)
+    document.getElementById('dashSemInfo').innerText = semInfo;
     document.getElementById('dashMediaAtraso').innerText = '0';
     document.getElementById('dashMediaTempo').innerText = '0';
-
     atualizarGraficos();
   }
 
@@ -1303,7 +1344,7 @@
     alert('Campos preenchidos automaticamente (verifique).');
   }
 
-  // ==================== BACKUP ====================
+  // ==================== BACKUP MANUAL ====================
   async function exportBackup() {
     if (!currentUser) return;
     try {
@@ -1344,6 +1385,131 @@
     } catch(e) { alert('Erro ao importar: '+e.message); }
     event.target.value = '';
   }
+
+  // ==================== BACKUP AUTOMÁTICO ====================
+  async function selecionarPastaBackup() {
+    if (!window.showDirectoryPicker) {
+      alert('Seu navegador não suporta seleção de pastas. Use Chrome ou Edge.');
+      return;
+    }
+    try {
+      backupFolderHandle = await window.showDirectoryPicker();
+      const nomePasta = backupFolderHandle.name;
+      document.getElementById('pastaSelecionada').innerText = nomePasta;
+      document.getElementById('pastaSelecionada').style.color = 'var(--success)';
+      // Verifica permissão
+      const opts = { mode: 'readwrite' };
+      if ((await backupFolderHandle.requestPermission(opts)) !== 'granted') {
+        alert('Permissão negada. O backup automático não funcionará.');
+        backupFolderHandle = null;
+        document.getElementById('pastaSelecionada').innerText = 'Permissão negada';
+        document.getElementById('pastaSelecionada').style.color = 'var(--danger)';
+      }
+    } catch(e) {
+      console.error(e);
+      if (e.name !== 'AbortError') alert('Erro ao selecionar pasta: '+e.message);
+    }
+  }
+
+  async function iniciarBackupAutomatico() {
+    if (!backupFolderHandle) {
+      alert('Selecione uma pasta de destino primeiro.');
+      return;
+    }
+    if (backupRunning) {
+      alert('Backup automático já está em execução.');
+      return;
+    }
+    // Verifica permissão novamente
+    try {
+      const opts = { mode: 'readwrite' };
+      if ((await backupFolderHandle.requestPermission(opts)) !== 'granted') {
+        alert('Permissão negada. Não é possível salvar na pasta.');
+        return;
+      }
+    } catch(e) {
+      alert('Erro ao verificar permissão: '+e.message);
+      return;
+    }
+
+    const intervaloMs = parseInt(document.getElementById('backupIntervalo').value);
+    backupRunning = true;
+    document.getElementById('btnIniciarBackup').style.display = 'none';
+    document.getElementById('btnPararBackup').style.display = 'inline-block';
+    document.getElementById('backupStatus').innerText = 'Ativo';
+    document.getElementById('backupStatus').style.color = 'var(--success)';
+
+    // Agenda o primeiro backup imediatamente? Não, espera o intervalo.
+    // Mas podemos fazer um backup imediato opcional? Vamos agendar.
+    nextBackupTime = Date.now() + intervaloMs;
+    atualizarInfoBackup();
+
+    // Função que executa o backup
+    const executarBackup = async () => {
+      if (!backupRunning) return;
+      try {
+        await realizarBackupNaPasta();
+        lastBackupTime = new Date();
+        nextBackupTime = Date.now() + intervaloMs;
+        atualizarInfoBackup();
+        document.getElementById('ultimoBackupInfo').innerText = 'Último backup: ' + lastBackupTime.toLocaleString();
+      } catch(e) {
+        console.error('Erro no backup automático:', e);
+        document.getElementById('backupStatus').innerText = 'Erro: ' + e.message;
+        document.getElementById('backupStatus').style.color = 'var(--danger)';
+      }
+    };
+
+    // Limpa intervalo anterior se existir
+    if (backupIntervalId) clearInterval(backupIntervalId);
+    backupIntervalId = setInterval(executarBackup, intervaloMs);
+  }
+
+  function pararBackupAutomatico() {
+    if (backupIntervalId) {
+      clearInterval(backupIntervalId);
+      backupIntervalId = null;
+    }
+    backupRunning = false;
+    document.getElementById('btnIniciarBackup').style.display = 'inline-block';
+    document.getElementById('btnPararBackup').style.display = 'none';
+    document.getElementById('backupStatus').innerText = 'Inativo';
+    document.getElementById('backupStatus').style.color = 'var(--text-secondary)';
+    document.getElementById('proximoBackupInfo').innerText = 'Próximo backup: --';
+  }
+
+  async function realizarBackupNaPasta() {
+    if (!backupFolderHandle || !currentUser) return;
+    // Coleta todos os dados (igual ao exportBackup)
+    const collections = ['clients', 'leads', 'tarefas', 'statuses', 'pracas', 'administradoras', 'acomodacoes', 'coparticipacoes', 'modalidades', 'fontesVenda', 'leadStatuses'];
+    const data = {};
+    for (const col of collections) {
+      const snap = await db.collection(col).where('userId', '==', currentUser.uid).get();
+      data[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    }
+    const json = JSON.stringify(data, null, 2);
+    const fileName = `backup_${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}.json`;
+    const fileHandle = await backupFolderHandle.getFileHandle(fileName, { create: true });
+    const writable = await fileHandle.createWritable();
+    await writable.write(json);
+    await writable.close();
+  }
+
+  function atualizarInfoBackup() {
+    if (nextBackupTime) {
+      const diff = nextBackupTime - Date.now();
+      if (diff > 0) {
+        const horas = Math.floor(diff / 3600000);
+        const minutos = Math.floor((diff % 3600000) / 60000);
+        document.getElementById('proximoBackupInfo').innerText = `Próximo backup: em ${horas}h ${minutos}min`;
+      } else {
+        document.getElementById('proximoBackupInfo').innerText = 'Próximo backup: em breve';
+      }
+    }
+  }
+
+  // Atualiza a contagem regressiva a cada minuto
+  setInterval(atualizarInfoBackup, 60000);
 
   // ==================== LEADS ====================
   function renderLeads() {
