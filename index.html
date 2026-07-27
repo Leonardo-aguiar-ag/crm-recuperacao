@@ -12,9 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
-    /* ============================================================
-       CSS COMPLETO (mantido do código anterior)
-       ============================================================ */
+    /* ===== CSS COMPLETO (MANTIDO) ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -44,7 +42,6 @@
       --sidebar-width: 220px;
       --sidebar-collapsed: 60px;
     }
-
     body.dark-mode {
       --bg: #0c111f;
       --card: #182237;
@@ -55,7 +52,6 @@
       --shadow: 0 12px 40px rgba(0,0,0,0.5);
       --shadow-hover: 0 20px 50px rgba(0,0,0,0.7);
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', -apple-system, sans-serif;
@@ -66,8 +62,6 @@
       transition: background var(--transition), color var(--transition);
       min-height: 100vh;
     }
-
-    /* ===== SIDEBAR ===== */
     .sidebar {
       position: fixed;
       top: 0;
@@ -84,9 +78,7 @@
       flex-direction: column;
       box-shadow: var(--shadow);
     }
-    .sidebar.collapsed {
-      width: var(--sidebar-collapsed);
-    }
+    .sidebar.collapsed { width: var(--sidebar-collapsed); }
     .sidebar .logo {
       display: flex;
       align-items: center;
@@ -114,12 +106,7 @@
       white-space: nowrap;
       transition: opacity 0.2s;
     }
-    .sidebar.collapsed .logo span {
-      opacity: 0;
-      width: 0;
-      overflow: hidden;
-    }
-
+    .sidebar.collapsed .logo span { opacity: 0; width: 0; overflow: hidden; }
     .sidebar .nav-items {
       flex: 1;
       overflow-y: auto;
@@ -154,19 +141,9 @@
       min-width: 24px;
       text-align: center;
     }
-    .sidebar .nav-items .nav-link .link-text {
-      transition: opacity 0.2s;
-    }
-    .sidebar.collapsed .nav-items .nav-link .link-text {
-      opacity: 0;
-      width: 0;
-      overflow: hidden;
-    }
-    .sidebar.collapsed .nav-items .nav-link {
-      justify-content: center;
-      padding: 0.7rem 0.5rem;
-    }
-
+    .sidebar .nav-items .nav-link .link-text { transition: opacity 0.2s; }
+    .sidebar.collapsed .nav-items .nav-link .link-text { opacity: 0; width: 0; overflow: hidden; }
+    .sidebar.collapsed .nav-items .nav-link { justify-content: center; padding: 0.7rem 0.5rem; }
     .sidebar .sidebar-footer {
       padding: 1rem;
       border-top: 2px solid var(--border);
@@ -197,21 +174,14 @@
       background: var(--primary-light);
       color: var(--primary);
     }
-    .sidebar.collapsed .collapse-toggle {
-      transform: rotate(180deg);
-    }
-
-    /* ===== MAIN CONTENT ===== */
+    .sidebar.collapsed .collapse-toggle { transform: rotate(180deg); }
     .main-content {
       margin-left: var(--sidebar-width);
       transition: margin-left 0.3s ease;
       padding: 0.5rem 1rem 1rem;
       min-height: 100vh;
     }
-    .main-content.expanded {
-      margin-left: var(--sidebar-collapsed);
-    }
-
+    .main-content.expanded { margin-left: var(--sidebar-collapsed); }
     .topbar {
       display: flex;
       justify-content: flex-end;
@@ -233,11 +203,7 @@
       padding: 0.4rem 1rem;
       font-weight: 600;
     }
-    .mobile-menu-btn {
-      display: none;
-    }
-
-    /* ===== CARDS ===== */
+    .mobile-menu-btn { display: none; }
     .card-custom {
       background: var(--card);
       border: 1px solid var(--border);
@@ -250,7 +216,6 @@
       box-shadow: var(--shadow-hover);
       transform: translateY(-2px);
     }
-
     .dashboard-card {
       padding: 1.4rem 1.6rem;
       border-radius: var(--radius);
@@ -274,9 +239,7 @@
       opacity: 0.15;
       transition: transform 0.2s ease;
     }
-    .dashboard-card:hover .icon {
-      transform: scale(1.2) rotate(-6deg);
-    }
+    .dashboard-card:hover .icon { transform: scale(1.2) rotate(-6deg); }
     .dashboard-card h6 {
       font-weight: 600;
       text-transform: uppercase;
@@ -298,7 +261,6 @@
       display: block;
       font-weight: 500;
     }
-
     .dashboard-card.bg-primary { background: linear-gradient(145deg, #6c5ce7, #a29bfe); }
     .dashboard-card.bg-success { background: linear-gradient(145deg, #00b894, #00cec9); }
     .dashboard-card.bg-warning { background: linear-gradient(145deg, #fdcb6e, #f9a825); color: #2d3436; }
@@ -306,8 +268,6 @@
     .dashboard-card.bg-danger { background: linear-gradient(145deg, #e17055, #fd79a8); }
     .dashboard-card.bg-purple { background: linear-gradient(145deg, #6c5ce7, #a29bfe); }
     .dashboard-card.bg-pink { background: linear-gradient(145deg, #fd79a8, #e84393); }
-
-    /* ===== BOTÕES ===== */
     .btn {
       border-radius: 60px;
       padding: 0.5rem 1.4rem;
@@ -326,8 +286,6 @@
     .btn-danger:hover { background: var(--danger-dark); transform: translateY(-1px); }
     .btn-outline-primary { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
     .btn-outline-primary:hover { background: var(--primary); color: white; transform: translateY(-1px); }
-
-    /* ===== TABELAS ===== */
     .table {
       color: var(--text);
       font-size: 0.8rem;
@@ -351,11 +309,7 @@
       background: var(--card);
       border-bottom: 1px solid var(--border);
     }
-    .table tbody tr:hover td {
-      background: var(--primary-light);
-    }
-
-    /* ===== FORMULÁRIOS ===== */
+    .table tbody tr:hover td { background: var(--primary-light); }
     .form-control, .form-select {
       background: var(--card);
       border: 2.5px solid var(--border);
@@ -402,8 +356,6 @@
       border-color: var(--primary);
       box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.35);
     }
-
-    /* ===== CALENDÁRIO ===== */
     .mini-calendar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -423,8 +375,6 @@
     .mini-calendar .day.today { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(108,92,231,0.3); }
     .mini-calendar .day.has-event::after { content: '•'; display: block; color: var(--warning); font-size: 1.2rem; line-height: 0; margin-top: 2px; }
     .mini-calendar .day.selected { background: var(--primary); color: white; }
-
-    /* ===== STATUS ITEMS ===== */
     .status-item {
       background: var(--bg);
       border: 2px solid var(--border);
@@ -437,8 +387,6 @@
       transition: all var(--transition);
     }
     .status-item:hover { background: var(--primary-light); border-color: var(--primary); }
-
-    /* ===== LOGIN ===== */
     .login-screen {
       position: fixed;
       inset: 0;
@@ -461,7 +409,6 @@
       from { opacity: 0; transform: translateY(40px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     body.dark-mode .dashboard-card {
       color: #ffffff !important;
       border: 1px solid rgba(255,255,255,0.06);
@@ -469,11 +416,7 @@
     body.dark-mode .dashboard-card .sub {
       color: rgba(255,255,255,0.85) !important;
     }
-    body.dark-mode .dashboard-card .icon {
-      opacity: 0.25;
-    }
-
-    /* ===== PIPELINE (KANBAN) ===== */
+    body.dark-mode .dashboard-card .icon { opacity: 0.25; }
     .pipeline-container {
       display: flex;
       gap: 16px;
@@ -523,7 +466,6 @@
       justify-content: space-between;
       margin-top: 4px;
     }
-
     .view-toggle .btn {
       border-radius: 60px;
       padding: 0.25rem 1rem;
@@ -534,37 +476,18 @@
       background: var(--primary);
       color: white;
     }
-
-    /* ===== RESPONSIVIDADE ===== */
     @media (max-width: 992px) {
       .sidebar {
         transform: translateX(-100%);
         width: var(--sidebar-width);
       }
-      .sidebar.mobile-open {
-        transform: translateX(0);
-      }
-      .main-content {
-        margin-left: 0 !important;
-      }
-      .sidebar .logo span {
-        opacity: 1 !important;
-        width: auto !important;
-      }
-      .sidebar .nav-items .nav-link .link-text {
-        opacity: 1 !important;
-        width: auto !important;
-      }
-      .sidebar .nav-items .nav-link {
-        justify-content: flex-start !important;
-        padding: 0.7rem 1rem !important;
-      }
-      .sidebar .collapse-toggle {
-        display: none;
-      }
-      .mobile-menu-btn {
-        display: inline-block !important;
-      }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .main-content { margin-left: 0 !important; }
+      .sidebar .logo span { opacity: 1 !important; width: auto !important; }
+      .sidebar .nav-items .nav-link .link-text { opacity: 1 !important; width: auto !important; }
+      .sidebar .nav-items .nav-link { justify-content: flex-start !important; padding: 0.7rem 1rem !important; }
+      .sidebar .collapse-toggle { display: none; }
+      .mobile-menu-btn { display: inline-block !important; }
     }
     @media (max-width: 768px) {
       .container-fluid { padding: 0.5rem; }
@@ -572,7 +495,6 @@
       .dashboard-card { padding: 1rem; }
       .pipeline-column { min-width: 160px; }
     }
-
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
@@ -644,7 +566,7 @@
   <!-- ===== ABAS ===== -->
   <div class="tab-content" id="mainTabContent">
 
-    <!-- DASHBOARD (resumido) -->
+    <!-- DASHBOARD -->
     <div class="tab-pane fade show active" id="dashboardTab">
       <div class="row g-3 mb-4 align-items-end">
         <div class="col-md-2"><label>Período</label><select id="periodoFiltro" class="form-select" onchange="handlePeriodoChange()"><option value="30">Últimos 30 dias</option><option value="60">Últimos 60 dias</option><option value="90">Últimos 90 dias</option><option value="120">Últimos 120 dias</option><option value="180">Últimos 180 dias</option><option value="mes">Mês atual</option><option value="intervalo">Intervalo personalizado</option></select></div>
@@ -734,7 +656,7 @@
       </div>
     </div>
 
-    <!-- PESQUISA (resumida) -->
+    <!-- PESQUISA -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card card-custom">
         <div class="row g-3 mb-4">
@@ -763,7 +685,7 @@
       </div>
     </div>
 
-    <!-- ===== LEADS ===== -->
+    <!-- LEADS -->
     <div class="tab-pane fade" id="leadsTab">
       <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
         <div class="view-toggle btn-group" role="group">
@@ -827,10 +749,9 @@
       </div>
     </div>
 
-    <!-- ===== CONFIGURAÇÕES ===== -->
+    <!-- CONFIGURAÇÕES -->
     <div class="tab-pane fade" id="configTab">
       <div class="row g-4">
-        <!-- Status de Leads -->
         <div class="col-lg-4">
           <div class="card card-custom">
             <h5 class="fw-bold"><i class="bi bi-tags me-2"></i>Status de Leads</h5>
@@ -838,7 +759,6 @@
             <div id="leadStatusList"></div>
           </div>
         </div>
-        <!-- Status de Propostas -->
         <div class="col-lg-4">
           <div class="card card-custom">
             <h5 class="fw-bold"><i class="bi bi-tags me-2"></i>Status de Propostas</h5>
@@ -846,14 +766,13 @@
             <div id="statusList"></div>
           </div>
         </div>
-        <!-- Praças -->
         <div class="col-lg-4"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-geo-alt me-2"></i>Praças</h5><div class="input-group mb-3"><input type="text" id="novaPraca" class="form-control" placeholder="Nova praça"><button class="btn btn-primary btn-sm" onclick="addPraca()">Adicionar</button></div><div id="pracasList"></div></div></div>
         <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-building me-2"></i>Administradoras</h5><div class="input-group mb-3"><input type="text" id="novaAdministradora" class="form-control" placeholder="Nova admin"><button class="btn btn-primary btn-sm" onclick="addAdministradora()">Adicionar</button></div><div id="administradorasList"></div></div></div>
         <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-bed me-2"></i>Acomodações</h5><div class="input-group mb-3"><input type="text" id="novaAcomodacao" class="form-control" placeholder="Nova acomodação"><button class="btn btn-primary btn-sm" onclick="addAcomodacao()">Adicionar</button></div><div id="acomodacoesList"></div></div></div>
         <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-percent me-2"></i>Coparticipações</h5><div class="input-group mb-3"><input type="text" id="novaCoparticipacao" class="form-control" placeholder="Nova coparticipação"><button class="btn btn-primary btn-sm" onclick="addCoparticipacao()">Adicionar</button></div><div id="coparticipacoesList"></div></div></div>
         <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-list-ul me-2"></i>Modalidades</h5><div class="input-group mb-3"><input type="text" id="novaModalidade" class="form-control" placeholder="Nova modalidade"><button class="btn btn-primary btn-sm" onclick="addModalidade()">Adicionar</button></div><div id="modalidadesList"></div></div></div>
         <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Fontes Venda</h5><div class="input-group mb-3"><input type="text" id="novaFonteVenda" class="form-control" placeholder="Nova fonte"><button class="btn btn-primary btn-sm" onclick="addFonteVenda()">Adicionar</button></div><div id="fontesVendaList"></div></div></div>
-        <div class="col-12"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-database me-2"></i>Backup</h5><div class="d-flex gap-3 flex-wrap"><button class="btn btn-primary btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i> Exportar</button><button class="btn btn-outline-primary btn-sm" onclick="importBackup()"><i class="bi bi-upload"></i> Importar</button><div class="ms-auto d-flex gap-2"><input type="month" id="exportMes" class="form-control" style="width:auto;"><button class="btn btn-success btn-sm" onclick="exportarExcel()"><i class="bi bi-file-earmark-excel"></i> Excel</button></div></div><input type="file" id="backupFileInput" accept=".json" style="display:none"></div></div>
+        <div class="col-12"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-database me-2"></i>Backup</h5><div class="d-flex gap-3 flex-wrap"><button class="btn btn-primary btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i> Exportar</button><button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('backupFileInput').click()"><i class="bi bi-upload"></i> Importar</button><div class="ms-auto d-flex gap-2"><input type="month" id="exportMes" class="form-control" style="width:auto;"><button class="btn btn-success btn-sm" onclick="exportarExcel()"><i class="bi bi-file-earmark-excel"></i> Excel</button></div></div><input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="importBackup(event)"></div></div>
       </div>
     </div>
 
@@ -948,8 +867,9 @@
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('show', 'active'));
     const pane = document.getElementById(tabId); if (pane) pane.classList.add('show', 'active');
     document.getElementById('sidebar').classList.remove('mobile-open');
-    if (tabId === 'leadsTab') { loadLeads().then(() => { renderLeads(); atualizarSidebarStatus(); }); }
+    if (tabId === 'leadsTab') { loadLeads().then(() => { renderLeads(); }); }
     if (tabId === 'configTab') { loadLeadStatuses(); }
+    if (tabId === 'pesquisaTab') { renderTable(); }
   }
 
   // ==================== CARREGAMENTO INICIAL ====================
@@ -963,62 +883,131 @@
       selectedIds.clear(); updateLoteButton();
       renderTable();
       renderLeads();
-      atualizarSidebarStatus();
+      preencherSelectsFicha();
     } catch(e) { console.error(e); alert('Erro ao carregar dados: '+e.message); }
   }
 
-  // ==================== LOAD LEADS (CORRIGIDO) ====================
+  // ==================== LOAD FUNCTIONS ====================
+  async function loadClients() {
+    if (!currentUser) return;
+    const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
+    clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+
+  async function loadTarefas() {
+    if (!currentUser) return;
+    const snap = await db.collection('tarefas').where('userId', '==', currentUser.uid).get();
+    tarefas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+
+  async function loadStatuses() {
+    if (!currentUser) return;
+    const snap = await db.collection('statuses').where('userId', '==', currentUser.uid).get();
+    statuses = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  }
+
+  async function loadPracas() {
+    if (!currentUser) return;
+    const snap = await db.collection('pracas').where('userId', '==', currentUser.uid).get();
+    pracas = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  }
+
+  async function loadAdministradoras() {
+    if (!currentUser) return;
+    const snap = await db.collection('administradoras').where('userId', '==', currentUser.uid).get();
+    administradoras = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  }
+
+  async function loadAcomodacoes() {
+    if (!currentUser) return;
+    const snap = await db.collection('acomodacoes').where('userId', '==', currentUser.uid).get();
+    acomodacoes = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  }
+
+  async function loadCoparticipacoes() {
+    if (!currentUser) return;
+    const snap = await db.collection('coparticipacoes').where('userId', '==', currentUser.uid).get();
+    coparticipacoes = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  }
+
+  async function loadModalidades() {
+    if (!currentUser) return;
+    const snap = await db.collection('modalidades').where('userId', '==', currentUser.uid).get();
+    modalidades = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  }
+
+  async function loadFontesVenda() {
+    if (!currentUser) return;
+    const snap = await db.collection('fontesVenda').where('userId', '==', currentUser.uid).get();
+    fontesVenda = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  }
+
   async function loadLeads() {
     if (!currentUser) return;
-    // 🔹 Removemos o orderBy para evitar a necessidade de índice composto
-    const snap = await db.collection('leads')
-      .where('userId', '==', currentUser.uid)
-      .get();
-    // Ordenamos localmente por 'abertura' (decrescente)
+    const snap = await db.collection('leads').where('userId', '==', currentUser.uid).get();
     leadsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     leadsData.sort((a, b) => (b.abertura || '').localeCompare(a.abertura || ''));
   }
 
-  // ==================== STATUS DE LEADS ====================
   async function loadLeadStatuses() {
     if (!currentUser) return;
     const snap = await db.collection('leadStatuses').where('userId', '==', currentUser.uid).get();
     leadStatuses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderLeadStatuses();
     atualizarSelectsLeadStatus();
-    const cLeadStatus = document.getElementById('cLeadStatus');
-    if (cLeadStatus) {
-      const currentVal = cLeadStatus.value;
-      cLeadStatus.innerHTML = '<option value="">Nenhum</option>';
-      leadStatuses.forEach(s => {
-        cLeadStatus.innerHTML += `<option value="${s.name}">${s.name}</option>`;
-      });
-      if (currentVal) cLeadStatus.value = currentVal;
+    preencherLeadStatusFicha();
+  }
+
+  // ==================== PREENCHER SELECTS ====================
+  function preencherSelectsFicha() {
+    const selects = {
+      cStatus: statuses,
+      cPraca: pracas,
+      cAdministradora: administradoras,
+      cAcomodacao: acomodacoes,
+      cCoparticipacao: coparticipacoes,
+      cModalidadePlano: modalidades,
+      cFonteVenda: fontesVenda
+    };
+    for (const [id, data] of Object.entries(selects)) {
+      const sel = document.getElementById(id);
+      if (!sel) continue;
+      const current = sel.value;
+      sel.innerHTML = '<option value="">Selecione</option>';
+      data.forEach(item => sel.innerHTML += `<option value="${item.name}">${item.name}</option>`);
+      if (current) sel.value = current;
+    }
+    // Filtros da pesquisa
+    const filterSelects = {
+      filterStatus: statuses,
+      filterModalidade: modalidades,
+      filterPraca: pracas,
+      filterAdministradora: administradoras,
+      filterFonte: fontesVenda
+    };
+    for (const [id, data] of Object.entries(filterSelects)) {
+      const sel = document.getElementById(id);
+      if (!sel) continue;
+      const current = sel.value;
+      sel.innerHTML = '<option value="ALL">Todos</option>';
+      data.forEach(item => sel.innerHTML += `<option value="${item.name}">${item.name}</option>`);
+      if (current && current !== 'ALL') sel.value = current;
     }
   }
 
-  function renderLeadStatuses() {
-    const el = document.getElementById('leadStatusList');
-    if (!el) return;
-    el.innerHTML = leadStatuses.map(s => `
-      <div class="status-item">
-        <span>${s.name}</span>
-        <button class="btn btn-danger btn-sm" onclick="deleteLeadStatus('${s.id}')">Excluir</button>
-      </div>
-    `).join('');
+  function preencherLeadStatusFicha() {
+    const sel = document.getElementById('cLeadStatus');
+    if (!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">Nenhum</option>';
+    leadStatuses.forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name}</option>`);
+    if (current) sel.value = current;
   }
 
-  async function addLeadStatus() {
-    const nome = prompt('Nome do novo status para leads:');
-    if (!nome || !nome.trim()) return;
-    await db.collection('leadStatuses').add({ name: nome.trim(), userId: currentUser.uid, createdAt: new Date().toISOString() });
-    await loadLeadStatuses();
-  }
-
-  async function deleteLeadStatus(id) {
-    if (!confirm('Remover este status?')) return;
-    await db.collection('leadStatuses').doc(id).delete();
-    await loadLeadStatuses();
+  function popularFiltroPraca() {
+    const select = document.getElementById('filtroPraca');
+    select.innerHTML = '<option value="">Todas as Praças</option>';
+    pracas.forEach(p => select.innerHTML += `<option value="${p.name}">${p.name}</option>`);
   }
 
   function atualizarSelectsLeadStatus() {
@@ -1026,26 +1015,299 @@
     selects.forEach(id => {
       const sel = document.getElementById(id);
       if (!sel) return;
-      const currentVal = sel.value;
+      const current = sel.value;
       sel.innerHTML = '<option value="">Status</option>';
-      leadStatuses.forEach(s => {
-        sel.innerHTML += `<option value="${s.name}">${s.name}</option>`;
-      });
-      if (currentVal) sel.value = currentVal;
+      leadStatuses.forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name}</option>`);
+      if (current) sel.value = current;
     });
   }
 
-  // ==================== LEADS (CRUD) ====================
-  function setLeadView(view) {
-    leadView = view;
-    document.getElementById('viewListBtn').classList.toggle('active', view === 'lista');
-    document.getElementById('viewPipelineBtn').classList.toggle('active', view === 'pipeline');
-    document.getElementById('leadListView').style.display = view === 'lista' ? 'block' : 'none';
-    document.getElementById('leadPipelineView').style.display = view === 'pipeline' ? 'block' : 'none';
-    if (view === 'pipeline') renderPipeline();
-    else renderLeads();
+  // ==================== DASHBOARD ====================
+  function updateDashboard() {
+    const total = clients.length;
+    const implantados = clients.filter(c => c.status === 'Implantado').length;
+    const valorTotal = clients.reduce((acc, c) => acc + (parseFloat(c.valorComDesconto) || 0), 0);
+    const inadimplentes = clients.filter(c => c.statusPagamento === 'Atrasado').length;
+    const emDia = clients.filter(c => c.statusPagamento === 'Pago').length;
+    const semInfo = clients.filter(c => !c.statusPagamento).length;
+    document.getElementById('dashTotal').innerText = total;
+    document.getElementById('dashImplantados').innerText = implantados;
+    document.getElementById('dashProcessado').innerText = 'R$ ' + valorTotal.toFixed(2).replace('.', ',');
+    document.getElementById('dashConversao').innerText = total ? Math.round((implantados/total)*100) + '%' : '0%';
+    document.getElementById('dashInadimplentes').innerText = inadimplentes;
+    document.getElementById('dashEmDia').innerText = emDia;
+    document.getElementById('dashSemInfo').innerText = semInfo;
+    // Médias (simples)
+    document.getElementById('dashMediaAtraso').innerText = '0';
+    document.getElementById('dashMediaTempo').innerText = '0';
+    // Gráficos (resumido)
+    if (charts.status) charts.status.destroy();
+    if (charts.admin) charts.admin.destroy();
+    if (charts.pfPj) charts.pfPj.destroy();
+    // Status
+    const statusCount = {};
+    statuses.forEach(s => statusCount[s.name] = 0);
+    clients.forEach(c => { if (c.status) statusCount[c.status] = (statusCount[c.status]||0)+1; });
+    const ctx1 = document.getElementById('statusChart').getContext('2d');
+    charts.status = new Chart(ctx1, { type: 'doughnut', data: { labels: Object.keys(statusCount), datasets: [{ data: Object.values(statusCount), backgroundColor: ['#6c5ce7','#00b894','#fdcb6e','#e17055','#0984e3'] }] } });
+    // Admin
+    const adminCount = {};
+    clients.forEach(c => { if (c.administradora) adminCount[c.administradora] = (adminCount[c.administradora]||0)+1; });
+    const ctx2 = document.getElementById('adminChart').getContext('2d');
+    charts.admin = new Chart(ctx2, { type: 'bar', data: { labels: Object.keys(adminCount), datasets: [{ data: Object.values(adminCount), backgroundColor: '#6c5ce7' }] } });
+    // PF/PJ
+    const pf = clients.filter(c => c.tipoCliente === 'PF').length;
+    const pj = clients.filter(c => c.tipoCliente === 'PJ').length;
+    const ctx3 = document.getElementById('pfPjChart').getContext('2d');
+    charts.pfPj = new Chart(ctx3, { type: 'pie', data: { labels: ['PF','PJ'], datasets: [{ data: [pf, pj], backgroundColor: ['#6c5ce7','#fdcb6e'] }] } });
   }
 
+  // ==================== RENDER TABELA (PESQUISA) ====================
+  function renderTable() {
+    const search = document.getElementById('search').value.toLowerCase();
+    const status = document.getElementById('filterStatus').value;
+    const modalidade = document.getElementById('filterModalidade').value;
+    const praca = document.getElementById('filterPraca').value;
+    const admin = document.getElementById('filterAdministradora').value;
+    const tipo = document.getElementById('filterTipo').value;
+    const valorMin = parseFloat(document.getElementById('filterValorMin').value) || 0;
+    const valorMax = parseFloat(document.getElementById('filterValorMax').value) || Infinity;
+    const dataIni = document.getElementById('filterDataIni').value;
+    const dataFim = document.getElementById('filterDataFim').value;
+    const mes = document.getElementById('filterMes').value;
+    const fonte = document.getElementById('filterFonte').value;
+
+    let filtered = clients.filter(c => {
+      const matchSearch = (c.nomeTitular || '').toLowerCase().includes(search) ||
+                          (c.cpfTitular || '').includes(search) ||
+                          (c.numeroProposta || '').toLowerCase().includes(search) ||
+                          (c.telefoneTitular || '').includes(search);
+      const matchStatus = status === 'ALL' || c.status === status;
+      const matchModalidade = modalidade === 'ALL' || c.modalidadePlano === modalidade;
+      const matchPraca = praca === 'ALL' || c.praca === praca;
+      const matchAdmin = admin === 'ALL' || c.administradora === admin;
+      const matchTipo = tipo === 'ALL' || c.tipoCliente === tipo;
+      const matchValor = (parseFloat(c.valorComDesconto) || 0) >= valorMin && (parseFloat(c.valorComDesconto) || 0) <= valorMax;
+      let matchData = true;
+      if (dataIni && c.data) matchData = matchData && c.data >= dataIni;
+      if (dataFim && c.data) matchData = matchData && c.data <= dataFim;
+      if (mes && c.data) matchData = matchData && c.data.startsWith(mes);
+      const matchFonte = fonte === 'ALL' || c.fonteVenda === fonte;
+      return matchSearch && matchStatus && matchModalidade && matchPraca && matchAdmin && matchTipo && matchValor && matchData && matchFonte;
+    });
+
+    // Ordenação
+    filtered.sort((a, b) => {
+      let valA = a[sortColumn] || '';
+      let valB = b[sortColumn] || '';
+      if (sortColumn === 'valorComDesconto') { valA = parseFloat(valA) || 0; valB = parseFloat(valB) || 0; }
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+      if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted">Nenhum cliente encontrado.</td></tr>';
+    } else {
+      filtered.forEach(c => {
+        const checked = selectedIds.has(c.id) ? 'checked' : '';
+        tbody.innerHTML += `
+          <tr>
+            <td><input type="checkbox" class="row-checkbox" data-id="${c.id}" ${checked} onchange="toggleRow('${c.id}')"></td>
+            <td>${c.numeroProposta || '-'}</td>
+            <td>${c.nomeTitular || '-'}</td>
+            <td>${c.cpfTitular || '-'}</td>
+            <td>${c.modalidadePlano || '-'}</td>
+            <td>${c.status || '-'}</td>
+            <td>${c.valorComDesconto ? 'R$ '+parseFloat(c.valorComDesconto).toFixed(2).replace('.',',') : '-'}</td>
+            <td>${c.praca || '-'}</td>
+            <td>${c.administradora || '-'}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary" onclick="editarCliente('${c.id}')"><i class="bi bi-pencil"></i></button>
+              <button class="btn btn-sm btn-danger" onclick="excluirCliente('${c.id}')"><i class="bi bi-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+    updateLoteButton();
+  }
+
+  // ==================== CRUD CLIENTES ====================
+  function editarCliente(id) {
+    const c = clients.find(c => c.id === id);
+    if (!c) return;
+    document.getElementById('clientId').value = c.id;
+    document.getElementById('cData').value = c.data || '';
+    document.getElementById('cNumeroProposta').value = c.numeroProposta || '';
+    document.getElementById('cNomeTitular').value = c.nomeTitular || '';
+    document.getElementById('cCpfTitular').value = c.cpfTitular || '';
+    document.getElementById('cCnpjTitular').value = c.cnpjTitular || '';
+    document.getElementById('cTelefoneTitular').value = c.telefoneTitular || '';
+    document.getElementById('cEmailTitular').value = c.emailTitular || '';
+    document.getElementById('cQtdVidas').value = c.qtdVidas || 1;
+    document.getElementById('cTipoCliente').value = c.tipoCliente || '';
+    document.getElementById('cModalidadePlano').value = c.modalidadePlano || '';
+    document.getElementById('cCoparticipacao').value = c.coparticipacao || '';
+    document.getElementById('cStatus').value = c.status || '';
+    document.getElementById('cDataImplantacao').value = c.dataImplantacao || '';
+    document.getElementById('cDataPagamento').value = c.dataPagamento || '';
+    document.getElementById('cFonteVenda').value = c.fonteVenda || '';
+    document.getElementById('cValorSemDesconto').value = c.valorSemDesconto || '';
+    document.getElementById('cValorComDesconto').value = c.valorComDesconto || '';
+    document.getElementById('cPraca').value = c.praca || '';
+    document.getElementById('cAdministradora').value = c.administradora || '';
+    document.getElementById('cCodigo').value = c.codigo || '';
+    document.getElementById('cAcomodacao').value = c.acomodacao || '';
+    document.getElementById('cVigencia').value = c.vigencia || '';
+    document.getElementById('cDataVencimento').value = c.dataVencimento || '';
+    document.getElementById('cStatusPagamento').value = c.statusPagamento || 'Pendente';
+    document.getElementById('cMesesEmDia').value = c.mesesEmDia || '';
+    document.getElementById('cAnotacoes').value = c.anotacoes || '';
+    document.getElementById('cLeadStatus').value = c.leadStatus || '';
+    // Dependentes e anexos (simplificado)
+    switchTab('clientesTab');
+  }
+
+  async function excluirCliente(id) {
+    if (!confirm('Excluir este cliente?')) return;
+    await db.collection('clients').doc(id).delete();
+    await loadClients();
+    renderTable();
+    updateDashboard();
+  }
+
+  async function saveClient() {
+    const id = document.getElementById('clientId').value;
+    const data = {
+      data: document.getElementById('cData').value,
+      numeroProposta: document.getElementById('cNumeroProposta').value,
+      nomeTitular: document.getElementById('cNomeTitular').value,
+      cpfTitular: document.getElementById('cCpfTitular').value,
+      cnpjTitular: document.getElementById('cCnpjTitular').value,
+      telefoneTitular: document.getElementById('cTelefoneTitular').value,
+      emailTitular: document.getElementById('cEmailTitular').value,
+      qtdVidas: parseInt(document.getElementById('cQtdVidas').value) || 1,
+      tipoCliente: document.getElementById('cTipoCliente').value,
+      modalidadePlano: document.getElementById('cModalidadePlano').value,
+      coparticipacao: document.getElementById('cCoparticipacao').value,
+      status: document.getElementById('cStatus').value,
+      dataImplantacao: document.getElementById('cDataImplantacao').value,
+      dataPagamento: document.getElementById('cDataPagamento').value,
+      fonteVenda: document.getElementById('cFonteVenda').value,
+      valorSemDesconto: document.getElementById('cValorSemDesconto').value,
+      valorComDesconto: document.getElementById('cValorComDesconto').value,
+      praca: document.getElementById('cPraca').value,
+      administradora: document.getElementById('cAdministradora').value,
+      codigo: document.getElementById('cCodigo').value,
+      acomodacao: document.getElementById('cAcomodacao').value,
+      vigencia: document.getElementById('cVigencia').value,
+      dataVencimento: document.getElementById('cDataVencimento').value,
+      statusPagamento: document.getElementById('cStatusPagamento').value,
+      mesesEmDia: document.getElementById('cMesesEmDia').value,
+      anotacoes: document.getElementById('cAnotacoes').value,
+      leadStatus: document.getElementById('cLeadStatus').value,
+      userId: currentUser.uid,
+      updatedAt: new Date().toISOString()
+    };
+    if (id) {
+      await db.collection('clients').doc(id).update(data);
+    } else {
+      data.createdAt = new Date().toISOString();
+      await db.collection('clients').add(data);
+    }
+    await loadClients();
+    renderTable();
+    updateDashboard();
+    clearForm();
+    alert('Cliente salvo com sucesso!');
+  }
+
+  function clearForm() {
+    document.getElementById('clientId').value = '';
+    document.querySelectorAll('#dadosPrincipais input, #dadosPrincipais select, #dadosPrincipais textarea').forEach(el => {
+      if (el.tagName === 'SELECT') el.selectedIndex = 0;
+      else if (el.type !== 'checkbox' && el.type !== 'radio') el.value = '';
+    });
+    document.getElementById('cQtdVidas').value = 1;
+    document.getElementById('cStatusPagamento').value = 'Pendente';
+  }
+
+  function autoFill() {
+    const text = document.getElementById('smartPaste').value;
+    if (!text) return alert('Cole o texto da proposta primeiro.');
+    // Exemplo simples: tenta extrair nome, cpf, número da proposta
+    const lines = text.split('\n');
+    lines.forEach(line => {
+      if (line.includes('Proposta:')) {
+        const num = line.replace(/.*Proposta:\s*/, '').trim();
+        document.getElementById('cNumeroProposta').value = num;
+      }
+      if (line.includes('Nome:')) {
+        const nome = line.replace(/.*Nome:\s*/, '').trim();
+        document.getElementById('cNomeTitular').value = nome;
+      }
+      if (line.includes('CPF:')) {
+        const cpf = line.replace(/.*CPF:\s*/, '').trim();
+        document.getElementById('cCpfTitular').value = cpf;
+      }
+    });
+    alert('Campos preenchidos automaticamente (verifique).');
+  }
+
+  // ==================== BACKUP (IMPORT / EXPORT) ====================
+  async function exportBackup() {
+    if (!currentUser) return;
+    try {
+      const collections = ['clients', 'leads', 'tarefas', 'statuses', 'pracas', 'administradoras', 'acomodacoes', 'coparticipacoes', 'modalidades', 'fontesVenda', 'leadStatuses'];
+      const data = {};
+      for (const col of collections) {
+        const snap = await db.collection(col).where('userId', '==', currentUser.uid).get();
+        data[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      }
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `backup_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch(e) { alert('Erro ao exportar: '+e.message); }
+  }
+
+  async function importBackup(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if (!currentUser) return alert('Usuário não logado.');
+      // Confirmação
+      if (!confirm('Isso irá importar todos os dados do backup. Deseja continuar?')) return;
+      for (const [collection, docs] of Object.entries(data)) {
+        if (!Array.isArray(docs)) continue;
+        for (const doc of docs) {
+          // Remove o id original para não sobrescrever
+          delete doc.id;
+          doc.userId = currentUser.uid;
+          doc.importedAt = new Date().toISOString();
+          await db.collection(collection).add(doc);
+        }
+      }
+      alert('Backup importado com sucesso!');
+      await loadAll();
+      renderTable();
+      updateDashboard();
+      renderLeads();
+    } catch(e) { alert('Erro ao importar: '+e.message); }
+    event.target.value = ''; // limpa o input
+  }
+
+  // ==================== LEADS (CRUD) ====================
   function renderLeads() {
     const busca = document.getElementById('searchLead').value.toLowerCase();
     const uf = document.getElementById('filterUfLead').value;
@@ -1058,7 +1320,6 @@
       return matchNome && matchUf && matchStatus;
     });
 
-    // Ordenação já feita no loadLeads, mas podemos reordenar se necessário
     filtrados.sort((a,b) => (b.abertura || '').localeCompare(a.abertura || ''));
 
     const total = filtrados.length;
@@ -1131,18 +1392,17 @@
     container.innerHTML = html;
   }
 
-  function mudarPaginaLead(delta) { paginaLead += delta; renderLeads(); }
-  function atualizarSidebarStatus() {
-    const statusCount = {};
-    leadStatuses.forEach(s => statusCount[s.name] = 0);
-    ['Disponível','Em Atendimento','Em Negociação','Perfil Inválido','Convertido'].forEach(s => { if (!statusCount[s]) statusCount[s] = 0; });
-    leadsData.forEach(l => {
-      const st = l.status || 'Disponível';
-      if (statusCount[st] !== undefined) statusCount[st]++;
-    });
-    // Não temos um elemento com id "statusSidebar" no HTML, então apenas para referência.
-    // Se quiser exibir, pode criar um local.
+  function setLeadView(view) {
+    leadView = view;
+    document.getElementById('viewListBtn').classList.toggle('active', view === 'lista');
+    document.getElementById('viewPipelineBtn').classList.toggle('active', view === 'pipeline');
+    document.getElementById('leadListView').style.display = view === 'lista' ? 'block' : 'none';
+    document.getElementById('leadPipelineView').style.display = view === 'pipeline' ? 'block' : 'none';
+    if (view === 'pipeline') renderPipeline();
+    else renderLeads();
   }
+
+  function mudarPaginaLead(delta) { paginaLead += delta; renderLeads(); }
 
   function abrirModalNovoLead() {
     document.querySelector('#modalNovoLead .modal-title').innerHTML = '<i class="bi bi-person-plus me-2"></i>Novo Lead';
@@ -1170,7 +1430,7 @@
     };
     await db.collection('leads').add(data);
     bootstrap.Modal.getInstance(document.getElementById('modalNovoLead')).hide();
-    await loadLeads(); renderLeads(); atualizarSidebarStatus();
+    await loadLeads(); renderLeads();
     if (leadView === 'pipeline') renderPipeline();
   }
 
@@ -1212,115 +1472,365 @@
     document.getElementById('btnSalvarNovoLead').innerHTML = 'Salvar Lead';
     document.getElementById('btnSalvarNovoLead').onclick = salvarNovoLead;
     delete document.getElementById('modalNovoLead').dataset.editId;
-    await loadLeads(); renderLeads(); atualizarSidebarStatus();
+    await loadLeads(); renderLeads();
     if (leadView === 'pipeline') renderPipeline();
   }
 
   async function excluirLead(id) {
     if (!confirm('Excluir este lead?')) return;
     await db.collection('leads').doc(id).delete();
-    await loadLeads(); renderLeads(); atualizarSidebarStatus();
+    await loadLeads(); renderLeads();
     if (leadView === 'pipeline') renderPipeline();
   }
 
-  // ==================== FUNÇÕES AUXILIARES (resumidas, mas funcionais) ====================
-  async function loadClients() {
-    if (!currentUser) return;
-    const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
-    clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  // ==================== CONFIGURAÇÕES ====================
+  function renderLeadStatuses() {
+    const el = document.getElementById('leadStatusList');
+    if (!el) return;
+    el.innerHTML = leadStatuses.map(s => `
+      <div class="status-item">
+        <span>${s.name}</span>
+        <button class="btn btn-danger btn-sm" onclick="deleteLeadStatus('${s.id}')">Excluir</button>
+      </div>
+    `).join('');
   }
 
-  async function loadTarefas() {
-    if (!currentUser) return;
-    const snap = await db.collection('tarefas').where('userId', '==', currentUser.uid).get();
-    tarefas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  async function addLeadStatus() {
+    const nome = prompt('Nome do novo status para leads:');
+    if (!nome || !nome.trim()) return;
+    await db.collection('leadStatuses').add({ name: nome.trim(), userId: currentUser.uid, createdAt: new Date().toISOString() });
+    await loadLeadStatuses();
   }
 
-  async function loadStatuses() {
-    if (!currentUser) return;
-    const snap = await db.collection('statuses').where('userId', '==', currentUser.uid).get();
-    statuses = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  async function deleteLeadStatus(id) {
+    if (!confirm('Remover este status?')) return;
+    await db.collection('leadStatuses').doc(id).delete();
+    await loadLeadStatuses();
   }
 
-  async function loadPracas() {
-    if (!currentUser) return;
-    const snap = await db.collection('pracas').where('userId', '==', currentUser.uid).get();
-    pracas = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  function renderStatuses() {
+    const el = document.getElementById('statusList');
+    if (!el) return;
+    el.innerHTML = statuses.map(s => `
+      <div class="status-item">
+        <span>${s.name}</span>
+        <button class="btn btn-danger btn-sm" onclick="deleteStatus('${s.id}')">Excluir</button>
+      </div>
+    `).join('');
   }
 
-  async function loadAdministradoras() {
-    if (!currentUser) return;
-    const snap = await db.collection('administradoras').where('userId', '==', currentUser.uid).get();
-    administradoras = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  async function addStatus() {
+    const nome = prompt('Novo status:');
+    if (!nome || !nome.trim()) return;
+    await db.collection('statuses').add({ name: nome.trim(), userId: currentUser.uid });
+    await loadStatuses(); renderStatuses(); preencherSelectsFicha();
   }
 
-  async function loadAcomodacoes() {
-    if (!currentUser) return;
-    const snap = await db.collection('acomodacoes').where('userId', '==', currentUser.uid).get();
-    acomodacoes = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  async function deleteStatus(id) {
+    if (!confirm('Remover?')) return;
+    await db.collection('statuses').doc(id).delete();
+    await loadStatuses(); renderStatuses(); preencherSelectsFicha();
   }
 
-  async function loadCoparticipacoes() {
-    if (!currentUser) return;
-    const snap = await db.collection('coparticipacoes').where('userId', '==', currentUser.uid).get();
-    coparticipacoes = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  function renderPracasList() {
+    const el = document.getElementById('pracasList');
+    el.innerHTML = pracas.map(p => `<div class="status-item"><span>${p.name}</span><button class="btn btn-danger btn-sm" onclick="deletePraca('${p.id}')">Excluir</button></div>`).join('');
   }
 
-  async function loadModalidades() {
-    if (!currentUser) return;
-    const snap = await db.collection('modalidades').where('userId', '==', currentUser.uid).get();
-    modalidades = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  async function addPraca() {
+    const nome = document.getElementById('novaPraca').value.trim();
+    if (!nome) return alert('Digite o nome');
+    await db.collection('pracas').add({ name: nome, userId: currentUser.uid });
+    document.getElementById('novaPraca').value = '';
+    await loadPracas(); renderPracasList(); preencherSelectsFicha(); popularFiltroPraca();
   }
 
-  async function loadFontesVenda() {
-    if (!currentUser) return;
-    const snap = await db.collection('fontesVenda').where('userId', '==', currentUser.uid).get();
-    fontesVenda = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
+  async function deletePraca(id) {
+    if (!confirm('Remover?')) return;
+    await db.collection('pracas').doc(id).delete();
+    await loadPracas(); renderPracasList(); preencherSelectsFicha(); popularFiltroPraca();
   }
 
-  function popularFiltroPraca() {
-    const select = document.getElementById('filtroPraca');
-    select.innerHTML = '<option value="">Todas as Praças</option>';
-    pracas.forEach(p => select.innerHTML += `<option value="${p.name}">${p.name}</option>`);
+  function renderAdministradorasList() {
+    const el = document.getElementById('administradorasList');
+    el.innerHTML = administradoras.map(a => `<div class="status-item"><span>${a.name}</span><button class="btn btn-danger btn-sm" onclick="deleteAdministradora('${a.id}')">Excluir</button></div>`).join('');
   }
 
-  function updateDashboard() {
-    // Implementação simplificada para não alongar
-    // Apenas atualiza os números de exemplo
-    document.getElementById('dashTotal').innerText = clients.length;
-    document.getElementById('dashImplantados').innerText = clients.filter(c => c.status === 'Implantado').length;
-    document.getElementById('dashProcessado').innerText = 'R$ ' + (clients.reduce((acc, c) => acc + parseFloat(c.valorComDesconto || 0), 0) || 0).toFixed(2);
-    // ... outros cálculos
+  async function addAdministradora() {
+    const nome = document.getElementById('novaAdministradora').value.trim();
+    if (!nome) return alert('Digite o nome');
+    await db.collection('administradoras').add({ name: nome, userId: currentUser.uid });
+    document.getElementById('novaAdministradora').value = '';
+    await loadAdministradoras(); renderAdministradorasList(); preencherSelectsFicha();
   }
 
-  function renderCalendario() { /* simplificado */ }
-  function renderCompromissos(data) { /* simplificado */ }
-  function renderStatuses() { /* ... */ }
-  function renderPracasList() { /* ... */ }
-  function renderAdministradorasList() { /* ... */ }
-  function renderAcomodacoesList() { /* ... */ }
-  function renderCoparticipacoesList() { /* ... */ }
-  function renderModalidadesList() { /* ... */ }
-  function renderFontesVendaList() { /* ... */ }
-  function updateLoteButton() { /* ... */ }
-  function renderTable() { /* ... */ }
-  function formatarValorInput(el) { /* ... */ }
-  function gerarRelatorio() { alert('Função de relatório'); }
-  function exportBackup() { alert('Exportar backup'); }
-  function importBackup() { document.getElementById('backupFileInput').click(); }
-  function exportarExcel() { alert('Exportar Excel'); }
-  function addStatus() { const nome = prompt('Novo status:'); if(nome) db.collection('statuses').add({ name: nome.trim(), userId: currentUser.uid }); }
-  function addPraca() { const nome = document.getElementById('novaPraca').value.trim(); if(nome) db.collection('pracas').add({ name: nome, userId: currentUser.uid }); }
-  function addAdministradora() { const nome = document.getElementById('novaAdministradora').value.trim(); if(nome) db.collection('administradoras').add({ name: nome, userId: currentUser.uid }); }
-  function addAcomodacao() { const nome = document.getElementById('novaAcomodacao').value.trim(); if(nome) db.collection('acomodacoes').add({ name: nome, userId: currentUser.uid }); }
-  function addCoparticipacao() { const nome = document.getElementById('novaCoparticipacao').value.trim(); if(nome) db.collection('coparticipacoes').add({ name: nome, userId: currentUser.uid }); }
-  function addModalidade() { const nome = document.getElementById('novaModalidade').value.trim(); if(nome) db.collection('modalidades').add({ name: nome, userId: currentUser.uid }); }
-  function addFonteVenda() { const nome = document.getElementById('novaFonteVenda').value.trim(); if(nome) db.collection('fontesVenda').add({ name: nome, userId: currentUser.uid }); }
-  function saveClient() { alert('Cliente salvo (simulado)'); }
-  function clearForm() { /* ... */ }
-  function autoFill() { alert('Auto preenchimento (simulado)'); }
-  function addDependente() { /* ... */ }
-  function adicionarAnexo() { /* ... */ }
+  async function deleteAdministradora(id) {
+    if (!confirm('Remover?')) return;
+    await db.collection('administradoras').doc(id).delete();
+    await loadAdministradoras(); renderAdministradorasList(); preencherSelectsFicha();
+  }
+
+  // Similar para acomodações, coparticipações, modalidades, fontes (resumido)
+  function renderAcomodacoesList() { const el = document.getElementById('acomodacoesList'); el.innerHTML = acomodacoes.map(a => `<div class="status-item"><span>${a.name}</span><button class="btn btn-danger btn-sm" onclick="deleteAcomodacao('${a.id}')">Excluir</button></div>`).join(''); }
+  async function addAcomodacao() { const nome = document.getElementById('novaAcomodacao').value.trim(); if (!nome) return; await db.collection('acomodacoes').add({ name: nome, userId: currentUser.uid }); document.getElementById('novaAcomodacao').value = ''; await loadAcomodacoes(); renderAcomodacoesList(); preencherSelectsFicha(); }
+  async function deleteAcomodacao(id) { if (!confirm('Remover?')) return; await db.collection('acomodacoes').doc(id).delete(); await loadAcomodacoes(); renderAcomodacoesList(); preencherSelectsFicha(); }
+
+  function renderCoparticipacoesList() { const el = document.getElementById('coparticipacoesList'); el.innerHTML = coparticipacoes.map(c => `<div class="status-item"><span>${c.name}</span><button class="btn btn-danger btn-sm" onclick="deleteCoparticipacao('${c.id}')">Excluir</button></div>`).join(''); }
+  async function addCoparticipacao() { const nome = document.getElementById('novaCoparticipacao').value.trim(); if (!nome) return; await db.collection('coparticipacoes').add({ name: nome, userId: currentUser.uid }); document.getElementById('novaCoparticipacao').value = ''; await loadCoparticipacoes(); renderCoparticipacoesList(); preencherSelectsFicha(); }
+  async function deleteCoparticipacao(id) { if (!confirm('Remover?')) return; await db.collection('coparticipacoes').doc(id).delete(); await loadCoparticipacoes(); renderCoparticipacoesList(); preencherSelectsFicha(); }
+
+  function renderModalidadesList() { const el = document.getElementById('modalidadesList'); el.innerHTML = modalidades.map(m => `<div class="status-item"><span>${m.name}</span><button class="btn btn-danger btn-sm" onclick="deleteModalidade('${m.id}')">Excluir</button></div>`).join(''); }
+  async function addModalidade() { const nome = document.getElementById('novaModalidade').value.trim(); if (!nome) return; await db.collection('modalidades').add({ name: nome, userId: currentUser.uid }); document.getElementById('novaModalidade').value = ''; await loadModalidades(); renderModalidadesList(); preencherSelectsFicha(); }
+  async function deleteModalidade(id) { if (!confirm('Remover?')) return; await db.collection('modalidades').doc(id).delete(); await loadModalidades(); renderModalidadesList(); preencherSelectsFicha(); }
+
+  function renderFontesVendaList() { const el = document.getElementById('fontesVendaList'); el.innerHTML = fontesVenda.map(f => `<div class="status-item"><span>${f.name}</span><button class="btn btn-danger btn-sm" onclick="deleteFonteVenda('${f.id}')">Excluir</button></div>`).join(''); }
+  async function addFonteVenda() { const nome = document.getElementById('novaFonteVenda').value.trim(); if (!nome) return; await db.collection('fontesVenda').add({ name: nome, userId: currentUser.uid }); document.getElementById('novaFonteVenda').value = ''; await loadFontesVenda(); renderFontesVendaList(); preencherSelectsFicha(); }
+  async function deleteFonteVenda(id) { if (!confirm('Remover?')) return; await db.collection('fontesVenda').doc(id).delete(); await loadFontesVenda(); renderFontesVendaList(); preencherSelectsFicha(); }
+
+  // ==================== OUTRAS FUNÇÕES ====================
+  function updateLoteButton() {
+    const count = selectedIds.size;
+    document.getElementById('selecionadosCount').innerText = count ? `${count} selecionado(s)` : '';
+    document.getElementById('btnAcaoLote').disabled = count === 0;
+  }
+
+  function toggleRow(id) {
+    if (selectedIds.has(id)) selectedIds.delete(id);
+    else selectedIds.add(id);
+    updateLoteButton();
+  }
+
+  function toggleSelectAll() {
+    const checked = document.getElementById('selectAll').checked;
+    document.querySelectorAll('.row-checkbox').forEach(cb => {
+      cb.checked = checked;
+      const id = cb.dataset.id;
+      if (checked) selectedIds.add(id);
+      else selectedIds.delete(id);
+    });
+    updateLoteButton();
+  }
+
+  function abrirModalLote() { new bootstrap.Modal(document.getElementById('modalLote')).show(); }
+  function handleAcaoLoteChange() {
+    const acao = document.getElementById('acaoLote').value;
+    const div = document.getElementById('parametrosLote');
+    div.innerHTML = '';
+    if (acao === 'status') {
+      div.innerHTML = `<select id="loteStatus" class="form-select"><option value="">Novo Status</option>${statuses.map(s => `<option value="${s.name}">${s.name}</option>`).join('')}</select>`;
+    } else if (acao === 'praca') {
+      div.innerHTML = `<select id="lotePraca" class="form-select"><option value="">Nova Praça</option>${pracas.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}</select>`;
+    } else if (acao === 'administradora') {
+      div.innerHTML = `<select id="loteAdmin" class="form-select"><option value="">Nova Admin</option>${administradoras.map(a => `<option value="${a.name}">${a.name}</option>`).join('')}</select>`;
+    } else if (acao === 'dataPagamento') {
+      div.innerHTML = `<input type="date" id="loteData" class="form-control">`;
+    }
+  }
+
+  async function executarAcaoLote() {
+    const acao = document.getElementById('acaoLote').value;
+    if (!acao) return alert('Selecione uma ação');
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return alert('Nenhum selecionado');
+    const updates = {};
+    if (acao === 'status') {
+      const val = document.getElementById('loteStatus')?.value;
+      if (!val) return alert('Selecione um status');
+      updates.status = val;
+    } else if (acao === 'praca') {
+      const val = document.getElementById('lotePraca')?.value;
+      if (!val) return alert('Selecione uma praça');
+      updates.praca = val;
+    } else if (acao === 'administradora') {
+      const val = document.getElementById('loteAdmin')?.value;
+      if (!val) return alert('Selecione uma administradora');
+      updates.administradora = val;
+    } else if (acao === 'dataPagamento') {
+      const val = document.getElementById('loteData')?.value;
+      if (!val) return alert('Selecione uma data');
+      updates.dataPagamento = val;
+    } else if (acao === 'excluir') {
+      if (!confirm('Excluir permanentemente os clientes selecionados?')) return;
+      for (const id of ids) {
+        await db.collection('clients').doc(id).delete();
+      }
+      selectedIds.clear();
+      await loadClients();
+      renderTable();
+      updateDashboard();
+      alert('Clientes excluídos');
+      bootstrap.Modal.getInstance(document.getElementById('modalLote')).hide();
+      return;
+    }
+    for (const id of ids) {
+      await db.collection('clients').doc(id).update(updates);
+    }
+    selectedIds.clear();
+    await loadClients();
+    renderTable();
+    updateDashboard();
+    alert('Ação aplicada com sucesso');
+    bootstrap.Modal.getInstance(document.getElementById('modalLote')).hide();
+  }
+
+  // ==================== AGENDA (SIMPLIFICADA) ====================
+  function renderCalendario() {
+    const mes = calendarioMes, ano = calendarioAno;
+    const titulo = document.getElementById('calendarioTitulo');
+    titulo.innerText = new Date(ano, mes).toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
+    const container = document.getElementById('calendarioContainer');
+    const primeiroDia = new Date(ano, mes, 1).getDay();
+    const diasNoMes = new Date(ano, mes+1, 0).getDate();
+    let html = '<div class="mini-calendar">';
+    const diasSemana = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    diasSemana.forEach(d => html += `<div class="fw-bold text-center">${d}</div>`);
+    for (let i = 0; i < primeiroDia; i++) html += '<div></div>';
+    for (let d = 1; d <= diasNoMes; d++) {
+      const dataStr = `${ano}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const hoje = new Date().toISOString().split('T')[0];
+      const hasEvent = tarefas.some(t => t.data === dataStr);
+      const selected = dataStr === diaSelecionado ? 'selected' : '';
+      const today = dataStr === hoje ? 'today' : '';
+      html += `<div class="day ${today} ${selected} ${hasEvent?'has-event':''}" onclick="selecionarDia('${dataStr}')">${d}</div>`;
+    }
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  function selecionarDia(data) {
+    diaSelecionado = data;
+    renderCalendario();
+    renderCompromissos(data);
+  }
+
+  function renderCompromissos(data) {
+    const el = document.getElementById('compromissosLista');
+    document.getElementById('dataSelecionada').innerText = data;
+    const tarefasDoDia = tarefas.filter(t => t.data === data);
+    if (tarefasDoDia.length === 0) {
+      el.innerHTML = '<p class="text-muted">Nenhum compromisso para este dia.</p>';
+      return;
+    }
+    el.innerHTML = tarefasDoDia.map(t => `
+      <div class="status-item">
+        <div><strong>${t.titulo}</strong> ${t.hora ? ' - '+t.hora : ''} ${t.concluida ? '✅' : ''}</div>
+        <div>
+          <button class="btn btn-sm btn-outline-primary" onclick="editarTarefa('${t.id}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-danger" onclick="excluirTarefa('${t.id}')"><i class="bi bi-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function changeMonth(delta) { calendarioMes += delta; if (calendarioMes > 11) { calendarioMes = 0; calendarioAno++; } if (calendarioMes < 0) { calendarioMes = 11; calendarioAno--; } renderCalendario(); renderCompromissos(diaSelecionado); }
+  function setView(view) { currentView = view; renderCalendario(); }
+
+  function abrirModalTarefa() {
+    document.getElementById('tarefaId').value = '';
+    document.getElementById('tarefaTitulo').value = '';
+    document.getElementById('tarefaData').value = diaSelecionado;
+    document.getElementById('tarefaHora').value = '';
+    document.getElementById('tarefaDesc').value = '';
+    document.getElementById('tarefaConcluida').checked = false;
+    new bootstrap.Modal(document.getElementById('modalTarefa')).show();
+  }
+
+  async function salvarTarefa() {
+    const id = document.getElementById('tarefaId').value;
+    const data = {
+      titulo: document.getElementById('tarefaTitulo').value,
+      data: document.getElementById('tarefaData').value,
+      hora: document.getElementById('tarefaHora').value,
+      descricao: document.getElementById('tarefaDesc').value,
+      concluida: document.getElementById('tarefaConcluida').checked,
+      userId: currentUser.uid,
+      updatedAt: new Date().toISOString()
+    };
+    if (id) {
+      await db.collection('tarefas').doc(id).update(data);
+    } else {
+      data.createdAt = new Date().toISOString();
+      await db.collection('tarefas').add(data);
+    }
+    bootstrap.Modal.getInstance(document.getElementById('modalTarefa')).hide();
+    await loadTarefas();
+    renderCalendario();
+    renderCompromissos(diaSelecionado);
+  }
+
+  function editarTarefa(id) {
+    const t = tarefas.find(t => t.id === id);
+    if (!t) return;
+    document.getElementById('tarefaId').value = t.id;
+    document.getElementById('tarefaTitulo').value = t.titulo || '';
+    document.getElementById('tarefaData').value = t.data || '';
+    document.getElementById('tarefaHora').value = t.hora || '';
+    document.getElementById('tarefaDesc').value = t.descricao || '';
+    document.getElementById('tarefaConcluida').checked = t.concluida || false;
+    new bootstrap.Modal(document.getElementById('modalTarefa')).show();
+  }
+
+  async function excluirTarefa(id) {
+    if (!confirm('Excluir esta tarefa?')) return;
+    await db.collection('tarefas').doc(id).delete();
+    await loadTarefas();
+    renderCalendario();
+    renderCompromissos(diaSelecionado);
+  }
+
+  // ==================== UTILITÁRIOS ====================
+  function formatarValorInput(el) {
+    let val = el.value.replace(/\D/g, '');
+    if (val) {
+      val = (parseFloat(val) / 100).toFixed(2);
+      el.value = val.replace('.', ',');
+    }
+  }
+
+  function handlePeriodoChange() {
+    const val = document.getElementById('periodoFiltro').value;
+    document.getElementById('intervaloDiv').style.display = val === 'intervalo' ? 'block' : 'none';
+    document.getElementById('intervaloFimDiv').style.display = val === 'intervalo' ? 'block' : 'none';
+    updateDashboard();
+  }
+
+  function gerarRelatorio() {
+    alert('Função de relatório em desenvolvimento.');
+  }
+
+  function exportarExcel() {
+    alert('Exportar Excel em desenvolvimento.');
+  }
+
+  function addDependente() {
+    const nome = prompt('Nome do dependente:');
+    if (nome) dependentesTemp.push(nome);
+    renderDependentes();
+  }
+
+  function renderDependentes() {
+    const el = document.getElementById('dependentesList');
+    el.innerHTML = dependentesTemp.map((d, i) => `
+      <div class="status-item"><span>${d}</span><button class="btn btn-danger btn-sm" onclick="removerDependente(${i})">Remover</button></div>
+    `).join('');
+  }
+
+  function removerDependente(idx) { dependentesTemp.splice(idx, 1); renderDependentes(); }
+
+  function adicionarAnexo() {
+    const nome = prompt('Nome do anexo (arquivo):');
+    if (nome) anexosTemp.push(nome);
+    renderAnexos();
+  }
+
+  function renderAnexos() {
+    const el = document.getElementById('anexosList');
+    el.innerHTML = anexosTemp.map((a, i) => `
+      <div class="status-item"><span>${a}</span><button class="btn btn-danger btn-sm" onclick="removerAnexo(${i})">Remover</button></div>
+    `).join('');
+  }
+
+  function removerAnexo(idx) { anexosTemp.splice(idx, 1); renderAnexos(); }
 
   // ==================== EVENTOS E INICIALIZAÇÃO ====================
   document.addEventListener('DOMContentLoaded', function() {
@@ -1335,18 +1845,10 @@
     document.querySelector('[data-bs-target="#configTab"]')?.addEventListener('shown.bs.tab', () => {
       loadLeadStatuses();
     });
+    document.querySelector('[data-bs-target="#pesquisaTab"]')?.addEventListener('shown.bs.tab', () => {
+      renderTable();
+    });
   });
-
-  // Funções placeholder para os modais lote e tarefa
-  function abrirModalLote() { new bootstrap.Modal(document.getElementById('modalLote')).show(); }
-  function abrirModalTarefa() { new bootstrap.Modal(document.getElementById('modalTarefa')).show(); }
-  function handleAcaoLoteChange() { /* ... */ }
-  function executarAcaoLote() { alert('Ação em lote executada'); }
-  function salvarTarefa() { alert('Tarefa salva'); }
-  function changeMonth(delta) { calendarioMes += delta; renderCalendario(); }
-  function setView(view) { currentView = view; renderCalendario(); }
-  function toggleSelectAll() { /* ... */ }
-  function handlePeriodoChange() { /* ... */ }
 </script>
 </body>
 </html>
