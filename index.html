@@ -1039,23 +1039,38 @@
     pracas.forEach(p => select.innerHTML += `<option value="${p.name}">${p.name}</option>`);
   }
 
-  // ==================== DASHBOARD ====================
+  // ==================== DASHBOARD (CORRIGIDO) ====================
   function updateDashboard() {
     const total = clients.length;
     const implantados = clients.filter(c => c.status === 'Implantado').length;
-    const valorTotal = clients.reduce((acc, c) => acc + (parseFloat(c.valorComDesconto) || 0), 0);
+
+    // Cálculo do valor total: converte string com vírgula para número
+    const valorTotal = clients.reduce((acc, c) => {
+      let val = c.valorComDesconto || '0';
+      val = val.replace(/\./g, '').replace(',', '.');
+      return acc + (parseFloat(val) || 0);
+    }, 0);
+
     const inadimplentes = clients.filter(c => c.statusPagamento === 'Atrasado').length;
     const emDia = clients.filter(c => c.statusPagamento === 'Pago').length;
-    const semInfo = clients.filter(c => !c.statusPagamento);
+    // 🔹 CORREÇÃO: usa .length para obter a quantidade
+    const semInfo = clients.filter(c => !c.statusPagamento).length;
+
     document.getElementById('dashTotal').innerText = total;
     document.getElementById('dashImplantados').innerText = implantados;
     document.getElementById('dashProcessado').innerText = 'R$ ' + valorTotal.toFixed(2).replace('.', ',');
-    document.getElementById('dashConversao').innerText = total ? Math.round((implantados/total)*100) + '%' : '0%';
+    document.getElementById('dashConversao').innerText = total ? Math.round((implantados / total) * 100) + '%' : '0%';
     document.getElementById('dashInadimplentes').innerText = inadimplentes;
     document.getElementById('dashEmDia').innerText = emDia;
-    document.getElementById('dashSemInfo').innerText = semInfo;
+    document.getElementById('dashSemInfo').innerText = semInfo;  // ← agora é um número
+
+    // Médias (exemplo simples)
+    document.getElementById('dashMediaAtraso').innerText = '0';
+    document.getElementById('dashMediaTempo').innerText = '0';
+
     atualizarGraficos();
   }
+
   function atualizarGraficos() {
     if (charts.status) charts.status.destroy();
     if (charts.admin) charts.admin.destroy();
