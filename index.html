@@ -500,7 +500,6 @@
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-    /* Spinner de loading */
     .loading-spinner {
       display: inline-block;
       width: 1.2rem;
@@ -842,7 +841,6 @@
 
   // ==================== VARIÁVEIS ====================
   let currentUser = null;
-  // Caches locais
   let clients = [];
   let tarefas = [];
   let dependentesTemp = [], anexosTemp = [];
@@ -851,7 +849,6 @@
   let leadStatuses = [];
   let leadsData = [];
 
-  // Outras variáveis
   let charts = {};
   let calendarioMes = new Date().getMonth(), calendarioAno = new Date().getFullYear(), diaSelecionado = new Date().toISOString().split('T')[0];
   let selectedIds = new Set();
@@ -860,12 +857,17 @@
   let paginaLead = 1;
   const leadsPorPagina = 10;
   let leadView = 'lista';
-  let isLoading = false; // controle de loading
+  let isLoading = false;
 
   // ==================== AUTENTICAÇÃO ====================
   auth.onAuthStateChanged(user => {
-    if (user) { currentUser = user; document.getElementById('loginScreen').style.display = 'none'; loadAll(); }
-    else { document.getElementById('loginScreen').style.display = 'flex'; }
+    if (user) {
+      currentUser = user;
+      document.getElementById('loginScreen').style.display = 'none';
+      loadAll();
+    } else {
+      document.getElementById('loginScreen').style.display = 'flex';
+    }
   });
   function login() { const email = document.getElementById('loginEmail').value, pwd = document.getElementById('loginPassword').value; auth.signInWithEmailAndPassword(email, pwd).catch(e => document.getElementById('loginError').innerText = e.message); }
   function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => document.getElementById('loginError').innerText = e.message); }
@@ -885,18 +887,17 @@
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('show', 'active'));
     const pane = document.getElementById(tabId); if (pane) pane.classList.add('show', 'active');
     document.getElementById('sidebar').classList.remove('mobile-open');
-    if (tabId === 'leadsTab') { renderLeads(); }
+    if (tabId === 'leadsTab') renderLeads();
     if (tabId === 'configTab') { renderLeadStatuses(); renderStatuses(); renderPracasList(); renderAdministradorasList(); renderAcomodacoesList(); renderCoparticipacoesList(); renderModalidadesList(); renderFontesVendaList(); }
-    if (tabId === 'pesquisaTab') { renderTable(); }
+    if (tabId === 'pesquisaTab') renderTable();
     if (tabId === 'agendaTab') { renderCalendario(); renderCompromissos(diaSelecionado); }
   }
 
-  // ==================== LOAD INICIAL (UMA VEZ) ====================
+  // ==================== LOAD INICIAL ====================
   async function loadAll() {
     if (isLoading) return;
     isLoading = true;
     try {
-      // Carrega todas as coleções em paralelo
       await Promise.all([
         loadClients(),
         loadTarefas(),
@@ -910,7 +911,6 @@
         loadLeads(),
         loadLeadStatuses()
       ]);
-      // Preenche selects e interface
       popularFiltroPraca();
       preencherSelectsFicha();
       renderTable();
@@ -919,82 +919,72 @@
       renderCompromissos(diaSelecionado);
       renderLeads();
     } catch(e) {
-      console.error(e);
+      console.error('ERRO NO loadAll:', e);
       alert('Erro ao carregar dados: '+e.message);
     } finally {
       isLoading = false;
     }
   }
 
-  // ==================== LOAD FUNCTIONS (com cache) ====================
+  // ==================== LOAD FUNCTIONS ====================
   async function loadClients() {
     if (!currentUser) return;
     const snap = await db.collection('clients').where('userId', '==', currentUser.uid).get();
     clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   }
-
   async function loadTarefas() {
     if (!currentUser) return;
     const snap = await db.collection('tarefas').where('userId', '==', currentUser.uid).get();
     tarefas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   }
-
   async function loadStatuses() {
     if (!currentUser) return;
     const snap = await db.collection('statuses').where('userId', '==', currentUser.uid).get();
     statuses = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
   }
-
   async function loadPracas() {
     if (!currentUser) return;
     const snap = await db.collection('pracas').where('userId', '==', currentUser.uid).get();
     pracas = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
   }
-
   async function loadAdministradoras() {
     if (!currentUser) return;
     const snap = await db.collection('administradoras').where('userId', '==', currentUser.uid).get();
     administradoras = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
   }
-
   async function loadAcomodacoes() {
     if (!currentUser) return;
     const snap = await db.collection('acomodacoes').where('userId', '==', currentUser.uid).get();
     acomodacoes = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
   }
-
   async function loadCoparticipacoes() {
     if (!currentUser) return;
     const snap = await db.collection('coparticipacoes').where('userId', '==', currentUser.uid).get();
     coparticipacoes = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
   }
-
   async function loadModalidades() {
     if (!currentUser) return;
     const snap = await db.collection('modalidades').where('userId', '==', currentUser.uid).get();
     modalidades = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
   }
-
   async function loadFontesVenda() {
     if (!currentUser) return;
     const snap = await db.collection('fontesVenda').where('userId', '==', currentUser.uid).get();
     fontesVenda = snap.docs.map(d => ({ id: d.id, name: d.data().name }));
   }
-
   async function loadLeads() {
     if (!currentUser) return;
     const snap = await db.collection('leads').where('userId', '==', currentUser.uid).get();
     leadsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     leadsData.sort((a, b) => (b.abertura || '').localeCompare(a.abertura || ''));
   }
-
   async function loadLeadStatuses() {
     if (!currentUser) return;
     const snap = await db.collection('leadStatuses').where('userId', '==', currentUser.uid).get();
     leadStatuses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   }
 
-  // ==================== PREENCHER SELECTS (uma vez) ====================
+  // ==================== PREENCHER SELECTS ====================
   function preencherSelectsFicha() {
     const selects = {
       cStatus: statuses,
@@ -1010,17 +1000,14 @@
       const sel = document.getElementById(id);
       if (!sel) continue;
       const current = sel.value;
-      sel.innerHTML = '<option value="">Selecione</option>';
-      if (id === 'cLeadStatus') {
-        sel.innerHTML = '<option value="">Nenhum</option>';
-      }
+      sel.innerHTML = id === 'cLeadStatus' ? '<option value="">Nenhum</option>' : '<option value="">Selecione</option>';
       data.forEach(item => {
         const name = item.name || item;
         sel.innerHTML += `<option value="${name}">${name}</option>`;
       });
       if (current) sel.value = current;
     }
-    // Filtros da pesquisa
+    // Filtros
     const filterSelects = {
       filterStatus: statuses,
       filterModalidade: modalidades,
@@ -1037,8 +1024,7 @@
       if (current && current !== 'ALL') sel.value = current;
     }
     // Status Lead (filtro e modal)
-    const leadStatusSelects = ['filterStatusLead', 'novoLeadStatus'];
-    leadStatusSelects.forEach(id => {
+    ['filterStatusLead', 'novoLeadStatus'].forEach(id => {
       const sel = document.getElementById(id);
       if (!sel) return;
       const current = sel.value;
@@ -1047,14 +1033,13 @@
       if (current) sel.value = current;
     });
   }
-
   function popularFiltroPraca() {
     const select = document.getElementById('filtroPraca');
     select.innerHTML = '<option value="">Todas as Praças</option>';
     pracas.forEach(p => select.innerHTML += `<option value="${p.name}">${p.name}</option>`);
   }
 
-  // ==================== DASHBOARD (atualiza com dados em cache) ====================
+  // ==================== DASHBOARD ====================
   function updateDashboard() {
     const total = clients.length;
     const implantados = clients.filter(c => c.status === 'Implantado').length;
@@ -1069,51 +1054,31 @@
     document.getElementById('dashInadimplentes').innerText = inadimplentes;
     document.getElementById('dashEmDia').innerText = emDia;
     document.getElementById('dashSemInfo').innerText = semInfo;
-    // Gráficos (somente se os canvas existirem)
     atualizarGraficos();
   }
-
   function atualizarGraficos() {
     if (charts.status) charts.status.destroy();
     if (charts.admin) charts.admin.destroy();
     if (charts.pfPj) charts.pfPj.destroy();
 
-    // Status
     const statusCount = {};
     statuses.forEach(s => statusCount[s.name] = 0);
     clients.forEach(c => { if (c.status) statusCount[c.status] = (statusCount[c.status]||0)+1; });
     const ctx1 = document.getElementById('statusChart')?.getContext('2d');
-    if (ctx1) {
-      charts.status = new Chart(ctx1, {
-        type: 'doughnut',
-        data: { labels: Object.keys(statusCount), datasets: [{ data: Object.values(statusCount), backgroundColor: ['#6c5ce7','#00b894','#fdcb6e','#e17055','#0984e3'] }] }
-      });
-    }
+    if (ctx1) charts.status = new Chart(ctx1, { type: 'doughnut', data: { labels: Object.keys(statusCount), datasets: [{ data: Object.values(statusCount), backgroundColor: ['#6c5ce7','#00b894','#fdcb6e','#e17055','#0984e3'] }] } });
 
-    // Admin
     const adminCount = {};
     clients.forEach(c => { if (c.administradora) adminCount[c.administradora] = (adminCount[c.administradora]||0)+1; });
     const ctx2 = document.getElementById('adminChart')?.getContext('2d');
-    if (ctx2) {
-      charts.admin = new Chart(ctx2, {
-        type: 'bar',
-        data: { labels: Object.keys(adminCount), datasets: [{ data: Object.values(adminCount), backgroundColor: '#6c5ce7' }] }
-      });
-    }
+    if (ctx2) charts.admin = new Chart(ctx2, { type: 'bar', data: { labels: Object.keys(adminCount), datasets: [{ data: Object.values(adminCount), backgroundColor: '#6c5ce7' }] } });
 
-    // PF/PJ
     const pf = clients.filter(c => c.tipoCliente === 'PF').length;
     const pj = clients.filter(c => c.tipoCliente === 'PJ').length;
     const ctx3 = document.getElementById('pfPjChart')?.getContext('2d');
-    if (ctx3) {
-      charts.pfPj = new Chart(ctx3, {
-        type: 'pie',
-        data: { labels: ['PF','PJ'], datasets: [{ data: [pf, pj], backgroundColor: ['#6c5ce7','#fdcb6e'] }] }
-      });
-    }
+    if (ctx3) charts.pfPj = new Chart(ctx3, { type: 'pie', data: { labels: ['PF','PJ'], datasets: [{ data: [pf, pj], backgroundColor: ['#6c5ce7','#fdcb6e'] }] } });
   }
 
-  // ==================== RENDER TABELA (PESQUISA) ====================
+  // ==================== RENDER TABELA ====================
   function renderTable() {
     const search = document.getElementById('search').value.toLowerCase();
     const status = document.getElementById('filterStatus').value;
@@ -1147,7 +1112,6 @@
       return matchSearch && matchStatus && matchModalidade && matchPraca && matchAdmin && matchTipo && matchValor && matchData && matchFonte;
     });
 
-    // Ordenação
     filtered.sort((a, b) => {
       let valA = a[sortColumn] || '';
       let valB = b[sortColumn] || '';
@@ -1188,7 +1152,7 @@
     updateLoteButton();
   }
 
-  // ==================== CRUD CLIENTES (otimizado com cache) ====================
+  // ==================== CRUD CLIENTES ====================
   function editarCliente(id) {
     const c = clients.find(c => c.id === id);
     if (!c) return;
@@ -1226,7 +1190,6 @@
   async function excluirCliente(id) {
     if (!confirm('Excluir este cliente?')) return;
     await db.collection('clients').doc(id).delete();
-    // Remove do cache local
     clients = clients.filter(c => c.id !== id);
     renderTable();
     updateDashboard();
@@ -1274,13 +1237,11 @@
 
       if (id) {
         await db.collection('clients').doc(id).update(data);
-        // Atualiza no cache local
         const index = clients.findIndex(c => c.id === id);
         if (index !== -1) clients[index] = { ...clients[index], ...data };
       } else {
         data.createdAt = new Date().toISOString();
         const docRef = await db.collection('clients').add(data);
-        // Adiciona ao cache local
         clients.push({ id: docRef.id, ...data });
       }
 
@@ -1364,13 +1325,12 @@
         }
       }
       alert('Backup importado com sucesso!');
-      // Recarrega tudo
       await loadAll();
     } catch(e) { alert('Erro ao importar: '+e.message); }
     event.target.value = '';
   }
 
-  // ==================== LEADS (CRUD) ====================
+  // ==================== LEADS ====================
   function renderLeads() {
     const busca = document.getElementById('searchLead').value.toLowerCase();
     const uf = document.getElementById('filterUfLead').value;
@@ -1427,7 +1387,6 @@
     document.getElementById('btnLeadPrev').disabled = paginaLead <= 1;
     document.getElementById('btnLeadNext').disabled = paginaLead >= totalPaginas || total === 0;
 
-    // Atualiza pipeline se estiver visível
     if (leadView === 'pipeline') renderPipeline();
   }
 
@@ -1561,7 +1520,6 @@
       </div>
     `).join('');
   }
-
   async function addLeadStatus() {
     const nome = prompt('Nome do novo status para leads:');
     if (!nome || !nome.trim()) return;
@@ -1570,7 +1528,6 @@
     renderLeadStatuses();
     preencherSelectsFicha();
   }
-
   async function deleteLeadStatus(id) {
     if (!confirm('Remover este status?')) return;
     await db.collection('leadStatuses').doc(id).delete();
@@ -1579,7 +1536,6 @@
     preencherSelectsFicha();
   }
 
-  // Outras funções de configuração (resumidas)
   function renderStatuses() {
     const el = document.getElementById('statusList');
     if (!el) return;
@@ -1596,8 +1552,10 @@
     await db.collection('statuses').doc(id).delete();
     await loadStatuses(); renderStatuses(); preencherSelectsFicha();
   }
+
   function renderPracasList() {
     const el = document.getElementById('pracasList');
+    if (!el) return;
     el.innerHTML = pracas.map(p => `<div class="status-item"><span>${p.name}</span><button class="btn btn-danger btn-sm" onclick="deletePraca('${p.id}')">Excluir</button></div>`).join('');
   }
   async function addPraca() {
@@ -1612,22 +1570,96 @@
     await db.collection('pracas').doc(id).delete();
     await loadPracas(); renderPracasList(); preencherSelectsFicha(); popularFiltroPraca();
   }
-  // Similar para as demais (administradoras, acomodações, etc.) - mantenha as funções já existentes
-  function renderAdministradorasList() { /* ... */ }
-  async function addAdministradora() { /* ... */ }
-  async function deleteAdministradora(id) { /* ... */ }
-  function renderAcomodacoesList() { /* ... */ }
-  async function addAcomodacao() { /* ... */ }
-  async function deleteAcomodacao(id) { /* ... */ }
-  function renderCoparticipacoesList() { /* ... */ }
-  async function addCoparticipacao() { /* ... */ }
-  async function deleteCoparticipacao(id) { /* ... */ }
-  function renderModalidadesList() { /* ... */ }
-  async function addModalidade() { /* ... */ }
-  async function deleteModalidade(id) { /* ... */ }
-  function renderFontesVendaList() { /* ... */ }
-  async function addFonteVenda() { /* ... */ }
-  async function deleteFonteVenda(id) { /* ... */ }
+
+  function renderAdministradorasList() {
+    const el = document.getElementById('administradorasList');
+    if (!el) return;
+    el.innerHTML = administradoras.map(a => `<div class="status-item"><span>${a.name}</span><button class="btn btn-danger btn-sm" onclick="deleteAdministradora('${a.id}')">Excluir</button></div>`).join('');
+  }
+  async function addAdministradora() {
+    const nome = document.getElementById('novaAdministradora').value.trim();
+    if (!nome) return alert('Digite o nome');
+    await db.collection('administradoras').add({ name: nome, userId: currentUser.uid });
+    document.getElementById('novaAdministradora').value = '';
+    await loadAdministradoras(); renderAdministradorasList(); preencherSelectsFicha();
+  }
+  async function deleteAdministradora(id) {
+    if (!confirm('Remover?')) return;
+    await db.collection('administradoras').doc(id).delete();
+    await loadAdministradoras(); renderAdministradorasList(); preencherSelectsFicha();
+  }
+
+  function renderAcomodacoesList() {
+    const el = document.getElementById('acomodacoesList');
+    if (!el) return;
+    el.innerHTML = acomodacoes.map(a => `<div class="status-item"><span>${a.name}</span><button class="btn btn-danger btn-sm" onclick="deleteAcomodacao('${a.id}')">Excluir</button></div>`).join('');
+  }
+  async function addAcomodacao() {
+    const nome = document.getElementById('novaAcomodacao').value.trim();
+    if (!nome) return alert('Digite o nome');
+    await db.collection('acomodacoes').add({ name: nome, userId: currentUser.uid });
+    document.getElementById('novaAcomodacao').value = '';
+    await loadAcomodacoes(); renderAcomodacoesList(); preencherSelectsFicha();
+  }
+  async function deleteAcomodacao(id) {
+    if (!confirm('Remover?')) return;
+    await db.collection('acomodacoes').doc(id).delete();
+    await loadAcomodacoes(); renderAcomodacoesList(); preencherSelectsFicha();
+  }
+
+  function renderCoparticipacoesList() {
+    const el = document.getElementById('coparticipacoesList');
+    if (!el) return;
+    el.innerHTML = coparticipacoes.map(c => `<div class="status-item"><span>${c.name}</span><button class="btn btn-danger btn-sm" onclick="deleteCoparticipacao('${c.id}')">Excluir</button></div>`).join('');
+  }
+  async function addCoparticipacao() {
+    const nome = document.getElementById('novaCoparticipacao').value.trim();
+    if (!nome) return alert('Digite o nome');
+    await db.collection('coparticipacoes').add({ name: nome, userId: currentUser.uid });
+    document.getElementById('novaCoparticipacao').value = '';
+    await loadCoparticipacoes(); renderCoparticipacoesList(); preencherSelectsFicha();
+  }
+  async function deleteCoparticipacao(id) {
+    if (!confirm('Remover?')) return;
+    await db.collection('coparticipacoes').doc(id).delete();
+    await loadCoparticipacoes(); renderCoparticipacoesList(); preencherSelectsFicha();
+  }
+
+  function renderModalidadesList() {
+    const el = document.getElementById('modalidadesList');
+    if (!el) return;
+    el.innerHTML = modalidades.map(m => `<div class="status-item"><span>${m.name}</span><button class="btn btn-danger btn-sm" onclick="deleteModalidade('${m.id}')">Excluir</button></div>`).join('');
+  }
+  async function addModalidade() {
+    const nome = document.getElementById('novaModalidade').value.trim();
+    if (!nome) return alert('Digite o nome');
+    await db.collection('modalidades').add({ name: nome, userId: currentUser.uid });
+    document.getElementById('novaModalidade').value = '';
+    await loadModalidades(); renderModalidadesList(); preencherSelectsFicha();
+  }
+  async function deleteModalidade(id) {
+    if (!confirm('Remover?')) return;
+    await db.collection('modalidades').doc(id).delete();
+    await loadModalidades(); renderModalidadesList(); preencherSelectsFicha();
+  }
+
+  function renderFontesVendaList() {
+    const el = document.getElementById('fontesVendaList');
+    if (!el) return;
+    el.innerHTML = fontesVenda.map(f => `<div class="status-item"><span>${f.name}</span><button class="btn btn-danger btn-sm" onclick="deleteFonteVenda('${f.id}')">Excluir</button></div>`).join('');
+  }
+  async function addFonteVenda() {
+    const nome = document.getElementById('novaFonteVenda').value.trim();
+    if (!nome) return alert('Digite o nome');
+    await db.collection('fontesVenda').add({ name: nome, userId: currentUser.uid });
+    document.getElementById('novaFonteVenda').value = '';
+    await loadFontesVenda(); renderFontesVendaList(); preencherSelectsFicha();
+  }
+  async function deleteFonteVenda(id) {
+    if (!confirm('Remover?')) return;
+    await db.collection('fontesVenda').doc(id).delete();
+    await loadFontesVenda(); renderFontesVendaList(); preencherSelectsFicha();
+  }
 
   // ==================== AÇÕES EM LOTE ====================
   function updateLoteButton() {
@@ -1702,7 +1734,6 @@
     }
     for (const id of ids) {
       await db.collection('clients').doc(id).update(updates);
-      // Atualiza cache
       const index = clients.findIndex(c => c.id === id);
       if (index !== -1) clients[index] = { ...clients[index], ...updates };
     }
@@ -1736,13 +1767,7 @@
     html += '</div>';
     container.innerHTML = html;
   }
-
-  function selecionarDia(data) {
-    diaSelecionado = data;
-    renderCalendario();
-    renderCompromissos(data);
-  }
-
+  function selecionarDia(data) { diaSelecionado = data; renderCalendario(); renderCompromissos(data); }
   function renderCompromissos(data) {
     const el = document.getElementById('compromissosLista');
     document.getElementById('dataSelecionada').innerText = data;
@@ -1761,10 +1786,8 @@
       </div>
     `).join('');
   }
-
   function changeMonth(delta) { calendarioMes += delta; if (calendarioMes > 11) { calendarioMes = 0; calendarioAno++; } if (calendarioMes < 0) { calendarioMes = 11; calendarioAno--; } renderCalendario(); renderCompromissos(diaSelecionado); }
   function setView(view) { currentView = view; renderCalendario(); }
-
   function abrirModalTarefa() {
     document.getElementById('tarefaId').value = '';
     document.getElementById('tarefaTitulo').value = '';
@@ -1774,7 +1797,6 @@
     document.getElementById('tarefaConcluida').checked = false;
     new bootstrap.Modal(document.getElementById('modalTarefa')).show();
   }
-
   async function salvarTarefa() {
     const id = document.getElementById('tarefaId').value;
     const data = {
@@ -1799,7 +1821,6 @@
     renderCalendario();
     renderCompromissos(diaSelecionado);
   }
-
   function editarTarefa(id) {
     const t = tarefas.find(t => t.id === id);
     if (!t) return;
@@ -1811,7 +1832,6 @@
     document.getElementById('tarefaConcluida').checked = t.concluida || false;
     new bootstrap.Modal(document.getElementById('modalTarefa')).show();
   }
-
   async function excluirTarefa(id) {
     if (!confirm('Excluir esta tarefa?')) return;
     await db.collection('tarefas').doc(id).delete();
@@ -1836,7 +1856,6 @@
   }
   function gerarRelatorio() { alert('Função de relatório em desenvolvimento.'); }
   function exportarExcel() { alert('Exportar Excel em desenvolvimento.'); }
-
   function addDependente() {
     const nome = prompt('Nome do dependente:');
     if (nome) dependentesTemp.push(nome);
@@ -1866,7 +1885,6 @@
         if (tabId) switchTab(tabId);
       });
     });
-    // Ordenação por coluna
     document.querySelectorAll('#pesquisaTable thead th[data-col]').forEach(th => {
       th.style.cursor = 'pointer';
       th.addEventListener('click', function() {
