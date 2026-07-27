@@ -12,9 +12,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
-    /* ============================================================
-       CSS COMPLETO (mantido do código anterior)
-       ============================================================ */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -25,17 +22,11 @@
       --primary-dark: #5a4bd1;
       --primary-light: #ede9fe;
       --success: #00b894;
-      --success-dark: #00a381;
       --warning: #fdcb6e;
-      --warning-dark: #f9a825;
       --danger: #e17055;
-      --danger-dark: #d63031;
       --info: #0984e3;
-      --info-dark: #0770c4;
       --purple: #a29bfe;
-      --purple-dark: #6c5ce7;
       --pink: #fd79a8;
-      --pink-dark: #e84393;
       --radius: 20px;
       --radius-sm: 12px;
       --shadow: 0 12px 40px rgba(108, 92, 231, 0.10);
@@ -53,7 +44,6 @@
       --text-secondary: #b0bdd5;
       --primary-light: #1e1a3a;
       --shadow: 0 12px 40px rgba(0,0,0,0.5);
-      --shadow-hover: 0 20px 50px rgba(0,0,0,0.7);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -67,7 +57,6 @@
       min-height: 100vh;
     }
 
-    /* ===== SIDEBAR ===== */
     .sidebar {
       position: fixed;
       top: 0;
@@ -84,9 +73,7 @@
       flex-direction: column;
       box-shadow: var(--shadow);
     }
-    .sidebar.collapsed {
-      width: var(--sidebar-collapsed);
-    }
+    .sidebar.collapsed { width: var(--sidebar-collapsed); }
     .sidebar .logo {
       display: flex;
       align-items: center;
@@ -112,13 +99,8 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       white-space: nowrap;
-      transition: opacity 0.2s;
     }
-    .sidebar.collapsed .logo span {
-      opacity: 0;
-      width: 0;
-      overflow: hidden;
-    }
+    .sidebar.collapsed .logo span { opacity: 0; width: 0; overflow: hidden; }
 
     .sidebar .nav-items {
       flex: 1;
@@ -134,11 +116,8 @@
       color: var(--text-secondary);
       text-decoration: none;
       font-weight: 600;
-      font-size: 0.85rem;
-      transition: all var(--transition);
-      margin-bottom: 4px;
       cursor: pointer;
-      white-space: nowrap;
+      transition: all var(--transition);
     }
     .sidebar .nav-items .nav-link:hover {
       background: var(--primary-light);
@@ -149,1139 +128,432 @@
       color: white;
       box-shadow: 0 4px 12px rgba(108,92,231,0.3);
     }
-    .sidebar .nav-items .nav-link i {
-      font-size: 1.3rem;
-      min-width: 24px;
-      text-align: center;
-    }
-    .sidebar .nav-items .nav-link .link-text {
-      transition: opacity 0.2s;
-    }
-    .sidebar.collapsed .nav-items .nav-link .link-text {
-      opacity: 0;
-      width: 0;
-      overflow: hidden;
-    }
-    .sidebar.collapsed .nav-items .nav-link {
-      justify-content: center;
-      padding: 0.7rem 0.5rem;
-    }
+    .sidebar .nav-items .nav-link i { font-size: 1.3rem; min-width: 24px; }
+    .sidebar.collapsed .nav-items .nav-link .link-text { opacity: 0; width: 0; overflow: hidden; }
+    .sidebar.collapsed .nav-items .nav-link { justify-content: center; padding: 0.7rem 0.5rem; }
 
-    .sidebar .sidebar-footer {
-      padding: 1rem;
-      border-top: 2px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .sidebar .sidebar-footer .btn {
-      width: 100%;
-      border-radius: 60px;
-      padding: 0.4rem 0.8rem;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-    .sidebar .collapse-toggle {
-      background: transparent;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 0.4rem;
-      border-radius: var(--radius-sm);
-      transition: all var(--transition);
-      width: 100%;
-      text-align: center;
-    }
-    .sidebar .collapse-toggle:hover {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-    .sidebar.collapsed .collapse-toggle {
-      transform: rotate(180deg);
-    }
-
-    /* ===== MAIN CONTENT ===== */
     .main-content {
       margin-left: var(--sidebar-width);
+      padding: 2rem;
       transition: margin-left 0.3s ease;
-      padding: 0.5rem 1rem 1rem;
-      min-height: 100vh;
     }
-    .main-content.expanded {
-      margin-left: var(--sidebar-collapsed);
-    }
+    .main-content.expanded { margin-left: var(--sidebar-collapsed); }
 
-    .topbar {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      padding: 0.6rem 0.8rem;
-      background: var(--card);
-      border-bottom: 2px solid var(--border);
-      border-radius: 0 0 var(--radius) var(--radius);
-      margin-bottom: 1.5rem;
-      box-shadow: var(--shadow);
-    }
-    .topbar .nav-actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .topbar .nav-actions .btn {
-      border-radius: 60px;
-      padding: 0.4rem 1rem;
-      font-weight: 600;
-    }
-    .mobile-menu-btn {
-      display: none;
-    }
-
-    /* ===== CARDS ===== */
-    .card-custom {
+    .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--radius-sm);
       box-shadow: var(--shadow);
       transition: all var(--transition);
-      padding: 1.2rem;
     }
-    .card-custom:hover {
-      box-shadow: var(--shadow-hover);
+    .card:hover { box-shadow: var(--shadow-hover); }
+
+    .btn-primary {
+      background: var(--primary);
+      border: none;
+      color: white;
+      transition: all var(--transition);
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
       transform: translateY(-2px);
     }
 
-    .dashboard-card {
-      padding: 1.4rem 1.6rem;
-      border-radius: var(--radius);
-      color: white;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .dashboard-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.12);
-    }
-    .dashboard-card .icon {
-      position: absolute;
-      right: 16px;
-      top: 16px;
-      font-size: 2.6rem;
-      opacity: 0.15;
-      transition: transform 0.2s ease;
-    }
-    .dashboard-card:hover .icon {
-      transform: scale(1.2) rotate(-6deg);
-    }
-    .dashboard-card h6 {
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      font-size: 0.65rem;
-      opacity: 0.8;
-      margin-bottom: 6px;
-    }
-    .dashboard-card h2 {
-      font-weight: 800;
-      font-size: 2rem;
-      margin: 0;
-      line-height: 1.1;
-    }
-    .dashboard-card .sub {
-      font-size: 0.8rem;
-      opacity: 0.8;
-      margin-top: 6px;
-      display: block;
-      font-weight: 500;
-    }
-
-    .dashboard-card.bg-primary { background: linear-gradient(145deg, #6c5ce7, #a29bfe); }
-    .dashboard-card.bg-success { background: linear-gradient(145deg, #00b894, #00cec9); }
-    .dashboard-card.bg-warning { background: linear-gradient(145deg, #fdcb6e, #f9a825); color: #2d3436; }
-    .dashboard-card.bg-info { background: linear-gradient(145deg, #0984e3, #74b9ff); }
-    .dashboard-card.bg-danger { background: linear-gradient(145deg, #e17055, #fd79a8); }
-    .dashboard-card.bg-purple { background: linear-gradient(145deg, #6c5ce7, #a29bfe); }
-    .dashboard-card.bg-pink { background: linear-gradient(145deg, #fd79a8, #e84393); }
-
-    /* ===== BOTÕES ===== */
-    .btn {
-      border-radius: 60px;
-      padding: 0.5rem 1.4rem;
-      font-weight: 700;
-      font-size: 0.8rem;
-      border: none;
-      transition: background 0.2s ease, transform 0.15s ease;
-    }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(108,92,231,0.3); }
-    .btn-success { background: var(--success); color: white; }
-    .btn-success:hover { background: var(--success-dark); transform: translateY(-1px); }
-    .btn-warning { background: var(--warning); color: #2d3436; }
-    .btn-warning:hover { background: var(--warning-dark); transform: translateY(-1px); }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-danger:hover { background: var(--danger-dark); transform: translateY(-1px); }
-    .btn-outline-primary { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
-    .btn-outline-primary:hover { background: var(--primary); color: white; transform: translateY(-1px); }
-
-    /* ===== TABELAS ===== */
-    .table {
-      color: var(--text);
-      font-size: 0.8rem;
-      border-collapse: separate;
-      border-spacing: 0 6px;
-    }
-    .table thead th {
-      background: var(--primary-light);
-      padding: 0.7rem 0.9rem;
-      font-weight: 700;
-      color: var(--primary-dark);
-      text-transform: uppercase;
-      font-size: 0.6rem;
-      letter-spacing: 0.8px;
-      border: none;
-      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-    }
-    .table tbody td {
-      padding: 0.7rem 0.9rem;
-      border: none;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-    }
-    .table tbody tr:hover td {
-      background: var(--primary-light);
-    }
-
-    /* ===== FORMULÁRIOS ===== */
-    .form-control, .form-select {
-      background: var(--card);
-      border: 2.5px solid var(--border);
-      color: var(--text);
-      border-radius: var(--radius-sm);
-      padding: 0.7rem 1rem;
-      font-size: 0.9rem;
-      transition: all var(--transition);
-      font-weight: 500;
-    }
-    .form-control:focus, .form-select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px var(--primary-light);
-      outline: none;
-    }
-    .form-control::placeholder {
-      color: var(--text-secondary);
-      font-weight: 400;
-      opacity: 0.7;
-    }
-    label {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.4rem;
-      display: block;
-      letter-spacing: 0.2px;
-    }
-    body.dark-mode .form-control,
-    body.dark-mode .form-select {
-      background: #0f1a2b;
-      border-color: #4a5a7a;
-      color: #eef2f8;
-    }
-    body.dark-mode .form-control::placeholder {
-      color: #8a9bb0;
-      opacity: 0.9;
-    }
-    body.dark-mode label {
-      color: #e0e8f0;
-    }
-    body.dark-mode .form-control:focus,
-    body.dark-mode .form-select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.35);
-    }
-
-    /* ===== CALENDÁRIO ===== */
-    .mini-calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      text-align: center;
-      font-size: 0.7rem;
-      margin-top: 1rem;
-    }
-    .mini-calendar .day {
-      padding: 0.5rem 0.2rem;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-weight: 600;
-      transition: all var(--transition);
-    }
-    .mini-calendar .day:hover { background: var(--primary); color: white; transform: scale(1.05); }
-    .mini-calendar .day.today { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(108,92,231,0.3); }
-    .mini-calendar .day.has-event::after { content: '•'; display: block; color: var(--warning); font-size: 1.2rem; line-height: 0; margin-top: 2px; }
-    .mini-calendar .day.selected { background: var(--primary); color: white; }
-
-    /* ===== STATUS ITEMS ===== */
-    .status-item {
-      background: var(--bg);
-      border: 2px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 0.6rem 1rem;
-      margin-bottom: 0.6rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all var(--transition);
-    }
-    .status-item:hover { background: var(--primary-light); border-color: var(--primary); }
-
-    /* ===== LOGIN ===== */
-    .login-screen {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(145deg, #6c5ce7, #a29bfe);
-      z-index: 9999;
-    }
-    .login-box {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 2.8rem;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 40px 80px rgba(0,0,0,0.2);
-      animation: fadeUp 0.6s ease;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    body.dark-mode .dashboard-card {
-      color: #ffffff !important;
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-    body.dark-mode .dashboard-card .sub {
-      color: rgba(255,255,255,0.85) !important;
-    }
-    body.dark-mode .dashboard-card .icon {
-      opacity: 0.25;
-    }
-
-    /* ===== PIPELINE (KANBAN) ===== */
-    .pipeline-container {
-      display: flex;
-      gap: 16px;
-      overflow-x: auto;
-      padding: 8px 0;
-      min-height: 400px;
-    }
     .pipeline-column {
-      min-width: 200px;
-      flex: 1;
-      background: var(--bg);
+      background: var(--primary-light);
       border-radius: var(--radius-sm);
-      padding: 0.8rem;
-      border: 2px solid var(--border);
+      padding: 1rem;
+      min-width: 280px;
+      max-height: 600px;
+      overflow-y: auto;
     }
-    .pipeline-column h6 {
-      font-weight: 700;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      font-size: 0.7rem;
-      letter-spacing: 0.5px;
-      margin-bottom: 0.8rem;
-      text-align: center;
-    }
+
     .pipeline-card {
       background: var(--card);
-      border-radius: var(--radius-sm);
-      padding: 0.6rem 0.8rem;
-      margin-bottom: 0.6rem;
-      box-shadow: var(--shadow-sm);
+      padding: 1rem;
+      margin-bottom: 0.8rem;
       border-left: 4px solid var(--primary);
-      cursor: grab;
-      transition: all var(--transition);
+      border-radius: var(--radius-sm);
+      cursor: move;
     }
-    .pipeline-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-hover);
-    }
-    .pipeline-card .p-name {
-      font-weight: 700;
-      font-size: 0.85rem;
-    }
-    .pipeline-card .p-detail {
-      font-size: 0.7rem;
-      color: var(--text-secondary);
+
+    .p-name { font-weight: 600; margin-bottom: 0.5rem; }
+    .p-detail {
       display: flex;
       justify-content: space-between;
-      margin-top: 4px;
-    }
-
-    .view-toggle .btn {
-      border-radius: 60px;
-      padding: 0.25rem 1rem;
       font-size: 0.75rem;
-      font-weight: 600;
-    }
-    .view-toggle .btn.active {
-      background: var(--primary);
-      color: white;
+      color: var(--text-secondary);
     }
 
-    /* ===== RESPONSIVIDADE ===== */
-    @media (max-width: 992px) {
-      .sidebar {
-        transform: translateX(-100%);
-        width: var(--sidebar-width);
-      }
-      .sidebar.mobile-open {
-        transform: translateX(0);
-      }
-      .main-content {
-        margin-left: 0 !important;
-      }
-      .sidebar .logo span {
-        opacity: 1 !important;
-        width: auto !important;
-      }
-      .sidebar .nav-items .nav-link .link-text {
-        opacity: 1 !important;
-        width: auto !important;
-      }
-      .sidebar .nav-items .nav-link {
-        justify-content: flex-start !important;
-        padding: 0.7rem 1rem !important;
-      }
-      .sidebar .collapse-toggle {
-        display: none;
-      }
-      .mobile-menu-btn {
-        display: inline-block !important;
-      }
-    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
     @media (max-width: 768px) {
-      .container-fluid { padding: 0.5rem; }
-      .dashboard-card h2 { font-size: 1.6rem; }
-      .dashboard-card { padding: 1rem; }
-      .pipeline-column { min-width: 160px; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.show { transform: translateX(0); }
+      .main-content { margin-left: 0; }
     }
-
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
   </style>
 </head>
 <body>
-
-<!-- ===== LOGIN ===== -->
-<div class="login-screen" id="loginScreen">
-  <div class="login-box">
-    <h3 class="text-center mb-4 fw-bold" style="color: var(--text);">CRM Recupera AI</h3>
-    <input type="email" id="loginEmail" class="form-control mb-3" placeholder="Seu email" />
-    <div class="input-group mb-3">
-      <input type="password" id="loginPassword" class="form-control" placeholder="Senha" />
-      <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()"><i class="bi bi-eye"></i></button>
+  <div class="sidebar" id="sidebar">
+    <div class="logo">
+      <i class="bi bi-graph-up"></i>
+      <span>CRM Recupera AI</span>
     </div>
-    <button class="btn btn-primary w-100 mb-2" onclick="login()">Entrar</button>
-    <button class="btn btn-danger w-100 mb-2" onclick="googleLogin()"><i class="bi bi-google"></i> Entrar com Google</button>
-    <button class="btn btn-outline-primary w-100 mb-2" onclick="register()">Criar Conta</button>
-    <button class="btn btn-link w-100" onclick="recoverPassword()">Esqueci minha senha</button>
-    <div id="loginError" class="text-danger text-center mt-3 small"></div>
-  </div>
-</div>
-
-<!-- ===== SIDEBAR ===== -->
-<div class="sidebar" id="sidebar">
-  <div class="logo">
-    <i class="bi bi-robot"></i>
-    <span>CRM Recupera AI</span>
-  </div>
-  <div class="nav-items">
-    <div class="nav-link active" data-tab="dashboardTab" onclick="switchTab('dashboardTab')">
-      <i class="bi bi-grid-1x2"></i><span class="link-text">Dashboard</span>
+    <div class="nav-items">
+      <a class="nav-link active" data-tab="dashboardTab"><i class="bi bi-house-fill"></i><span class="link-text">Dashboard</span></a>
+      <a class="nav-link" data-tab="leadsTab"><i class="bi bi-people-fill"></i><span class="link-text">Leads</span></a>
+      <a class="nav-link" data-tab="clientesTab"><i class="bi bi-person-check-fill"></i><span class="link-text">Clientes</span></a>
+      <a class="nav-link" data-tab="configTab"><i class="bi bi-gear-fill"></i><span class="link-text">Configurações</span></a>
     </div>
-    <div class="nav-link" data-tab="clientesTab" onclick="switchTab('clientesTab')">
-      <i class="bi bi-person-badge"></i><span class="link-text">Ficha Cliente</span>
-    </div>
-    <div class="nav-link" data-tab="pesquisaTab" onclick="switchTab('pesquisaTab')">
-      <i class="bi bi-search"></i><span class="link-text">Pesquisar</span>
-    </div>
-    <div class="nav-link" data-tab="leadsTab" onclick="switchTab('leadsTab')">
-      <i class="bi bi-funnel"></i><span class="link-text">Leads</span>
-    </div>
-    <div class="nav-link" data-tab="agendaTab" onclick="switchTab('agendaTab')">
-      <i class="bi bi-calendar-event"></i><span class="link-text">Agenda</span>
-    </div>
-    <div class="nav-link" data-tab="configTab" onclick="switchTab('configTab')">
-      <i class="bi bi-gear"></i><span class="link-text">Configurações</span>
-    </div>
-  </div>
-  <div class="sidebar-footer">
-    <button class="collapse-toggle" onclick="toggleSidebar()"><i class="bi bi-chevron-left"></i></button>
-    <button class="btn btn-danger btn-sm" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Sair</button>
-  </div>
-</div>
-
-<!-- ===== CONTEÚDO PRINCIPAL ===== -->
-<div class="main-content" id="mainContent">
-  <div class="topbar">
-    <button class="btn btn-outline-secondary mobile-menu-btn" onclick="toggleMobileSidebar()"><i class="bi bi-list"></i></button>
-    <div class="nav-actions">
-      <button class="btn btn-outline-primary btn-sm" onclick="toggleTheme()"><i class="bi bi-moon-stars-fill"></i></button>
-      <button class="btn btn-success btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i></button>
-      <button class="btn btn-danger btn-sm" onclick="logout()"><i class="bi bi-box-arrow-right"></i></button>
+    <div class="sidebar-footer">
+      <button class="btn btn-outline-danger btn-sm" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i>Sair</button>
     </div>
   </div>
 
-  <!-- ===== ABAS ===== -->
-  <div class="tab-content" id="mainTabContent">
-
-    <!-- DASHBOARD (resumido) -->
-    <div class="tab-pane fade show active" id="dashboardTab">
-      <div class="row g-3 mb-4 align-items-end">
-        <div class="col-md-2"><label>Período</label><select id="periodoFiltro" class="form-select" onchange="handlePeriodoChange()"><option value="30">Últimos 30 dias</option><option value="60">Últimos 60 dias</option><option value="90">Últimos 90 dias</option><option value="120">Últimos 120 dias</option><option value="180">Últimos 180 dias</option><option value="mes">Mês atual</option><option value="intervalo">Intervalo personalizado</option></select></div>
-        <div class="col-md-2" id="intervaloDiv" style="display:none;"><label>Início</label><input type="date" id="dataInicioIntervalo" class="form-control" onchange="updateDashboard()"></div>
-        <div class="col-md-2" id="intervaloFimDiv" style="display:none;"><label>Fim</label><input type="date" id="dataFimIntervalo" class="form-control" onchange="updateDashboard()"></div>
-        <div class="col-md-2"><label>Praça</label><select id="filtroPraca" class="form-select" onchange="updateDashboard()"><option value="">Todas as Praças</option></select></div>
-        <div class="col-md-2"><button class="btn btn-warning mt-4" onclick="gerarRelatorio()"><i class="bi bi-file-earmark-pdf"></i> Relatório</button></div>
-      </div>
-      <div class="row g-3 mb-4">
-        <div class="col-md-3"><div class="dashboard-card bg-primary"><i class="icon bi bi-file-earmark-text"></i><h6>Propostas</h6><h2 id="dashTotal">0</h2></div></div>
-        <div class="col-md-3"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Implantadas</h6><h2 id="dashImplantados">0</h2></div></div>
-        <div class="col-md-3"><div class="dashboard-card bg-info"><i class="icon bi bi-cash-stack"></i><h6>Valor Processado</h6><h2 id="dashProcessado">R$ 0,00</h2></div></div>
-        <div class="col-md-3"><div class="dashboard-card bg-warning" style="color:#2d3436;"><i class="icon bi bi-graph-up"></i><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
-      </div>
-      <div class="row g-3 mb-4">
-        <div class="col-md-4"><div class="dashboard-card bg-danger"><i class="icon bi bi-exclamation-triangle"></i><h6>Clientes Inadimplentes</h6><h2 id="dashInadimplentes">0</h2><span class="sub">Média atraso: <span id="dashMediaAtraso">0</span> dias</span></div></div>
-        <div class="col-md-4"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Clientes em Dia</h6><h2 id="dashEmDia">0</h2><span class="sub">Média tempo: <span id="dashMediaTempo">0</span> meses</span></div></div>
-        <div class="col-md-4"><div class="dashboard-card bg-purple"><i class="icon bi bi-question-circle"></i><h6>Sem Info de Pagamento</h6><h2 id="dashSemInfo">0</h2></div></div>
-      </div>
-      <div class="row g-4">
-        <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Status</h6><canvas id="statusChart" height="150"></canvas></div></div>
-        <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Top Administradoras</h6><canvas id="adminChart" height="150"></canvas></div></div>
-        <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">PF vs PJ</h6><canvas id="pfPjChart" height="150"></canvas></div></div>
-        <div class="col-12"><div class="card card-custom"><h6 class="fw-bold mb-3">Evolução Mensal</h6><canvas id="monthlyRevenueChart" height="200"></canvas></div></div>
+  <div class="main-content" id="mainContent">
+    <div id="dashboardTab" class="tab-content active">
+      <h2>Dashboard</h2>
+      <div class="row mt-4">
+        <div class="col-md-3"><div class="card p-3"><h5>Propostas</h5><h2 id="propostas">0</h2></div></div>
+        <div class="col-md-3"><div class="card p-3"><h5>Clientes</h5><h2 id="clientes">0</h2></div></div>
+        <div class="col-md-3"><div class="card p-3"><h5>Taxa Conversão</h5><h2 id="conversao">0%</h2></div></div>
+        <div class="col-md-3"><div class="card p-3"><h5>Leads</h5><h2 id="totalLeads">0</h2></div></div>
       </div>
     </div>
 
-    <!-- FICHA CLIENTE -->
-    <div class="tab-pane fade" id="clientesTab">
-      <div class="card card-custom mb-4">
-        <h5 class="fw-bold mb-3"><i class="bi bi-magic me-2"></i>Campo Mágico</h5>
-        <textarea id="smartPaste" class="form-control mb-3" rows="3" placeholder="Cole o texto da proposta aqui..."></textarea>
-        <button class="btn btn-primary" onclick="autoFill()">Auto preencher</button>
-      </div>
-      <div class="card card-custom">
-        <input type="hidden" id="clientId">
-        <ul class="nav nav-tabs mb-4">
-          <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dadosPrincipais">Dados da Proposta</button></li>
-          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dependentesTab">Dependentes</button></li>
-          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#anexosTab">Anexos</button></li>
-        </ul>
-        <div class="tab-content">
-          <div class="tab-pane fade show active" id="dadosPrincipais">
-            <div class="row g-3">
-              <!-- (todos os campos da ficha cliente, incluindo status do lead) -->
-              <div class="col-md-3"><label>Data</label><input type="date" id="cData" class="form-control"></div>
-              <div class="col-md-3"><label>Número Proposta</label><input type="text" id="cNumeroProposta" class="form-control"></div>
-              <div class="col-md-6"><label>Nome Titular</label><input type="text" id="cNomeTitular" class="form-control"></div>
-              <div class="col-md-3"><label>CPF Titular</label><input type="text" id="cCpfTitular" class="form-control"></div>
-              <div class="col-md-3"><label>CNPJ/CAEPF</label><input type="text" id="cCnpjTitular" class="form-control"></div>
-              <div class="col-md-3"><label>Telefone</label><input type="text" id="cTelefoneTitular" class="form-control"></div>
-              <div class="col-md-3"><label>Email</label><input type="email" id="cEmailTitular" class="form-control"></div>
-              <div class="col-md-2"><label>Qtd Vidas</label><input type="number" id="cQtdVidas" class="form-control" min="1" value="1"></div>
-              <div class="col-md-2"><label>Tipo Cliente</label><select id="cTipoCliente" class="form-select"><option value="">Selecione</option><option value="PF">Pessoa Física</option><option value="PJ">Pessoa Jurídica</option></select></div>
-              <div class="col-md-4"><label>Modalidade</label><select id="cModalidadePlano" class="form-select"></select></div>
-              <div class="col-md-3"><label>Coparticipação</label><select id="cCoparticipacao" class="form-select"></select></div>
-              <div class="col-md-3"><label>Status</label><select id="cStatus" class="form-select"></select></div>
-              <div class="col-md-3"><label>Implantação</label><input type="date" id="cDataImplantacao" class="form-control"></div>
-              <div class="col-md-3"><label>Pagamento</label><input type="date" id="cDataPagamento" class="form-control"></div>
-              <div class="col-md-3"><label>Fonte Venda</label><select id="cFonteVenda" class="form-select"></select></div>
-              <div class="col-md-3"><label>Valor s/ Desconto</label><input type="text" id="cValorSemDesconto" class="form-control" onblur="formatarValorInput(this)" onfocus="this.value = this.value.replace(/\./g,'').replace(',','.')"></div>
-              <div class="col-md-3"><label>Valor c/ Desconto</label><input type="text" id="cValorComDesconto" class="form-control" onblur="formatarValorInput(this)" onfocus="this.value = this.value.replace(/\./g,'').replace(',','.')"></div>
-              <div class="col-md-3"><label>Praça</label><select id="cPraca" class="form-select"></select></div>
-              <div class="col-md-3"><label>Administradora</label><select id="cAdministradora" class="form-select"></select></div>
-              <div class="col-md-2"><label>Código</label><input type="text" id="cCodigo" class="form-control"></div>
-              <div class="col-md-2"><label>Acomodação</label><select id="cAcomodacao" class="form-select"></select></div>
-              <div class="col-md-2"><label>Vigência</label><input type="text" id="cVigencia" class="form-control" placeholder="dd/mm/aaaa"></div>
-              <div class="col-md-3"><label>Data Vencimento</label><input type="date" id="cDataVencimento" class="form-control"></div>
-              <div class="col-md-3"><label>Status Pagamento</label><select id="cStatusPagamento" class="form-select"><option value="Pago">Pago</option><option value="Pendente">Pendente</option><option value="Atrasado">Atrasado</option></select></div>
-              <div class="col-md-3"><label>Meses em Dia</label><input type="text" id="cMesesEmDia" class="form-control" readonly></div>
-              <!-- NOVO: Status do Lead (vinculado ao funil) -->
-              <div class="col-md-3"><label>Status do Lead</label><select id="cLeadStatus" class="form-select"><option value="">Nenhum</option></select></div>
-              <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="2"></textarea></div>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="dependentesTab"><!-- igual --></div>
-          <div class="tab-pane fade" id="anexosTab"><!-- igual --></div>
-        </div>
-        <div class="d-flex gap-2 mt-4">
-          <button class="btn btn-success" onclick="saveClient()"><i class="bi bi-save"></i> Salvar</button>
-          <button class="btn btn-outline-danger" onclick="clearForm()"><i class="bi bi-eraser"></i> Limpar</button>
-        </div>
-      </div>
+    <div id="leadsTab" class="tab-content">
+      <h2>Gerenciador de Leads</h2>
+      <button class="btn btn-primary mt-3" onclick="abrirModalNovoLead()"><i class="bi bi-plus-circle me-2"></i>Novo Lead</button>
+      <div id="leadsContainer" class="mt-3"></div>
+      <div id="pipelineContainer" class="d-flex gap-3 mt-3" style="overflow-x: auto;"></div>
     </div>
 
-    <!-- PESQUISA (resumida) -->
-    <div class="tab-pane fade" id="pesquisaTab">
-      <div class="card card-custom">
-        <div class="row g-3 mb-4">
-          <div class="col-md-3"><input type="text" id="search" class="form-control" placeholder="Buscar..." onkeyup="renderTable()"></div>
-          <div class="col-md-2"><select id="filterStatus" class="form-select" onchange="renderTable()"><option value="ALL">Status</option></select></div>
-          <div class="col-md-2"><select id="filterModalidade" class="form-select" onchange="renderTable()"><option value="ALL">Modalidade</option></select></div>
-          <div class="col-md-2"><select id="filterPraca" class="form-select" onchange="renderTable()"><option value="ALL">Praça</option></select></div>
-          <div class="col-md-2"><select id="filterAdministradora" class="form-select" onchange="renderTable()"><option value="ALL">Admin.</option></select></div>
-          <div class="col-md-1"><select id="filterTipo" class="form-select" onchange="renderTable()"><option value="ALL">Tipo</option><option value="PF">PF</option><option value="PJ">PJ</option></select></div>
-        </div>
-        <div class="row g-3 mb-4">
-          <div class="col-md-2"><input type="number" id="filterValorMin" class="form-control" placeholder="Valor min" onchange="renderTable()"></div>
-          <div class="col-md-2"><input type="number" id="filterValorMax" class="form-control" placeholder="Valor max" onchange="renderTable()"></div>
-          <div class="col-md-2"><input type="date" id="filterDataIni" class="form-control" placeholder="Data início" onchange="renderTable()"></div>
-          <div class="col-md-2"><input type="date" id="filterDataFim" class="form-control" placeholder="Data fim" onchange="renderTable()"></div>
-          <div class="col-md-2"><input type="month" id="filterMes" class="form-control" placeholder="Mês/Ano" onchange="renderTable()"></div>
-          <div class="col-md-2"><select id="filterFonte" class="form-select" onchange="renderTable()"><option value="ALL">Fonte</option></select></div>
-        </div>
-        <div class="mb-3"><button class="btn btn-warning" onclick="abrirModalLote()" id="btnAcaoLote" disabled><i class="bi bi-stack"></i> Ações em Lote</button><span id="selecionadosCount" class="ms-2 text-muted small"></span></div>
-        <div class="table-responsive">
-          <table class="table" id="pesquisaTable">
-            <thead><tr><th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th><th data-col="numeroProposta">Proposta</th><th data-col="nomeTitular">Titular</th><th data-col="cpfTitular">CPF</th><th data-col="modalidadePlano">Modalidade</th><th data-col="status">Status</th><th data-col="valorComDesconto">Valor</th><th data-col="praca">Praça</th><th data-col="administradora">Admin.</th><th>Ações</th></tr></thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
-      </div>
+    <div id="clientesTab" class="tab-content">
+      <h2>Clientes</h2>
+      <div id="clientesContainer" class="mt-3"></div>
     </div>
 
-    <!-- ===== LEADS ===== -->
-    <div class="tab-pane fade" id="leadsTab">
-      <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
-        <div class="view-toggle btn-group" role="group">
-          <button class="btn btn-outline-primary active" id="viewListBtn" onclick="setLeadView('lista')"><i class="bi bi-list-ul"></i> Lista</button>
-          <button class="btn btn-outline-primary" id="viewPipelineBtn" onclick="setLeadView('pipeline')"><i class="bi bi-grid-3x3-gap"></i> Pipeline</button>
-        </div>
-        <div class="ms-auto d-flex gap-2 flex-wrap">
-          <input type="text" id="searchLead" class="form-control" style="width:200px;" placeholder="Buscar..." onkeyup="if(event.key==='Enter') renderLeads()">
-          <select id="filterUfLead" class="form-select" style="width:auto;" onchange="renderLeads()"><option value="">UF</option><option value="SP">SP</option><option value="RJ">RJ</option><option value="MG">MG</option><option value="BA">BA</option><option value="PR">PR</option><option value="RS">RS</option><option value="SC">SC</option><option value="DF">DF</option><option value="GO">GO</option><option value="PE">PE</option><option value="CE">CE</option><option value="PB">PB</option></select>
-          <select id="filterStatusLead" class="form-select" style="width:auto;" onchange="renderLeads()"><option value="">Status</option></select>
-          <button class="btn btn-primary" onclick="abrirModalNovoLead()"><i class="bi bi-plus-circle"></i> Novo Lead</button>
-        </div>
-      </div>
-      <div id="leadViewContainer">
-        <div id="leadListView" class="card card-custom">
-          <div class="table-responsive">
-            <table class="table">
-              <thead><tr><th>Abertura</th><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Cidade</th><th>UF</th><th>Status</th><th>Ações</th></tr></thead>
-              <tbody id="leadsBody"></tbody>
-            </table>
-          </div>
-          <div class="d-flex justify-content-between align-items-center mt-3">
-            <span id="leadCountInfo" class="text-muted small"></span>
-            <div>
-              <button class="btn btn-sm btn-outline-secondary" onclick="mudarPaginaLead(-1)" id="btnLeadPrev" disabled><i class="bi bi-chevron-left"></i></button>
-              <span id="leadPaginaInfo" class="mx-2">Página 1</span>
-              <button class="btn btn-sm btn-outline-secondary" onclick="mudarPaginaLead(1)" id="btnLeadNext"><i class="bi bi-chevron-right"></i></button>
-            </div>
+    <div id="configTab" class="tab-content">
+      <h2>Configurações</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card p-3">
+            <h5>Status de Leads</h5>
+            <div id="statusSidebar"></div>
           </div>
         </div>
-        <div id="leadPipelineView" style="display:none;">
-          <div class="pipeline-container" id="pipelineContainer"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- AGENDA -->
-    <div class="tab-pane fade" id="agendaTab">
-      <div class="row g-4">
-        <div class="col-lg-4">
-          <div class="card card-custom">
-            <div class="d-flex justify-content-between align-items-center">
-              <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i></button>
-              <h5 id="calendarioTitulo" class="m-0 fw-bold"></h5>
-              <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(1)"><i class="bi bi-chevron-right"></i></button>
-            </div>
-            <div class="btn-group w-100 mt-3">
-              <button class="btn btn-sm btn-outline-secondary" onclick="setView('month')">Mês</button>
-              <button class="btn btn-sm btn-outline-secondary" onclick="setView('week')">Semana</button>
-            </div>
-            <div id="calendarioContainer" class="mt-3"></div>
-            <button class="btn btn-info w-100 mt-4" onclick="abrirModalTarefa()"><i class="bi bi-plus-circle"></i> Nova Tarefa</button>
-          </div>
-        </div>
-        <div class="col-lg-8">
-          <div class="card card-custom">
-            <h5 class="fw-bold">Compromissos: <span id="dataSelecionada" class="text-primary"></span></h5>
-            <div id="compromissosLista"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== CONFIGURAÇÕES (com Status de Leads) ===== -->
-    <div class="tab-pane fade" id="configTab">
-      <div class="row g-4">
-        <!-- Status de Leads (NOVO) -->
-        <div class="col-lg-4">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-tags me-2"></i>Status de Leads</h5>
-            <button class="btn btn-success mb-3 btn-sm" onclick="addLeadStatus()"><i class="bi bi-plus"></i> Adicionar</button>
-            <div id="leadStatusList"></div>
-          </div>
-        </div>
-        <!-- Status de Propostas (existente) -->
-        <div class="col-lg-4">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-tags me-2"></i>Status de Propostas</h5>
-            <button class="btn btn-success mb-3 btn-sm" onclick="addStatus()"><i class="bi bi-plus"></i> Adicionar</button>
-            <div id="statusList"></div>
-          </div>
-        </div>
-        <!-- Praças -->
-        <div class="col-lg-4"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-geo-alt me-2"></i>Praças</h5><div class="input-group mb-3"><input type="text" id="novaPraca" class="form-control" placeholder="Nova praça"><button class="btn btn-primary btn-sm" onclick="addPraca()">Adicionar</button></div><div id="pracasList"></div></div></div>
-        <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-building me-2"></i>Administradoras</h5><div class="input-group mb-3"><input type="text" id="novaAdministradora" class="form-control" placeholder="Nova admin"><button class="btn btn-primary btn-sm" onclick="addAdministradora()">Adicionar</button></div><div id="administradorasList"></div></div></div>
-        <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-bed me-2"></i>Acomodações</h5><div class="input-group mb-3"><input type="text" id="novaAcomodacao" class="form-control" placeholder="Nova acomodação"><button class="btn btn-primary btn-sm" onclick="addAcomodacao()">Adicionar</button></div><div id="acomodacoesList"></div></div></div>
-        <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-percent me-2"></i>Coparticipações</h5><div class="input-group mb-3"><input type="text" id="novaCoparticipacao" class="form-control" placeholder="Nova coparticipação"><button class="btn btn-primary btn-sm" onclick="addCoparticipacao()">Adicionar</button></div><div id="coparticipacoesList"></div></div></div>
-        <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-list-ul me-2"></i>Modalidades</h5><div class="input-group mb-3"><input type="text" id="novaModalidade" class="form-control" placeholder="Nova modalidade"><button class="btn btn-primary btn-sm" onclick="addModalidade()">Adicionar</button></div><div id="modalidadesList"></div></div></div>
-        <div class="col-lg-3"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Fontes Venda</h5><div class="input-group mb-3"><input type="text" id="novaFonteVenda" class="form-control" placeholder="Nova fonte"><button class="btn btn-primary btn-sm" onclick="addFonteVenda()">Adicionar</button></div><div id="fontesVendaList"></div></div></div>
-        <div class="col-12"><div class="card card-custom"><h5 class="fw-bold"><i class="bi bi-database me-2"></i>Backup</h5><div class="d-flex gap-3 flex-wrap"><button class="btn btn-primary btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i> Exportar</button><button class="btn btn-outline-primary btn-sm" onclick="importBackup()"><i class="bi bi-upload"></i> Importar</button><div class="ms-auto d-flex gap-2"><input type="month" id="exportMes" class="form-control" style="width:auto;"><button class="btn btn-success btn-sm" onclick="exportarExcel()"><i class="bi bi-file-earmark-excel"></i> Excel</button></div></div><input type="file" id="backupFileInput" accept=".json" style="display:none"></div></div>
-      </div>
-    </div>
-
-  </div><!-- end tab-content -->
-</div><!-- end main-content -->
-
-<!-- ===== MODAIS ===== -->
-<!-- (Mesmos modais do código anterior) -->
-<div class="modal fade" id="modalTarefa" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Nova Tarefa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="tarefaId"><input type="text" id="tarefaTitulo" class="form-control mb-3" placeholder="Título"><input type="date" id="tarefaData" class="form-control mb-3"><input type="time" id="tarefaHora" class="form-control mb-3"><textarea id="tarefaDesc" class="form-control" rows="3" placeholder="Descrição"></textarea><div class="form-check"><input class="form-check-input" type="checkbox" id="tarefaConcluida"><label class="form-check-label">Concluída</label></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="salvarTarefa()">Salvar</button></div></div></div></div>
-
-<div class="modal fade" id="modalLote" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Ação em Lote</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select id="acaoLote" class="form-select mb-3" onchange="handleAcaoLoteChange()"><option value="">Escolha...</option><option value="status">Alterar Status</option><option value="praca">Alterar Praça</option><option value="administradora">Alterar Administradora</option><option value="dataPagamento">Definir Data</option><option value="excluir">Excluir</option></select><div id="parametrosLote"></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="executarAcaoLote()">Aplicar</button></div></div></div></div>
-
-<div class="modal fade" id="modalNovoLead" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content" style="background:var(--card);">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold"><i class="bi bi-person-plus me-2"></i>Novo Lead</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3"><input type="text" id="novoLeadNome" class="form-control" placeholder="Nome completo *"></div>
-        <div class="mb-3"><input type="text" id="novoLeadTelefone" class="form-control" placeholder="Telefone *"></div>
-        <div class="mb-3"><input type="email" id="novoLeadEmail" class="form-control" placeholder="E-mail"></div>
-        <div class="mb-3"><input type="text" id="novoLeadCidade" class="form-control" placeholder="Cidade"></div>
-        <div class="mb-3"><select id="novoLeadUf" class="form-select"><option value="">UF</option><option value="SP">SP</option><option value="RJ">RJ</option><option value="MG">MG</option><option value="BA">BA</option><option value="PR">PR</option><option value="RS">RS</option><option value="SC">SC</option><option value="DF">DF</option><option value="GO">GO</option><option value="PE">PE</option><option value="CE">CE</option><option value="PB">PB</option></select></div>
-        <div class="mb-3">
-          <select id="novoLeadStatus" class="form-select"><option value="">Status</option></select>
-        </div>
-        <div class="mb-3"><textarea id="novoLeadObs" class="form-control" rows="2" placeholder="Observações"></textarea></div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button class="btn btn-primary" id="btnSalvarNovoLead" onclick="salvarNovoLead()">Salvar Lead</button>
       </div>
     </div>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  // ==================== FIREBASE CONFIG ====================
-  const firebaseConfig = {
-    apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
-    authDomain: "crm-recuperacao.firebaseapp.com",
-    projectId: "crm-recuperacao",
-    storageBucket: "crm-recuperacao.firebasestorage.app",
-    messagingSenderId: "347011763386",
-    appId: "1:347011763386:web:158c1ca6f512a1cde1c683",
-    measurementId: "G-1XHHFXHN4G"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+  <!-- Modal Novo Lead -->
+  <div class="modal fade" id="modalNovoLead" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Novo Lead</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" id="novoLeadNome" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Telefone</label>
+            <input type="tel" id="novoLeadTelefone" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" id="novoLeadEmail" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cidade</label>
+            <input type="text" id="novoLeadCidade" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">UF</label>
+            <select id="novoLeadUf" class="form-select">
+              <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option>
+              <option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option>
+              <option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option>
+              <option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+              <option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option>
+              <option>SE</option><option>TO</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select id="novoLeadStatus" class="form-select"></select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Observações</label>
+            <textarea id="novoLeadObs" class="form-control" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" id="btnSalvarNovoLead" class="btn btn-primary">Salvar Lead</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  // ==================== VARIÁVEIS ====================
-  let currentUser = null;
-  let clients = [], tarefas = [];
-  let dependentesTemp = [], anexosTemp = [];
-  let statuses = [];
-  let pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
-  let charts = {};
-  let calendarioMes = new Date().getMonth(), calendarioAno = new Date().getFullYear(), diaSelecionado = new Date().toISOString().split('T')[0];
-  let selectedIds = new Set();
-  let currentView = 'month';
-  let sortColumn = 'numeroProposta', sortDir = 'asc';
-  let filtroPraca = '';
-  let leadsData = [];
-  let paginaLead = 1;
-  const leadsPorPagina = 10;
-  let leadView = 'lista';
-  let leadStatuses = [];
+  <script>
+    // ========== VARIÁVEIS GLOBAIS ==========
+    let leadsData = [];
+    let clientesData = [];
+    let leadStatuses = [
+      { id: 1, name: 'Disponível' },
+      { id: 2, name: 'Em Atendimento' },
+      { id: 3, name: 'Em Negociação' },
+      { id: 4, name: 'Perfil Inválido' },
+      { id: 5, name: 'Convertido' }
+    ];
+    let currentUser = null;
+    let db = null;
+    let leadView = 'lista';
+    let paginaLead = 1;
 
-  // ==================== AUTENTICAÇÃO ====================
-  auth.onAuthStateChanged(user => {
-    if (user) { currentUser = user; document.getElementById('loginScreen').style.display = 'none'; loadAll(); }
-    else { document.getElementById('loginScreen').style.display = 'flex'; }
-  });
-  function login() { const email = document.getElementById('loginEmail').value, pwd = document.getElementById('loginPassword').value; auth.signInWithEmailAndPassword(email, pwd).catch(e => document.getElementById('loginError').innerText = e.message); }
-  function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => document.getElementById('loginError').innerText = e.message); }
-  function register() { const email = document.getElementById('loginEmail').value, pwd = document.getElementById('loginPassword').value; auth.createUserWithEmailAndPassword(email, pwd).catch(e => document.getElementById('loginError').innerText = e.message); }
-  function recoverPassword() { const email = document.getElementById('loginEmail').value; if(email) auth.sendPasswordResetEmail(email).then(()=>alert('Email enviado!')).catch(e=>alert(e.message)); else alert('Digite seu email'); }
-  function togglePassword() { const inp = document.getElementById('loginPassword'); inp.type = inp.type==='password'?'text':'password'; }
-  function logout() { auth.signOut(); }
-  function toggleTheme() { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode')?'dark':'light'); }
-  if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark-mode');
+    // ========== FIREBASE INIT ==========
+    const firebaseConfig = {
+      apiKey: "AIzaSyDemoKey123456789",
+      authDomain: "seu-app.firebaseapp.com",
+      projectId: "seu-project-id",
+      storageBucket: "seu-app.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef123456"
+    };
 
-  // ==================== SIDEBAR ====================
-  function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); document.getElementById('mainContent').classList.toggle('expanded'); }
-  function toggleMobileSidebar() { document.getElementById('sidebar').classList.toggle('mobile-open'); }
-  function switchTab(tabId) {
-    document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
-    document.querySelector(`.sidebar .nav-link[data-tab="${tabId}"]`)?.classList.add('active');
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('show', 'active'));
-    const pane = document.getElementById(tabId); if (pane) pane.classList.add('show', 'active');
-    document.getElementById('sidebar').classList.remove('mobile-open');
-    if (tabId === 'leadsTab') { loadLeads().then(() => { renderLeads(); atualizarSidebarStatus(); }); }
-    if (tabId === 'configTab') { loadLeadStatuses(); }
-  }
-
-  // ==================== CARREGAMENTO INICIAL ====================
-  async function loadAll() {
     try {
-      await Promise.all([loadClients(), loadTarefas(), loadStatuses(), loadPracas(), loadAdministradoras(), loadAcomodacoes(), loadCoparticipacoes(), loadModalidades(), loadFontesVenda(), loadLeads(), loadLeadStatuses()]);
-      popularFiltroPraca();
-      updateDashboard();
-      renderCalendario(); renderCompromissos(diaSelecionado);
-      renderStatuses(); renderPracasList(); renderAdministradorasList(); renderAcomodacoesList(); renderCoparticipacoesList(); renderModalidadesList(); renderFontesVendaList();
-      selectedIds.clear(); updateLoteButton();
-      renderTable();
-      renderLeads();
-      atualizarSidebarStatus();
-    } catch(e) { console.error(e); alert('Erro ao carregar dados: '+e.message); }
-  }
-
-  // ==================== STATUS DE LEADS (NOVO) ====================
-  async function loadLeadStatuses() {
-    if (!currentUser) return;
-    const snap = await db.collection('leadStatuses').where('userId', '==', currentUser.uid).get();
-    leadStatuses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderLeadStatuses();
-    atualizarSelectsLeadStatus();
-    // Atualizar também o select da ficha cliente
-    const cLeadStatus = document.getElementById('cLeadStatus');
-    if (cLeadStatus) {
-      const currentVal = cLeadStatus.value;
-      cLeadStatus.innerHTML = '<option value="">Nenhum</option>';
-      leadStatuses.forEach(s => {
-        cLeadStatus.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      firebase.auth().onAuthStateChanged(user => {
+        currentUser = user;
+        if (user) {
+          loadLeads();
+          loadClients();
+        } else {
+          alert('Não autenticado');
+        }
       });
-      if (currentVal) cLeadStatus.value = currentVal;
+    } catch (e) {
+      console.error('Firebase init error:', e);
     }
-  }
 
-  function renderLeadStatuses() {
-    const el = document.getElementById('leadStatusList');
-    if (!el) return;
-    el.innerHTML = leadStatuses.map(s => `
-      <div class="status-item">
-        <span>${s.name}</span>
-        <button class="btn btn-danger btn-sm" onclick="deleteLeadStatus('${s.id}')">Excluir</button>
-      </div>
-    `).join('');
-  }
+    // ========== CRUD LEADS ==========
+    async function loadLeads() {
+      try {
+        if (!db || !currentUser) return;
+        const snap = await db.collection('leads').where('userId', '==', currentUser.uid).get();
+        leadsData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderLeads();
+        atualizarSidebarStatus();
+      } catch (err) {
+        console.error('Erro ao carregar leads:', err);
+      }
+    }
 
-  async function addLeadStatus() {
-    const nome = prompt('Nome do novo status para leads:');
-    if (!nome || !nome.trim()) return;
-    await db.collection('leadStatuses').add({ name: nome.trim(), userId: currentUser.uid, createdAt: new Date().toISOString() });
-    await loadLeadStatuses();
-  }
-
-  async function deleteLeadStatus(id) {
-    if (!confirm('Remover este status?')) return;
-    await db.collection('leadStatuses').doc(id).delete();
-    await loadLeadStatuses();
-  }
-
-  function atualizarSelectsLeadStatus() {
-    const selects = ['filterStatusLead', 'novoLeadStatus'];
-    selects.forEach(id => {
-      const sel = document.getElementById(id);
-      if (!sel) return;
-      const currentVal = sel.value;
-      sel.innerHTML = '<option value="">Status</option>';
-      leadStatuses.forEach(s => {
-        sel.innerHTML += `<option value="${s.name}">${s.name}</option>`;
-      });
-      if (currentVal) sel.value = currentVal;
-    });
-  }
-
-  // ==================== LEADS (FUNIL) ====================
-  async function loadLeads() {
-    if (!currentUser) return;
-    const snap = await db.collection('leads').where('userId', '==', currentUser.uid).orderBy('abertura', 'desc').get();
-    leadsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  }
-
-  function setLeadView(view) {
-    leadView = view;
-    document.getElementById('viewListBtn').classList.toggle('active', view === 'lista');
-    document.getElementById('viewPipelineBtn').classList.toggle('active', view === 'pipeline');
-    document.getElementById('leadListView').style.display = view === 'lista' ? 'block' : 'none';
-    document.getElementById('leadPipelineView').style.display = view === 'pipeline' ? 'block' : 'none';
-    if (view === 'pipeline') renderPipeline();
-    else renderLeads();
-  }
-
-  function renderLeads() {
-    const busca = document.getElementById('searchLead').value.toLowerCase();
-    const uf = document.getElementById('filterUfLead').value;
-    const status = document.getElementById('filterStatusLead').value;
-
-    let filtrados = leadsData.filter(l => {
-      const matchNome = (l.nome || '').toLowerCase().includes(busca) || (l.telefone || '').includes(busca) || (l.observacoes || '').toLowerCase().includes(busca);
-      const matchUf = uf ? l.uf === uf : true;
-      const matchStatus = status ? l.status === status : true;
-      return matchNome && matchUf && matchStatus;
-    });
-
-    filtrados.sort((a,b) => (b.abertura || '').localeCompare(a.abertura || ''));
-
-    const total = filtrados.length;
-    const totalPaginas = Math.ceil(total / leadsPorPagina);
-    if (paginaLead > totalPaginas) paginaLead = Math.max(1, totalPaginas);
-    const inicio = (paginaLead - 1) * leadsPorPagina;
-    const pagina = filtrados.slice(inicio, inicio + leadsPorPagina);
-
-    const tbody = document.getElementById('leadsBody');
-    tbody.innerHTML = '';
-    if (pagina.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-3">Nenhum lead encontrado.</td></tr>`;
-    } else {
-      pagina.forEach(l => {
-        const statusBadge = l.status || 'Disponível';
-        let bgColor = 'primary';
-        if (statusBadge === 'Em Atendimento') bgColor = 'warning';
-        else if (statusBadge === 'Em Negociação') bgColor = 'info';
-        else if (statusBadge === 'Convertido') bgColor = 'success';
-        else if (statusBadge === 'Perfil Inválido') bgColor = 'danger';
-        else bgColor = 'primary';
-        tbody.innerHTML += `
-          <tr>
-            <td>${l.abertura || '-'}</td>
-            <td>${l.nome || '-'}</td>
-            <td>${l.telefone || '-'}</td>
-            <td>${l.email || '-'}</td>
-            <td>${l.cidade || '-'}</td>
-            <td>${l.uf || '-'}</td>
-            <td><span class="badge bg-${bgColor}">${statusBadge}</span></td>
-            <td>
+    function renderLeads() {
+      const container = document.getElementById('leadsContainer');
+      const html = leadsData.map(l => `
+        <div class="card p-3 mb-2">
+          <div class="row">
+            <div class="col-md-8">
+              <h6>${l.nome || 'Sem nome'}</h6>
+              <small>${l.telefone || '-'} | ${l.email || '-'}</small>
+            </div>
+            <div class="col-md-4 text-end">
               <button class="btn btn-sm btn-outline-primary" onclick="editarLead('${l.id}')"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-danger" onclick="excluirLead('${l.id}')"><i class="bi bi-trash"></i></button>
-            </td>
-          </tr>
-        `;
-      });
+            </div>
+          </div>
+        </div>
+      `).join('');
+      container.innerHTML = html || '<p class="text-muted">Nenhum lead</p>';
     }
 
-    document.getElementById('leadCountInfo').innerText = `Mostrando ${Math.min(inicio+1, total)}-${Math.min(inicio+leadsPorPagina, total)} de ${total}`;
-    document.getElementById('leadPaginaInfo').innerText = `Página ${paginaLead} de ${totalPaginas || 1}`;
-    document.getElementById('btnLeadPrev').disabled = paginaLead <= 1;
-    document.getElementById('btnLeadNext').disabled = paginaLead >= totalPaginas || total === 0;
-  }
-
-  function renderPipeline() {
-    const container = document.getElementById('pipelineContainer');
-    const colors = { 'Disponível': '#6c5ce7', 'Em Atendimento': '#fdcb6e', 'Em Negociação': '#0984e3', 'Perfil Inválido': '#e17055', 'Convertido': '#00b894' };
-    // Adicionar status personalizados com cores padrão
-    leadStatuses.forEach(s => { if (!colors[s.name]) colors[s.name] = '#6c5ce7'; });
-    const allStatuses = ['Disponível', 'Em Atendimento', 'Em Negociação', 'Perfil Inválido', 'Convertido', ...leadStatuses.map(s => s.name).filter(n => !['Disponível','Em Atendimento','Em Negociação','Perfil Inválido','Convertido'].includes(n))];
-    let html = '';
-    allStatuses.forEach(status => {
-      const cards = leadsData.filter(l => (l.status || 'Disponível') === status);
-      html += `
-        <div class="pipeline-column">
-          <h6>${status} (${cards.length})</h6>
-          ${cards.map(l => `
-            <div class="pipeline-card" style="border-left-color: ${colors[status] || '#6c5ce7'}">
-              <div class="p-name">${l.nome || 'Sem nome'}</div>
-              <div class="p-detail"><span>${l.telefone || '-'}</span><span>${l.abertura || '-'}</span></div>
-              <div class="mt-1">
-                <button class="btn btn-sm btn-outline-primary" onclick="editarLead('${l.id}')"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-sm btn-danger" onclick="excluirLead('${l.id}')"><i class="bi bi-trash"></i></button>
+    function renderPipeline() {
+      const container = document.getElementById('pipelineContainer');
+      const colors = { 'Disponível': '#6c5ce7', 'Em Atendimento': '#fdcb6e', 'Em Negociação': '#0984e3', 'Perfil Inválido': '#e17055', 'Convertido': '#00b894' };
+      
+      const allStatuses = leadStatuses.map(s => s.name);
+      let html = '';
+      allStatuses.forEach(status => {
+        const cards = leadsData.filter(l => (l.status || 'Disponível') === status);
+        html += `
+          <div class="pipeline-column">
+            <h6>${status} (${cards.length})</h6>
+            ${cards.map(l => `
+              <div class="pipeline-card" style="border-left-color: ${colors[status]}">
+                <div class="p-name">${l.nome || 'Sem nome'}</div>
+                <div class="p-detail"><span>${l.telefone || '-'}</span></div>
+                <div class="mt-2">
+                  <button class="btn btn-sm btn-outline-primary" onclick="editarLead('${l.id}')"><i class="bi bi-pencil"></i></button>
+                  <button class="btn btn-sm btn-danger" onclick="excluirLead('${l.id}')"><i class="bi bi-trash"></i></button>
+                </div>
               </div>
-            </div>
-          `).join('')}
+            `).join('')}
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    async function abrirModalNovoLead() {
+      document.querySelector('#modalNovoLead .modal-title').innerHTML = '<i class="bi bi-person-plus me-2"></i>Novo Lead';
+      ['novoLeadNome', 'novoLeadTelefone', 'novoLeadEmail', 'novoLeadCidade', 'novoLeadObs'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('novoLeadUf').value = '';
+      document.getElementById('novoLeadStatus').value = leadStatuses[0]?.name || '';
+      document.getElementById('modalNovoLead').dataset.editId = '';
+      new bootstrap.Modal(document.getElementById('modalNovoLead')).show();
+    }
+
+    async function salvarNovoLead() {
+      try {
+        const nome = document.getElementById('novoLeadNome').value.trim();
+        const telefone = document.getElementById('novoLeadTelefone').value.trim();
+        if (!nome || !telefone) return alert('Nome e telefone são obrigatórios');
+        
+        const data = {
+          nome, telefone,
+          email: document.getElementById('novoLeadEmail').value.trim(),
+          cidade: document.getElementById('novoLeadCidade').value.trim(),
+          uf: document.getElementById('novoLeadUf').value,
+          status: document.getElementById('novoLeadStatus').value || 'Disponível',
+          observacoes: document.getElementById('novoLeadObs').value.trim(),
+          abertura: new Date().toISOString().split('T')[0],
+          userId: currentUser.uid,
+          createdAt: new Date().toISOString()
+        };
+        await db.collection('leads').add(data);
+        bootstrap.Modal.getInstance(document.getElementById('modalNovoLead')).hide();
+        await loadLeads();
+      } catch (err) {
+        console.error('Erro ao salvar lead:', err);
+        alert('Erro ao salvar lead');
+      }
+    }
+
+    function editarLead(id) {
+      const l = leadsData.find(l => l.id === id);
+      if (!l) return;
+      document.querySelector('#modalNovoLead .modal-title').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar Lead';
+      document.getElementById('novoLeadNome').value = l.nome || '';
+      document.getElementById('novoLeadTelefone').value = l.telefone || '';
+      document.getElementById('novoLeadEmail').value = l.email || '';
+      document.getElementById('novoLeadCidade').value = l.cidade || '';
+      document.getElementById('novoLeadUf').value = l.uf || '';
+      document.getElementById('novoLeadStatus').value = l.status || 'Disponível';
+      document.getElementById('novoLeadObs').value = l.observacoes || '';
+      document.getElementById('modalNovoLead').dataset.editId = id;
+      document.getElementById('btnSalvarNovoLead').innerHTML = 'Atualizar Lead';
+      document.getElementById('btnSalvarNovoLead').onclick = atualizarLead;
+      new bootstrap.Modal(document.getElementById('modalNovoLead')).show();
+    }
+
+    async function atualizarLead() {
+      try {
+        const id = document.getElementById('modalNovoLead').dataset.editId;
+        if (!id) return;
+        const nome = document.getElementById('novoLeadNome').value.trim();
+        const telefone = document.getElementById('novoLeadTelefone').value.trim();
+        if (!nome || !telefone) return alert('Nome e telefone são obrigatórios');
+        
+        await db.collection('leads').doc(id).update({
+          nome, telefone,
+          email: document.getElementById('novoLeadEmail').value.trim(),
+          cidade: document.getElementById('novoLeadCidade').value.trim(),
+          uf: document.getElementById('novoLeadUf').value,
+          status: document.getElementById('novoLeadStatus').value || 'Disponível',
+          observacoes: document.getElementById('novoLeadObs').value.trim(),
+          updatedAt: new Date().toISOString()
+        });
+        bootstrap.Modal.getInstance(document.getElementById('modalNovoLead')).hide();
+        await loadLeads();
+      } catch (err) {
+        console.error('Erro ao atualizar lead:', err);
+        alert('Erro ao atualizar lead');
+      }
+    }
+
+    async function excluirLead(id) {
+      if (!confirm('Excluir este lead?')) return;
+      try {
+        await db.collection('leads').doc(id).delete();
+        await loadLeads();
+      } catch (err) {
+        console.error('Erro ao excluir lead:', err);
+      }
+    }
+
+    function atualizarSidebarStatus() {
+      const statusCount = {};
+      leadStatuses.forEach(s => statusCount[s.name] = 0);
+      leadsData.forEach(l => {
+        const st = l.status || 'Disponível';
+        statusCount[st] = (statusCount[st] || 0) + 1;
+      });
+      const html = Object.entries(statusCount).map(([status, count]) => `
+        <div class="d-flex justify-content-between mb-2">
+          <span><strong>${status}</strong></span>
+          <span class="badge bg-primary">${count}</span>
         </div>
-      `;
-    });
-    container.innerHTML = html;
-  }
+      `).join('');
+      document.getElementById('statusSidebar').innerHTML = html;
+    }
 
-  function mudarPaginaLead(delta) { paginaLead += delta; renderLeads(); }
-  function atualizarSidebarStatus() {
-    const statusCount = {};
-    leadStatuses.forEach(s => statusCount[s.name] = 0);
-    // Garantir os padrão
-    ['Disponível','Em Atendimento','Em Negociação','Perfil Inválido','Convertido'].forEach(s => { if (!statusCount[s]) statusCount[s] = 0; });
-    leadsData.forEach(l => {
-      const st = l.status || 'Disponível';
-      if (statusCount[st] !== undefined) statusCount[st]++;
-    });
-    const cores = { 'Disponível':'primary', 'Em Atendimento':'warning', 'Em Negociação':'info', 'Perfil Inválido':'danger', 'Convertido':'success' };
-    const html = Object.entries(statusCount).filter(([_, count]) => count > 0 || true).map(([status, count]) => `
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <span class="badge bg-${cores[status] || 'secondary'} me-2">${status}</span>
-        <span class="fw-bold">${count}</span>
-      </div>
-    `).join('');
-    document.getElementById('statusSidebar').innerHTML = html || '<p class="text-muted">Nenhum status</p>';
-  }
+    async function loadClients() {
+      try {
+        if (!db || !currentUser) return;
+        const snap = await db.collection('clientes').where('userId', '==', currentUser.uid).get();
+        clientesData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      } catch (err) {
+        console.error('Erro ao carregar clientes:', err);
+      }
+    }
 
-  // ==================== CRUD LEADS ====================
-  function abrirModalNovoLead() {
-    document.querySelector('#modalNovoLead .modal-title').innerHTML = '<i class="bi bi-person-plus me-2"></i>Novo Lead';
-    document.getElementById('btnSalvarNovoLead').innerHTML = 'Salvar Lead';
-    document.getElementById('btnSalvarNovoLead').onclick = salvarNovoLead;
-    delete document.getElementById('modalNovoLead').dataset.editId;
-    ['novoLeadNome','novoLeadTelefone','novoLeadEmail','novoLeadCidade','novoLeadObs'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('novoLeadUf').value = '';
-    document.getElementById('novoLeadStatus').value = leadStatuses.length ? leadStatuses[0].name : '';
-    new bootstrap.Modal(document.getElementById('modalNovoLead')).show();
-  }
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+      if (tabId === 'leadsTab' && leadView === 'pipeline') renderPipeline();
+    }
 
-  async function salvarNovoLead() {
-    const nome = document.getElementById('novoLeadNome').value.trim();
-    const telefone = document.getElementById('novoLeadTelefone').value.trim();
-    if (!nome || !telefone) return alert('Nome e telefone são obrigatórios');
-    const data = {
-      nome, telefone, email: document.getElementById('novoLeadEmail').value.trim(),
-      cidade: document.getElementById('novoLeadCidade').value.trim(),
-      uf: document.getElementById('novoLeadUf').value,
-      status: document.getElementById('novoLeadStatus').value || 'Disponível',
-      observacoes: document.getElementById('novoLeadObs').value.trim(),
-      abertura: new Date().toISOString().split('T')[0],
-      userId: currentUser.uid, createdAt: new Date().toISOString()
-    };
-    await db.collection('leads').add(data);
-    bootstrap.Modal.getInstance(document.getElementById('modalNovoLead')).hide();
-    await loadLeads(); renderLeads(); atualizarSidebarStatus();
-    if (leadView === 'pipeline') renderPipeline();
-  }
+    function setLeadView(view) {
+      leadView = view;
+      if (view === 'pipeline') renderPipeline();
+      else renderLeads();
+    }
 
-  function editarLead(id) {
-    const l = leadsData.find(l => l.id === id);
-    if (!l) return;
-    document.querySelector('#modalNovoLead .modal-title').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar Lead';
-    document.getElementById('btnSalvarNovoLead').innerHTML = 'Atualizar Lead';
-    document.getElementById('btnSalvarNovoLead').onclick = atualizarLead;
-    document.getElementById('modalNovoLead').dataset.editId = id;
-    document.getElementById('novoLeadNome').value = l.nome || '';
-    document.getElementById('novoLeadTelefone').value = l.telefone || '';
-    document.getElementById('novoLeadEmail').value = l.email || '';
-    document.getElementById('novoLeadCidade').value = l.cidade || '';
-    document.getElementById('novoLeadUf').value = l.uf || '';
-    document.getElementById('novoLeadStatus').value = l.status || leadStatuses[0]?.name || '';
-    document.getElementById('novoLeadObs').value = l.observacoes || '';
-    new bootstrap.Modal(document.getElementById('modalNovoLead')).show();
-  }
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        alert('Desconectado');
+        location.reload();
+      }).catch(err => console.error('Logout error:', err));
+    }
 
-  async function atualizarLead() {
-    const id = document.getElementById('modalNovoLead').dataset.editId;
-    if (!id) return;
-    const nome = document.getElementById('novoLeadNome').value.trim();
-    const telefone = document.getElementById('novoLeadTelefone').value.trim();
-    if (!nome || !telefone) return alert('Nome e telefone são obrigatórios');
-    const data = {
-      nome, telefone: document.getElementById('novoLeadTelefone').value.trim(),
-      email: document.getElementById('novoLeadEmail').value.trim(),
-      cidade: document.getElementById('novoLeadCidade').value.trim(),
-      uf: document.getElementById('novoLeadUf').value,
-      status: document.getElementById('novoLeadStatus').value || 'Disponível',
-      observacoes: document.getElementById('novoLeadObs').value.trim(),
-      updatedAt: new Date().toISOString()
-    };
-    await db.collection('leads').doc(id).update(data);
-    bootstrap.Modal.getInstance(document.getElementById('modalNovoLead')).hide();
-    document.querySelector('#modalNovoLead .modal-title').innerHTML = '<i class="bi bi-person-plus me-2"></i>Novo Lead';
-    document.getElementById('btnSalvarNovoLead').innerHTML = 'Salvar Lead';
-    document.getElementById('btnSalvarNovoLead').onclick = salvarNovoLead;
-    delete document.getElementById('modalNovoLead').dataset.editId;
-    await loadLeads(); renderLeads(); atualizarSidebarStatus();
-    if (leadView === 'pipeline') renderPipeline();
-  }
-
-  async function excluirLead(id) {
-    if (!confirm('Excluir este lead?')) return;
-    await db.collection('leads').doc(id).delete();
-    await loadLeads(); renderLeads(); atualizarSidebarStatus();
-    if (leadView === 'pipeline') renderPipeline();
-  }
-
-  // ==================== FUNÇÕES AUXILIARES EXISTENTES (resumidas) ====================
-  // As funções loadClients, loadTarefas, loadStatuses, etc. permanecem as mesmas do código anterior.
-  // Incluo apenas os cabeçalhos para não estender demais.
-  async function loadClients() { /* ... */ }
-  async function loadTarefas() { /* ... */ }
-  async function loadStatuses() { /* ... */ }
-  async function loadPracas() { /* ... */ }
-  async function loadAdministradoras() { /* ... */ }
-  async function loadAcomodacoes() { /* ... */ }
-  async function loadCoparticipacoes() { /* ... */ }
-  async function loadModalidades() { /* ... */ }
-  async function loadFontesVenda() { /* ... */ }
-  function popularFiltroPraca() { /* ... */ }
-  function updateDashboard() { /* ... */ }
-  function renderCalendario() { /* ... */ }
-  function renderCompromissos() { /* ... */ }
-  function renderStatuses() { /* ... */ }
-  function renderPracasList() { /* ... */ }
-  function renderAdministradorasList() { /* ... */ }
-  function renderAcomodacoesList() { /* ... */ }
-  function renderCoparticipacoesList() { /* ... */ }
-  function renderModalidadesList() { /* ... */ }
-  function renderFontesVendaList() { /* ... */ }
-  function updateLoteButton() { /* ... */ }
-  function renderTable() { /* ... */ }
-  function formatarValorInput(el) { /* ... */ }
-  function gerarRelatorio() { /* ... */ }
-  function exportBackup() { /* ... */ }
-  function importBackup() { /* ... */ }
-  function exportarExcel() { /* ... */ }
-  function addStatus() { /* ... */ }
-  function addPraca() { /* ... */ }
-  function addAdministradora() { /* ... */ }
-  function addAcomodacao() { /* ... */ }
-  function addCoparticipacao() { /* ... */ }
-  function addModalidade() { /* ... */ }
-  function addFonteVenda() { /* ... */ }
-  function saveClient() { /* ... */ }
-  function clearForm() { /* ... */ }
-  function autoFill() { /* ... */ }
-  function addDependente() { /* ... */ }
-  function adicionarAnexo() { /* ... */ }
-  // ... E as demais funções já existentes.
-
-  // ==================== EVENTOS E INICIALIZAÇÃO ====================
-  document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.sidebar .nav-link').forEach(el => {
-      el.addEventListener('click', function(e) {
-        const tabId = this.getAttribute('data-tab');
-        if (tabId) switchTab(tabId);
+    // ========== INICIALIZAÇÃO ==========
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.nav-link').forEach(el => {
+        el.addEventListener('click', () => {
+          const tabId = el.getAttribute('data-tab');
+          if (tabId) switchTab(tabId);
+        });
+      });
+      const statusSelect = document.getElementById('novoLeadStatus');
+      leadStatuses.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.name;
+        opt.text = s.name;
+        statusSelect.appendChild(opt);
       });
     });
-    switchTab('dashboardTab');
-    setLeadView('lista');
-    // Ao carregar a aba de configurações, carregar status de leads
-    document.querySelector('[data-bs-target="#configTab"]')?.addEventListener('shown.bs.tab', () => {
-      loadLeadStatuses();
-    });
-  });
-</script>
+  </script>
 </body>
 </html>
