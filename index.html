@@ -583,7 +583,7 @@
     <!-- DASHBOARD -->
     <div class="tab-pane fade show active" id="dashboardTab">
       <div class="row g-3 mb-4 align-items-end">
-        <div class="col-md-2"><label>Período</label><select id="periodoFiltro" class="form-select"><option value="30">Últimos 30 dias</option><option value="60">Últimos 60 dias</option><option value="90">Últimos 90 dias</option><option value="120">Últimos 120 dias</option><option value="180">Últimos 180 dias</option><option value="mes">Mês atual</option><option value="intervalo">Intervalo personalizado</option></select></div>
+        <div class="col-md-2"><label>Período</label><select id="periodoFiltro" class="form-select"><option value="">Todos</option><option value="30">Últimos 30 dias</option><option value="60">Últimos 60 dias</option><option value="90">Últimos 90 dias</option><option value="120">Últimos 120 dias</option><option value="180">Últimos 180 dias</option><option value="mes">Mês atual</option><option value="intervalo">Intervalo personalizado</option></select></div>
         <div class="col-md-2" id="intervaloDiv" style="display:none;"><label>Início</label><input type="date" id="dataInicioIntervalo" class="form-control"></div>
         <div class="col-md-2" id="intervaloFimDiv" style="display:none;"><label>Fim</label><input type="date" id="dataFimIntervalo" class="form-control"></div>
         <div class="col-md-2"><label>Praça</label><select id="filtroPraca" class="form-select"><option value="">Todas as Praças</option></select></div>
@@ -683,7 +683,7 @@
       </div>
     </div>
 
-    <!-- PESQUISA -->
+    <!-- PESQUISA (com coluna "Vidas") -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card card-custom">
         <div class="row g-3 mb-4">
@@ -705,7 +705,7 @@
         <div class="mb-3"><button class="btn btn-warning" onclick="abrirModalLote()" id="btnAcaoLote" disabled><i class="bi bi-stack"></i> Ações em Lote</button><span id="selecionadosCount" class="ms-2 text-muted small"></span></div>
         <div class="table-responsive">
           <table class="table" id="pesquisaTable">
-            <thead><tr><th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th><th data-col="numeroProposta">Proposta</th><th data-col="nomeTitular">Titular</th><th data-col="cpfTitular">CPF</th><th data-col="modalidadePlano">Modalidade</th><th data-col="status">Status</th><th data-col="valorComDesconto">Valor</th><th data-col="praca">Praça</th><th data-col="administradora">Admin.</th><th>Ações</th></tr></thead>
+            <thead><tr><th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th><th data-col="numeroProposta">Proposta</th><th data-col="nomeTitular">Titular</th><th data-col="cpfTitular">CPF</th><th data-col="modalidadePlano">Modalidade</th><th data-col="status">Status</th><th data-col="valorComDesconto">Valor</th><th data-col="qtdVidas">Vidas</th><th data-col="praca">Praça</th><th data-col="administradora">Admin.</th><th>Ações</th></tr></thead>
             <tbody id="tableBody"></tbody>
           </table>
         </div>
@@ -1218,7 +1218,12 @@
     }
 
     // Filtrar por período (data da proposta)
-    if (periodo !== 'intervalo') {
+    if (periodo === 'intervalo') {
+      const dataIni = document.getElementById('dataInicioIntervalo').value;
+      const dataFim = document.getElementById('dataFimIntervalo').value;
+      if (dataIni) filtered = filtered.filter(c => c.data >= dataIni);
+      if (dataFim) filtered = filtered.filter(c => c.data <= dataFim);
+    } else if (periodo) {
       const hoje = new Date();
       let dataLimite = new Date();
       if (periodo === 'mes') {
@@ -1236,13 +1241,8 @@
       }
       const dataLimiteStr = dataLimite.toISOString().split('T')[0];
       filtered = filtered.filter(c => c.data >= dataLimiteStr);
-    } else {
-      // Intervalo personalizado
-      const dataIni = document.getElementById('dataInicioIntervalo').value;
-      const dataFim = document.getElementById('dataFimIntervalo').value;
-      if (dataIni) filtered = filtered.filter(c => c.data >= dataIni);
-      if (dataFim) filtered = filtered.filter(c => c.data <= dataFim);
     }
+    // Se periodo vazio (""), não filtra por data
 
     // ===== Calcular métricas =====
     const total = filtered.length;
@@ -1254,10 +1254,9 @@
       return acc + vidas;
     }, 0);
 
-    // Valor Processado: soma de valorComDesconto
+    // Valor Processado: soma de valorComDesconto (convertido corretamente)
     const valorTotal = filtered.reduce((acc, c) => {
       let val = c.valorComDesconto || '0';
-      // Remove pontos de milhar e substitui vírgula por ponto
       val = val.replace(/\./g, '').replace(',', '.');
       const num = parseFloat(val);
       return acc + (isNaN(num) ? 0 : num);
@@ -1344,7 +1343,7 @@
     }
   }
 
-  // ==================== RENDER TABELA ====================
+  // ==================== RENDER TABELA (com coluna "Vidas") ====================
   function renderTable() {
     const search = document.getElementById('search').value.toLowerCase();
     const status = document.getElementById('filterStatus').value;
@@ -1382,6 +1381,7 @@
       let valA = a[sortColumn] || '';
       let valB = b[sortColumn] || '';
       if (sortColumn === 'valorComDesconto') { valA = parseFloat(valA) || 0; valB = parseFloat(valB) || 0; }
+      if (sortColumn === 'qtdVidas') { valA = parseInt(valA) || 0; valB = parseInt(valB) || 0; }
       if (typeof valA === 'string') valA = valA.toLowerCase();
       if (typeof valB === 'string') valB = valB.toLowerCase();
       if (valA < valB) return sortDir === 'asc' ? -1 : 1;
@@ -1392,7 +1392,7 @@
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted">Nenhum cliente encontrado.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted">Nenhum cliente encontrado.</td></tr>';
     } else {
       filtered.forEach(c => {
         const checked = selectedIds.has(c.id) ? 'checked' : '';
@@ -1405,6 +1405,7 @@
             <td>${c.modalidadePlano || '-'}</td>
             <td>${c.status || '-'}</td>
             <td>${c.valorComDesconto ? 'R$ ' + parseFloat(c.valorComDesconto).toFixed(2).replace('.', ',') : '-'}</td>
+            <td>${c.qtdVidas || '0'}</td>
             <td>${c.praca || '-'}</td>
             <td>${c.administradora || '-'}</td>
             <td>
