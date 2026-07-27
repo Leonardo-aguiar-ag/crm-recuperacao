@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CRM Recupera AI </title>
+  <title>CRM Recupera AI - v4.1</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -13,7 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <style>
-    /* ===== CSS COMPLETO (idêntico ao anterior) ===== */
+    /* ===== CSS COMPLETO (mantido) ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -583,10 +583,10 @@
     <!-- DASHBOARD -->
     <div class="tab-pane fade show active" id="dashboardTab">
       <div class="row g-3 mb-4 align-items-end">
-        <div class="col-md-2"><label>Período</label><select id="periodoFiltro" class="form-select" onchange="handlePeriodoChange()"><option value="30">Últimos 30 dias</option><option value="60">Últimos 60 dias</option><option value="90">Últimos 90 dias</option><option value="120">Últimos 120 dias</option><option value="180">Últimos 180 dias</option><option value="mes">Mês atual</option><option value="intervalo">Intervalo personalizado</option></select></div>
-        <div class="col-md-2" id="intervaloDiv" style="display:none;"><label>Início</label><input type="date" id="dataInicioIntervalo" class="form-control" onchange="updateDashboard()"></div>
-        <div class="col-md-2" id="intervaloFimDiv" style="display:none;"><label>Fim</label><input type="date" id="dataFimIntervalo" class="form-control" onchange="updateDashboard()"></div>
-        <div class="col-md-2"><label>Praça</label><select id="filtroPraca" class="form-select" onchange="updateDashboard()"><option value="">Todas as Praças</option></select></div>
+        <div class="col-md-2"><label>Período</label><select id="periodoFiltro" class="form-select"><option value="30">Últimos 30 dias</option><option value="60">Últimos 60 dias</option><option value="90">Últimos 90 dias</option><option value="120">Últimos 120 dias</option><option value="180">Últimos 180 dias</option><option value="mes">Mês atual</option><option value="intervalo">Intervalo personalizado</option></select></div>
+        <div class="col-md-2" id="intervaloDiv" style="display:none;"><label>Início</label><input type="date" id="dataInicioIntervalo" class="form-control"></div>
+        <div class="col-md-2" id="intervaloFimDiv" style="display:none;"><label>Fim</label><input type="date" id="dataFimIntervalo" class="form-control"></div>
+        <div class="col-md-2"><label>Praça</label><select id="filtroPraca" class="form-select"><option value="">Todas as Praças</option></select></div>
         <div class="col-md-2"><button class="btn btn-warning mt-4" onclick="gerarRelatorio()"><i class="bi bi-file-earmark-pdf"></i> Relatório</button></div>
       </div>
       <div class="row g-3 mb-4">
@@ -654,10 +654,23 @@
               <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="2"></textarea></div>
             </div>
           </div>
+
+          <!-- ===== ABA DEPENDENTES ===== -->
           <div class="tab-pane fade" id="dependentesTab">
-            <button class="btn btn-success btn-sm mb-3" onclick="addDependente()"><i class="bi bi-plus"></i> Adicionar Dependente</button>
+            <div class="row g-2 mb-3">
+              <div class="col-md-4"><input type="text" id="depNome" class="form-control" placeholder="Nome *"></div>
+              <div class="col-md-3"><input type="text" id="depCpf" class="form-control" placeholder="CPF"></div>
+              <div class="col-md-3"><input type="email" id="depEmail" class="form-control" placeholder="E-mail"></div>
+              <div class="col-md-2"><input type="text" id="depTelefone" class="form-control" placeholder="Telefone"></div>
+            </div>
+            <div class="d-flex gap-2 mb-3">
+              <button class="btn btn-success btn-sm" onclick="adicionarDependente()"><i class="bi bi-plus"></i> Adicionar</button>
+              <button class="btn btn-secondary btn-sm" onclick="limparCamposDependente()"><i class="bi bi-eraser"></i> Limpar</button>
+            </div>
             <div id="dependentesList"></div>
           </div>
+
+          <!-- ===== ABA ANEXOS ===== -->
           <div class="tab-pane fade" id="anexosTab">
             <button class="btn btn-success btn-sm mb-3" onclick="adicionarAnexo()"><i class="bi bi-plus"></i> Adicionar Anexo</button>
             <div id="anexosList"></div>
@@ -929,8 +942,11 @@
 
   // ==================== VARIÁVEIS ====================
   let currentUser = null;
-  let clients = [], tarefas = [], dependentesTemp = [], anexosTemp = [];
-  let statuses = [], pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
+  let clients = [], tarefas = [];
+  let dependentesTemp = [];
+  let anexosTemp = [];
+  let statuses = [];
+  let pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
   let leadStatuses = [], leadsData = [];
   let charts = {};
   let calendarioMes = new Date().getMonth(), calendarioAno = new Date().getFullYear(), diaSelecionado = new Date().toISOString().split('T')[0];
@@ -942,7 +958,7 @@
   let leadView = 'lista';
   let isLoading = false;
 
-  // Backup automático (Firebase Storage)
+  // Backup automático
   let backupIntervalId = null;
   let backupRunning = false;
   let lastBackupTime = null;
@@ -1187,28 +1203,80 @@
     pracas.forEach(p => select.innerHTML += `<option value="${p.name}">${p.name}</option>`);
   }
 
-  // ==================== DASHBOARD ====================
+  // ==================== DASHBOARD (CORRIGIDO) ====================
   function updateDashboard() {
-    const total = clients.length;
-    const implantados = clients.filter(c => c.status === 'Implantado').length;
-    const valorTotal = clients.reduce((acc, c) => {
+    // ===== Obter filtros =====
+    const periodo = document.getElementById('periodoFiltro').value;
+    const praca = document.getElementById('filtroPraca').value;
+
+    // ===== Filtrar clientes =====
+    let filtered = clients;
+
+    // Filtrar por praça
+    if (praca) {
+      filtered = filtered.filter(c => c.praca === praca);
+    }
+
+    // Filtrar por período (data da proposta)
+    if (periodo !== 'intervalo') {
+      const hoje = new Date();
+      let dataLimite = new Date();
+      if (periodo === 'mes') {
+        dataLimite = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+      } else if (periodo === '30') {
+        dataLimite.setDate(hoje.getDate() - 30);
+      } else if (periodo === '60') {
+        dataLimite.setDate(hoje.getDate() - 60);
+      } else if (periodo === '90') {
+        dataLimite.setDate(hoje.getDate() - 90);
+      } else if (periodo === '120') {
+        dataLimite.setDate(hoje.getDate() - 120);
+      } else if (periodo === '180') {
+        dataLimite.setDate(hoje.getDate() - 180);
+      }
+      // Formata para comparar com data string (YYYY-MM-DD)
+      const dataLimiteStr = dataLimite.toISOString().split('T')[0];
+      filtered = filtered.filter(c => c.data >= dataLimiteStr);
+    } else {
+      // Intervalo personalizado
+      const dataIni = document.getElementById('dataInicioIntervalo').value;
+      const dataFim = document.getElementById('dataFimIntervalo').value;
+      if (dataIni) filtered = filtered.filter(c => c.data >= dataIni);
+      if (dataFim) filtered = filtered.filter(c => c.data <= dataFim);
+    }
+
+    // ===== Calcular métricas =====
+    const total = filtered.length;
+    // Implantadas: soma das vidas (qtdVidas) dos clientes com status 'Implantado'
+    const implantados = filtered.filter(c => c.status === 'Implantado');
+    const totalVidasImplantadas = implantados.reduce((acc, c) => acc + (parseInt(c.qtdVidas) || 0), 0);
+
+    // Valor Processado: soma de valorComDesconto (convertendo string para número)
+    const valorTotal = filtered.reduce((acc, c) => {
       let val = c.valorComDesconto || '0';
       val = val.replace(/\./g, '').replace(',', '.');
       return acc + (parseFloat(val) || 0);
     }, 0);
-    const inadimplentes = clients.filter(c => c.statusPagamento === 'Atrasado').length;
-    const emDia = clients.filter(c => c.statusPagamento === 'Pago').length;
-    const semInfo = clients.filter(c => !c.statusPagamento).length;
 
+    // Taxa de Conversão: (número de propostas implantadas / total de propostas) * 100
+    const taxaConversao = total ? Math.round((implantados.length / total) * 100) : 0;
+
+    // Clientes inadimplentes, em dia, sem info (baseado no período)
+    const inadimplentes = filtered.filter(c => c.statusPagamento === 'Atrasado').length;
+    const emDia = filtered.filter(c => c.statusPagamento === 'Pago').length;
+    const semInfo = filtered.filter(c => !c.statusPagamento).length;
+
+    // ===== Atualizar DOM =====
     document.getElementById('dashTotal').innerText = total;
-    document.getElementById('dashImplantados').innerText = implantados;
+    document.getElementById('dashImplantados').innerText = totalVidasImplantadas;
     document.getElementById('dashProcessado').innerText = 'R$ ' + valorTotal.toFixed(2).replace('.', ',');
-    document.getElementById('dashConversao').innerText = total ? Math.round((implantados / total) * 100) + '%' : '0%';
+    document.getElementById('dashConversao').innerText = taxaConversao + '%';
     document.getElementById('dashInadimplentes').innerText = inadimplentes;
     document.getElementById('dashEmDia').innerText = emDia;
     document.getElementById('dashSemInfo').innerText = semInfo;
     document.getElementById('dashMediaAtraso').innerText = '0';
     document.getElementById('dashMediaTempo').innerText = '0';
+
     atualizarGraficos();
   }
 
@@ -1308,7 +1376,7 @@
     updateLoteButton();
   }
 
-  // ==================== CRUD CLIENTES ====================
+  // ==================== CRUD CLIENTES (com dependentes) ====================
   function editarCliente(id) {
     const c = clients.find(c => c.id === id);
     if (!c) return;
@@ -1340,6 +1408,15 @@
     document.getElementById('cMesesEmDia').value = c.mesesEmDia || '';
     document.getElementById('cAnotacoes').value = c.anotacoes || '';
     document.getElementById('cLeadStatus').value = c.leadStatus || '';
+
+    // Carregar dependentes
+    dependentesTemp = c.dependentes ? JSON.parse(JSON.stringify(c.dependentes)) : [];
+    renderDependentes();
+
+    // Carregar anexos
+    anexosTemp = c.anexos ? JSON.parse(JSON.stringify(c.anexos)) : [];
+    renderAnexos();
+
     switchTab('clientesTab');
   }
 
@@ -1387,6 +1464,8 @@
         mesesEmDia: document.getElementById('cMesesEmDia').value,
         anotacoes: document.getElementById('cAnotacoes').value,
         leadStatus: document.getElementById('cLeadStatus').value,
+        dependentes: dependentesTemp,
+        anexos: anexosTemp,
         userId: currentUser.uid,
         updatedAt: new Date().toISOString()
       };
@@ -1421,6 +1500,11 @@
     });
     document.getElementById('cQtdVidas').value = 1;
     document.getElementById('cStatusPagamento').value = 'Pendente';
+    dependentesTemp = [];
+    renderDependentes();
+    anexosTemp = [];
+    renderAnexos();
+    limparCamposDependente();
   }
 
   function autoFill() {
@@ -1444,7 +1528,89 @@
     alert('Campos preenchidos automaticamente (verifique).');
   }
 
-  // ==================== BACKUP MANUAL ====================
+  // ==================== DEPENDENTES ====================
+  function limparCamposDependente() {
+    document.getElementById('depNome').value = '';
+    document.getElementById('depCpf').value = '';
+    document.getElementById('depEmail').value = '';
+    document.getElementById('depTelefone').value = '';
+  }
+
+  function adicionarDependente() {
+    const nome = document.getElementById('depNome').value.trim();
+    if (!nome) return alert('Nome do dependente é obrigatório.');
+    const cpf = document.getElementById('depCpf').value.trim();
+    const email = document.getElementById('depEmail').value.trim();
+    const telefone = document.getElementById('depTelefone').value.trim();
+    dependentesTemp.push({ nome, cpf, email, telefone });
+    renderDependentes();
+    limparCamposDependente();
+  }
+
+  function renderDependentes() {
+    const el = document.getElementById('dependentesList');
+    if (dependentesTemp.length === 0) {
+      el.innerHTML = '<p class="text-muted">Nenhum dependente cadastrado.</p>';
+      return;
+    }
+    el.innerHTML = dependentesTemp.map((dep, i) => `
+      <div class="status-item">
+        <div>
+          <strong>${dep.nome}</strong>
+          ${dep.cpf ? ' | CPF: ' + dep.cpf : ''}
+          ${dep.email ? ' | Email: ' + dep.email : ''}
+          ${dep.telefone ? ' | Telefone: ' + dep.telefone : ''}
+        </div>
+        <div>
+          <button class="btn btn-sm btn-outline-primary" onclick="editarDependente(${i})"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-danger" onclick="removerDependente(${i})"><i class="bi bi-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function editarDependente(idx) {
+    const dep = dependentesTemp[idx];
+    if (!dep) return;
+    document.getElementById('depNome').value = dep.nome || '';
+    document.getElementById('depCpf').value = dep.cpf || '';
+    document.getElementById('depEmail').value = dep.email || '';
+    document.getElementById('depTelefone').value = dep.telefone || '';
+    dependentesTemp.splice(idx, 1);
+    renderDependentes();
+    document.getElementById('depNome').focus();
+  }
+
+  function removerDependente(idx) {
+    if (!confirm('Remover este dependente?')) return;
+    dependentesTemp.splice(idx, 1);
+    renderDependentes();
+  }
+
+  // ==================== ANEXOS ====================
+  function adicionarAnexo() {
+    const nome = prompt('Nome do anexo (arquivo):');
+    if (nome) anexosTemp.push(nome);
+    renderAnexos();
+  }
+
+  function renderAnexos() {
+    const el = document.getElementById('anexosList');
+    if (anexosTemp.length === 0) {
+      el.innerHTML = '<p class="text-muted">Nenhum anexo.</p>';
+      return;
+    }
+    el.innerHTML = anexosTemp.map((a, i) => `
+      <div class="status-item">
+        <span>${a}</span>
+        <button class="btn btn-danger btn-sm" onclick="removerAnexo(${i})">Remover</button>
+      </div>
+    `).join('');
+  }
+
+  function removerAnexo(idx) { anexosTemp.splice(idx, 1); renderAnexos(); }
+
+  // ==================== BACKUP ====================
   async function exportBackup() {
     if (!currentUser) return;
     try {
@@ -1481,7 +1647,7 @@
     event.target.value = '';
   }
 
-  // ==================== BACKUP AUTOMÁTICO (Firebase Storage) ====================
+  // ==================== BACKUP AUTOMÁTICO ====================
   async function coletarDadosBackup() {
     const collections = ['clients', 'leads', 'tarefas', 'statuses', 'pracas', 'administradoras', 'acomodacoes', 'coparticipacoes', 'modalidades', 'fontesVenda', 'leadStatuses'];
     const data = {};
@@ -2155,40 +2321,17 @@
   function gerarRelatorio() { alert('Função de relatório em desenvolvimento.'); }
   function exportarExcel() { alert('Exportar Excel em desenvolvimento.'); }
 
-  function addDependente() {
-    const nome = prompt('Nome do dependente:');
-    if (nome) dependentesTemp.push(nome);
-    renderDependentes();
-  }
-
-  function renderDependentes() {
-    const el = document.getElementById('dependentesList');
-    el.innerHTML = dependentesTemp.map((d, i) => `<div class="status-item"><span>${d}</span><button class="btn btn-danger btn-sm" onclick="removerDependente(${i})">Remover</button></div>`).join('');
-  }
-
-  function removerDependente(idx) { dependentesTemp.splice(idx, 1); renderDependentes(); }
-
-  function adicionarAnexo() {
-    const nome = prompt('Nome do anexo (arquivo):');
-    if (nome) anexosTemp.push(nome);
-    renderAnexos();
-  }
-
-  function renderAnexos() {
-    const el = document.getElementById('anexosList');
-    el.innerHTML = anexosTemp.map((a, i) => `<div class="status-item"><span>${a}</span><button class="btn btn-danger btn-sm" onclick="removerAnexo(${i})">Remover</button></div>`).join('');
-  }
-
-  function removerAnexo(idx) { anexosTemp.splice(idx, 1); renderAnexos(); }
-
   // ==================== EVENTOS ====================
   document.addEventListener('DOMContentLoaded', function() {
+    // Sidebar
     document.querySelectorAll('.sidebar .nav-link').forEach(el => {
       el.addEventListener('click', function(e) {
         const tabId = this.getAttribute('data-tab');
         if (tabId) switchTab(tabId);
       });
     });
+
+    // Ordenação da tabela
     document.querySelectorAll('#pesquisaTable thead th[data-col]').forEach(th => {
       th.style.cursor = 'pointer';
       th.addEventListener('click', function() {
@@ -2198,17 +2341,27 @@
         renderTable();
       });
     });
+
+    // Filtros do dashboard
+    document.getElementById('periodoFiltro').addEventListener('change', function() {
+      const val = this.value;
+      document.getElementById('intervaloDiv').style.display = val === 'intervalo' ? 'block' : 'none';
+      document.getElementById('intervaloFimDiv').style.display = val === 'intervalo' ? 'block' : 'none';
+      updateDashboard();
+    });
+    document.getElementById('filtroPraca').addEventListener('change', updateDashboard);
+    document.getElementById('dataInicioIntervalo').addEventListener('change', updateDashboard);
+    document.getElementById('dataFimIntervalo').addEventListener('change', updateDashboard);
+
+    // Inicialização
     switchTab('dashboardTab');
     setLeadView('lista');
-
-    // Inicialização da agenda
     renderCalendario();
     renderCompromissos(diaSelecionado);
 
-    // Atualizar contagem regressiva do backup a cada minuto
+    // Contagem regressiva do backup
     setInterval(atualizarInfoBackup, 60000);
   });
-
 </script>
 </body>
 </html>
