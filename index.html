@@ -1234,7 +1234,6 @@
       } else if (periodo === '180') {
         dataLimite.setDate(hoje.getDate() - 180);
       }
-      // Formata para comparar com data string (YYYY-MM-DD)
       const dataLimiteStr = dataLimite.toISOString().split('T')[0];
       filtered = filtered.filter(c => c.data >= dataLimiteStr);
     } else {
@@ -1247,21 +1246,27 @@
 
     // ===== Calcular métricas =====
     const total = filtered.length;
+
     // Implantadas: soma das vidas (qtdVidas) dos clientes com status 'Implantado'
     const implantados = filtered.filter(c => c.status === 'Implantado');
-    const totalVidasImplantadas = implantados.reduce((acc, c) => acc + (parseInt(c.qtdVidas) || 0), 0);
+    const totalVidasImplantadas = implantados.reduce((acc, c) => {
+      const vidas = parseInt(c.qtdVidas) || 0;
+      return acc + vidas;
+    }, 0);
 
-    // Valor Processado: soma de valorComDesconto (convertendo string para número)
+    // Valor Processado: soma de valorComDesconto
     const valorTotal = filtered.reduce((acc, c) => {
       let val = c.valorComDesconto || '0';
+      // Remove pontos de milhar e substitui vírgula por ponto
       val = val.replace(/\./g, '').replace(',', '.');
-      return acc + (parseFloat(val) || 0);
+      const num = parseFloat(val);
+      return acc + (isNaN(num) ? 0 : num);
     }, 0);
 
     // Taxa de Conversão: (número de propostas implantadas / total de propostas) * 100
-    const taxaConversao = total ? Math.round((implantados.length / total) * 100) : 0;
+    const taxaConversao = total > 0 ? Math.round((implantados.length / total) * 100) : 0;
 
-    // Clientes inadimplentes, em dia, sem info (baseado no período)
+    // Inadimplentes, em dia, sem info (baseado no período)
     const inadimplentes = filtered.filter(c => c.statusPagamento === 'Atrasado').length;
     const emDia = filtered.filter(c => c.statusPagamento === 'Pago').length;
     const semInfo = filtered.filter(c => !c.statusPagamento).length;
@@ -1277,29 +1282,66 @@
     document.getElementById('dashMediaAtraso').innerText = '0';
     document.getElementById('dashMediaTempo').innerText = '0';
 
-    atualizarGraficos();
+    // Atualizar gráficos com os dados filtrados
+    atualizarGraficos(filtered);
   }
 
-  function atualizarGraficos() {
+  // ==================== ATUALIZAR GRÁFICOS (com filtro) ====================
+  function atualizarGraficos(dadosFiltrados) {
+    // Se não for passado dadosFiltrados, usa todos os clientes
+    const dados = dadosFiltrados || clients;
+
+    // Destroi gráficos antigos
     if (charts.status) charts.status.destroy();
     if (charts.admin) charts.admin.destroy();
     if (charts.pfPj) charts.pfPj.destroy();
 
+    // 1. Gráfico de Status (baseado nos dados filtrados)
     const statusCount = {};
     statuses.forEach(s => statusCount[s.name] = 0);
-    clients.forEach(c => { if (c.status) statusCount[c.status] = (statusCount[c.status] || 0) + 1; });
+    dados.forEach(c => {
+      if (c.status) statusCount[c.status] = (statusCount[c.status] || 0) + 1;
+    });
     const ctx1 = document.getElementById('statusChart')?.getContext('2d');
-    if (ctx1) charts.status = new Chart(ctx1, { type: 'doughnut', data: { labels: Object.keys(statusCount), datasets: [{ data: Object.values(statusCount), backgroundColor: ['#6c5ce7', '#00b894', '#fdcb6e', '#e17055', '#0984e3'] }] } });
+    if (ctx1) {
+      charts.status = new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(statusCount),
+          datasets: [{ data: Object.values(statusCount), backgroundColor: ['#6c5ce7', '#00b894', '#fdcb6e', '#e17055', '#0984e3'] }]
+        }
+      });
+    }
 
+    // 2. Gráfico de Administradoras (baseado nos dados filtrados)
     const adminCount = {};
-    clients.forEach(c => { if (c.administradora) adminCount[c.administradora] = (adminCount[c.administradora] || 0) + 1; });
+    dados.forEach(c => {
+      if (c.administradora) adminCount[c.administradora] = (adminCount[c.administradora] || 0) + 1;
+    });
     const ctx2 = document.getElementById('adminChart')?.getContext('2d');
-    if (ctx2) charts.admin = new Chart(ctx2, { type: 'bar', data: { labels: Object.keys(adminCount), datasets: [{ data: Object.values(adminCount), backgroundColor: '#6c5ce7' }] } });
+    if (ctx2) {
+      charts.admin = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(adminCount),
+          datasets: [{ data: Object.values(adminCount), backgroundColor: '#6c5ce7' }]
+        }
+      });
+    }
 
-    const pf = clients.filter(c => c.tipoCliente === 'PF').length;
-    const pj = clients.filter(c => c.tipoCliente === 'PJ').length;
+    // 3. Gráfico PF vs PJ (baseado nos dados filtrados)
+    const pf = dados.filter(c => c.tipoCliente === 'PF').length;
+    const pj = dados.filter(c => c.tipoCliente === 'PJ').length;
     const ctx3 = document.getElementById('pfPjChart')?.getContext('2d');
-    if (ctx3) charts.pfPj = new Chart(ctx3, { type: 'pie', data: { labels: ['PF', 'PJ'], datasets: [{ data: [pf, pj], backgroundColor: ['#6c5ce7', '#fdcb6e'] }] } });
+    if (ctx3) {
+      charts.pfPj = new Chart(ctx3, {
+        type: 'pie',
+        data: {
+          labels: ['PF', 'PJ'],
+          datasets: [{ data: [pf, pj], backgroundColor: ['#6c5ce7', '#fdcb6e'] }]
+        }
+      });
+    }
   }
 
   // ==================== RENDER TABELA ====================
