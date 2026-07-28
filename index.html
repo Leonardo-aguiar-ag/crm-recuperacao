@@ -13,7 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <style>
-    /* ===== CSS COMPLETO ===== */
+    /* ===== CSS COMPLETO (mantido) ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -1397,10 +1397,12 @@
     updateLoteButton();
   }
 
-  // ==================== CRUD CLIENTES ====================
+  // ==================== CRUD CLIENTES (com correção de carregamento) ====================
   function editarCliente(id) {
     const c = clients.find(c => c.id === id);
     if (!c) return;
+
+    // Preenche os campos
     document.getElementById('clientId').value = c.id;
     document.getElementById('cData').value = c.data || '';
     document.getElementById('cNumeroProposta').value = c.numeroProposta || '';
@@ -1430,6 +1432,7 @@
     document.getElementById('cAnotacoes').value = c.anotacoes || '';
     document.getElementById('cLeadStatus').value = c.leadStatus || '';
 
+    // Carrega listas
     dependentesTemp = c.dependentes ? JSON.parse(JSON.stringify(c.dependentes)) : [];
     renderDependentes();
     pagamentosTemp = c.pagamentos ? JSON.parse(JSON.stringify(c.pagamentos)) : [];
@@ -1437,11 +1440,27 @@
     anexosTemp = c.anexos ? JSON.parse(JSON.stringify(c.anexos)) : [];
     renderAnexos();
 
-    // Força a aba "Dados da Proposta" a ficar ativa
-    document.querySelector('#fichaTabs .nav-link.active')?.classList.remove('active');
+    // Força a aba "Dados da Proposta" a ficar ativa VISIVELMENTE
+    // 1. Remove active de todas as abas
+    document.querySelectorAll('#fichaTabs .nav-link').forEach(el => el.classList.remove('active'));
+    // 2. Adiciona active na aba desejada
     document.getElementById('tabDados').classList.add('active');
+    // 3. Remove show/active de todos os painéis
     document.querySelectorAll('#clientesTab .tab-pane').forEach(p => p.classList.remove('show', 'active'));
+    // 4. Adiciona show/active no painel desejado
     document.getElementById('dadosPrincipais').classList.add('show', 'active');
+
+    // Pequeno delay para garantir renderização
+    setTimeout(() => {
+      // Força o redesenho dos campos (opcional)
+      const inputs = document.querySelectorAll('#dadosPrincipais input, #dadosPrincipais select, #dadosPrincipais textarea');
+      inputs.forEach(el => {
+        // Força a atualização do valor (para alguns navegadores)
+        const val = el.value;
+        el.value = '';
+        el.value = val;
+      });
+    }, 50);
 
     switchTab('clientesTab');
   }
@@ -1535,6 +1554,12 @@
     renderAnexos();
     limparCamposDependente();
     limparCamposPagamento();
+
+    // Garante que a aba "Dados da Proposta" fique ativa mesmo após limpar
+    document.querySelectorAll('#fichaTabs .nav-link').forEach(el => el.classList.remove('active'));
+    document.getElementById('tabDados').classList.add('active');
+    document.querySelectorAll('#clientesTab .tab-pane').forEach(p => p.classList.remove('show', 'active'));
+    document.getElementById('dadosPrincipais').classList.add('show', 'active');
   }
 
   function autoFill() {
