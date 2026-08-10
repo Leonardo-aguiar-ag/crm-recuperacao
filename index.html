@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CRM Recupera AI - v4.1</title>
+  <title>CRM Recupera AI</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -13,7 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <style>
-    /* ===== CSS COMPLETO ===== */
+    /* ===== CSS COMPLETO (mantido) ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -600,22 +600,6 @@
         <div class="col-md-4"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Clientes em Dia</h6><h2 id="dashEmDia">0</h2><span class="sub">Média tempo: <span id="dashMediaTempo">0</span> meses</span></div></div>
         <div class="col-md-4"><div class="dashboard-card bg-purple"><i class="icon bi bi-question-circle"></i><h6>Sem Info de Pagamento</h6><h2 id="dashSemInfo">0</h2></div></div>
       </div>
-      
-      <!-- Últimas Vendas -->
-      <div class="card card-custom mb-4">
-        <h5 class="fw-bold"><i class="bi bi-trophy me-2"></i>Últimas Vendas</h5>
-        <div class="table-responsive">
-          <table class="table" id="ultimasVendasTable">
-            <thead>
-              <tr><th># Proposta</th><th>Titular</th><th>Tipo</th><th>Data</th></tr>
-            </thead>
-            <tbody id="ultimasVendasBody">
-              <tr><td colspan="4" class="text-center text-muted py-3">Nenhuma venda encontrada.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
       <div class="row g-4">
         <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Status</h6><canvas id="statusChart" height="150"></canvas></div></div>
         <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Top Administradoras</h6><canvas id="adminChart" height="150"></canvas></div></div>
@@ -723,17 +707,7 @@
 
           <!-- ANEXOS -->
           <div class="tab-pane fade" id="anexosTab">
-            <div class="row g-2 mb-3">
-              <div class="col-md-6">
-                <input type="file" id="anexoFileInput" class="form-control" accept=".pdf,.jpg,.png,.doc,.docx,.xls,.xlsx" />
-              </div>
-              <div class="col-md-3">
-                <button class="btn btn-success btn-sm" onclick="fazerUploadAnexo()"><i class="bi bi-cloud-upload"></i> Upload</button>
-              </div>
-              <div class="col-md-3">
-                <button class="btn btn-secondary btn-sm" onclick="document.getElementById('anexoFileInput').value = ''">Limpar</button>
-              </div>
-            </div>
+            <button class="btn btn-success btn-sm mb-3" onclick="adicionarAnexo()"><i class="bi bi-plus"></i> Adicionar Anexo</button>
             <div id="anexosList"></div>
           </div>
         </div>
@@ -1114,7 +1088,7 @@
       renderCalendario();
       renderCompromissos(diaSelecionado);
     }
-    // Se for a aba clientes, GARANTE que a aba "Dados da Proposta" seja ativada
+    // SE FOR A ABA CLIENTES, GARANTE QUE A ABA DADOS FIQUE ATIVA
     if (tabId === 'clientesTab') {
       ativarAbaDados();
     }
@@ -1318,8 +1292,7 @@
 
     document.getElementById('dashTotal').innerText = total;
     document.getElementById('dashImplantados').innerText = totalVidasImplantadas;
-    const valorFormatado = valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    document.getElementById('dashProcessado').innerText = 'R$ ' + valorFormatado;
+    document.getElementById('dashProcessado').innerText = 'R$ ' + valorTotal.toFixed(2).replace('.', ',');
     document.getElementById('dashConversao').innerText = taxaConversao + '%';
     document.getElementById('dashInadimplentes').innerText = inadimplentes;
     document.getElementById('dashEmDia').innerText = emDia;
@@ -1327,27 +1300,6 @@
     document.getElementById('dashMediaAtraso').innerText = '0';
     document.getElementById('dashMediaTempo').innerText = '0';
     atualizarGraficos(filtered);
-    renderUltimasVendas();
-  }
-
-  // ==================== ÚLTIMAS VENDAS ====================
-  function renderUltimasVendas() {
-    const tbody = document.getElementById('ultimasVendasBody');
-    const ultimas = [...clients]
-      .sort((a, b) => (b.data || '').localeCompare(a.data || ''))
-      .slice(0, 5);
-    if (ultimas.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">Nenhuma venda cadastrada.</td></tr>';
-      return;
-    }
-    tbody.innerHTML = ultimas.map(c => `
-      <tr>
-        <td>${c.numeroProposta || '-'}</td>
-        <td>${c.nomeTitular || '-'}</td>
-        <td>${c.tipoCliente || '-'}</td>
-        <td>${c.data ? new Date(c.data).toLocaleDateString('pt-BR') : '-'}</td>
-      </tr>
-    `).join('');
   }
 
   function atualizarGraficos(dadosFiltrados) {
@@ -1449,12 +1401,12 @@
     updateLoteButton();
   }
 
-  // ==================== ATIVAR ABA DADOS (CORRIGIDO E GARANTIDO) ====================
+  // ==================== ATIVAR ABA DADOS (CORRIGIDO) ====================
   function ativarAbaDados() {
     const tabDados = document.getElementById('tabDados');
     if (!tabDados) return;
 
-    // Método 1: usando o Bootstrap
+    // Tenta usar o método do Bootstrap
     try {
       const tab = new bootstrap.Tab(tabDados);
       tab.show();
@@ -1468,14 +1420,14 @@
       }
     }
 
-    // Força a exibição do painel
+    // Força a exibição do painel 'dadosPrincipais'
     const pane = document.getElementById('dadosPrincipais');
     if (pane) {
       pane.style.display = 'block';
       pane.classList.add('show', 'active');
     }
 
-    // Remove active/show de outros painéis
+    // Remove show/active dos outros painéis
     document.querySelectorAll('.tab-pane').forEach(p => {
       if (p.id !== 'dadosPrincipais') {
         p.classList.remove('show', 'active');
@@ -1483,13 +1435,12 @@
       }
     });
 
-    // Força a aba ativa visualmente
+    // Garante que a aba fique visualmente ativa
     document.querySelectorAll('#fichaTabs .nav-link').forEach(btn => btn.classList.remove('active'));
     tabDados.classList.add('active');
 
-    // Pequeno delay para garantir renderização
+    // Pequeno delay para forçar a renderização dos campos
     setTimeout(() => {
-      // Atualiza os valores dos campos para garantir que apareçam
       document.querySelectorAll('#dadosPrincipais input, #dadosPrincipais select, #dadosPrincipais textarea').forEach(el => {
         const val = el.value;
         el.value = '';
@@ -1503,6 +1454,7 @@
     const c = clients.find(c => c.id === id);
     if (!c) return;
 
+    // Preenche os campos
     document.getElementById('clientId').value = c.id;
     document.getElementById('cData').value = c.data || '';
     document.getElementById('cNumeroProposta').value = c.numeroProposta || '';
@@ -1532,6 +1484,7 @@
     document.getElementById('cAnotacoes').value = c.anotacoes || '';
     document.getElementById('cLeadStatus').value = c.leadStatus || '';
 
+    // Carrega listas
     dependentesTemp = c.dependentes ? JSON.parse(JSON.stringify(c.dependentes)) : [];
     renderDependentes();
     pagamentosTemp = c.pagamentos ? JSON.parse(JSON.stringify(c.pagamentos)) : [];
@@ -1539,11 +1492,13 @@
     anexosTemp = c.anexos ? JSON.parse(JSON.stringify(c.anexos)) : [];
     renderAnexos();
 
-    // Força a ativação da aba Dados
+    // Ativa a aba Dados da Proposta
     ativarAbaDados();
-    // Muda para a aba clientes
+
+    // Redireciona para a aba clientes
     switchTab('clientesTab');
-    // Redesenha os campos após um pequeno delay
+
+    // Redesenha os campos
     setTimeout(() => {
       document.querySelectorAll('#dadosPrincipais input, #dadosPrincipais select, #dadosPrincipais textarea').forEach(el => {
         const val = el.value;
@@ -1642,7 +1597,7 @@
     renderAnexos();
     limparCamposDependente();
     limparCamposPagamento();
-    document.getElementById('anexoFileInput').value = '';
+
     ativarAbaDados();
   }
 
@@ -1789,25 +1744,10 @@
   }
 
   // ==================== ANEXOS ====================
-  async function fazerUploadAnexo() {
-    const input = document.getElementById('anexoFileInput');
-    const file = input.files[0];
-    if (!file) return alert('Selecione um arquivo primeiro.');
-    if (!currentUser) return alert('Usuário não logado.');
-    const clientId = document.getElementById('clientId').value;
-    if (!clientId) return alert('Salve o cliente antes de adicionar anexos.');
-
-    try {
-      const storageRef = storage.ref(`clientes/${clientId}/anexos/${Date.now()}_${file.name}`);
-      const snapshot = await storageRef.put(file);
-      const url = await snapshot.ref.getDownloadURL();
-      anexosTemp.push({ nome: file.name, url: url });
-      renderAnexos();
-      document.getElementById('anexoFileInput').value = '';
-      alert('Arquivo enviado com sucesso!');
-    } catch (e) {
-      alert('Erro ao enviar arquivo: ' + e.message);
-    }
+  function adicionarAnexo() {
+    const nome = prompt('Nome do anexo (arquivo):');
+    if (nome) anexosTemp.push(nome);
+    renderAnexos();
   }
 
   function renderAnexos() {
@@ -1818,20 +1758,13 @@
     }
     el.innerHTML = anexosTemp.map((a, i) => `
       <div class="status-item">
-        <span><i class="bi bi-file-earmark me-2"></i>${a.nome}</span>
-        <div>
-          <a href="${a.url}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i></a>
-          <button class="btn btn-sm btn-danger" onclick="removerAnexo(${i})"><i class="bi bi-trash"></i></button>
-        </div>
+        <span>${a}</span>
+        <button class="btn btn-danger btn-sm" onclick="removerAnexo(${i})">Remover</button>
       </div>
     `).join('');
   }
 
-  function removerAnexo(idx) {
-    if (!confirm('Remover este anexo?')) return;
-    anexosTemp.splice(idx, 1);
-    renderAnexos();
-  }
+  function removerAnexo(idx) { anexosTemp.splice(idx, 1); renderAnexos(); }
 
   // ==================== BACKUP ====================
   async function exportBackup() {
