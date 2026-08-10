@@ -601,7 +601,7 @@
         <div class="col-md-4"><div class="dashboard-card bg-purple"><i class="icon bi bi-question-circle"></i><h6>Sem Info de Pagamento</h6><h2 id="dashSemInfo">0</h2></div></div>
       </div>
       
-      <!-- NOVO: Ranking das últimas 5 vendas -->
+      <!-- Últimas Vendas -->
       <div class="card card-custom mb-4">
         <h5 class="fw-bold"><i class="bi bi-trophy me-2"></i>Últimas Vendas</h5>
         <div class="table-responsive">
@@ -726,7 +726,7 @@
             <div id="pagamentosList"></div>
           </div>
 
-          <!-- ANEXOS (com upload de arquivo) -->
+          <!-- ANEXOS -->
           <div class="tab-pane fade" id="anexosTab">
             <div class="row g-2 mb-3">
               <div class="col-md-6">
@@ -1019,7 +1019,7 @@
   let clients = [], tarefas = [];
   let dependentesTemp = [];
   let pagamentosTemp = [];
-  let anexosTemp = []; // agora armazena objetos { nome, url }
+  let anexosTemp = [];
   let statuses = [];
   let pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
   let leadStatuses = [], leadsData = [];
@@ -1118,6 +1118,10 @@
     if (tabId === 'agendaTab') {
       renderCalendario();
       renderCompromissos(diaSelecionado);
+    }
+    // Se for a aba clientes, garante que a aba Dados esteja ativa
+    if (tabId === 'clientesTab') {
+      ativarAbaDados();
     }
   }
 
@@ -1319,7 +1323,6 @@
 
     document.getElementById('dashTotal').innerText = total;
     document.getElementById('dashImplantados').innerText = totalVidasImplantadas;
-    // Formatação com separador de milhares
     const valorFormatado = valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     document.getElementById('dashProcessado').innerText = 'R$ ' + valorFormatado;
     document.getElementById('dashConversao').innerText = taxaConversao + '%';
@@ -1335,16 +1338,13 @@
   // ==================== ÚLTIMAS VENDAS ====================
   function renderUltimasVendas() {
     const tbody = document.getElementById('ultimasVendasBody');
-    // Ordena por data (mais recente primeiro) e pega os 5 primeiros
     const ultimas = [...clients]
       .sort((a, b) => (b.data || '').localeCompare(a.data || ''))
       .slice(0, 5);
-
     if (ultimas.length === 0) {
       tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">Nenhuma venda cadastrada.</td></tr>';
       return;
     }
-
     tbody.innerHTML = ultimas.map(c => `
       <tr>
         <td>${c.numeroProposta || '-'}</td>
@@ -1454,17 +1454,27 @@
     updateLoteButton();
   }
 
-  // ==================== FUNÇÃO AUXILIAR PARA ATIVAR ABA ====================
+  // ==================== ATIVAR ABA DADOS (CORRIGIDO) ====================
   function ativarAbaDados() {
     const tabDados = document.getElementById('tabDados');
-    if (tabDados) {
-      const tab = new bootstrap.Tab(tabDados);
-      tab.show();
-    }
+    if (!tabDados) return;
+    // Usa o método show do Bootstrap
+    const tab = new bootstrap.Tab(tabDados);
+    tab.show();
+    // Força a adição das classes show e active no painel
     const pane = document.getElementById('dadosPrincipais');
     if (pane) {
       pane.classList.add('show', 'active');
+      // Garante display block (caso algum CSS esteja interferindo)
+      pane.style.display = 'block';
     }
+    // Remove a classe show de todos os outros painéis (para evitar duplicidade)
+    document.querySelectorAll('.tab-pane').forEach(p => {
+      if (p.id !== 'dadosPrincipais') {
+        p.classList.remove('show', 'active');
+        p.style.display = '';
+      }
+    });
   }
 
   // ==================== CRUD CLIENTES ====================
@@ -1508,8 +1518,10 @@
     anexosTemp = c.anexos ? JSON.parse(JSON.stringify(c.anexos)) : [];
     renderAnexos();
 
+    // Força a ativação da aba Dados
     ativarAbaDados();
     switchTab('clientesTab');
+    // Pequeno delay para forçar a exibição dos campos
     setTimeout(() => {
       document.querySelectorAll('#dadosPrincipais input, #dadosPrincipais select, #dadosPrincipais textarea').forEach(el => {
         const val = el.value;
@@ -1754,7 +1766,7 @@
     renderPagamentos();
   }
 
-  // ==================== ANEXOS (com upload de arquivo) ====================
+  // ==================== ANEXOS ====================
   async function fazerUploadAnexo() {
     const input = document.getElementById('anexoFileInput');
     const file = input.files[0];
@@ -1774,11 +1786,6 @@
     } catch (e) {
       alert('Erro ao enviar arquivo: ' + e.message);
     }
-  }
-
-  function adicionarAnexo() {
-    // Mantido para compatibilidade, mas agora usa upload real
-    document.getElementById('anexoFileInput').click();
   }
 
   function renderAnexos() {
