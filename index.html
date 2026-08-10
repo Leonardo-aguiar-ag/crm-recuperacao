@@ -624,7 +624,7 @@
       </div>
     </div>
 
-    <!-- FICHA CLIENTE (sem Campo Mágico e sem os campos removidos) -->
+    <!-- FICHA CLIENTE (com nova aba "Plano") -->
     <div class="tab-pane fade" id="clientesTab">
       <div class="card card-custom">
         <input type="hidden" id="clientId">
@@ -633,6 +633,7 @@
           <li class="nav-item"><button class="nav-link active" onclick="switchInternalTab('dadosPrincipais')" data-tab="dadosPrincipais">Dados da Proposta</button></li>
           <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('dependentesTab')" data-tab="dependentesTab">Dependentes</button></li>
           <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('pagamentosTab')" data-tab="pagamentosTab">Pagamentos</button></li>
+          <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('planoTab')" data-tab="planoTab">Plano</button></li>
           <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('anexosTab')" data-tab="anexosTab">Anexos</button></li>
         </ul>
         <div class="tab-content">
@@ -650,6 +651,7 @@
               <div class="col-md-2"><label>Tipo Cliente</label><select id="cTipoCliente" class="form-select"><option value="">Selecione</option><option value="PF">Pessoa Física</option><option value="PJ">Pessoa Jurídica</option></select></div>
               <div class="col-md-4"><label>Modalidade</label><select id="cModalidadePlano" class="form-select"></select></div>
               <div class="col-md-3"><label>Coparticipação</label><select id="cCoparticipacao" class="form-select"></select></div>
+              <!-- Nova aba "Plano" será inserida aqui (via aba separada) -->
               <div class="col-md-3"><label>Status</label><select id="cStatus" class="form-select"></select></div>
               <div class="col-md-3"><label>Implantação</label><input type="date" id="cDataImplantacao" class="form-control"></div>
               <div class="col-md-3"><label>Pagamento</label><input type="date" id="cDataPagamento" class="form-control"></div>
@@ -660,7 +662,6 @@
               <div class="col-md-3"><label>Administradora</label><select id="cAdministradora" class="form-select"></select></div>
               <div class="col-md-2"><label>Código</label><input type="text" id="cCodigo" class="form-control"></div>
               <div class="col-md-2"><label>Acomodação</label><select id="cAcomodacao" class="form-select"></select></div>
-              <!-- Campos removidos: Vigência, Data Vencimento, Status Pagamento, Meses em Dia, Status do Lead -->
               <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="2"></textarea></div>
             </div>
           </div>
@@ -711,6 +712,16 @@
               <button class="btn btn-secondary btn-sm" onclick="limparCamposPagamento()"><i class="bi bi-eraser"></i> Limpar</button>
             </div>
             <div id="pagamentosList"></div>
+          </div>
+
+          <!-- ===== NOVA ABA "PLANO" ===== -->
+          <div class="tab-pane" id="planoTab" style="display:none;">
+            <div class="row g-3">
+              <div class="col-md-6"><label>Plano Escolhido</label><input type="text" id="cPlanoEscolhido" class="form-control" placeholder="Ex: Plano Gold"></div>
+              <div class="col-md-6"><label>Tipo de Plano</label><input type="text" id="cTipoPlano" class="form-control" placeholder="Ex: Empresarial, Individual"></div>
+              <div class="col-md-12"><label>Descrição do Plano</label><textarea id="cDescricaoPlano" class="form-control" rows="3" placeholder="Detalhes do plano escolhido..."></textarea></div>
+              <div class="col-md-4"><label>Valor do Plano</label><input type="text" id="cValorPlano" class="form-control" placeholder="0,00" onblur="formatarValorInput(this)" onfocus="this.value = this.value.replace(/\./g,'').replace(',','.')"></div>
+            </div>
           </div>
 
           <!-- ANEXOS -->
@@ -1237,7 +1248,6 @@
       cCoparticipacao: coparticipacoes,
       cModalidadePlano: modalidades,
       cFonteVenda: fontesVenda
-      // cLeadStatus removido
     };
     for (const [id, data] of Object.entries(selects)) {
       const sel = document.getElementById(id);
@@ -1485,6 +1495,12 @@
     document.getElementById('cAcomodacao').value = c.acomodacao || '';
     document.getElementById('cAnotacoes').value = c.anotacoes || '';
 
+    // Carrega dados da aba Plano
+    document.getElementById('cPlanoEscolhido').value = c.planoEscolhido || '';
+    document.getElementById('cTipoPlano').value = c.tipoPlano || '';
+    document.getElementById('cDescricaoPlano').value = c.descricaoPlano || '';
+    document.getElementById('cValorPlano').value = c.valorPlano || '';
+
     // Carrega listas
     dependentesTemp = c.dependentes ? JSON.parse(JSON.stringify(c.dependentes)) : [];
     renderDependentes();
@@ -1536,12 +1552,12 @@
         administradora: document.getElementById('cAdministradora').value,
         codigo: document.getElementById('cCodigo').value,
         acomodacao: document.getElementById('cAcomodacao').value,
-        // Vigência removido
-        // Data Vencimento removido
-        // Status Pagamento removido
-        // Meses em Dia removido
-        // Status do Lead removido
         anotacoes: document.getElementById('cAnotacoes').value,
+        // Campos da aba Plano
+        planoEscolhido: document.getElementById('cPlanoEscolhido').value,
+        tipoPlano: document.getElementById('cTipoPlano').value,
+        descricaoPlano: document.getElementById('cDescricaoPlano').value,
+        valorPlano: document.getElementById('cValorPlano').value,
         dependentes: dependentesTemp,
         pagamentos: pagamentosTemp,
         anexos: anexosTemp,
@@ -1578,6 +1594,11 @@
       else if (el.type !== 'checkbox' && el.type !== 'radio') el.value = '';
     });
     document.getElementById('cQtdVidas').value = 1;
+    // Limpa campos da aba Plano
+    document.getElementById('cPlanoEscolhido').value = '';
+    document.getElementById('cTipoPlano').value = '';
+    document.getElementById('cDescricaoPlano').value = '';
+    document.getElementById('cValorPlano').value = '';
     dependentesTemp = [];
     renderDependentes();
     pagamentosTemp = [];
