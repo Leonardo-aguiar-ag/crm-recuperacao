@@ -13,7 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <style>
-    /* ===== CSS COMPLETO (mantido) ===== */
+    /* ===== CSS COMPLETO ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -607,12 +607,7 @@
         <div class="table-responsive">
           <table class="table" id="ultimasVendasTable">
             <thead>
-              <tr>
-                <th># Proposta</th>
-                <th>Titular</th>
-                <th>Tipo</th>
-                <th>Data</th>
-              </tr>
+              <tr><th># Proposta</th><th>Titular</th><th>Tipo</th><th>Data</th></tr>
             </thead>
             <tbody id="ultimasVendasBody">
               <tr><td colspan="4" class="text-center text-muted py-3">Nenhuma venda encontrada.</td></tr>
@@ -1119,7 +1114,7 @@
       renderCalendario();
       renderCompromissos(diaSelecionado);
     }
-    // Se for a aba clientes, garante que a aba Dados esteja ativa
+    // Se for a aba clientes, GARANTE que a aba "Dados da Proposta" seja ativada
     if (tabId === 'clientesTab') {
       ativarAbaDados();
     }
@@ -1454,27 +1449,53 @@
     updateLoteButton();
   }
 
-  // ==================== ATIVAR ABA DADOS (CORRIGIDO) ====================
+  // ==================== ATIVAR ABA DADOS (CORRIGIDO E GARANTIDO) ====================
   function ativarAbaDados() {
     const tabDados = document.getElementById('tabDados');
     if (!tabDados) return;
-    // Usa o método show do Bootstrap
-    const tab = new bootstrap.Tab(tabDados);
-    tab.show();
-    // Força a adição das classes show e active no painel
+
+    // Método 1: usando o Bootstrap
+    try {
+      const tab = new bootstrap.Tab(tabDados);
+      tab.show();
+    } catch (e) {
+      // Fallback manual
+      tabDados.classList.add('active');
+      const target = document.querySelector(tabDados.dataset.bsTarget || tabDados.getAttribute('data-bs-target'));
+      if (target) {
+        target.classList.add('show', 'active');
+        target.style.display = 'block';
+      }
+    }
+
+    // Força a exibição do painel
     const pane = document.getElementById('dadosPrincipais');
     if (pane) {
-      pane.classList.add('show', 'active');
-      // Garante display block (caso algum CSS esteja interferindo)
       pane.style.display = 'block';
+      pane.classList.add('show', 'active');
     }
-    // Remove a classe show de todos os outros painéis (para evitar duplicidade)
+
+    // Remove active/show de outros painéis
     document.querySelectorAll('.tab-pane').forEach(p => {
       if (p.id !== 'dadosPrincipais') {
         p.classList.remove('show', 'active');
         p.style.display = '';
       }
     });
+
+    // Força a aba ativa visualmente
+    document.querySelectorAll('#fichaTabs .nav-link').forEach(btn => btn.classList.remove('active'));
+    tabDados.classList.add('active');
+
+    // Pequeno delay para garantir renderização
+    setTimeout(() => {
+      // Atualiza os valores dos campos para garantir que apareçam
+      document.querySelectorAll('#dadosPrincipais input, #dadosPrincipais select, #dadosPrincipais textarea').forEach(el => {
+        const val = el.value;
+        el.value = '';
+        el.value = val;
+      });
+    }, 50);
   }
 
   // ==================== CRUD CLIENTES ====================
@@ -1520,8 +1541,9 @@
 
     // Força a ativação da aba Dados
     ativarAbaDados();
+    // Muda para a aba clientes
     switchTab('clientesTab');
-    // Pequeno delay para forçar a exibição dos campos
+    // Redesenha os campos após um pequeno delay
     setTimeout(() => {
       document.querySelectorAll('#dadosPrincipais input, #dadosPrincipais select, #dadosPrincipais textarea').forEach(el => {
         const val = el.value;
