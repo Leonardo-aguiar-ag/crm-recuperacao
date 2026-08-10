@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CRM Recupera AI </title>
+  <title>CRM Recupera AI - v4.1</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -624,16 +624,11 @@
       </div>
     </div>
 
-    <!-- FICHA CLIENTE (com abas internas manuais) -->
+    <!-- FICHA CLIENTE (sem Campo Mágico e sem os campos removidos) -->
     <div class="tab-pane fade" id="clientesTab">
-      <div class="card card-custom mb-4">
-        <h5 class="fw-bold mb-3"><i class="bi bi-magic me-2"></i>Campo Mágico</h5>
-        <textarea id="smartPaste" class="form-control mb-3" rows="3" placeholder="Cole o texto da proposta aqui..."></textarea>
-        <button class="btn btn-primary" onclick="autoFill()">Auto preencher</button>
-      </div>
       <div class="card card-custom">
         <input type="hidden" id="clientId">
-        <!-- ABAS INTERNAS (sem data-bs-toggle, controle manual) -->
+        <!-- ABAS INTERNAS -->
         <ul class="nav nav-tabs mb-4" id="fichaTabs">
           <li class="nav-item"><button class="nav-link active" onclick="switchInternalTab('dadosPrincipais')" data-tab="dadosPrincipais">Dados da Proposta</button></li>
           <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('dependentesTab')" data-tab="dependentesTab">Dependentes</button></li>
@@ -665,11 +660,7 @@
               <div class="col-md-3"><label>Administradora</label><select id="cAdministradora" class="form-select"></select></div>
               <div class="col-md-2"><label>Código</label><input type="text" id="cCodigo" class="form-control"></div>
               <div class="col-md-2"><label>Acomodação</label><select id="cAcomodacao" class="form-select"></select></div>
-              <div class="col-md-2"><label>Vigência</label><input type="text" id="cVigencia" class="form-control" placeholder="dd/mm/aaaa"></div>
-              <div class="col-md-3"><label>Data Vencimento</label><input type="date" id="cDataVencimento" class="form-control"></div>
-              <div class="col-md-3"><label>Status Pagamento</label><select id="cStatusPagamento" class="form-select"><option value="Pago">Pago</option><option value="Pendente">Pendente</option><option value="Atrasado">Atrasado</option></select></div>
-              <div class="col-md-3"><label>Meses em Dia</label><input type="text" id="cMesesEmDia" class="form-control" readonly></div>
-              <div class="col-md-3"><label>Status do Lead</label><select id="cLeadStatus" class="form-select"><option value="">Nenhum</option></select></div>
+              <!-- Campos removidos: Vigência, Data Vencimento, Status Pagamento, Meses em Dia, Status do Lead -->
               <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="2"></textarea></div>
             </div>
           </div>
@@ -1245,14 +1236,14 @@
       cAcomodacao: acomodacoes,
       cCoparticipacao: coparticipacoes,
       cModalidadePlano: modalidades,
-      cFonteVenda: fontesVenda,
-      cLeadStatus: leadStatuses
+      cFonteVenda: fontesVenda
+      // cLeadStatus removido
     };
     for (const [id, data] of Object.entries(selects)) {
       const sel = document.getElementById(id);
       if (!sel) continue;
       const current = sel.value;
-      sel.innerHTML = id === 'cLeadStatus' ? '<option value="">Nenhum</option>' : '<option value="">Selecione</option>';
+      sel.innerHTML = '<option value="">Selecione</option>';
       data.forEach(item => {
         const name = item.name || item;
         sel.innerHTML += `<option value="${name}">${name}</option>`;
@@ -1492,12 +1483,7 @@
     document.getElementById('cAdministradora').value = c.administradora || '';
     document.getElementById('cCodigo').value = c.codigo || '';
     document.getElementById('cAcomodacao').value = c.acomodacao || '';
-    document.getElementById('cVigencia').value = c.vigencia || '';
-    document.getElementById('cDataVencimento').value = c.dataVencimento || '';
-    document.getElementById('cStatusPagamento').value = c.statusPagamento || 'Pendente';
-    document.getElementById('cMesesEmDia').value = c.mesesEmDia || '';
     document.getElementById('cAnotacoes').value = c.anotacoes || '';
-    document.getElementById('cLeadStatus').value = c.leadStatus || '';
 
     // Carrega listas
     dependentesTemp = c.dependentes ? JSON.parse(JSON.stringify(c.dependentes)) : [];
@@ -1509,7 +1495,6 @@
 
     // Ativa a aba principal "Ficha Cliente" e a sub-aba "Dados da Proposta"
     switchTab('clientesTab');
-    // Garante que a sub-aba seja exibida
     switchInternalTab('dadosPrincipais');
   }
 
@@ -1551,12 +1536,12 @@
         administradora: document.getElementById('cAdministradora').value,
         codigo: document.getElementById('cCodigo').value,
         acomodacao: document.getElementById('cAcomodacao').value,
-        vigencia: document.getElementById('cVigencia').value,
-        dataVencimento: document.getElementById('cDataVencimento').value,
-        statusPagamento: document.getElementById('cStatusPagamento').value,
-        mesesEmDia: document.getElementById('cMesesEmDia').value,
+        // Vigência removido
+        // Data Vencimento removido
+        // Status Pagamento removido
+        // Meses em Dia removido
+        // Status do Lead removido
         anotacoes: document.getElementById('cAnotacoes').value,
-        leadStatus: document.getElementById('cLeadStatus').value,
         dependentes: dependentesTemp,
         pagamentos: pagamentosTemp,
         anexos: anexosTemp,
@@ -1593,7 +1578,6 @@
       else if (el.type !== 'checkbox' && el.type !== 'radio') el.value = '';
     });
     document.getElementById('cQtdVidas').value = 1;
-    document.getElementById('cStatusPagamento').value = 'Pendente';
     dependentesTemp = [];
     renderDependentes();
     pagamentosTemp = [];
@@ -1605,27 +1589,6 @@
     document.getElementById('anexoFileInput').value = '';
     // Após limpar, mostra a aba "Dados da Proposta"
     switchInternalTab('dadosPrincipais');
-  }
-
-  function autoFill() {
-    const text = document.getElementById('smartPaste').value;
-    if (!text) return alert('Cole o texto da proposta primeiro.');
-    const lines = text.split('\n');
-    lines.forEach(line => {
-      if (line.includes('Proposta:')) {
-        const num = line.replace(/.*Proposta:\s*/, '').trim();
-        document.getElementById('cNumeroProposta').value = num;
-      }
-      if (line.includes('Nome:')) {
-        const nome = line.replace(/.*Nome:\s*/, '').trim();
-        document.getElementById('cNomeTitular').value = nome;
-      }
-      if (line.includes('CPF:')) {
-        const cpf = line.replace(/.*CPF:\s*/, '').trim();
-        document.getElementById('cCpfTitular').value = cpf;
-      }
-    });
-    alert('Campos preenchidos automaticamente (verifique).');
   }
 
   // ==================== DEPENDENTES ====================
