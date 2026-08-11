@@ -1015,7 +1015,6 @@
   let clients = [], tarefas = [];
   let dependentesTemp = [];
   let pagamentosTemp = [];
-  // anexosTemp agora guarda objetos { nome, file, url? }
   let anexosTemp = [];
   let statuses = [];
   let pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
@@ -1494,7 +1493,6 @@
     renderDependentes();
     pagamentosTemp = c.pagamentos ? JSON.parse(JSON.stringify(c.pagamentos)) : [];
     renderPagamentos();
-    // Anexos já possuem url, então carregamos como objetos com url
     anexosTemp = c.anexos ? c.anexos.map(a => ({ nome: a.nome, url: a.url })) : [];
     renderAnexos();
 
@@ -1510,14 +1508,17 @@
     updateDashboard();
   }
 
-  // ==================== SALVAR CLIENTE (COM UPLOAD DE ANEXOS) ====================
+  // ==================== SALVAR CLIENTE (COM UPLOAD DE ANEXOS) - CORRIGIDO ====================
   async function saveClient() {
     if (isLoading) return;
     const btn = document.getElementById('btnSalvarCliente');
     btn.innerHTML = '<span class="loading-spinner"></span> Salvando...';
     btn.classList.add('btn-loading');
+    isLoading = true;
 
     try {
+      if (!currentUser) throw new Error('Usuário não logado.');
+
       const id = document.getElementById('clientId').value;
       const data = {
         data: document.getElementById('cData').value,
@@ -1558,16 +1559,15 @@
         data.createdAt = new Date().toISOString();
         const docRef = await db.collection('clients').add(data);
         clientId = docRef.id;
-        const newClient = { id: docRef.id, ...data };
-        clients.push(newClient);
+        clients.push({ id: docRef.id, ...data });
       }
 
-      // ----- UPLOAD DOS ANEXOS PENDENTES -----
+      // Upload de anexos pendentes
       if (anexosTemp.length > 0) {
-        const anexosParaUpload = anexosTemp.filter(a => a.file && !a.url);
-        if (anexosParaUpload.length > 0) {
+        const pendentes = anexosTemp.filter(a => a.file && !a.url);
+        if (pendentes.length > 0) {
           const uploaded = [];
-          for (const item of anexosParaUpload) {
+          for (const item of pendentes) {
             const file = item.file;
             const nome = item.nome;
             const storageRef = storage.ref(`clientes/${clientId}/anexos/${Date.now()}_${nome}`);
@@ -1575,24 +1575,20 @@
             const url = await snapshot.ref.getDownloadURL();
             uploaded.push({ nome, url });
           }
-          // Atualiza a lista de anexos: remove os que foram enviados e adiciona os com url
+          // Atualiza lista local
           anexosTemp = anexosTemp.filter(a => !a.file);
           anexosTemp = anexosTemp.concat(uploaded);
-          // Atualiza o documento com a lista final de anexos
+          // Atualiza no Firestore
           await db.collection('clients').doc(clientId).update({ anexos: anexosTemp });
-          // Atualiza o cliente na memória
           const idx = clients.findIndex(c => c.id === clientId);
-          if (idx !== -1) {
-            clients[idx].anexos = anexosTemp;
-          }
+          if (idx !== -1) clients[idx].anexos = anexosTemp;
         }
       }
 
-      // Recarrega a lista de clientes para garantir dados atualizados
+      // Recarregar dados e redirecionar
       await loadClients();
       renderTable();
       updateDashboard();
-      // Redireciona para Dashboard
       switchTab('dashboardTab');
     } catch (e) {
       console.error('Erro ao salvar:', e);
@@ -1600,6 +1596,7 @@
     } finally {
       btn.innerHTML = '<i class="bi bi-save"></i> Salvar';
       btn.classList.remove('btn-loading');
+      isLoading = false;
     }
   }
 
