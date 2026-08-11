@@ -1558,7 +1558,8 @@
         data.createdAt = new Date().toISOString();
         const docRef = await db.collection('clients').add(data);
         clientId = docRef.id;
-        clients.push({ id: docRef.id, ...data });
+        const newClient = { id: docRef.id, ...data };
+        clients.push(newClient);
       }
 
       // ----- UPLOAD DOS ANEXOS PENDENTES -----
@@ -1574,26 +1575,28 @@
             const url = await snapshot.ref.getDownloadURL();
             uploaded.push({ nome, url });
           }
-          // Atualiza a lista de anexos com as URLs
-          // Remove os temporários e adiciona os enviados
+          // Atualiza a lista de anexos: remove os que foram enviados e adiciona os com url
           anexosTemp = anexosTemp.filter(a => !a.file);
           anexosTemp = anexosTemp.concat(uploaded);
-          // Atualiza o documento com a lista final
+          // Atualiza o documento com a lista final de anexos
           await db.collection('clients').doc(clientId).update({ anexos: anexosTemp });
           // Atualiza o cliente na memória
           const idx = clients.findIndex(c => c.id === clientId);
-          if (idx !== -1) clients[idx].anexos = anexosTemp;
+          if (idx !== -1) {
+            clients[idx].anexos = anexosTemp;
+          }
         }
       }
 
-      clearForm();
+      // Recarrega a lista de clientes para garantir dados atualizados
+      await loadClients();
       renderTable();
       updateDashboard();
       // Redireciona para Dashboard
       switchTab('dashboardTab');
     } catch (e) {
-      alert('Erro ao salvar: ' + e.message);
-      console.error(e);
+      console.error('Erro ao salvar:', e);
+      alert('Erro ao salvar: ' + (e.message || 'Verifique o console para mais detalhes.'));
     } finally {
       btn.innerHTML = '<i class="bi bi-save"></i> Salvar';
       btn.classList.remove('btn-loading');
@@ -1620,7 +1623,7 @@
     switchInternalTab('dadosPrincipais');
   }
 
-  // ==================== ANEXOS (NOVO) ====================
+  // ==================== ANEXOS ====================
   function adicionarAnexos() {
     const input = document.getElementById('anexoFileInput');
     const files = input.files;
@@ -1629,11 +1632,10 @@
       return;
     }
     for (const file of files) {
-      // Verifica se já existe um arquivo com o mesmo nome (opcional)
       anexosTemp.push({ nome: file.name, file: file });
     }
     renderAnexos();
-    input.value = ''; // limpa o input
+    input.value = '';
   }
 
   function renderAnexos() {
