@@ -13,7 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <style>
-    /* ===== CSS COMPLETO ===== */
+    /* ===== CSS COMPLETO (mantido igual) ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -655,7 +655,6 @@
               <div class="col-md-2"><label>Tipo Cliente</label><select id="cTipoCliente" class="form-select"><option value="">Selecione</option><option value="PF">Pessoa Física</option><option value="PJ">Pessoa Jurídica</option></select></div>
               <div class="col-md-4"><label>Modalidade</label><select id="cModalidadePlano" class="form-select"></select></div>
               <div class="col-md-3"><label>Coparticipação</label><select id="cCoparticipacao" class="form-select"></select></div>
-              <!-- CAMPO PLANO ESCOLHIDO (entre Coparticipação e Acomodação) -->
               <div class="col-md-3"><label>Plano Escolhido</label><input type="text" id="cPlanoEscolhido" class="form-control" placeholder="Ex: Plano Gold"></div>
               <div class="col-md-3"><label>Acomodação</label><select id="cAcomodacao" class="form-select"></select></div>
               <div class="col-md-3"><label>Status</label><select id="cStatus" class="form-select"></select></div>
@@ -666,8 +665,19 @@
               <div class="col-md-3"><label>Valor c/ Desconto</label><input type="text" id="cValorComDesconto" class="form-control" onblur="formatarValorInput(this)" onfocus="this.value = this.value.replace(/\./g,'').replace(',','.')"></div>
               <div class="col-md-3"><label>Praça</label><select id="cPraca" class="form-select"></select></div>
               <div class="col-md-3"><label>Administradora</label><select id="cAdministradora" class="form-select"></select></div>
-              <div class="col-md-2"><label>Código</label><input type="text" id="cCodigo" class="form-control"></div>
-              <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="2"></textarea></div>
+              
+              <!-- NOVOS CAMPOS: VENDEDOR E CÓDIGO -->
+              <div class="col-md-3">
+                <label>Vendedor</label>
+                <select id="cVendedor" class="form-select" onchange="preencherCodigoPorVendedor()">
+                  <option value="">Selecione</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <label>Código</label>
+                <input type="text" id="cCodigo" class="form-control" placeholder="Código" />
+              </div>
+              <div class="col-md-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="2"></textarea></div>
             </div>
           </div>
 
@@ -767,7 +777,22 @@
         <div class="mb-3"><button class="btn btn-warning" onclick="abrirModalLote()" id="btnAcaoLote" disabled><i class="bi bi-stack"></i> Ações em Lote</button><span id="selecionadosCount" class="ms-2 text-muted small"></span></div>
         <div class="table-responsive">
           <table class="table" id="pesquisaTable">
-            <thead><tr><th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th><th data-col="numeroProposta">Proposta</th><th data-col="nomeTitular">Titular</th><th data-col="cpfTitular">CPF</th><th data-col="modalidadePlano">Modalidade</th><th data-col="status">Status</th><th data-col="valorComDesconto">Valor</th><th data-col="qtdVidas">Vidas</th><th data-col="praca">Praça</th><th data-col="administradora">Admin.</th><th>Ações</th></tr></thead>
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                <th data-col="numeroProposta">Proposta</th>
+                <th data-col="nomeTitular">Titular</th>
+                <th data-col="cpfTitular">CPF</th>
+                <th data-col="modalidadePlano">Modalidade</th>
+                <th data-col="status">Status</th>
+                <th data-col="valorComDesconto">Valor</th>
+                <th data-col="qtdVidas">Vidas</th>
+                <th data-col="praca">Praça</th>
+                <th data-col="administradora">Admin.</th>
+                <th data-col="codigo">Código</th>  <!-- NOVA COLUNA -->
+                <th>Ações</th>
+              </tr>
+            </thead>
             <tbody id="tableBody"></tbody>
           </table>
         </div>
@@ -906,6 +931,19 @@
           </div>
         </div>
 
+        <!-- NOVA SEÇÃO: PESSOAS (VENDEDORES) -->
+        <div class="col-lg-4">
+          <div class="card card-custom">
+            <h5 class="fw-bold"><i class="bi bi-people me-2"></i>Pessoas (Vendedores)</h5>
+            <div class="row g-2 mb-2">
+              <div class="col-6"><input type="text" id="novaPessoaNome" class="form-control" placeholder="Nome"></div>
+              <div class="col-4"><input type="text" id="novaPessoaCodigo" class="form-control" placeholder="Código"></div>
+              <div class="col-2"><button class="btn btn-primary btn-sm" onclick="addPessoa()"><i class="bi bi-plus"></i></button></div>
+            </div>
+            <div id="pessoasList"></div>
+          </div>
+        </div>
+
         <!-- Backup Automático -->
         <div class="col-12">
           <div class="card card-custom">
@@ -965,7 +1003,7 @@
 <!-- ===== MODAIS ===== -->
 <div class="modal fade" id="modalTarefa" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Nova Tarefa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="tarefaId"><input type="text" id="tarefaTitulo" class="form-control mb-3" placeholder="Título"><input type="date" id="tarefaData" class="form-control mb-3"><input type="time" id="tarefaHora" class="form-control mb-3"><textarea id="tarefaDesc" class="form-control" rows="3" placeholder="Descrição"></textarea><div class="form-check"><input class="form-check-input" type="checkbox" id="tarefaConcluida"><label class="form-check-label">Concluída</label></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="salvarTarefa()">Salvar</button></div></div></div></div>
 
-<div class="modal fade" id="modalLote" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Ação em Lote</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select id="acaoLote" class="form-select mb-3" onchange="handleAcaoLoteChange()"><option value="">Escolha...</option><option value="status">Alterar Status</option><option value="praca">Alterar Praça</option><option value="administradora">Alterar Administradora</option><option value="dataPagamento">Definir Data</option><option value="excluir">Excluir</option></select><div id="parametrosLote"></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="executarAcaoLote()">Aplicar</button></div></div></div></div>
+<div class="modal fade" id="modalLote" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Ação em Lote</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select id="acaoLote" class="form-select mb-3" onchange="handleAcaoLoteChange()"><option value="">Escolha...</option><option value="status">Alterar Status</option><option value="praca">Alterar Praça</option><option value="administradora">Alterar Administradora</option><option value="dataPagamento">Definir Data</option><option value="codigo">Alterar Código</option><option value="excluir">Excluir</option></select><div id="parametrosLote"></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="executarAcaoLote()">Aplicar</button></div></div></div></div>
 
 <div class="modal fade" id="modalNovoLead" tabindex="-1">
   <div class="modal-dialog">
@@ -1019,6 +1057,7 @@
   let statuses = [];
   let pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
   let leadStatuses = [], leadsData = [];
+  let pessoas = []; // NOVA: lista de vendedores
   let charts = {};
   let calendarioMes = new Date().getMonth(), calendarioAno = new Date().getFullYear(), diaSelecionado = new Date().toISOString().split('T')[0];
   let selectedIds = new Set();
@@ -1109,6 +1148,7 @@
       renderCoparticipacoesList();
       renderModalidadesList();
       renderFontesVendaList();
+      renderPessoasList(); // NOVO
     }
     if (tabId === 'pesquisaTab') renderTable();
     if (tabId === 'agendaTab') {
@@ -1117,6 +1157,7 @@
     }
     if (tabId === 'clientesTab') {
       switchInternalTab('dadosPrincipais');
+      carregarVendedoresSelect(); // NOVO
     }
   }
 
@@ -1147,7 +1188,8 @@
         loadModalidades(),
         loadFontesVenda(),
         loadLeads(),
-        loadLeadStatuses()
+        loadLeadStatuses(),
+        loadPessoas() // NOVO
       ]);
       popularFiltroPraca();
       preencherSelectsFicha();
@@ -1156,6 +1198,7 @@
       renderCalendario();
       renderCompromissos(diaSelecionado);
       renderLeads();
+      carregarVendedoresSelect(); // NOVO
     } catch (e) {
       console.error('ERRO NO loadAll:', e);
       alert('Erro ao carregar dados: ' + e.message);
@@ -1232,6 +1275,13 @@
     leadStatuses = snap.docs.map(d => ({ id: d.id, name: d.data().name || 'Status' }));
   }
 
+  // NOVA: carregar pessoas (vendedores)
+  async function loadPessoas() {
+    if (!currentUser) return;
+    const snap = await db.collection('pessoas').where('userId', '==', currentUser.uid).get();
+    pessoas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+
   // ==================== PREENCHER SELECTS ====================
   function preencherSelectsFicha() {
     const selects = {
@@ -1283,6 +1333,31 @@
     const select = document.getElementById('filtroPraca');
     select.innerHTML = '<option value="">Todas as Praças</option>';
     pracas.forEach(p => select.innerHTML += `<option value="${p.name}">${p.name}</option>`);
+  }
+
+  // NOVO: popular select de vendedores
+  function carregarVendedoresSelect() {
+    const sel = document.getElementById('cVendedor');
+    if (!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">Selecione</option>';
+    pessoas.forEach(p => {
+      sel.innerHTML += `<option value="${p.id}" data-codigo="${p.codigo || ''}">${p.nome} ${p.codigo ? '('+p.codigo+')' : ''}</option>`;
+    });
+    if (current) sel.value = current;
+  }
+
+  // ==================== FUNÇÃO PARA PREENCHER CÓDIGO AUTOMATICAMENTE ====================
+  function preencherCodigoPorVendedor() {
+    const sel = document.getElementById('cVendedor');
+    const codInput = document.getElementById('cCodigo');
+    const selectedOption = sel.options[sel.selectedIndex];
+    if (selectedOption && selectedOption.dataset.codigo) {
+      codInput.value = selectedOption.dataset.codigo;
+    } else {
+      // se não houver código, deixa em branco
+      codInput.value = '';
+    }
   }
 
   // ==================== DASHBOARD ====================
@@ -1402,7 +1477,8 @@
       const matchSearch = (c.nomeTitular || '').toLowerCase().includes(search) ||
         (c.cpfTitular || '').includes(search) ||
         (c.numeroProposta || '').toLowerCase().includes(search) ||
-        (c.telefoneTitular || '').includes(search);
+        (c.telefoneTitular || '').includes(search) ||
+        (c.codigo || '').toLowerCase().includes(search); // inclui código na busca
       const matchStatus = status === 'ALL' || c.status === status;
       const matchModalidade = modalidade === 'ALL' || c.modalidadePlano === modalidade;
       const matchPraca = praca === 'ALL' || c.praca === praca;
@@ -1432,7 +1508,7 @@
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted">Nenhum cliente encontrado.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="12" class="text-center text-muted">Nenhum cliente encontrado.</td></tr>';
     } else {
       filtered.forEach(c => {
         const checked = selectedIds.has(c.id) ? 'checked' : '';
@@ -1448,6 +1524,7 @@
             <td>${c.qtdVidas || '0'}</td>
             <td>${c.praca || '-'}</td>
             <td>${c.administradora || '-'}</td>
+            <td>${c.codigo || '-'}</td> <!-- NOVA COLUNA CÓDIGO -->
             <td>
               <button class="btn btn-sm btn-outline-primary" onclick="editarCliente('${c.id}')"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-danger" onclick="excluirCliente('${c.id}')"><i class="bi bi-trash"></i></button>
@@ -1486,6 +1563,8 @@
     document.getElementById('cValorComDesconto').value = c.valorComDesconto || '';
     document.getElementById('cPraca').value = c.praca || '';
     document.getElementById('cAdministradora').value = c.administradora || '';
+    // NOVOS CAMPOS
+    document.getElementById('cVendedor').value = c.vendedorId || '';
     document.getElementById('cCodigo').value = c.codigo || '';
     document.getElementById('cAnotacoes').value = c.anotacoes || '';
 
@@ -1508,7 +1587,7 @@
     updateDashboard();
   }
 
-  // ==================== SALVAR CLIENTE (COM UPLOAD DE ANEXOS) - CORRIGIDO ====================
+  // ==================== SALVAR CLIENTE (COM UPLOAD DE ANEXOS) ====================
   async function saveClient() {
     if (isLoading) return;
     const btn = document.getElementById('btnSalvarCliente');
@@ -1542,6 +1621,7 @@
         valorComDesconto: document.getElementById('cValorComDesconto').value,
         praca: document.getElementById('cPraca').value,
         administradora: document.getElementById('cAdministradora').value,
+        vendedorId: document.getElementById('cVendedor').value,
         codigo: document.getElementById('cCodigo').value,
         anotacoes: document.getElementById('cAnotacoes').value,
         dependentes: dependentesTemp,
@@ -1551,7 +1631,6 @@
       };
 
       let clientId = id;
-      // 1. Salvar dados do cliente
       if (id) {
         await db.collection('clients').doc(id).update(data);
         const index = clients.findIndex(c => c.id === id);
@@ -1563,7 +1642,7 @@
         clients.push({ id: docRef.id, ...data });
       }
 
-      // 2. Fazer upload dos anexos pendentes - AGORA DE FORMA SÍNCRONA (aguardando terminar)
+      // Upload de anexos
       const pendentes = anexosTemp.filter(a => a.file && !a.url);
       if (pendentes.length > 0) {
         const uploaded = [];
@@ -1575,7 +1654,6 @@
           const url = await snapshot.ref.getDownloadURL();
           uploaded.push({ nome, url });
         }
-        // Atualiza lista local e Firestore
         anexosTemp = anexosTemp.filter(a => !a.file);
         anexosTemp = anexosTemp.concat(uploaded);
         await db.collection('clients').doc(clientId).update({ anexos: anexosTemp });
@@ -1584,7 +1662,6 @@
         renderAnexos();
       }
 
-      // 3. Limpar formulário e redirecionar
       clearForm();
       renderTable();
       updateDashboard();
@@ -1608,6 +1685,8 @@
     });
     document.getElementById('cQtdVidas').value = 1;
     document.getElementById('cPlanoEscolhido').value = '';
+    document.getElementById('cVendedor').value = '';
+    document.getElementById('cCodigo').value = '';
     dependentesTemp = [];
     renderDependentes();
     pagamentosTemp = [];
@@ -1783,6 +1862,42 @@
     renderPagamentos();
   }
 
+  // ==================== PESSOAS (VENDEDORES) ====================
+  function renderPessoasList() {
+    const el = document.getElementById('pessoasList');
+    if (!el) return;
+    if (pessoas.length === 0) {
+      el.innerHTML = '<p class="text-muted">Nenhuma pessoa cadastrada.</p>';
+      return;
+    }
+    el.innerHTML = pessoas.map(p => `
+      <div class="status-item">
+        <span><strong>${p.nome}</strong> ${p.codigo ? '['+p.codigo+']' : ''}</span>
+        <button class="btn btn-danger btn-sm" onclick="deletePessoa('${p.id}')">Excluir</button>
+      </div>
+    `).join('');
+  }
+
+  async function addPessoa() {
+    const nome = document.getElementById('novaPessoaNome').value.trim();
+    const codigo = document.getElementById('novaPessoaCodigo').value.trim();
+    if (!nome) return alert('Digite o nome da pessoa.');
+    await db.collection('pessoas').add({ nome, codigo, userId: currentUser.uid });
+    document.getElementById('novaPessoaNome').value = '';
+    document.getElementById('novaPessoaCodigo').value = '';
+    await loadPessoas();
+    renderPessoasList();
+    carregarVendedoresSelect();
+  }
+
+  async function deletePessoa(id) {
+    if (!confirm('Remover esta pessoa?')) return;
+    await db.collection('pessoas').doc(id).delete();
+    await loadPessoas();
+    renderPessoasList();
+    carregarVendedoresSelect();
+  }
+
   // ==================== BACKUP ====================
   async function exportBackup() {
     if (!currentUser) return;
@@ -1822,7 +1937,7 @@
 
   // ==================== BACKUP AUTOMÁTICO ====================
   async function coletarDadosBackup() {
-    const collections = ['clients', 'leads', 'tarefas', 'statuses', 'pracas', 'administradoras', 'acomodacoes', 'coparticipacoes', 'modalidades', 'fontesVenda', 'leadStatuses'];
+    const collections = ['clients', 'leads', 'tarefas', 'statuses', 'pracas', 'administradoras', 'acomodacoes', 'coparticipacoes', 'modalidades', 'fontesVenda', 'leadStatuses', 'pessoas'];
     const data = {};
     for (const col of collections) {
       const snap = await db.collection(col).where('userId', '==', currentUser.uid).get();
@@ -2321,6 +2436,8 @@
       div.innerHTML = `<select id="loteAdmin" class="form-select"><option value="">Nova Admin</option>${administradoras.map(a => `<option value="${a.name}">${a.name}</option>`).join('')}</select>`;
     } else if (acao === 'dataPagamento') {
       div.innerHTML = `<input type="date" id="loteData" class="form-control">`;
+    } else if (acao === 'codigo') {
+      div.innerHTML = `<input type="text" id="loteCodigo" class="form-control" placeholder="Novo Código">`;
     }
   }
 
@@ -2346,6 +2463,9 @@
       const val = document.getElementById('loteData')?.value;
       if (!val) return alert('Selecione uma data');
       updates.dataPagamento = val;
+    } else if (acao === 'codigo') {
+      const val = document.getElementById('loteCodigo')?.value.trim();
+      updates.codigo = val;
     } else if (acao === 'excluir') {
       if (!confirm('Excluir permanentemente os clientes selecionados?')) return;
       for (const id of ids) {
