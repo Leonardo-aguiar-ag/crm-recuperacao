@@ -13,7 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <style>
-    /* ===== CSS COMPLETO (mantido igual) ===== */
+    /* ===== CSS COMPLETO (mantido) ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -516,6 +516,21 @@
     .btn-loading { pointer-events: none; opacity: 0.7; }
     .badge-pending { background: #f39c12; color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 0.65rem; }
     .badge-uploaded { background: #27ae60; color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 0.65rem; }
+
+    /* Organização da Config */
+    .config-section {
+      margin-bottom: 1.5rem;
+    }
+    .config-section h6 {
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -592,7 +607,7 @@
         <div class="col-md-2"><label>Praça</label><select id="filtroPraca" class="form-select"><option value="">Todas as Praças</option></select></div>
         <div class="col-md-2"><button class="btn btn-warning mt-4" onclick="gerarRelatorio()"><i class="bi bi-file-earmark-pdf"></i> Relatório</button></div>
       </div>
-      <!-- Cards principais com 5 itens -->
+      <!-- Cards principais -->
       <div class="row g-3 mb-4">
         <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-primary"><i class="icon bi bi-file-earmark-text"></i><h6>Propostas</h6><h2 id="dashTotal">0</h2></div></div>
         <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Implantadas</h6><h2 id="dashImplantados">0</h2></div></div>
@@ -625,15 +640,14 @@
         <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Status</h6><canvas id="statusChart" height="150"></canvas></div></div>
         <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Top Administradoras</h6><canvas id="adminChart" height="150"></canvas></div></div>
         <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">PF vs PJ</h6><canvas id="pfPjChart" height="150"></canvas></div></div>
-        <div class="col-12"><div class="card card-custom"><h6 class="fw-bold mb-3">Evolução Mensal</h6><canvas id="monthlyRevenueChart" height="200"></canvas></div></div>
+        <!-- Removido: Evolução Mensal -->
       </div>
     </div>
 
-    <!-- FICHA CLIENTE -->
+    <!-- FICHA CLIENTE (mantido) -->
     <div class="tab-pane fade" id="clientesTab">
       <div class="card card-custom">
         <input type="hidden" id="clientId">
-        <!-- ABAS INTERNAS -->
         <ul class="nav nav-tabs mb-4" id="fichaTabs">
           <li class="nav-item"><button class="nav-link active" onclick="switchInternalTab('dadosPrincipais')" data-tab="dadosPrincipais">Dados da Proposta</button></li>
           <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('dependentesTab')" data-tab="dependentesTab">Dependentes</button></li>
@@ -641,7 +655,6 @@
           <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('anexosTab')" data-tab="anexosTab">Anexos</button></li>
         </ul>
         <div class="tab-content">
-          <!-- DADOS DA PROPOSTA -->
           <div class="tab-pane" id="dadosPrincipais" style="display:block;">
             <div class="row g-3">
               <div class="col-md-3"><label>Data</label><input type="date" id="cData" class="form-control"></div>
@@ -665,23 +678,11 @@
               <div class="col-md-3"><label>Valor c/ Desconto</label><input type="text" id="cValorComDesconto" class="form-control" onblur="formatarValorInput(this)" onfocus="this.value = this.value.replace(/\./g,'').replace(',','.')"></div>
               <div class="col-md-3"><label>Praça</label><select id="cPraca" class="form-select"></select></div>
               <div class="col-md-3"><label>Administradora</label><select id="cAdministradora" class="form-select"></select></div>
-              
-              <!-- NOVOS CAMPOS: VENDEDOR E CÓDIGO -->
-              <div class="col-md-3">
-                <label>Vendedor</label>
-                <select id="cVendedor" class="form-select" onchange="preencherCodigoPorVendedor()">
-                  <option value="">Selecione</option>
-                </select>
-              </div>
-              <div class="col-md-2">
-                <label>Código</label>
-                <input type="text" id="cCodigo" class="form-control" placeholder="Código" />
-              </div>
-              <div class="col-md-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="2"></textarea></div>
+              <div class="col-md-3"><label>Vendedor</label><select id="cVendedor" class="form-select" onchange="preencherCodigoPorVendedor()"><option value="">Selecione</option></select></div>
+              <div class="col-md-2"><label>Código</label><input type="text" id="cCodigo" class="form-control" placeholder="Código" /></div>
+              <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="2"></textarea></div>
             </div>
           </div>
-
-          <!-- DEPENDENTES -->
           <div class="tab-pane" id="dependentesTab" style="display:none;">
             <div class="row g-2 mb-3">
               <div class="col-md-4"><input type="text" id="depNome" class="form-control" placeholder="Nome *"></div>
@@ -695,31 +696,12 @@
             </div>
             <div id="dependentesList"></div>
           </div>
-
-          <!-- PAGAMENTOS -->
           <div class="tab-pane" id="pagamentosTab" style="display:none;">
             <div class="row g-2 mb-3">
               <div class="col-md-3"><input type="date" id="pagData" class="form-control" placeholder="Data"></div>
               <div class="col-md-3"><input type="text" id="pagValor" class="form-control" placeholder="Valor" onblur="formatarValorInput(this)" onfocus="this.value = this.value.replace(/\./g,'').replace(',','.')"></div>
-              <div class="col-md-2">
-                <select id="pagForma" class="form-select">
-                  <option value="">Forma</option>
-                  <option value="Boleto">Boleto</option>
-                  <option value="Cartão Crédito">Cartão Crédito</option>
-                  <option value="Cartão Débito">Cartão Débito</option>
-                  <option value="Transferência">Transferência</option>
-                  <option value="PIX">PIX</option>
-                  <option value="Dinheiro">Dinheiro</option>
-                </select>
-              </div>
-              <div class="col-md-2">
-                <select id="pagStatus" class="form-select">
-                  <option value="">Status</option>
-                  <option value="Pago">Pago</option>
-                  <option value="Pendente">Pendente</option>
-                  <option value="Atrasado">Atrasado</option>
-                </select>
-              </div>
+              <div class="col-md-2"><select id="pagForma" class="form-select"><option value="">Forma</option><option value="Boleto">Boleto</option><option value="Cartão Crédito">Cartão Crédito</option><option value="Cartão Débito">Cartão Débito</option><option value="Transferência">Transferência</option><option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option></select></div>
+              <div class="col-md-2"><select id="pagStatus" class="form-select"><option value="">Status</option><option value="Pago">Pago</option><option value="Pendente">Pendente</option><option value="Atrasado">Atrasado</option></select></div>
               <div class="col-md-2"><input type="text" id="pagObs" class="form-control" placeholder="Observações"></div>
             </div>
             <div class="d-flex gap-2 mb-3">
@@ -728,24 +710,14 @@
             </div>
             <div id="pagamentosList"></div>
           </div>
-
-          <!-- ANEXOS -->
           <div class="tab-pane" id="anexosTab" style="display:none;">
             <div class="row g-2 mb-3">
-              <div class="col-md-6">
-                <input type="file" id="anexoFileInput" class="form-control" accept=".pdf,.jpg,.png,.doc,.docx,.xls,.xlsx" multiple />
-              </div>
-              <div class="col-md-3">
-                <button class="btn btn-success btn-sm" onclick="adicionarAnexos()"><i class="bi bi-plus-circle"></i> Adicionar</button>
-              </div>
-              <div class="col-md-3">
-                <button class="btn btn-secondary btn-sm" onclick="document.getElementById('anexoFileInput').value = ''">Limpar</button>
-              </div>
+              <div class="col-md-6"><input type="file" id="anexoFileInput" class="form-control" accept=".pdf,.jpg,.png,.doc,.docx,.xls,.xlsx" multiple /></div>
+              <div class="col-md-3"><button class="btn btn-success btn-sm" onclick="adicionarAnexos()"><i class="bi bi-plus-circle"></i> Adicionar</button></div>
+              <div class="col-md-3"><button class="btn btn-secondary btn-sm" onclick="document.getElementById('anexoFileInput').value = ''">Limpar</button></div>
             </div>
             <div id="anexosList"></div>
-            <div class="text-muted small mt-2">
-              <i class="bi bi-info-circle"></i> Os anexos serão enviados automaticamente ao salvar o cliente.
-            </div>
+            <div class="text-muted small mt-2"><i class="bi bi-info-circle"></i> Os anexos serão enviados automaticamente ao salvar o cliente.</div>
           </div>
         </div>
         <div class="d-flex gap-2 mt-4">
@@ -755,7 +727,7 @@
       </div>
     </div>
 
-    <!-- PESQUISA -->
+    <!-- PESQUISA (mantido) -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card card-custom">
         <div class="row g-3 mb-4">
@@ -789,7 +761,7 @@
                 <th data-col="qtdVidas">Vidas</th>
                 <th data-col="praca">Praça</th>
                 <th data-col="administradora">Admin.</th>
-                <th data-col="codigo">Código</th>  <!-- NOVA COLUNA -->
+                <th data-col="codigo">Código</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -799,7 +771,7 @@
       </div>
     </div>
 
-    <!-- LEADS -->
+    <!-- LEADS (mantido) -->
     <div class="tab-pane fade" id="leadsTab">
       <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
         <div class="view-toggle btn-group" role="group">
@@ -836,7 +808,7 @@
       </div>
     </div>
 
-    <!-- AGENDA -->
+    <!-- AGENDA (mantido) -->
     <div class="tab-pane fade" id="agendaTab">
       <div class="row g-4">
         <div class="col-lg-4">
@@ -863,91 +835,79 @@
       </div>
     </div>
 
-    <!-- CONFIGURAÇÕES -->
+    <!-- CONFIGURAÇÕES (REORGANIZADO) -->
     <div class="tab-pane fade" id="configTab">
       <div class="row g-4">
-        <!-- Status de Leads -->
-        <div class="col-lg-4">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-tags me-2"></i>Status de Leads</h5>
-            <button class="btn btn-success mb-3 btn-sm" onclick="addLeadStatus()"><i class="bi bi-plus"></i> Adicionar</button>
+        <!-- Coluna esquerda: Status -->
+        <div class="col-lg-6">
+          <div class="card card-custom config-section">
+            <h6><i class="bi bi-tags me-2"></i>Status de Leads</h6>
+            <button class="btn btn-success btn-sm mb-2" onclick="addLeadStatus()"><i class="bi bi-plus"></i> Adicionar</button>
             <div id="leadStatusList"></div>
           </div>
-        </div>
-        <!-- Status de Propostas -->
-        <div class="col-lg-4">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-tags me-2"></i>Status de Propostas</h5>
-            <button class="btn btn-success mb-3 btn-sm" onclick="addStatus()"><i class="bi bi-plus"></i> Adicionar</button>
+          <div class="card card-custom config-section mt-3">
+            <h6><i class="bi bi-tags me-2"></i>Status de Propostas</h6>
+            <button class="btn btn-success btn-sm mb-2" onclick="addStatus()"><i class="bi bi-plus"></i> Adicionar</button>
             <div id="statusList"></div>
           </div>
         </div>
-        <!-- Praças -->
-        <div class="col-lg-4">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-geo-alt me-2"></i>Praças</h5>
-            <div class="input-group mb-3"><input type="text" id="novaPraca" class="form-control" placeholder="Nova praça"><button class="btn btn-primary btn-sm" onclick="addPraca()">Adicionar</button></div>
-            <div id="pracasList"></div>
-          </div>
-        </div>
-        <!-- Administradoras -->
-        <div class="col-lg-3">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-building me-2"></i>Administradoras</h5>
-            <div class="input-group mb-3"><input type="text" id="novaAdministradora" class="form-control" placeholder="Nova admin"><button class="btn btn-primary btn-sm" onclick="addAdministradora()">Adicionar</button></div>
-            <div id="administradorasList"></div>
-          </div>
-        </div>
-        <!-- Acomodações -->
-        <div class="col-lg-3">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-bed me-2"></i>Acomodações</h5>
-            <div class="input-group mb-3"><input type="text" id="novaAcomodacao" class="form-control" placeholder="Nova acomodação"><button class="btn btn-primary btn-sm" onclick="addAcomodacao()">Adicionar</button></div>
-            <div id="acomodacoesList"></div>
-          </div>
-        </div>
-        <!-- Coparticipações -->
-        <div class="col-lg-3">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-percent me-2"></i>Coparticipações</h5>
-            <div class="input-group mb-3"><input type="text" id="novaCoparticipacao" class="form-control" placeholder="Nova coparticipação"><button class="btn btn-primary btn-sm" onclick="addCoparticipacao()">Adicionar</button></div>
-            <div id="coparticipacoesList"></div>
-          </div>
-        </div>
-        <!-- Modalidades -->
-        <div class="col-lg-3">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-list-ul me-2"></i>Modalidades</h5>
-            <div class="input-group mb-3"><input type="text" id="novaModalidade" class="form-control" placeholder="Nova modalidade"><button class="btn btn-primary btn-sm" onclick="addModalidade()">Adicionar</button></div>
-            <div id="modalidadesList"></div>
-          </div>
-        </div>
-        <!-- Fontes Venda -->
-        <div class="col-lg-3">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Fontes Venda</h5>
-            <div class="input-group mb-3"><input type="text" id="novaFonteVenda" class="form-control" placeholder="Nova fonte"><button class="btn btn-primary btn-sm" onclick="addFonteVenda()">Adicionar</button></div>
-            <div id="fontesVendaList"></div>
+
+        <!-- Coluna direita: Cadastros (Praças, Admins, etc) -->
+        <div class="col-lg-6">
+          <div class="card card-custom config-section">
+            <h6><i class="bi bi-building me-2"></i>Cadastros</h6>
+            <div class="row g-2">
+              <div class="col-md-6">
+                <label>Praças</label>
+                <div class="input-group mb-2"><input type="text" id="novaPraca" class="form-control" placeholder="Nova"><button class="btn btn-primary btn-sm" onclick="addPraca()">+</button></div>
+                <div id="pracasList"></div>
+              </div>
+              <div class="col-md-6">
+                <label>Administradoras</label>
+                <div class="input-group mb-2"><input type="text" id="novaAdministradora" class="form-control" placeholder="Nova"><button class="btn btn-primary btn-sm" onclick="addAdministradora()">+</button></div>
+                <div id="administradorasList"></div>
+              </div>
+              <div class="col-md-6">
+                <label>Acomodações</label>
+                <div class="input-group mb-2"><input type="text" id="novaAcomodacao" class="form-control" placeholder="Nova"><button class="btn btn-primary btn-sm" onclick="addAcomodacao()">+</button></div>
+                <div id="acomodacoesList"></div>
+              </div>
+              <div class="col-md-6">
+                <label>Coparticipações</label>
+                <div class="input-group mb-2"><input type="text" id="novaCoparticipacao" class="form-control" placeholder="Nova"><button class="btn btn-primary btn-sm" onclick="addCoparticipacao()">+</button></div>
+                <div id="coparticipacoesList"></div>
+              </div>
+              <div class="col-md-6">
+                <label>Modalidades</label>
+                <div class="input-group mb-2"><input type="text" id="novaModalidade" class="form-control" placeholder="Nova"><button class="btn btn-primary btn-sm" onclick="addModalidade()">+</button></div>
+                <div id="modalidadesList"></div>
+              </div>
+              <div class="col-md-6">
+                <label>Fontes Venda</label>
+                <div class="input-group mb-2"><input type="text" id="novaFonteVenda" class="form-control" placeholder="Nova"><button class="btn btn-primary btn-sm" onclick="addFonteVenda()">+</button></div>
+                <div id="fontesVendaList"></div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- NOVA SEÇÃO: PESSOAS (VENDEDORES) -->
-        <div class="col-lg-4">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-people me-2"></i>Pessoas (Vendedores)</h5>
+        <!-- Pessoas (Vendedores) -->
+        <div class="col-lg-12">
+          <div class="card card-custom config-section">
+            <h6><i class="bi bi-people me-2"></i>Pessoas (Vendedores)</h6>
             <div class="row g-2 mb-2">
-              <div class="col-6"><input type="text" id="novaPessoaNome" class="form-control" placeholder="Nome"></div>
-              <div class="col-4"><input type="text" id="novaPessoaCodigo" class="form-control" placeholder="Código"></div>
-              <div class="col-2"><button class="btn btn-primary btn-sm" onclick="addPessoa()"><i class="bi bi-plus"></i></button></div>
+              <div class="col-md-3"><input type="text" id="novaPessoaNome" class="form-control" placeholder="Nome"></div>
+              <div class="col-md-2"><input type="text" id="novaPessoaCodigo" class="form-control" placeholder="Código"></div>
+              <div class="col-md-1"><button class="btn btn-primary btn-sm" onclick="addPessoa()"><i class="bi bi-plus"></i></button></div>
             </div>
             <div id="pessoasList"></div>
           </div>
         </div>
 
-        <!-- Backup Automático -->
-        <div class="col-12">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-cloud-upload me-2"></i>Backup Automático (Firebase Storage)</h5>
+        <!-- Backup -->
+        <div class="col-lg-12">
+          <div class="card card-custom config-section">
+            <h6><i class="bi bi-cloud-upload me-2"></i>Backup</h6>
             <div class="row g-3 align-items-end">
               <div class="col-md-3">
                 <label>Intervalo</label>
@@ -976,13 +936,7 @@
             <div class="mt-2 small text-muted">
               <span id="proximoBackupInfo">Próximo backup: --</span>
             </div>
-          </div>
-        </div>
-
-        <!-- Backup Manual -->
-        <div class="col-12">
-          <div class="card card-custom">
-            <h5 class="fw-bold"><i class="bi bi-database me-2"></i>Backup Manual</h5>
+            <hr />
             <div class="d-flex gap-3 flex-wrap">
               <button class="btn btn-primary btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i> Exportar</button>
               <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('backupFileInput').click()"><i class="bi bi-upload"></i> Importar</button>
@@ -1018,9 +972,7 @@
         <div class="mb-3"><input type="email" id="novoLeadEmail" class="form-control" placeholder="E-mail"></div>
         <div class="mb-3"><input type="text" id="novoLeadCidade" class="form-control" placeholder="Cidade"></div>
         <div class="mb-3"><select id="novoLeadUf" class="form-select"><option value="">UF</option><option value="SP">SP</option><option value="RJ">RJ</option><option value="MG">MG</option><option value="BA">BA</option><option value="PR">PR</option><option value="RS">RS</option><option value="SC">SC</option><option value="DF">DF</option><option value="GO">GO</option><option value="PE">PE</option><option value="CE">CE</option><option value="PB">PB</option></select></div>
-        <div class="mb-3">
-          <select id="novoLeadStatus" class="form-select"><option value="">Status</option></select>
-        </div>
+        <div class="mb-3"><select id="novoLeadStatus" class="form-select"><option value="">Status</option></select></div>
         <div class="mb-3"><textarea id="novoLeadObs" class="form-control" rows="2" placeholder="Observações"></textarea></div>
       </div>
       <div class="modal-footer">
@@ -1057,7 +1009,7 @@
   let statuses = [];
   let pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
   let leadStatuses = [], leadsData = [];
-  let pessoas = []; // NOVA: lista de vendedores
+  let pessoas = [];
   let charts = {};
   let calendarioMes = new Date().getMonth(), calendarioAno = new Date().getFullYear(), diaSelecionado = new Date().toISOString().split('T')[0];
   let selectedIds = new Set();
@@ -1148,7 +1100,7 @@
       renderCoparticipacoesList();
       renderModalidadesList();
       renderFontesVendaList();
-      renderPessoasList(); // NOVO
+      renderPessoasList();
     }
     if (tabId === 'pesquisaTab') renderTable();
     if (tabId === 'agendaTab') {
@@ -1157,15 +1109,12 @@
     }
     if (tabId === 'clientesTab') {
       switchInternalTab('dadosPrincipais');
-      carregarVendedoresSelect(); // NOVO
+      carregarVendedoresSelect();
     }
   }
 
-  // ==================== CONTROLE DE ABAS INTERNAS ====================
   function switchInternalTab(tabId) {
-    document.querySelectorAll('#clientesTab .tab-pane').forEach(p => {
-      p.style.display = 'none';
-    });
+    document.querySelectorAll('#clientesTab .tab-pane').forEach(p => p.style.display = 'none');
     const pane = document.getElementById(tabId);
     if (pane) pane.style.display = 'block';
     document.querySelectorAll('#fichaTabs .nav-link').forEach(btn => btn.classList.remove('active'));
@@ -1189,7 +1138,7 @@
         loadFontesVenda(),
         loadLeads(),
         loadLeadStatuses(),
-        loadPessoas() // NOVO
+        loadPessoas()
       ]);
       popularFiltroPraca();
       preencherSelectsFicha();
@@ -1198,7 +1147,7 @@
       renderCalendario();
       renderCompromissos(diaSelecionado);
       renderLeads();
-      carregarVendedoresSelect(); // NOVO
+      carregarVendedoresSelect();
     } catch (e) {
       console.error('ERRO NO loadAll:', e);
       alert('Erro ao carregar dados: ' + e.message);
@@ -1275,7 +1224,6 @@
     leadStatuses = snap.docs.map(d => ({ id: d.id, name: d.data().name || 'Status' }));
   }
 
-  // NOVA: carregar pessoas (vendedores)
   async function loadPessoas() {
     if (!currentUser) return;
     const snap = await db.collection('pessoas').where('userId', '==', currentUser.uid).get();
@@ -1335,7 +1283,6 @@
     pracas.forEach(p => select.innerHTML += `<option value="${p.name}">${p.name}</option>`);
   }
 
-  // NOVO: popular select de vendedores
   function carregarVendedoresSelect() {
     const sel = document.getElementById('cVendedor');
     if (!sel) return;
@@ -1347,7 +1294,6 @@
     if (current) sel.value = current;
   }
 
-  // ==================== FUNÇÃO PARA PREENCHER CÓDIGO AUTOMATICAMENTE ====================
   function preencherCodigoPorVendedor() {
     const sel = document.getElementById('cVendedor');
     const codInput = document.getElementById('cCodigo');
@@ -1355,7 +1301,6 @@
     if (selectedOption && selectedOption.dataset.codigo) {
       codInput.value = selectedOption.dataset.codigo;
     } else {
-      // se não houver código, deixa em branco
       codInput.value = '';
     }
   }
@@ -1412,13 +1357,15 @@
     document.getElementById('dashMediaTempo').innerText = '0';
     document.getElementById('dashTicketMedio').innerText = 'R$ ' + ticketMedio.toFixed(2).replace('.', ',');
     atualizarGraficos(filtered);
-    renderUltimasVendas();
+    renderUltimasVendas(); // <-- CHAMADA CORRIGIDA
   }
 
   // ==================== ÚLTIMAS VENDAS ====================
   function renderUltimasVendas() {
     const tbody = document.getElementById('ultimasVendasBody');
+    // Ordenar por data decrescente e pegar as 5 primeiras
     const ultimas = [...clients]
+      .filter(c => c.data) // apenas com data
       .sort((a, b) => (b.data || '').localeCompare(a.data || ''))
       .slice(0, 5);
     if (ultimas.length === 0) {
@@ -1478,7 +1425,7 @@
         (c.cpfTitular || '').includes(search) ||
         (c.numeroProposta || '').toLowerCase().includes(search) ||
         (c.telefoneTitular || '').includes(search) ||
-        (c.codigo || '').toLowerCase().includes(search); // inclui código na busca
+        (c.codigo || '').toLowerCase().includes(search);
       const matchStatus = status === 'ALL' || c.status === status;
       const matchModalidade = modalidade === 'ALL' || c.modalidadePlano === modalidade;
       const matchPraca = praca === 'ALL' || c.praca === praca;
@@ -1524,7 +1471,7 @@
             <td>${c.qtdVidas || '0'}</td>
             <td>${c.praca || '-'}</td>
             <td>${c.administradora || '-'}</td>
-            <td>${c.codigo || '-'}</td> <!-- NOVA COLUNA CÓDIGO -->
+            <td>${c.codigo || '-'}</td>
             <td>
               <button class="btn btn-sm btn-outline-primary" onclick="editarCliente('${c.id}')"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-danger" onclick="excluirCliente('${c.id}')"><i class="bi bi-trash"></i></button>
@@ -1540,7 +1487,6 @@
   function editarCliente(id) {
     const c = clients.find(c => c.id === id);
     if (!c) return;
-
     document.getElementById('clientId').value = c.id;
     document.getElementById('cData').value = c.data || '';
     document.getElementById('cNumeroProposta').value = c.numeroProposta || '';
@@ -1563,7 +1509,6 @@
     document.getElementById('cValorComDesconto').value = c.valorComDesconto || '';
     document.getElementById('cPraca').value = c.praca || '';
     document.getElementById('cAdministradora').value = c.administradora || '';
-    // NOVOS CAMPOS
     document.getElementById('cVendedor').value = c.vendedorId || '';
     document.getElementById('cCodigo').value = c.codigo || '';
     document.getElementById('cAnotacoes').value = c.anotacoes || '';
@@ -1587,7 +1532,7 @@
     updateDashboard();
   }
 
-  // ==================== SALVAR CLIENTE (COM UPLOAD DE ANEXOS) ====================
+  // ==================== SALVAR CLIENTE ====================
   async function saveClient() {
     if (isLoading) return;
     const btn = document.getElementById('btnSalvarCliente');
@@ -1862,7 +1807,7 @@
     renderPagamentos();
   }
 
-  // ==================== PESSOAS (VENDEDORES) ====================
+  // ==================== PESSOAS ====================
   function renderPessoasList() {
     const el = document.getElementById('pessoasList');
     if (!el) return;
@@ -2200,7 +2145,7 @@
     renderLeads();
   }
 
-  // ==================== CONFIGURAÇÕES ====================
+  // ==================== CONFIGURAÇÕES (RENDERIZAÇÃO) ====================
   function renderLeadStatuses() {
     const el = document.getElementById('leadStatusList');
     if (!el) return;
