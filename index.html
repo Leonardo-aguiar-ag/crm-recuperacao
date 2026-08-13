@@ -13,7 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <style>
-    /* ===== CSS COMPLETO (mantido) ===== */
+    /* ===== CSS COM MELHORIAS NO MODO ESCURO ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -43,16 +43,162 @@
       --sidebar-width: 220px;
       --sidebar-collapsed: 60px;
     }
+
+    /* ===== MODO ESCURO COM ALTO CONTRASTE ===== */
     body.dark-mode {
-      --bg: #0c111f;
-      --card: #182237;
-      --border: #3a4a66;
-      --text: #eef2f8;
-      --text-secondary: #b0bdd5;
-      --primary-light: #1e1a3a;
-      --shadow: 0 12px 40px rgba(0,0,0,0.5);
-      --shadow-hover: 0 20px 50px rgba(0,0,0,0.7);
+      --bg: #0b1120;           /* fundo mais escuro e uniforme */
+      --card: #19223a;         /* cards mais claros que o fundo, mas ainda escuros */
+      --border: #3e507a;       /* bordas com tom azulado para contraste */
+      --text: #e8edf5;         /* texto claro com alto contraste */
+      --text-secondary: #b8c7e0; /* texto secundário mais claro */
+      --primary-light: #2a2a5a; /* fundo de hover e seleção */
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+      --shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.9);
     }
+
+    /* Ajustes específicos para elementos no escuro */
+    body.dark-mode .dashboard-card {
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    body.dark-mode .dashboard-card .sub {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+    body.dark-mode .dashboard-card .icon {
+      opacity: 0.25;
+    }
+
+    body.dark-mode .card-custom {
+      background: var(--card);
+      border-color: var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    body.dark-mode .table thead th {
+      background: #1f2b4a;
+      color: #b0c4f0;
+    }
+    body.dark-mode .table tbody td {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    body.dark-mode .table tbody tr:hover td {
+      background: #26325a;
+    }
+
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+      background: #101a2e;
+      border-color: #3a507a;
+      color: #e8edf5;
+    }
+    body.dark-mode .form-control::placeholder {
+      color: #8a9fc0;
+    }
+    body.dark-mode .form-control:focus,
+    body.dark-mode .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.4);
+    }
+
+    body.dark-mode .status-item {
+      background: #101a2e;
+      border-color: #3a507a;
+      color: var(--text);
+    }
+    body.dark-mode .status-item:hover {
+      background: #1f2b4a;
+      border-color: var(--primary);
+    }
+
+    body.dark-mode .sidebar {
+      background: var(--card);
+      border-right-color: var(--border);
+    }
+    body.dark-mode .sidebar .logo {
+      border-bottom-color: var(--border);
+    }
+    body.dark-mode .sidebar .nav-link {
+      color: var(--text-secondary);
+    }
+    body.dark-mode .sidebar .nav-link:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    body.dark-mode .sidebar .nav-link.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    body.dark-mode .topbar {
+      background: var(--card);
+      border-bottom-color: var(--border);
+    }
+
+    body.dark-mode .mini-calendar .day {
+      color: var(--text);
+    }
+    body.dark-mode .mini-calendar .day:hover {
+      background: var(--primary);
+      color: white;
+    }
+    body.dark-mode .mini-calendar .day.today {
+      background: var(--primary);
+      color: white;
+    }
+    body.dark-mode .mini-calendar .day.selected {
+      background: var(--primary);
+      color: white;
+    }
+
+    body.dark-mode .pipeline-column {
+      background: #101a2e;
+      border-color: var(--border);
+    }
+    body.dark-mode .pipeline-card {
+      background: var(--card);
+      border-left-color: var(--primary);
+    }
+
+    body.dark-mode .login-box {
+      background: var(--card);
+      color: var(--text);
+    }
+
+    body.dark-mode .btn-outline-secondary {
+      color: var(--text-secondary);
+      border-color: var(--border);
+    }
+    body.dark-mode .btn-outline-secondary:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    body.dark-mode .modal-content {
+      background: var(--card) !important;
+      color: var(--text);
+    }
+    body.dark-mode .modal-header,
+    body.dark-mode .modal-footer {
+      border-color: var(--border);
+    }
+
+    body.dark-mode .badge-pending {
+      background: #b8860b;
+      color: #fff;
+    }
+    body.dark-mode .badge-uploaded {
+      background: #1a7a4a;
+      color: #fff;
+    }
+
+    /* Ajuste para gráficos (Chart.js) – fundo transparente */
+    body.dark-mode canvas {
+      filter: brightness(0.9) contrast(1.1);
+    }
+
+    /* Restante do CSS original (mantido) */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', -apple-system, sans-serif;
@@ -340,24 +486,6 @@
       display: block;
       letter-spacing: 0.2px;
     }
-    body.dark-mode .form-control,
-    body.dark-mode .form-select {
-      background: #0f1a2b;
-      border-color: #4a5a7a;
-      color: #eef2f8;
-    }
-    body.dark-mode .form-control::placeholder {
-      color: #8a9bb0;
-      opacity: 0.9;
-    }
-    body.dark-mode label {
-      color: #e0e8f0;
-    }
-    body.dark-mode .form-control:focus,
-    body.dark-mode .form-select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.35);
-    }
     .mini-calendar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -411,14 +539,6 @@
       from { opacity: 0; transform: translateY(40px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    body.dark-mode .dashboard-card {
-      color: #ffffff !important;
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-    body.dark-mode .dashboard-card .sub {
-      color: rgba(255,255,255,0.85) !important;
-    }
-    body.dark-mode .dashboard-card .icon { opacity: 0.25; }
     .pipeline-container {
       display: flex;
       gap: 16px;
@@ -517,7 +637,6 @@
     .badge-pending { background: #f39c12; color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 0.65rem; }
     .badge-uploaded { background: #27ae60; color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 0.65rem; }
 
-    /* Organização da Config */
     .config-section {
       margin-bottom: 1.5rem;
     }
@@ -640,7 +759,6 @@
         <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Status</h6><canvas id="statusChart" height="150"></canvas></div></div>
         <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Top Administradoras</h6><canvas id="adminChart" height="150"></canvas></div></div>
         <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">PF vs PJ</h6><canvas id="pfPjChart" height="150"></canvas></div></div>
-        <!-- Removido: Evolução Mensal -->
       </div>
     </div>
 
@@ -835,7 +953,7 @@
       </div>
     </div>
 
-    <!-- CONFIGURAÇÕES (REORGANIZADO) -->
+    <!-- CONFIGURAÇÕES (reorganizado) -->
     <div class="tab-pane fade" id="configTab">
       <div class="row g-4">
         <!-- Coluna esquerda: Status -->
@@ -852,7 +970,7 @@
           </div>
         </div>
 
-        <!-- Coluna direita: Cadastros (Praças, Admins, etc) -->
+        <!-- Coluna direita: Cadastros -->
         <div class="col-lg-6">
           <div class="card card-custom config-section">
             <h6><i class="bi bi-building me-2"></i>Cadastros</h6>
@@ -1357,15 +1475,14 @@
     document.getElementById('dashMediaTempo').innerText = '0';
     document.getElementById('dashTicketMedio').innerText = 'R$ ' + ticketMedio.toFixed(2).replace('.', ',');
     atualizarGraficos(filtered);
-    renderUltimasVendas(); // <-- CHAMADA CORRIGIDA
+    renderUltimasVendas();
   }
 
   // ==================== ÚLTIMAS VENDAS ====================
   function renderUltimasVendas() {
     const tbody = document.getElementById('ultimasVendasBody');
-    // Ordenar por data decrescente e pegar as 5 primeiras
     const ultimas = [...clients]
-      .filter(c => c.data) // apenas com data
+      .filter(c => c.data)
       .sort((a, b) => (b.data || '').localeCompare(a.data || ''))
       .slice(0, 5);
     if (ultimas.length === 0) {
