@@ -12,8 +12,12 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <!-- JSZip para manipulação de ZIP (anexos em lote) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <!-- XLSX para exportação avançada (Excel com abas) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    /* ===== CSS COM MELHORIAS NO MODO ESCURO ===== */
+    /* ===== CSS COMPLETO COM MELHORIAS NO MODO ESCURO ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -43,162 +47,16 @@
       --sidebar-width: 220px;
       --sidebar-collapsed: 60px;
     }
-
-    /* ===== MODO ESCURO COM ALTO CONTRASTE ===== */
     body.dark-mode {
-      --bg: #0b1120;           /* fundo mais escuro e uniforme */
-      --card: #19223a;         /* cards mais claros que o fundo, mas ainda escuros */
-      --border: #3e507a;       /* bordas com tom azulado para contraste */
-      --text: #e8edf5;         /* texto claro com alto contraste */
-      --text-secondary: #b8c7e0; /* texto secundário mais claro */
-      --primary-light: #2a2a5a; /* fundo de hover e seleção */
-      --shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
-      --shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.9);
+      --bg: #0b1120;
+      --card: #19223a;
+      --border: #3e507a;
+      --text: #e8edf5;
+      --text-secondary: #b8c7e0;
+      --primary-light: #2a2a5a;
+      --shadow: 0 12px 40px rgba(0,0,0,0.7);
+      --shadow-hover: 0 20px 50px rgba(0,0,0,0.9);
     }
-
-    /* Ajustes específicos para elementos no escuro */
-    body.dark-mode .dashboard-card {
-      color: #ffffff !important;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    body.dark-mode .dashboard-card .sub {
-      color: rgba(255, 255, 255, 0.85) !important;
-    }
-    body.dark-mode .dashboard-card .icon {
-      opacity: 0.25;
-    }
-
-    body.dark-mode .card-custom {
-      background: var(--card);
-      border-color: var(--border);
-      box-shadow: var(--shadow);
-    }
-
-    body.dark-mode .table thead th {
-      background: #1f2b4a;
-      color: #b0c4f0;
-    }
-    body.dark-mode .table tbody td {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      color: var(--text);
-    }
-    body.dark-mode .table tbody tr:hover td {
-      background: #26325a;
-    }
-
-    body.dark-mode .form-control,
-    body.dark-mode .form-select {
-      background: #101a2e;
-      border-color: #3a507a;
-      color: #e8edf5;
-    }
-    body.dark-mode .form-control::placeholder {
-      color: #8a9fc0;
-    }
-    body.dark-mode .form-control:focus,
-    body.dark-mode .form-select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.4);
-    }
-
-    body.dark-mode .status-item {
-      background: #101a2e;
-      border-color: #3a507a;
-      color: var(--text);
-    }
-    body.dark-mode .status-item:hover {
-      background: #1f2b4a;
-      border-color: var(--primary);
-    }
-
-    body.dark-mode .sidebar {
-      background: var(--card);
-      border-right-color: var(--border);
-    }
-    body.dark-mode .sidebar .logo {
-      border-bottom-color: var(--border);
-    }
-    body.dark-mode .sidebar .nav-link {
-      color: var(--text-secondary);
-    }
-    body.dark-mode .sidebar .nav-link:hover {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-    body.dark-mode .sidebar .nav-link.active {
-      background: var(--primary);
-      color: white;
-    }
-
-    body.dark-mode .topbar {
-      background: var(--card);
-      border-bottom-color: var(--border);
-    }
-
-    body.dark-mode .mini-calendar .day {
-      color: var(--text);
-    }
-    body.dark-mode .mini-calendar .day:hover {
-      background: var(--primary);
-      color: white;
-    }
-    body.dark-mode .mini-calendar .day.today {
-      background: var(--primary);
-      color: white;
-    }
-    body.dark-mode .mini-calendar .day.selected {
-      background: var(--primary);
-      color: white;
-    }
-
-    body.dark-mode .pipeline-column {
-      background: #101a2e;
-      border-color: var(--border);
-    }
-    body.dark-mode .pipeline-card {
-      background: var(--card);
-      border-left-color: var(--primary);
-    }
-
-    body.dark-mode .login-box {
-      background: var(--card);
-      color: var(--text);
-    }
-
-    body.dark-mode .btn-outline-secondary {
-      color: var(--text-secondary);
-      border-color: var(--border);
-    }
-    body.dark-mode .btn-outline-secondary:hover {
-      background: var(--border);
-      color: var(--text);
-    }
-
-    body.dark-mode .modal-content {
-      background: var(--card) !important;
-      color: var(--text);
-    }
-    body.dark-mode .modal-header,
-    body.dark-mode .modal-footer {
-      border-color: var(--border);
-    }
-
-    body.dark-mode .badge-pending {
-      background: #b8860b;
-      color: #fff;
-    }
-    body.dark-mode .badge-uploaded {
-      background: #1a7a4a;
-      color: #fff;
-    }
-
-    /* Ajuste para gráficos (Chart.js) – fundo transparente */
-    body.dark-mode canvas {
-      filter: brightness(0.9) contrast(1.1);
-    }
-
-    /* Restante do CSS original (mantido) */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', -apple-system, sans-serif;
@@ -621,7 +479,6 @@
     ::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-
     .loading-spinner {
       display: inline-block;
       width: 1.2rem;
@@ -636,7 +493,6 @@
     .btn-loading { pointer-events: none; opacity: 0.7; }
     .badge-pending { background: #f39c12; color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 0.65rem; }
     .badge-uploaded { background: #27ae60; color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 0.65rem; }
-
     .config-section {
       margin-bottom: 1.5rem;
     }
@@ -649,6 +505,44 @@
       border-bottom: 2px solid var(--border);
       padding-bottom: 0.5rem;
       margin-bottom: 1rem;
+    }
+    .interacao-item {
+      border-left: 4px solid var(--primary);
+      padding: 0.5rem 1rem;
+      margin-bottom: 0.5rem;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .interacao-item .tipo {
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      color: var(--primary);
+    }
+    .interacao-item .data {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+    .widget-control {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .widget-control label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .widget-control input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
     }
   </style>
 </head>
@@ -719,6 +613,18 @@
 
     <!-- DASHBOARD -->
     <div class="tab-pane fade show active" id="dashboardTab">
+      <div class="card card-custom mb-4">
+        <h6 class="fw-bold"><i class="bi bi-eye me-2"></i>Personalizar Widgets</h6>
+        <div class="widget-control" id="widgetControls">
+          <label><input type="checkbox" class="widget-toggle" data-widget="cards1" checked> Cards Principais</label>
+          <label><input type="checkbox" class="widget-toggle" data-widget="cards2" checked> Inadimplência / Em Dia</label>
+          <label><input type="checkbox" class="widget-toggle" data-widget="ultimasVendas" checked> Últimas Vendas</label>
+          <label><input type="checkbox" class="widget-toggle" data-widget="graficos" checked> Gráficos</label>
+          <label><input type="checkbox" class="widget-toggle" data-widget="relatorioVendedor" checked> Performance Vendedores</label>
+        </div>
+        <button class="btn btn-sm btn-outline-secondary" onclick="aplicarWidgets()">Aplicar</button>
+      </div>
+
       <div class="row g-3 mb-4 align-items-end">
         <div class="col-md-2"><label>Período</label><select id="periodoFiltro" class="form-select"><option value="">Todos</option><option value="30">Últimos 30 dias</option><option value="60">Últimos 60 dias</option><option value="90">Últimos 90 dias</option><option value="120">Últimos 120 dias</option><option value="180">Últimos 180 dias</option><option value="mes">Mês atual</option><option value="intervalo">Intervalo personalizado</option></select></div>
         <div class="col-md-2" id="intervaloDiv" style="display:none;"><label>Início</label><input type="date" id="dataInicioIntervalo" class="form-control"></div>
@@ -726,43 +632,57 @@
         <div class="col-md-2"><label>Praça</label><select id="filtroPraca" class="form-select"><option value="">Todas as Praças</option></select></div>
         <div class="col-md-2"><button class="btn btn-warning mt-4" onclick="gerarRelatorio()"><i class="bi bi-file-earmark-pdf"></i> Relatório</button></div>
       </div>
-      <!-- Cards principais -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-primary"><i class="icon bi bi-file-earmark-text"></i><h6>Propostas</h6><h2 id="dashTotal">0</h2></div></div>
-        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Implantadas</h6><h2 id="dashImplantados">0</h2></div></div>
-        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-info"><i class="icon bi bi-cash-stack"></i><h6>Valor Processado</h6><h2 id="dashProcessado">R$ 0,00</h2></div></div>
-        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-warning" style="color:#2d3436;"><i class="icon bi bi-graph-up"></i><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
-        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-secondary"><i class="icon bi bi-calculator"></i><h6>Ticket Médio</h6><h2 id="dashTicketMedio">R$ 0,00</h2></div></div>
-      </div>
-      <div class="row g-3 mb-4">
-        <div class="col-md-4"><div class="dashboard-card bg-danger"><i class="icon bi bi-exclamation-triangle"></i><h6>Clientes Inadimplentes</h6><h2 id="dashInadimplentes">0</h2><span class="sub">Média atraso: <span id="dashMediaAtraso">0</span> dias</span></div></div>
-        <div class="col-md-4"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Clientes em Dia</h6><h2 id="dashEmDia">0</h2><span class="sub">Média tempo: <span id="dashMediaTempo">0</span> meses</span></div></div>
-        <div class="col-md-4"><div class="dashboard-card bg-purple"><i class="icon bi bi-question-circle"></i><h6>Sem Info de Pagamento</h6><h2 id="dashSemInfo">0</h2></div></div>
-      </div>
-      
-      <!-- Últimas Vendas -->
-      <div class="card card-custom mb-4">
-        <h5 class="fw-bold"><i class="bi bi-trophy me-2"></i>Últimas Vendas</h5>
-        <div class="table-responsive">
-          <table class="table" id="ultimasVendasTable">
-            <thead>
-              <tr><th># Proposta</th><th>Titular</th><th>Tipo</th><th>Data</th></tr>
-            </thead>
-            <tbody id="ultimasVendasBody">
-              <tr><td colspan="4" class="text-center text-muted py-3">Nenhuma venda encontrada.</td></tr>
-            </tbody>
-          </table>
+
+      <div class="widget-group" id="wg-cards1">
+        <div class="row g-3 mb-4">
+          <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-primary"><i class="icon bi bi-file-earmark-text"></i><h6>Propostas</h6><h2 id="dashTotal">0</h2></div></div>
+          <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Implantadas</h6><h2 id="dashImplantados">0</h2></div></div>
+          <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-info"><i class="icon bi bi-cash-stack"></i><h6>Valor Processado</h6><h2 id="dashProcessado">R$ 0,00</h2></div></div>
+          <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-warning" style="color:#2d3436;"><i class="icon bi bi-graph-up"></i><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
+          <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-secondary"><i class="icon bi bi-calculator"></i><h6>Ticket Médio</h6><h2 id="dashTicketMedio">R$ 0,00</h2></div></div>
         </div>
       </div>
 
-      <div class="row g-4">
-        <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Status</h6><canvas id="statusChart" height="150"></canvas></div></div>
-        <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Top Administradoras</h6><canvas id="adminChart" height="150"></canvas></div></div>
-        <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">PF vs PJ</h6><canvas id="pfPjChart" height="150"></canvas></div></div>
+      <div class="widget-group" id="wg-cards2">
+        <div class="row g-3 mb-4">
+          <div class="col-md-4"><div class="dashboard-card bg-danger"><i class="icon bi bi-exclamation-triangle"></i><h6>Clientes Inadimplentes</h6><h2 id="dashInadimplentes">0</h2><span class="sub">Média atraso: <span id="dashMediaAtraso">0</span> dias</span></div></div>
+          <div class="col-md-4"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Clientes em Dia</h6><h2 id="dashEmDia">0</h2><span class="sub">Média tempo: <span id="dashMediaTempo">0</span> meses</span></div></div>
+          <div class="col-md-4"><div class="dashboard-card bg-purple"><i class="icon bi bi-question-circle"></i><h6>Sem Info de Pagamento</h6><h2 id="dashSemInfo">0</h2></div></div>
+        </div>
+      </div>
+
+      <div class="widget-group" id="wg-ultimasVendas">
+        <div class="card card-custom mb-4">
+          <h5 class="fw-bold"><i class="bi bi-trophy me-2"></i>Últimas Vendas</h5>
+          <div class="table-responsive">
+            <table class="table" id="ultimasVendasTable">
+              <thead><tr><th># Proposta</th><th>Titular</th><th>Tipo</th><th>Data</th></tr></thead>
+              <tbody id="ultimasVendasBody"><tr><td colspan="4" class="text-center text-muted py-3">Nenhuma venda encontrada.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="widget-group" id="wg-graficos">
+        <div class="row g-4">
+          <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Status</h6><canvas id="statusChart" height="150"></canvas></div></div>
+          <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">Top Administradoras</h6><canvas id="adminChart" height="150"></canvas></div></div>
+          <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold mb-3">PF vs PJ</h6><canvas id="pfPjChart" height="150"></canvas></div></div>
+        </div>
+      </div>
+
+      <div class="widget-group" id="wg-relatorioVendedor">
+        <div class="card card-custom mt-4">
+          <h5 class="fw-bold"><i class="bi bi-bar-chart-fill me-2"></i>Performance por Vendedor</h5>
+          <div style="height: 300px;"><canvas id="vendedorChart"></canvas></div>
+          <div class="mt-3">
+            <button class="btn btn-sm btn-outline-secondary" onclick="gerarRelatorioVendedorExcel()"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- FICHA CLIENTE (mantido) -->
+    <!-- FICHA CLIENTE -->
     <div class="tab-pane fade" id="clientesTab">
       <div class="card card-custom">
         <input type="hidden" id="clientId">
@@ -771,6 +691,7 @@
           <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('dependentesTab')" data-tab="dependentesTab">Dependentes</button></li>
           <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('pagamentosTab')" data-tab="pagamentosTab">Pagamentos</button></li>
           <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('anexosTab')" data-tab="anexosTab">Anexos</button></li>
+          <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('interacoesTab')" data-tab="interacoesTab">Interações</button></li>
         </ul>
         <div class="tab-content">
           <div class="tab-pane" id="dadosPrincipais" style="display:block;">
@@ -780,7 +701,12 @@
               <div class="col-md-6"><label>Nome Titular</label><input type="text" id="cNomeTitular" class="form-control"></div>
               <div class="col-md-3"><label>CPF Titular</label><input type="text" id="cCpfTitular" class="form-control"></div>
               <div class="col-md-3"><label>CNPJ/CAEPF</label><input type="text" id="cCnpjTitular" class="form-control"></div>
-              <div class="col-md-3"><label>Telefone</label><input type="text" id="cTelefoneTitular" class="form-control"></div>
+              <div class="col-md-3"><label>Telefone</label>
+                <div class="input-group">
+                  <input type="text" id="cTelefoneTitular" class="form-control">
+                  <button class="btn btn-outline-success" onclick="abrirWhatsApp(document.getElementById('cTelefoneTitular').value, document.getElementById('cNumeroProposta').value)" title="WhatsApp"><i class="bi bi-whatsapp"></i></button>
+                </div>
+              </div>
               <div class="col-md-3"><label>Email</label><input type="email" id="cEmailTitular" class="form-control"></div>
               <div class="col-md-2"><label>Qtd Vidas</label><input type="number" id="cQtdVidas" class="form-control" min="1" value="1"></div>
               <div class="col-md-2"><label>Tipo Cliente</label><select id="cTipoCliente" class="form-select"><option value="">Selecione</option><option value="PF">Pessoa Física</option><option value="PJ">Pessoa Jurídica</option></select></div>
@@ -837,6 +763,23 @@
             <div id="anexosList"></div>
             <div class="text-muted small mt-2"><i class="bi bi-info-circle"></i> Os anexos serão enviados automaticamente ao salvar o cliente.</div>
           </div>
+          <div class="tab-pane" id="interacoesTab" style="display:none;">
+            <div class="row g-2 mb-3">
+              <div class="col-md-3">
+                <select id="interacaoTipo" class="form-select">
+                  <option value="Telefone">Telefone</option>
+                  <option value="E-mail">E-mail</option>
+                  <option value="WhatsApp">WhatsApp</option>
+                  <option value="Visita">Visita</option>
+                  <option value="Outro">Outro</option>
+                </select>
+              </div>
+              <div class="col-md-4"><input type="text" id="interacaoDesc" class="form-control" placeholder="Descrição do contato"></div>
+              <div class="col-md-3"><input type="datetime-local" id="interacaoData" class="form-control" value=""></div>
+              <div class="col-md-2"><button class="btn btn-primary btn-sm" onclick="adicionarInteracao()"><i class="bi bi-plus"></i> Registrar</button></div>
+            </div>
+            <div id="interacoesList"></div>
+          </div>
         </div>
         <div class="d-flex gap-2 mt-4">
           <button class="btn btn-success" id="btnSalvarCliente" onclick="saveClient()"><i class="bi bi-save"></i> Salvar</button>
@@ -845,7 +788,7 @@
       </div>
     </div>
 
-    <!-- PESQUISA (mantido) -->
+    <!-- PESQUISA -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card card-custom">
         <div class="row g-3 mb-4">
@@ -864,7 +807,24 @@
           <div class="col-md-2"><input type="month" id="filterMes" class="form-control" placeholder="Mês/Ano" onchange="renderTable()"></div>
           <div class="col-md-2"><select id="filterFonte" class="form-select" onchange="renderTable()"><option value="ALL">Fonte</option></select></div>
         </div>
-        <div class="mb-3"><button class="btn btn-warning" onclick="abrirModalLote()" id="btnAcaoLote" disabled><i class="bi bi-stack"></i> Ações em Lote</button><span id="selecionadosCount" class="ms-2 text-muted small"></span></div>
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <label>Último contato há mais de</label>
+            <div class="input-group">
+              <input type="number" id="filterUltimoContatoDias" class="form-control" placeholder="Ex: 15" min="1" value="" onchange="renderTable()">
+              <span class="input-group-text">dias</span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <button class="btn btn-outline-secondary" onclick="document.getElementById('filterUltimoContatoDias').value=''; renderTable();">Limpar</button>
+          </div>
+        </div>
+        <div class="mb-3">
+          <button class="btn btn-warning" onclick="abrirModalLote()" id="btnAcaoLote" disabled><i class="bi bi-stack"></i> Ações em Lote</button>
+          <button class="btn btn-success" onclick="document.getElementById('zipUploadInput').click()"><i class="bi bi-file-zip"></i> Anexos em Lote</button>
+          <input type="file" id="zipUploadInput" accept=".zip" style="display:none" onchange="uploadZipAnexos(event)">
+          <span id="selecionadosCount" class="ms-2 text-muted small"></span>
+        </div>
         <div class="table-responsive">
           <table class="table" id="pesquisaTable">
             <thead>
@@ -880,6 +840,7 @@
                 <th data-col="praca">Praça</th>
                 <th data-col="administradora">Admin.</th>
                 <th data-col="codigo">Código</th>
+                <th>WhatsApp</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -889,7 +850,7 @@
       </div>
     </div>
 
-    <!-- LEADS (mantido) -->
+    <!-- LEADS -->
     <div class="tab-pane fade" id="leadsTab">
       <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
         <div class="view-toggle btn-group" role="group">
@@ -926,7 +887,7 @@
       </div>
     </div>
 
-    <!-- AGENDA (mantido) -->
+    <!-- AGENDA -->
     <div class="tab-pane fade" id="agendaTab">
       <div class="row g-4">
         <div class="col-lg-4">
@@ -953,10 +914,9 @@
       </div>
     </div>
 
-    <!-- CONFIGURAÇÕES (reorganizado) -->
+    <!-- CONFIGURAÇÕES -->
     <div class="tab-pane fade" id="configTab">
       <div class="row g-4">
-        <!-- Coluna esquerda: Status -->
         <div class="col-lg-6">
           <div class="card card-custom config-section">
             <h6><i class="bi bi-tags me-2"></i>Status de Leads</h6>
@@ -970,7 +930,6 @@
           </div>
         </div>
 
-        <!-- Coluna direita: Cadastros -->
         <div class="col-lg-6">
           <div class="card card-custom config-section">
             <h6><i class="bi bi-building me-2"></i>Cadastros</h6>
@@ -1009,7 +968,6 @@
           </div>
         </div>
 
-        <!-- Pessoas (Vendedores) -->
         <div class="col-lg-12">
           <div class="card card-custom config-section">
             <h6><i class="bi bi-people me-2"></i>Pessoas (Vendedores)</h6>
@@ -1022,10 +980,9 @@
           </div>
         </div>
 
-        <!-- Backup -->
         <div class="col-lg-12">
           <div class="card card-custom config-section">
-            <h6><i class="bi bi-cloud-upload me-2"></i>Backup</h6>
+            <h6><i class="bi bi-cloud-upload me-2"></i>Backup e Exportação</h6>
             <div class="row g-3 align-items-end">
               <div class="col-md-3">
                 <label>Intervalo</label>
@@ -1056,12 +1013,9 @@
             </div>
             <hr />
             <div class="d-flex gap-3 flex-wrap">
-              <button class="btn btn-primary btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i> Exportar</button>
-              <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('backupFileInput').click()"><i class="bi bi-upload"></i> Importar</button>
-              <div class="ms-auto d-flex gap-2">
-                <input type="month" id="exportMes" class="form-control" style="width:auto;">
-                <button class="btn btn-success btn-sm" onclick="exportarExcel()"><i class="bi bi-file-earmark-excel"></i> Excel</button>
-              </div>
+              <button class="btn btn-primary btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i> Exportar JSON</button>
+              <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('backupFileInput').click()"><i class="bi bi-upload"></i> Importar JSON</button>
+              <button class="btn btn-success btn-sm" onclick="exportarExcelAvancado()"><i class="bi bi-file-earmark-excel"></i> Exportar Excel (3 abas)</button>
             </div>
             <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="importBackup(event)">
           </div>
@@ -1124,6 +1078,7 @@
   let dependentesTemp = [];
   let pagamentosTemp = [];
   let anexosTemp = [];
+  let interacoesTemp = [];
   let statuses = [];
   let pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
   let leadStatuses = [], leadsData = [];
@@ -1266,6 +1221,7 @@
       renderCompromissos(diaSelecionado);
       renderLeads();
       carregarVendedoresSelect();
+      aplicarWidgets();
     } catch (e) {
       console.error('ERRO NO loadAll:', e);
       alert('Erro ao carregar dados: ' + e.message);
@@ -1423,6 +1379,35 @@
     }
   }
 
+  // ==================== WIDGETS (VISÃO EXECUTIVA) ====================
+  function aplicarWidgets() {
+    const toggles = document.querySelectorAll('.widget-toggle');
+    const groups = {
+      'cards1': 'wg-cards1',
+      'cards2': 'wg-cards2',
+      'ultimasVendas': 'wg-ultimasVendas',
+      'graficos': 'wg-graficos',
+      'relatorioVendedor': 'wg-relatorioVendedor'
+    };
+    toggles.forEach(toggle => {
+      const widget = toggle.dataset.widget;
+      const groupId = groups[widget];
+      const el = document.getElementById(groupId);
+      if (el) {
+        el.style.display = toggle.checked ? '' : 'none';
+      }
+    });
+    if (document.getElementById('wg-relatorioVendedor').style.display !== 'none') {
+      renderVendedorChart();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.widget-toggle').forEach(cb => {
+      cb.addEventListener('change', aplicarWidgets);
+    });
+  });
+
   // ==================== DASHBOARD ====================
   function updateDashboard() {
     const periodo = document.getElementById('periodoFiltro').value;
@@ -1476,6 +1461,7 @@
     document.getElementById('dashTicketMedio').innerText = 'R$ ' + ticketMedio.toFixed(2).replace('.', ',');
     atualizarGraficos(filtered);
     renderUltimasVendas();
+    renderVendedorChart();
   }
 
   // ==================== ÚLTIMAS VENDAS ====================
@@ -1499,6 +1485,7 @@
     `).join('');
   }
 
+  // ==================== GRÁFICOS ====================
   function atualizarGraficos(dadosFiltrados) {
     const dados = dadosFiltrados || clients;
     if (charts.status) charts.status.destroy();
@@ -1522,6 +1509,193 @@
     if (ctx3) charts.pfPj = new Chart(ctx3, { type: 'pie', data: { labels: ['PF', 'PJ'], datasets: [{ data: [pf, pj], backgroundColor: ['#6c5ce7', '#fdcb6e'] }] } });
   }
 
+  // ==================== RELATÓRIO DE PERFORMANCE POR VENDEDOR ====================
+  function renderVendedorChart() {
+    const ctx = document.getElementById('vendedorChart')?.getContext('2d');
+    if (!ctx) return;
+    if (charts.vendedor) charts.vendedor.destroy();
+
+    const vendedores = pessoas;
+    const dados = vendedores.map(v => {
+      const vendas = clients.filter(c => c.vendedorId === v.id);
+      const propostas = vendas.length;
+      const implantadas = vendas.filter(c => c.status === 'Implantado').length;
+      const valorTotal = vendas.reduce((acc, c) => {
+        let val = c.valorComDesconto || '0';
+        val = val.replace(/\./g, '').replace(',', '.');
+        return acc + (parseFloat(val) || 0);
+      }, 0);
+      const taxa = propostas > 0 ? Math.round((implantadas / propostas) * 100) : 0;
+      return { nome: v.nome || 'Sem nome', propostas, implantadas, taxa, valorTotal };
+    });
+
+    dados.sort((a, b) => b.propostas - a.propostas);
+
+    charts.vendedor = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: dados.map(d => d.nome),
+        datasets: [
+          { label: 'Propostas', data: dados.map(d => d.propostas), backgroundColor: '#6c5ce7' },
+          { label: 'Implantadas', data: dados.map(d => d.implantadas), backgroundColor: '#00b894' },
+          { label: 'Taxa (%)', data: dados.map(d => d.taxa), type: 'line', borderColor: '#fdcb6e', fill: false, tension: 0.1 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  function gerarRelatorioVendedorExcel() {
+    const dados = pessoas.map(v => {
+      const vendas = clients.filter(c => c.vendedorId === v.id);
+      const propostas = vendas.length;
+      const implantadas = vendas.filter(c => c.status === 'Implantado').length;
+      const valorTotal = vendas.reduce((acc, c) => {
+        let val = c.valorComDesconto || '0';
+        val = val.replace(/\./g, '').replace(',', '.');
+        return acc + (parseFloat(val) || 0);
+      }, 0);
+      const taxa = propostas > 0 ? Math.round((implantadas / propostas) * 100) : 0;
+      return { Vendedor: v.nome, Propostas: propostas, Implantadas: implantadas, 'Taxa (%)': taxa, 'Valor Total (R$)': valorTotal.toFixed(2) };
+    });
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(dados);
+    XLSX.utils.book_append_sheet(wb, ws, 'Vendedores');
+    XLSX.writeFile(wb, 'relatorio_vendedores.xlsx');
+  }
+
+  // ==================== EXPORTAÇÃO AVANÇADA (EXCEL COM ABAS) ====================
+  function exportarExcelAvancado() {
+    if (!clients.length) return alert('Nenhum cliente para exportar.');
+
+    const clientesData = clients.map(c => ({
+      'Número Proposta': c.numeroProposta || '',
+      'Data': c.data || '',
+      'Titular': c.nomeTitular || '',
+      'CPF': c.cpfTitular || '',
+      'CNPJ': c.cnpjTitular || '',
+      'Telefone': c.telefoneTitular || '',
+      'Email': c.emailTitular || '',
+      'Qtd Vidas': c.qtdVidas || 0,
+      'Tipo': c.tipoCliente || '',
+      'Modalidade': c.modalidadePlano || '',
+      'Coparticipação': c.coparticipacao || '',
+      'Plano': c.planoEscolhido || '',
+      'Acomodação': c.acomodacao || '',
+      'Status': c.status || '',
+      'Data Implantação': c.dataImplantacao || '',
+      'Data Pagamento': c.dataPagamento || '',
+      'Fonte Venda': c.fonteVenda || '',
+      'Valor s/ Desconto': c.valorSemDesconto || '',
+      'Valor c/ Desconto': c.valorComDesconto || '',
+      'Praça': c.praca || '',
+      'Administradora': c.administradora || '',
+      'Vendedor ID': c.vendedorId || '',
+      'Código': c.codigo || '',
+      'Anotações': c.anotacoes || ''
+    }));
+
+    const dependentesData = [];
+    clients.forEach(c => {
+      if (c.dependentes && c.dependentes.length) {
+        c.dependentes.forEach(d => {
+          dependentesData.push({
+            'Proposta': c.numeroProposta || '',
+            'Titular': c.nomeTitular || '',
+            'Nome Dep.': d.nome || '',
+            'CPF Dep.': d.cpf || '',
+            'Email Dep.': d.email || '',
+            'Telefone Dep.': d.telefone || ''
+          });
+        });
+      }
+    });
+
+    const pagamentosData = [];
+    clients.forEach(c => {
+      if (c.pagamentos && c.pagamentos.length) {
+        c.pagamentos.forEach(p => {
+          pagamentosData.push({
+            'Proposta': c.numeroProposta || '',
+            'Titular': c.nomeTitular || '',
+            'Data Pag.': p.data || '',
+            'Valor': p.valor || '',
+            'Forma': p.forma || '',
+            'Status': p.status || '',
+            'Obs': p.obs || ''
+          });
+        });
+      }
+    });
+
+    const wb = XLSX.utils.book_new();
+    const ws1 = XLSX.utils.json_to_sheet(clientesData);
+    XLSX.utils.book_append_sheet(wb, ws1, 'Clientes');
+    if (dependentesData.length) {
+      const ws2 = XLSX.utils.json_to_sheet(dependentesData);
+      XLSX.utils.book_append_sheet(wb, ws2, 'Dependentes');
+    }
+    if (pagamentosData.length) {
+      const ws3 = XLSX.utils.json_to_sheet(pagamentosData);
+      XLSX.utils.book_append_sheet(wb, ws3, 'Pagamentos');
+    }
+    XLSX.writeFile(wb, `exportacao_completa_${new Date().toISOString().slice(0,10)}.xlsx`);
+  }
+
+  // ==================== ANEXOS EM LOTE VIA ZIP ====================
+  async function uploadZipAnexos(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (!file.name.endsWith('.zip')) return alert('Selecione um arquivo .zip');
+    const JSZip = window.JSZip;
+    if (!JSZip) {
+      alert('Biblioteca JSZip não carregada. Verifique a conexão com a internet.');
+      return;
+    }
+    try {
+      const zip = await JSZip.loadAsync(file);
+      const files = Object.keys(zip.files);
+      let count = 0;
+      for (const nome of files) {
+        const entry = zip.files[nome];
+        if (entry.dir) continue;
+        const match = nome.match(/proposta[_\-]?(\d+)/i);
+        if (!match) continue;
+        const numeroProposta = match[1];
+        const client = clients.find(c => c.numeroProposta === numeroProposta);
+        if (!client) continue;
+        const blob = await entry.async('blob');
+        const fileRef = storage.ref(`clientes/${client.id}/anexos/${Date.now()}_${nome}`);
+        await fileRef.put(blob);
+        const url = await fileRef.getDownloadURL();
+        const anexosAtuais = client.anexos || [];
+        anexosAtuais.push({ nome, url });
+        await db.collection('clients').doc(client.id).update({ anexos: anexosAtuais });
+        count++;
+      }
+      alert(`${count} anexos enviados com sucesso!`);
+      await loadAll();
+    } catch (e) {
+      alert('Erro ao processar ZIP: ' + e.message);
+    }
+    event.target.value = '';
+  }
+
+  // ==================== BOTÃO WHATSAPP ====================
+  function abrirWhatsApp(telefone, proposta) {
+    if (!telefone) return alert('Número de telefone não informado.');
+    const numero = telefone.replace(/\D/g, '');
+    if (numero.length < 10) return alert('Número inválido.');
+    const msg = encodeURIComponent(`Olá! Referente à proposta ${proposta || ''}, gostaria de falar sobre...`);
+    window.open(`https://wa.me/55${numero}?text=${msg}`, '_blank');
+  }
+
   // ==================== RENDER TABELA ====================
   function renderTable() {
     const search = document.getElementById('search').value.toLowerCase();
@@ -1536,6 +1710,7 @@
     const dataFim = document.getElementById('filterDataFim').value;
     const mes = document.getElementById('filterMes').value;
     const fonte = document.getElementById('filterFonte').value;
+    const ultimoContatoDias = parseInt(document.getElementById('filterUltimoContatoDias').value) || 0;
 
     let filtered = clients.filter(c => {
       const matchSearch = (c.nomeTitular || '').toLowerCase().includes(search) ||
@@ -1554,7 +1729,24 @@
       if (dataFim && c.data) matchData = matchData && c.data <= dataFim;
       if (mes && c.data) matchData = matchData && c.data.startsWith(mes);
       const matchFonte = fonte === 'ALL' || c.fonteVenda === fonte;
-      return matchSearch && matchStatus && matchModalidade && matchPraca && matchAdmin && matchTipo && matchValor && matchData && matchFonte;
+      let matchContato = true;
+      if (ultimoContatoDias > 0) {
+        const interacoes = c.interacoes || [];
+        let ultimaData = null;
+        interacoes.forEach(i => {
+          if (i.data) {
+            const d = new Date(i.data);
+            if (!ultimaData || d > ultimaData) ultimaData = d;
+          }
+        });
+        if (ultimaData) {
+          const diasDiff = Math.floor((new Date() - ultimaData) / (1000 * 60 * 60 * 24));
+          matchContato = diasDiff >= ultimoContatoDias;
+        } else {
+          matchContato = true;
+        }
+      }
+      return matchSearch && matchStatus && matchModalidade && matchPraca && matchAdmin && matchTipo && matchValor && matchData && matchFonte && matchContato;
     });
 
     filtered.sort((a, b) => {
@@ -1572,7 +1764,7 @@
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="12" class="text-center text-muted">Nenhum cliente encontrado.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="13" class="text-center text-muted">Nenhum cliente encontrado.</td></tr>';
     } else {
       filtered.forEach(c => {
         const checked = selectedIds.has(c.id) ? 'checked' : '';
@@ -1589,6 +1781,9 @@
             <td>${c.praca || '-'}</td>
             <td>${c.administradora || '-'}</td>
             <td>${c.codigo || '-'}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-success" onclick="abrirWhatsApp('${c.telefoneTitular || ''}', '${c.numeroProposta || ''}')"><i class="bi bi-whatsapp"></i></button>
+            </td>
             <td>
               <button class="btn btn-sm btn-outline-primary" onclick="editarCliente('${c.id}')"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-danger" onclick="excluirCliente('${c.id}')"><i class="bi bi-trash"></i></button>
@@ -1636,6 +1831,8 @@
     renderPagamentos();
     anexosTemp = c.anexos ? c.anexos.map(a => ({ nome: a.nome, url: a.url })) : [];
     renderAnexos();
+    interacoesTemp = c.interacoes ? JSON.parse(JSON.stringify(c.interacoes)) : [];
+    renderInteracoes();
 
     switchTab('clientesTab');
     switchInternalTab('dadosPrincipais');
@@ -1688,6 +1885,7 @@
         anotacoes: document.getElementById('cAnotacoes').value,
         dependentes: dependentesTemp,
         pagamentos: pagamentosTemp,
+        interacoes: interacoesTemp,
         userId: currentUser.uid,
         updatedAt: new Date().toISOString()
       };
@@ -1704,7 +1902,6 @@
         clients.push({ id: docRef.id, ...data });
       }
 
-      // Upload de anexos
       const pendentes = anexosTemp.filter(a => a.file && !a.url);
       if (pendentes.length > 0) {
         const uploaded = [];
@@ -1755,10 +1952,50 @@
     renderPagamentos();
     anexosTemp = [];
     renderAnexos();
+    interacoesTemp = [];
+    renderInteracoes();
     limparCamposDependente();
     limparCamposPagamento();
     document.getElementById('anexoFileInput').value = '';
     switchInternalTab('dadosPrincipais');
+  }
+
+  // ==================== INTERAÇÕES ====================
+  function adicionarInteracao() {
+    const tipo = document.getElementById('interacaoTipo').value;
+    const desc = document.getElementById('interacaoDesc').value.trim();
+    let data = document.getElementById('interacaoData').value;
+    if (!desc) return alert('Descreva a interação.');
+    if (!data) data = new Date().toISOString().slice(0, 16);
+    interacoesTemp.push({ tipo, desc, data });
+    renderInteracoes();
+    document.getElementById('interacaoDesc').value = '';
+    document.getElementById('interacaoData').value = '';
+  }
+
+  function renderInteracoes() {
+    const el = document.getElementById('interacoesList');
+    if (!interacoesTemp.length) {
+      el.innerHTML = '<p class="text-muted">Nenhuma interação registrada.</p>';
+      return;
+    }
+    const sorted = [...interacoesTemp].sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+    el.innerHTML = sorted.map((i, idx) => `
+      <div class="interacao-item">
+        <div>
+          <span class="tipo">${i.tipo}</span>
+          <span class="data">${i.data ? new Date(i.data).toLocaleString() : ''}</span>
+          <p class="mb-0">${i.desc}</p>
+        </div>
+        <button class="btn btn-sm btn-danger" onclick="removerInteracao(${idx})"><i class="bi bi-trash"></i></button>
+      </div>
+    `).join('');
+  }
+
+  function removerInteracao(idx) {
+    if (!confirm('Remover esta interação?')) return;
+    interacoesTemp.splice(idx, 1);
+    renderInteracoes();
   }
 
   // ==================== ANEXOS ====================
@@ -1950,6 +2187,7 @@
     await loadPessoas();
     renderPessoasList();
     carregarVendedoresSelect();
+    renderVendedorChart();
   }
 
   async function deletePessoa(id) {
@@ -1958,6 +2196,7 @@
     await loadPessoas();
     renderPessoasList();
     carregarVendedoresSelect();
+    renderVendedorChart();
   }
 
   // ==================== BACKUP ====================
@@ -2657,6 +2896,28 @@
     renderCompromissos(diaSelecionado);
   }
 
+  // ==================== ATALHOS DE TECLADO ====================
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 's') {
+      e.preventDefault();
+      const btn = document.getElementById('btnSalvarCliente');
+      if (btn && btn.offsetParent !== null) {
+        saveClient();
+      }
+    }
+    if (e.ctrlKey && e.key === 'b') {
+      e.preventDefault();
+      const searchInput = document.getElementById('search');
+      if (searchInput) searchInput.focus();
+    }
+    if (e.key === 'Escape') {
+      const openModal = document.querySelector('.modal.show');
+      if (openModal) {
+        bootstrap.Modal.getInstance(openModal)?.hide();
+      }
+    }
+  });
+
   // ==================== UTILITÁRIOS ====================
   function formatarValorInput(el) {
     let val = el.value.replace(/\D/g, '');
@@ -2674,7 +2935,6 @@
   }
 
   function gerarRelatorio() { alert('Função de relatório em desenvolvimento.'); }
-  function exportarExcel() { alert('Exportar Excel em desenvolvimento.'); }
 
   // ==================== EVENTOS ====================
   document.addEventListener('DOMContentLoaded', function() {
