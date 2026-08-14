@@ -17,7 +17,7 @@
   <!-- XLSX para exportação avançada (Excel com abas) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    /* ===== CSS COMPLETO COM MELHORIAS NO MODO ESCURO ===== */
+    /* ===== CSS COMPLETO COM CONTROLE DE TAMANHO DA SIDEBAR ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -44,6 +44,7 @@
       --shadow: 0 12px 40px rgba(108, 92, 231, 0.10);
       --shadow-hover: 0 20px 50px rgba(108, 92, 231, 0.18);
       --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      /* Largura padrão da sidebar (será sobrescrita pelo JS) */
       --sidebar-width: 220px;
       --sidebar-collapsed: 60px;
     }
@@ -180,6 +181,40 @@
       color: var(--primary);
     }
     .sidebar.collapsed .collapse-toggle { transform: rotate(180deg); }
+    /* Controle de tamanho da sidebar */
+    .sidebar-size-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+    }
+    .sidebar-size-control input[type="range"] {
+      flex: 1;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--border);
+      border-radius: 4px;
+      outline: none;
+    }
+    .sidebar-size-control input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+    }
+    .sidebar-size-control span {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      min-width: 36px;
+      text-align: center;
+    }
+    .sidebar.collapsed .sidebar-size-control { display: none; }
+    /* Main content */
     .main-content {
       margin-left: var(--sidebar-width);
       transition: margin-left 0.3s ease;
@@ -592,6 +627,12 @@
     </div>
   </div>
   <div class="sidebar-footer">
+    <!-- Controle de tamanho da sidebar -->
+    <div class="sidebar-size-control">
+      <i class="bi bi-arrows-expand" style="font-size:0.8rem; color:var(--text-secondary);"></i>
+      <input type="range" id="sidebarSizeRange" min="180" max="320" value="220" step="5" />
+      <span id="sidebarSizeLabel">220px</span>
+    </div>
     <button class="collapse-toggle" onclick="toggleSidebar()"><i class="bi bi-chevron-left"></i></button>
     <button class="btn btn-danger btn-sm" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Sair</button>
   </div>
@@ -791,56 +832,127 @@
     <!-- PESQUISA -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card card-custom">
-        <div class="row g-3 mb-4">
-          <div class="col-md-3"><input type="text" id="search" class="form-control" placeholder="Buscar..." onkeyup="renderTable()"></div>
-          <div class="col-md-2"><select id="filterStatus" class="form-select" onchange="renderTable()"><option value="ALL">Status</option></select></div>
-          <div class="col-md-2"><select id="filterModalidade" class="form-select" onchange="renderTable()"><option value="ALL">Modalidade</option></select></div>
-          <div class="col-md-2"><select id="filterPraca" class="form-select" onchange="renderTable()"><option value="ALL">Praça</option></select></div>
-          <div class="col-md-2"><select id="filterAdministradora" class="form-select" onchange="renderTable()"><option value="ALL">Admin.</option></select></div>
-          <div class="col-md-1"><select id="filterTipo" class="form-select" onchange="renderTable()"><option value="ALL">Tipo</option><option value="PF">PF</option><option value="PJ">PJ</option></select></div>
-        </div>
-        <div class="row g-3 mb-4">
-          <div class="col-md-2"><input type="number" id="filterValorMin" class="form-control" placeholder="Valor min" onchange="renderTable()"></div>
-          <div class="col-md-2"><input type="number" id="filterValorMax" class="form-control" placeholder="Valor max" onchange="renderTable()"></div>
-          <div class="col-md-2"><input type="date" id="filterDataIni" class="form-control" placeholder="Data início" onchange="renderTable()"></div>
-          <div class="col-md-2"><input type="date" id="filterDataFim" class="form-control" placeholder="Data fim" onchange="renderTable()"></div>
-          <div class="col-md-2"><input type="month" id="filterMes" class="form-control" placeholder="Mês/Ano" onchange="renderTable()"></div>
-          <div class="col-md-2"><select id="filterFonte" class="form-select" onchange="renderTable()"><option value="ALL">Fonte</option></select></div>
-        </div>
+        <!-- Filtros principais -->
         <div class="row g-3 mb-4">
           <div class="col-md-3">
-            <label>Último contato há mais de</label>
+            <label for="search" class="form-label fw-bold">
+              <i class="bi bi-search me-1"></i> Busca Geral
+              <span class="text-muted small" title="Digite nome, CPF, número da proposta, telefone ou código">❓</span>
+            </label>
+            <input type="text" id="search" class="form-control" placeholder="Ex: João, 123.456.789-00, 4656116" onkeyup="renderTable()" />
+          </div>
+          <div class="col-md-2">
+            <label for="filterStatus" class="form-label fw-bold">Status</label>
+            <select id="filterStatus" class="form-select" onchange="renderTable()" title="Filtrar por status da proposta">
+              <option value="ALL">Todos</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="filterModalidade" class="form-label fw-bold">Modalidade</label>
+            <select id="filterModalidade" class="form-select" onchange="renderTable()" title="Filtrar por modalidade do plano">
+              <option value="ALL">Todas</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="filterPraca" class="form-label fw-bold">Praça</label>
+            <select id="filterPraca" class="form-select" onchange="renderTable()" title="Filtrar por praça de venda">
+              <option value="ALL">Todas</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="filterAdministradora" class="form-label fw-bold">Admin.</label>
+            <select id="filterAdministradora" class="form-select" onchange="renderTable()" title="Filtrar por administradora">
+              <option value="ALL">Todas</option>
+            </select>
+          </div>
+          <div class="col-md-1">
+            <label for="filterTipo" class="form-label fw-bold">Tipo</label>
+            <select id="filterTipo" class="form-select" onchange="renderTable()" title="Filtrar por PF ou PJ">
+              <option value="ALL">Todos</option>
+              <option value="PF">PF</option>
+              <option value="PJ">PJ</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Filtros de valor e data -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-2">
+            <label for="filterValorMin" class="form-label fw-bold">Valor mínimo (R$)</label>
+            <input type="number" id="filterValorMin" class="form-control" placeholder="0,00" onchange="renderTable()" step="0.01" />
+          </div>
+          <div class="col-md-2">
+            <label for="filterValorMax" class="form-label fw-bold">Valor máximo (R$)</label>
+            <input type="number" id="filterValorMax" class="form-control" placeholder="999999,99" onchange="renderTable()" step="0.01" />
+          </div>
+          <div class="col-md-2">
+            <label for="filterDataIni" class="form-label fw-bold">Data início</label>
+            <input type="date" id="filterDataIni" class="form-control" placeholder="dd/mm/aaaa" onchange="renderTable()" title="Data de cadastro inicial" />
+          </div>
+          <div class="col-md-2">
+            <label for="filterDataFim" class="form-label fw-bold">Data fim</label>
+            <input type="date" id="filterDataFim" class="form-control" placeholder="dd/mm/aaaa" onchange="renderTable()" title="Data de cadastro final" />
+          </div>
+          <div class="col-md-2">
+            <label for="filterMes" class="form-label fw-bold">Mês/Ano</label>
+            <input type="month" id="filterMes" class="form-control" placeholder="Mês/Ano" onchange="renderTable()" title="Filtrar por mês de cadastro" />
+          </div>
+          <div class="col-md-2">
+            <label for="filterFonte" class="form-label fw-bold">Fonte Venda</label>
+            <select id="filterFonte" class="form-select" onchange="renderTable()" title="Filtrar por fonte de venda">
+              <option value="ALL">Todas</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Filtro Último Contato -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <label for="filterUltimoContatoDias" class="form-label fw-bold">
+              <i class="bi bi-clock-history me-1"></i> Último contato há mais de
+              <span class="text-muted small" title="Filtra clientes sem interação há X dias ou mais">❓</span>
+            </label>
             <div class="input-group">
-              <input type="number" id="filterUltimoContatoDias" class="form-control" placeholder="Ex: 15" min="1" value="" onchange="renderTable()">
+              <input type="number" id="filterUltimoContatoDias" class="form-control" placeholder="Ex: 15" min="1" value="" onchange="renderTable()" />
               <span class="input-group-text">dias</span>
             </div>
           </div>
-          <div class="col-md-3">
-            <button class="btn btn-outline-secondary" onclick="document.getElementById('filterUltimoContatoDias').value=''; renderTable();">Limpar</button>
+          <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-outline-secondary" onclick="document.getElementById('filterUltimoContatoDias').value=''; renderTable();">
+              <i class="bi bi-eraser"></i> Limpar
+            </button>
           </div>
         </div>
+
+        <!-- Botões de ação em lote -->
         <div class="mb-3">
-          <button class="btn btn-warning" onclick="abrirModalLote()" id="btnAcaoLote" disabled><i class="bi bi-stack"></i> Ações em Lote</button>
-          <button class="btn btn-success" onclick="document.getElementById('zipUploadInput').click()"><i class="bi bi-file-zip"></i> Anexos em Lote</button>
-          <input type="file" id="zipUploadInput" accept=".zip" style="display:none" onchange="uploadZipAnexos(event)">
+          <button class="btn btn-warning" onclick="abrirModalLote()" id="btnAcaoLote" disabled>
+            <i class="bi bi-stack"></i> Ações em Lote
+          </button>
+          <button class="btn btn-success" onclick="document.getElementById('zipUploadInput').click()">
+            <i class="bi bi-file-zip"></i> Anexos em Lote
+          </button>
+          <input type="file" id="zipUploadInput" accept=".zip" style="display:none" onchange="uploadZipAnexos(event)" />
           <span id="selecionadosCount" class="ms-2 text-muted small"></span>
         </div>
+
+        <!-- Tabela de resultados -->
         <div class="table-responsive">
           <table class="table" id="pesquisaTable">
             <thead>
               <tr>
-                <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
-                <th data-col="numeroProposta">Proposta</th>
-                <th data-col="nomeTitular">Titular</th>
-                <th data-col="cpfTitular">CPF</th>
-                <th data-col="modalidadePlano">Modalidade</th>
-                <th data-col="status">Status</th>
-                <th data-col="valorComDesconto">Valor</th>
-                <th data-col="qtdVidas">Vidas</th>
-                <th data-col="praca">Praça</th>
-                <th data-col="administradora">Admin.</th>
-                <th data-col="codigo">Código</th>
-                <th>WhatsApp</th>
+                <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" title="Selecionar todos" /></th>
+                <th data-col="numeroProposta" title="Clique para ordenar">Proposta</th>
+                <th data-col="nomeTitular" title="Clique para ordenar">Titular</th>
+                <th data-col="cpfTitular" title="Clique para ordenar">CPF</th>
+                <th data-col="modalidadePlano" title="Clique para ordenar">Modalidade</th>
+                <th data-col="status" title="Clique para ordenar">Status</th>
+                <th data-col="valorComDesconto" title="Clique para ordenar">Valor</th>
+                <th data-col="qtdVidas" title="Clique para ordenar">Vidas</th>
+                <th data-col="praca" title="Clique para ordenar">Praça</th>
+                <th data-col="administradora" title="Clique para ordenar">Admin.</th>
+                <th data-col="codigo" title="Clique para ordenar">Código</th>
+                <th title="Abrir WhatsApp">WhatsApp</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -1097,6 +1209,23 @@
   let backupRunning = false;
   let lastBackupTime = null;
   let nextBackupTime = null;
+
+  // ==================== CONTROLE DE TAMANHO DA SIDEBAR ====================
+  function atualizarTamanhoSidebar(largura) {
+    document.documentElement.style.setProperty('--sidebar-width', largura + 'px');
+    document.getElementById('sidebarSizeLabel').innerText = largura + 'px';
+    localStorage.setItem('sidebarWidth', largura);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const range = document.getElementById('sidebarSizeRange');
+    const saved = parseInt(localStorage.getItem('sidebarWidth')) || 220;
+    range.value = saved;
+    atualizarTamanhoSidebar(saved);
+    range.addEventListener('input', function() {
+      atualizarTamanhoSidebar(parseInt(this.value));
+    });
+  });
 
   // ==================== AUTENTICAÇÃO ====================
   auth.onAuthStateChanged(user => {
