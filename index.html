@@ -15,7 +15,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    /* ===== CSS COMPLETO (mesmo do anterior) ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -1546,8 +1545,12 @@ async function saveClient() {
       const idx=clients.findIndex(c=>c.id===clientId); if(idx!==-1) clients[idx].anexos=anexosTemp; renderAnexos();
     }
     clearForm(); renderTable(); updateDashboard(); switchTab('dashboardTab');
-  } catch(e){ console.error(e); alert('Erro ao salvar: '+(e.message||'Verifique o console.')); }
-  finally { btn.innerHTML='<i class="bi bi-save"></i> Salvar'; btn.classList.remove('btn-loading'); isLoading=false; }
+  } catch(e){ console.error('Erro ao salvar:', e); alert('Erro ao salvar: '+(e.message||'Verifique o console.')); }
+  finally {
+    btn.innerHTML='<i class="bi bi-save"></i> Salvar';
+    btn.classList.remove('btn-loading');
+    isLoading=false;
+  }
 }
 
 function clearForm() {
@@ -1595,7 +1598,7 @@ function renderPagamentos() {
   const el=document.getElementById('pagamentosList');
   if(!pagamentosTemp.length){ el.innerHTML='<p class="text-muted">Nenhum pagamento registrado.</p>'; return; }
   el.innerHTML=pagamentosTemp.map((p,i)=>`
-    <div class="status-item"><div><strong>${p.data}</strong> - R$ ${formatarMoeda(parseFloat(p.valor))}</div><div><button class="btn btn-sm btn-outline-primary" onclick="editarPagamento(${i})"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" onclick="removerPagamento(${i})"><i class="bi bi-trash"></i></button></div></div>
+    <div class="status-item"><div><strong>${p.data}</strong> - ${formatarMoeda(parseFloat(p.valor))}</div><div><button class="btn btn-sm btn-outline-primary" onclick="editarPagamento(${i})"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" onclick="removerPagamento(${i})"><i class="bi bi-trash"></i></button></div></div>
   `).join('');
 }
 function editarPagamento(idx){ const p=pagamentosTemp[idx]; if(!p) return; document.getElementById('pagData').value=p.data||''; document.getElementById('pagValor').value=p.valor||''; document.getElementById('pagForma').value=p.forma||''; document.getElementById('pagStatus').value=p.status||''; document.getElementById('pagObs').value=p.obs||''; pagamentosTemp.splice(idx,1); renderPagamentos(); document.getElementById('pagData').focus(); }
