@@ -14,9 +14,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <!-- CSS (mesmo do anterior) -->
   <style>
-    /* ===== CSS COMPLETO ===== */
+    /* ===== CSS COMPLETO (mesmo do anterior) ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -566,7 +565,7 @@
         <div id="leadListView" class="card card-custom">
           <div class="table-responsive">
             <table class="table">
-              <thead><tr><th>Abertura</th><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Cidade</th><th>UF</th><th>Status</th><th>Prob.</th><th>Ações</th></tr></thead>
+              <thead><tr><th>Abertura</th><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Cidade</th><th>UF</th><th>Status</th><th>Prob.</th><th>Valor Estimado</th><th>Ações</th></tr></thead>
               <tbody id="leadsBody"></tbody>
             </table>
           </div>
@@ -693,13 +692,13 @@
 </div><!-- end main-content -->
 
 <!-- ===== MODAIS ===== -->
-<!-- Modal Tarefa (com Lembrete) -->
+<!-- Modal Tarefa -->
 <div class="modal fade" id="modalTarefa" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Nova Tarefa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="tarefaId"><input type="text" id="tarefaTitulo" class="form-control mb-3" placeholder="Título"><input type="date" id="tarefaData" class="form-control mb-3"><input type="time" id="tarefaHora" class="form-control mb-3"><textarea id="tarefaDesc" class="form-control" rows="3" placeholder="Descrição"></textarea><div class="form-check"><input class="form-check-input" type="checkbox" id="tarefaConcluida"><label class="form-check-label">Concluída</label></div><div class="mt-2"><label>Lembrete</label><select id="tarefaLembrete" class="form-select"><option value="0">Nenhum</option><option value="15">15 minutos antes</option><option value="30">30 minutos antes</option><option value="60">1 hora antes</option><option value="1440">1 dia antes</option><option value="10080">1 semana antes</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="salvarTarefa()">Salvar</button></div></div></div></div>
 
 <!-- Modal Lote -->
 <div class="modal fade" id="modalLote" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Ação em Lote</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select id="acaoLote" class="form-select mb-3" onchange="handleAcaoLoteChange()"><option value="">Escolha...</option><option value="status">Alterar Status</option><option value="praca">Alterar Praça</option><option value="administradora">Alterar Administradora</option><option value="dataPagamento">Definir Data</option><option value="codigo">Alterar Código</option><option value="excluir">Excluir</option></select><div id="parametrosLote"></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="executarAcaoLote()">Aplicar</button></div></div></div></div>
 
-<!-- Modal Novo Lead (com Probabilidade) -->
+<!-- Modal Novo Lead (com Valor Estimado) -->
 <div class="modal fade" id="modalNovoLead" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content" style="background:var(--card);">
@@ -712,6 +711,7 @@
         <div class="mb-3"><select id="novoLeadUf" class="form-select"><option value="">UF</option><option value="SP">SP</option><option value="RJ">RJ</option><option value="MG">MG</option><option value="BA">BA</option><option value="PR">PR</option><option value="RS">RS</option><option value="SC">SC</option><option value="DF">DF</option><option value="GO">GO</option><option value="PE">PE</option><option value="CE">CE</option><option value="PB">PB</option></select></div>
         <div class="mb-3"><select id="novoLeadStatus" class="form-select"><option value="">Status</option></select></div>
         <div class="mb-3"><label>Probabilidade (%)</label><input type="number" id="novoLeadProbabilidade" class="form-control" placeholder="Ex: 50" min="0" max="100" value="50"></div>
+        <div class="mb-3"><label>Valor Estimado (R$)</label><input type="number" id="novoLeadValor" class="form-control" placeholder="Ex: 5000" step="0.01" value="1000"></div>
         <div class="mb-3"><textarea id="novoLeadObs" class="form-control" rows="2" placeholder="Observações"></textarea></div>
       </div>
       <div class="modal-footer">
@@ -1032,26 +1032,73 @@ function renderVendedorChart() {
   charts.vendedor=new Chart(ctx,{type:'bar',data:{labels:dados.map(d=>d.nome),datasets:[{label:'Propostas',data:dados.map(d=>d.propostas),backgroundColor:'#6c5ce7'},{label:'Implantadas',data:dados.map(d=>d.implantadas),backgroundColor:'#00b894'},{label:'Taxa (%)',data:dados.map(d=>d.taxa),type:'line',borderColor:'#fdcb6e',fill:false,tension:0.1}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true}}}});
 }
 
-// ==================== FORECAST ====================
+// ==================== FORECAST (CORRIGIDO) ====================
 function renderForecast() {
-  const leadsNegociacao = leadsData.filter(l => ['Negociação','Proposta Enviada','Cotação'].includes(l.status));
+  // Status que indicam negociação ativa
+  const statusNegociacao = ['Negociação', 'Proposta Enviada', 'Cotação', 'Em Negociação', 'Aguardando Retorno', 'Em análise'];
+  
+  // Filtra leads em negociação (exceto convertidos ou perdidos)
+  const leadsNegociacao = leadsData.filter(l => 
+    statusNegociacao.includes(l.status) && l.status !== 'Convertido' && l.status !== 'Perdido'
+  );
+  
   let totalEsperado = 0;
   let probMedia = 0;
+  let count = leadsNegociacao.length;
+  
   leadsNegociacao.forEach(l => {
-    const prob = parseFloat(l.probabilidade) || 50;
+    const prob = parseFloat(l.probabilidade) || 50; // se não tiver, usa 50%
     const valor = parseFloat(l.valorEstimado) || 0;
     totalEsperado += (valor * prob / 100);
     probMedia += prob;
   });
-  if(leadsNegociacao.length) probMedia = Math.round(probMedia / leadsNegociacao.length);
-  document.getElementById('forecastValor').innerText = 'R$ '+totalEsperado.toFixed(2).replace('.',',');
+  
+  if (count > 0) {
+    probMedia = Math.round(probMedia / count);
+  } else {
+    probMedia = 0;
+  }
+  
+  document.getElementById('forecastValor').innerText = 'R$ ' + totalEsperado.toFixed(2).replace('.', ',');
   document.getElementById('forecastProb').innerText = probMedia + '%';
+  
+  // Gráfico
   const ctx = document.getElementById('forecastChart')?.getContext('2d');
   if(ctx) {
     if(charts.forecast) charts.forecast.destroy();
+    if (count === 0) {
+      charts.forecast = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Nenhum lead em negociação'],
+          datasets: [{ label: 'Valor Esperado (R$)', data: [0], backgroundColor: '#6c5ce7' }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } }
+        }
+      });
+      return;
+    }
     const labels = leadsNegociacao.map(l => l.nome || 'Lead');
-    const valores = leadsNegociacao.map(l => (parseFloat(l.valorEstimado)||0) * (parseFloat(l.probabilidade)||50) / 100);
-    charts.forecast = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ label:'Valor Esperado (R$)', data:valores, backgroundColor:'#6c5ce7' }] }, options:{ responsive:true, maintainAspectRatio:false } });
+    const valores = leadsNegociacao.map(l => {
+      const prob = parseFloat(l.probabilidade) || 50;
+      const valor = parseFloat(l.valorEstimado) || 0;
+      return (valor * prob / 100);
+    });
+    charts.forecast = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{ label: 'Valor Esperado (R$)', data: valores, backgroundColor: '#6c5ce7' }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
   }
 }
 
@@ -1086,24 +1133,55 @@ function renderTendencias() {
   });
 }
 
-// ==================== METAS ====================
+// ==================== METAS (CORRIGIDO) ====================
 function renderMetas() {
   const el = document.getElementById('metasVendedoresList');
   if(!el) return;
+  
   const hoje = new Date();
   const mesAtual = hoje.getMonth();
   const anoAtual = hoje.getFullYear();
+  const mesStr = String(mesAtual + 1).padStart(2, '0');
+  const anoMes = `${anoAtual}-${mesStr}`; // formato YYYY-MM
+  
   let html = '';
+  
   pessoas.forEach(v => {
-    const vendas = clients.filter(c => c.vendedorId === v.id && c.data && c.data.startsWith(`${anoAtual}-${String(mesAtual+1).padStart(2,'0')}`));
+    // Filtra clientes do vendedor e do mês atual (independente do formato da data)
+    const vendas = clients.filter(c => {
+      if (c.vendedorId !== v.id) return false;
+      if (!c.data) return false;
+      
+      // Tenta converter a data para o formato YYYY-MM
+      let dataStr = c.data;
+      // Se for DD/MM/YYYY ou DD-MM-YYYY, converte para YYYY-MM
+      if (dataStr.includes('/') || dataStr.includes('-')) {
+        const partes = dataStr.split(/[\/-]/);
+        if (partes.length === 3) {
+          // Se o primeiro for dia (DD), assume formato DD/MM/YYYY ou DD-MM-YYYY
+          if (partes[0].length === 2 && partes[1].length === 2 && partes[2].length === 4) {
+            dataStr = `${partes[2]}-${partes[1]}`; // YYYY-MM
+          } else if (partes[0].length === 4) {
+            dataStr = `${partes[0]}-${partes[1]}`; // já é YYYY-MM-DD ou YYYY-MM
+          }
+        }
+      }
+      return dataStr.startsWith(anoMes);
+    });
+    
     const qtd = vendas.length;
     const metaVendas = parseInt(v.metaVendas) || 0;
     const metaValor = parseFloat(v.metaValor) || 0;
-    const valorVendido = vendas.reduce((acc,c)=> acc + (parseFloat(String(c.valorComDesconto).replace(/\./g,'').replace(',','.'))||0), 0);
-    const progVendas = metaVendas > 0 ? Math.round((qtd/metaVendas)*100) : 0;
-    const progValor = metaValor > 0 ? Math.round((valorVendido/metaValor)*100) : 0;
+    const valorVendido = vendas.reduce((acc, c) => {
+      let val = String(c.valorComDesconto || '0').replace(/\./g, '').replace(',', '.');
+      return acc + (parseFloat(val) || 0);
+    }, 0);
+    
+    const progVendas = metaVendas > 0 ? Math.round((qtd / metaVendas) * 100) : 0;
+    const progValor = metaValor > 0 ? Math.round((valorVendido / metaValor) * 100) : 0;
+    
     html += `<div class="status-item">
-      <div><strong>${v.nome}</strong> ${v.codigo?'['+v.codigo+']':''}</div>
+      <div><strong>${v.nome}</strong> ${v.codigo ? '['+v.codigo+']' : ''}</div>
       <div>
         <span>Vendas: ${qtd}/${metaVendas} (${progVendas}%)</span>
         <div class="progress-meta" style="width:100px;display:inline-block;margin:0 8px;"><div class="bar" style="width:${Math.min(progVendas,100)}%"></div></div>
@@ -1112,6 +1190,7 @@ function renderMetas() {
       </div>
     </div>`;
   });
+  
   el.innerHTML = html || '<p class="text-muted">Nenhum vendedor com metas definidas.</p>';
 }
 
@@ -1298,7 +1377,6 @@ async function carregarNotificacoes() {
 function toggleNotificacoes() {
   const dropdown = document.getElementById('notifDropdown');
   if(dropdown.classList.contains('show')) { dropdown.classList.remove('show'); return; }
-  // Carregar notificações
   db.collection('notificacoes').where('userId','==',currentUser.uid).orderBy('criadoEm','desc').limit(20).get().then(snap => {
     let html = '';
     snap.forEach(doc => {
@@ -1765,7 +1843,7 @@ async function uploadZipAnexos(event) {
   event.target.value='';
 }
 
-// ==================== LEADS ====================
+// ==================== LEADS (com Valor Estimado) ====================
 function renderLeads() {
   const busca=document.getElementById('searchLead').value.toLowerCase();
   const uf=document.getElementById('filterUfLead').value;
@@ -1780,8 +1858,8 @@ function renderLeads() {
   if(paginaLead>totalPaginas) paginaLead=Math.max(1,totalPaginas);
   const inicio=(paginaLead-1)*leadsPorPagina; const pagina=filtrados.slice(inicio,inicio+leadsPorPagina);
   const tbody=document.getElementById('leadsBody'); tbody.innerHTML='';
-  if(!pagina.length){ tbody.innerHTML='<tr><td colspan="8" class="text-center text-muted py-3">Nenhum lead encontrado.</td></tr>'; }
-  else { pagina.forEach(l=>{ const s=l.status||'Disponível'; let bg='primary'; if(s==='Em Atendimento') bg='warning'; else if(s==='Em Negociação') bg='info'; else if(s==='Convertido') bg='success'; else if(s==='Perfil Inválido') bg='danger'; tbody.innerHTML+=`<tr><td>${l.abertura||'-'}</td><td>${l.nome||'-'}</td><td>${l.telefone||'-'}</td><td>${l.email||'-'}</td><td>${l.cidade||'-'}</td><td>${l.uf||'-'}</td><td><span class="badge bg-${bg}">${s}</span></td><td>${l.probabilidade||'50'}%</td><td><button class="btn btn-sm btn-outline-primary" onclick="editarLead('${l.id}')"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" onclick="excluirLead('${l.id}')"><i class="bi bi-trash"></i></button></td></tr>`; }); }
+  if(!pagina.length){ tbody.innerHTML='<tr><td colspan="9" class="text-center text-muted py-3">Nenhum lead encontrado.</td></tr>'; }
+  else { pagina.forEach(l=>{ const s=l.status||'Disponível'; let bg='primary'; if(s==='Em Atendimento') bg='warning'; else if(s==='Em Negociação') bg='info'; else if(s==='Convertido') bg='success'; else if(s==='Perfil Inválido') bg='danger'; tbody.innerHTML+=`<tr><td>${l.abertura||'-'}</td><td>${l.nome||'-'}</td><td>${l.telefone||'-'}</td><td>${l.email||'-'}</td><td>${l.cidade||'-'}</td><td>${l.uf||'-'}</td><td><span class="badge bg-${bg}">${s}</span></td><td>${l.probabilidade||'50'}%</td><td>R$ ${(parseFloat(l.valorEstimado)||0).toFixed(2).replace('.',',')}</td><td><button class="btn btn-sm btn-outline-primary" onclick="editarLead('${l.id}')"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" onclick="excluirLead('${l.id}')"><i class="bi bi-trash"></i></button></td></tr>`; }); }
   document.getElementById('leadCountInfo').innerText=`Mostrando ${Math.min(inicio+1,total)}-${Math.min(inicio+leadsPorPagina,total)} de ${total}`;
   document.getElementById('leadPaginaInfo').innerText=`Página ${paginaLead} de ${totalPaginas||1}`;
   document.getElementById('btnLeadPrev').disabled=paginaLead<=1;
@@ -1814,6 +1892,7 @@ function abrirModalNovoLead() {
   document.getElementById('novoLeadUf').value='';
   document.getElementById('novoLeadStatus').value=leadStatuses.length?leadStatuses[0].name:'';
   document.getElementById('novoLeadProbabilidade').value='50';
+  document.getElementById('novoLeadValor').value='1000';
   new bootstrap.Modal(document.getElementById('modalNovoLead')).show();
 }
 
@@ -1828,13 +1907,17 @@ async function salvarNovoLead() {
     uf:document.getElementById('novoLeadUf').value,
     status:document.getElementById('novoLeadStatus').value||'Disponível',
     probabilidade:document.getElementById('novoLeadProbabilidade').value||50,
+    valorEstimado:parseFloat(document.getElementById('novoLeadValor').value)||0,
     observacoes:document.getElementById('novoLeadObs').value.trim(),
     abertura:new Date().toISOString().split('T')[0],
-    userId:currentUser.uid, createdAt:new Date().toISOString()
+    userId:currentUser.uid,
+    createdAt:new Date().toISOString()
   };
   await db.collection('leads').add(data);
   bootstrap.Modal.getInstance(document.getElementById('modalNovoLead')).hide();
-  await loadLeads(); renderLeads();
+  await loadLeads();
+  renderLeads();
+  renderForecast();
 }
 
 function editarLead(id) {
@@ -1850,21 +1933,25 @@ function editarLead(id) {
   document.getElementById('novoLeadUf').value=l.uf||'';
   document.getElementById('novoLeadStatus').value=l.status||leadStatuses[0]?.name||'';
   document.getElementById('novoLeadProbabilidade').value=l.probabilidade||50;
+  document.getElementById('novoLeadValor').value=l.valorEstimado||1000;
   document.getElementById('novoLeadObs').value=l.observacoes||'';
   new bootstrap.Modal(document.getElementById('modalNovoLead')).show();
 }
 
 async function atualizarLead() {
   const id=document.getElementById('modalNovoLead').dataset.editId; if(!id) return;
-  const nome=document.getElementById('novoLeadNome').value.trim(); const telefone=document.getElementById('novoLeadTelefone').value.trim();
+  const nome=document.getElementById('novoLeadNome').value.trim();
+  const telefone=document.getElementById('novoLeadTelefone').value.trim();
   if(!nome||!telefone) return alert('Nome e telefone são obrigatórios');
   const data={
-    nome, telefone:document.getElementById('novoLeadTelefone').value.trim(),
+    nome,
+    telefone:document.getElementById('novoLeadTelefone').value.trim(),
     email:document.getElementById('novoLeadEmail').value.trim(),
     cidade:document.getElementById('novoLeadCidade').value.trim(),
     uf:document.getElementById('novoLeadUf').value,
     status:document.getElementById('novoLeadStatus').value||'Disponível',
     probabilidade:document.getElementById('novoLeadProbabilidade').value||50,
+    valorEstimado:parseFloat(document.getElementById('novoLeadValor').value)||0,
     observacoes:document.getElementById('novoLeadObs').value.trim(),
     updatedAt:new Date().toISOString()
   };
@@ -1874,7 +1961,9 @@ async function atualizarLead() {
   document.getElementById('btnSalvarNovoLead').innerHTML='Salvar Lead';
   document.getElementById('btnSalvarNovoLead').onclick=salvarNovoLead;
   delete document.getElementById('modalNovoLead').dataset.editId;
-  await loadLeads(); renderLeads();
+  await loadLeads();
+  renderLeads();
+  renderForecast();
 }
 
 async function excluirLead(id){ if(!confirm('Excluir este lead?')) return; await db.collection('leads').doc(id).delete(); await loadLeads(); renderLeads(); }
