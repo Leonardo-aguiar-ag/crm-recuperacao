@@ -15,7 +15,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    /* ===== CSS COMPLETO (mesmo do anterior) ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -203,7 +202,7 @@
 </head>
 <body>
 
-<!-- ===== LOGIN ===== -->
+<!-- LOGIN -->
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
     <h3 class="text-center mb-4 fw-bold" style="color:var(--text);">CRM Recupera AI</h3>
@@ -220,7 +219,7 @@
   </div>
 </div>
 
-<!-- ===== SIDEBAR ===== -->
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <div class="logo">
     <i class="bi bi-robot"></i>
@@ -260,7 +259,7 @@
   </div>
 </div>
 
-<!-- ===== CONTEÚDO PRINCIPAL ===== -->
+<!-- MAIN CONTENT -->
 <div class="main-content" id="mainContent">
   <div class="topbar">
     <div class="left-actions">
@@ -280,7 +279,6 @@
     </div>
   </div>
 
-  <!-- ===== ABAS ===== -->
   <div class="tab-content" id="mainTabContent">
 
     <!-- DASHBOARD -->
@@ -349,7 +347,7 @@
           <h5 class="fw-bold"><i class="bi bi-award me-2"></i>Ranking de Vendedores</h5>
           <div class="table-responsive">
             <table class="table" id="rankingTable">
-              <thead><tr><th>#</th><th>Vendedor</th><th>Vendas</th><th>Valor (R$)</th><th>Conversão</th><th>Ticket Médio</th><th>Badges</th></tr></thead>
+              <thead><tr><th>#</th><th>Vendedor</th><th>Implantações</th><th>Valor (R$)</th><th>Conversão</th><th>Ticket Médio</th><th>Badges</th></tr></thead>
               <tbody id="rankingBody"></tbody>
             </table>
           </div>
@@ -436,51 +434,10 @@
               <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="2"></textarea></div>
             </div>
           </div>
-          <div class="tab-pane" id="dependentesTab" style="display:none;">
-            <div class="row g-2 mb-3">
-              <div class="col-md-4"><input type="text" id="depNome" class="form-control" placeholder="Nome *"></div>
-              <div class="col-md-3"><input type="text" id="depCpf" class="form-control" placeholder="CPF"></div>
-              <div class="col-md-3"><input type="email" id="depEmail" class="form-control" placeholder="E-mail"></div>
-              <div class="col-md-2"><input type="text" id="depTelefone" class="form-control" placeholder="Telefone"></div>
-            </div>
-            <div class="d-flex gap-2 mb-3">
-              <button class="btn btn-success btn-sm" onclick="adicionarDependente()"><i class="bi bi-plus"></i> Adicionar</button>
-              <button class="btn btn-secondary btn-sm" onclick="limparCamposDependente()"><i class="bi bi-eraser"></i> Limpar</button>
-            </div>
-            <div id="dependentesList"></div>
-          </div>
-          <div class="tab-pane" id="pagamentosTab" style="display:none;">
-            <div class="row g-2 mb-3">
-              <div class="col-md-3"><input type="date" id="pagData" class="form-control" placeholder="Data"></div>
-              <div class="col-md-3"><input type="text" id="pagValor" class="form-control" placeholder="Valor" onblur="formatarValorInput(this)" onfocus="this.value=this.value.replace(/\./g,'').replace(',','.')"></div>
-              <div class="col-md-2"><select id="pagForma" class="form-select"><option value="">Forma</option><option value="Boleto">Boleto</option><option value="Cartão Crédito">Cartão Crédito</option><option value="Cartão Débito">Cartão Débito</option><option value="Transferência">Transferência</option><option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option></select></div>
-              <div class="col-md-2"><select id="pagStatus" class="form-select"><option value="">Status</option><option value="Pago">Pago</option><option value="Pendente">Pendente</option><option value="Atrasado">Atrasado</option></select></div>
-              <div class="col-md-2"><input type="text" id="pagObs" class="form-control" placeholder="Observações"></div>
-            </div>
-            <div class="d-flex gap-2 mb-3">
-              <button class="btn btn-success btn-sm" onclick="adicionarPagamento()"><i class="bi bi-plus"></i> Adicionar</button>
-              <button class="btn btn-secondary btn-sm" onclick="limparCamposPagamento()"><i class="bi bi-eraser"></i> Limpar</button>
-            </div>
-            <div id="pagamentosList"></div>
-          </div>
-          <div class="tab-pane" id="anexosTab" style="display:none;">
-            <div class="row g-2 mb-3">
-              <div class="col-md-6"><input type="file" id="anexoFileInput" class="form-control" accept=".pdf,.jpg,.png,.doc,.docx,.xls,.xlsx" multiple /></div>
-              <div class="col-md-3"><button class="btn btn-success btn-sm" onclick="adicionarAnexos()"><i class="bi bi-plus-circle"></i> Adicionar</button></div>
-              <div class="col-md-3"><button class="btn btn-secondary btn-sm" onclick="document.getElementById('anexoFileInput').value=''">Limpar</button></div>
-            </div>
-            <div id="anexosList"></div>
-            <div class="text-muted small mt-2"><i class="bi bi-info-circle"></i> Os anexos serão enviados automaticamente ao salvar o cliente.</div>
-          </div>
-          <div class="tab-pane" id="interacoesTab" style="display:none;">
-            <div class="row g-2 mb-3">
-              <div class="col-md-3"><select id="interacaoTipo" class="form-select"><option value="Telefone">Telefone</option><option value="E-mail">E-mail</option><option value="WhatsApp">WhatsApp</option><option value="Visita">Visita</option><option value="Outro">Outro</option></select></div>
-              <div class="col-md-4"><input type="text" id="interacaoDesc" class="form-control" placeholder="Descrição do contato"></div>
-              <div class="col-md-3"><input type="datetime-local" id="interacaoData" class="form-control" value=""></div>
-              <div class="col-md-2"><button class="btn btn-primary btn-sm" onclick="adicionarInteracao()"><i class="bi bi-plus"></i> Registrar</button></div>
-            </div>
-            <div id="interacoesList"></div>
-          </div>
+          <div class="tab-pane" id="dependentesTab" style="display:none;"><!-- dependentes --></div>
+          <div class="tab-pane" id="pagamentosTab" style="display:none;"><!-- pagamentos --></div>
+          <div class="tab-pane" id="anexosTab" style="display:none;"><!-- anexos --></div>
+          <div class="tab-pane" id="interacoesTab" style="display:none;"><!-- interações --></div>
           <div class="tab-pane" id="checklistTab" style="display:none;">
             <div class="mb-3">
               <div class="input-group">
@@ -688,17 +645,14 @@
       </div>
     </div>
 
-  </div><!-- end tab-content -->
-</div><!-- end main-content -->
+  </div>
+</div>
 
-<!-- ===== MODAIS ===== -->
-<!-- Modal Tarefa -->
+<!-- MODAIS -->
 <div class="modal fade" id="modalTarefa" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Nova Tarefa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="tarefaId"><input type="text" id="tarefaTitulo" class="form-control mb-3" placeholder="Título"><input type="date" id="tarefaData" class="form-control mb-3"><input type="time" id="tarefaHora" class="form-control mb-3"><textarea id="tarefaDesc" class="form-control" rows="3" placeholder="Descrição"></textarea><div class="form-check"><input class="form-check-input" type="checkbox" id="tarefaConcluida"><label class="form-check-label">Concluída</label></div><div class="mt-2"><label>Lembrete</label><select id="tarefaLembrete" class="form-select"><option value="0">Nenhum</option><option value="15">15 minutos antes</option><option value="30">30 minutos antes</option><option value="60">1 hora antes</option><option value="1440">1 dia antes</option><option value="10080">1 semana antes</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="salvarTarefa()">Salvar</button></div></div></div></div>
 
-<!-- Modal Lote -->
 <div class="modal fade" id="modalLote" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Ação em Lote</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select id="acaoLote" class="form-select mb-3" onchange="handleAcaoLoteChange()"><option value="">Escolha...</option><option value="status">Alterar Status</option><option value="praca">Alterar Praça</option><option value="administradora">Alterar Administradora</option><option value="dataPagamento">Definir Data</option><option value="codigo">Alterar Código</option><option value="excluir">Excluir</option></select><div id="parametrosLote"></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="executarAcaoLote()">Aplicar</button></div></div></div></div>
 
-<!-- Modal Novo Lead (com Valor Estimado) -->
 <div class="modal fade" id="modalNovoLead" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content" style="background:var(--card);">
@@ -1032,73 +986,30 @@ function renderVendedorChart() {
   charts.vendedor=new Chart(ctx,{type:'bar',data:{labels:dados.map(d=>d.nome),datasets:[{label:'Propostas',data:dados.map(d=>d.propostas),backgroundColor:'#6c5ce7'},{label:'Implantadas',data:dados.map(d=>d.implantadas),backgroundColor:'#00b894'},{label:'Taxa (%)',data:dados.map(d=>d.taxa),type:'line',borderColor:'#fdcb6e',fill:false,tension:0.1}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true}}}});
 }
 
-// ==================== FORECAST (CORRIGIDO) ====================
+// ==================== FORECAST ====================
 function renderForecast() {
-  // Status que indicam negociação ativa
   const statusNegociacao = ['Negociação', 'Proposta Enviada', 'Cotação', 'Em Negociação', 'Aguardando Retorno', 'Em análise'];
-  
-  // Filtra leads em negociação (exceto convertidos ou perdidos)
-  const leadsNegociacao = leadsData.filter(l => 
-    statusNegociacao.includes(l.status) && l.status !== 'Convertido' && l.status !== 'Perdido'
-  );
-  
-  let totalEsperado = 0;
-  let probMedia = 0;
-  let count = leadsNegociacao.length;
-  
+  const leadsNegociacao = leadsData.filter(l => statusNegociacao.includes(l.status) && l.status !== 'Convertido' && l.status !== 'Perdido');
+  let totalEsperado = 0, probMedia = 0, count = leadsNegociacao.length;
   leadsNegociacao.forEach(l => {
-    const prob = parseFloat(l.probabilidade) || 50; // se não tiver, usa 50%
+    const prob = parseFloat(l.probabilidade) || 50;
     const valor = parseFloat(l.valorEstimado) || 0;
     totalEsperado += (valor * prob / 100);
     probMedia += prob;
   });
-  
-  if (count > 0) {
-    probMedia = Math.round(probMedia / count);
-  } else {
-    probMedia = 0;
-  }
-  
+  if (count > 0) probMedia = Math.round(probMedia / count); else probMedia = 0;
   document.getElementById('forecastValor').innerText = 'R$ ' + totalEsperado.toFixed(2).replace('.', ',');
   document.getElementById('forecastProb').innerText = probMedia + '%';
-  
-  // Gráfico
   const ctx = document.getElementById('forecastChart')?.getContext('2d');
   if(ctx) {
     if(charts.forecast) charts.forecast.destroy();
     if (count === 0) {
-      charts.forecast = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Nenhum lead em negociação'],
-          datasets: [{ label: 'Valor Esperado (R$)', data: [0], backgroundColor: '#6c5ce7' }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } }
-        }
-      });
+      charts.forecast = new Chart(ctx, { type:'bar', data:{ labels:['Nenhum lead em negociação'], datasets:[{ label:'Valor Esperado (R$)', data:[0], backgroundColor:'#6c5ce7' }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } } } });
       return;
     }
     const labels = leadsNegociacao.map(l => l.nome || 'Lead');
-    const valores = leadsNegociacao.map(l => {
-      const prob = parseFloat(l.probabilidade) || 50;
-      const valor = parseFloat(l.valorEstimado) || 0;
-      return (valor * prob / 100);
-    });
-    charts.forecast = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{ label: 'Valor Esperado (R$)', data: valores, backgroundColor: '#6c5ce7' }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } }
-      }
-    });
+    const valores = leadsNegociacao.map(l => (parseFloat(l.probabilidade)||50) * (parseFloat(l.valorEstimado)||0) / 100);
+    charts.forecast = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ label:'Valor Esperado (R$)', data:valores, backgroundColor:'#6c5ce7' }] }, options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } } });
   }
 }
 
@@ -1122,53 +1033,42 @@ function renderTendencias() {
   const vendasData = labels.map(m => meses[m].vendas);
   const inadData = labels.map(m => meses[m].inadimplentes);
   const ticketData = labels.map(m => meses[m].count ? (meses[m].ticket / meses[m].count) : 0);
-  charts.tendencias = new Chart(ctx, {
-    type:'line',
-    data:{ labels, datasets:[
-      { label:'Vendas (R$)', data:vendasData, borderColor:'#6c5ce7', fill:false },
-      { label:'Inadimplentes', data:inadData, borderColor:'#e17055', fill:false },
-      { label:'Ticket Médio (R$)', data:ticketData, borderColor:'#00b894', fill:false }
-    ]},
-    options:{ responsive:true, maintainAspectRatio:false }
-  });
+  charts.tendencias = new Chart(ctx, { type:'line', data:{ labels, datasets:[
+    { label:'Vendas (R$)', data:vendasData, borderColor:'#6c5ce7', fill:false },
+    { label:'Inadimplentes', data:inadData, borderColor:'#e17055', fill:false },
+    { label:'Ticket Médio (R$)', data:ticketData, borderColor:'#00b894', fill:false }
+  ]}, options:{ responsive:true, maintainAspectRatio:false } });
 }
 
 // ==================== METAS (CORRIGIDO) ====================
 function renderMetas() {
   const el = document.getElementById('metasVendedoresList');
   if(!el) return;
-  
   const hoje = new Date();
   const mesAtual = hoje.getMonth();
   const anoAtual = hoje.getFullYear();
   const mesStr = String(mesAtual + 1).padStart(2, '0');
-  const anoMes = `${anoAtual}-${mesStr}`; // formato YYYY-MM
-  
+  const anoMes = `${anoAtual}-${mesStr}`;
   let html = '';
-  
   pessoas.forEach(v => {
-    // Filtra clientes do vendedor e do mês atual (independente do formato da data)
     const vendas = clients.filter(c => {
       if (c.vendedorId !== v.id) return false;
       if (!c.data) return false;
-      
-      // Tenta converter a data para o formato YYYY-MM
+      const status = (c.status || '').toLowerCase();
+      if (status !== 'implantado') return false;
       let dataStr = c.data;
-      // Se for DD/MM/YYYY ou DD-MM-YYYY, converte para YYYY-MM
       if (dataStr.includes('/') || dataStr.includes('-')) {
         const partes = dataStr.split(/[\/-]/);
         if (partes.length === 3) {
-          // Se o primeiro for dia (DD), assume formato DD/MM/YYYY ou DD-MM-YYYY
           if (partes[0].length === 2 && partes[1].length === 2 && partes[2].length === 4) {
-            dataStr = `${partes[2]}-${partes[1]}`; // YYYY-MM
+            dataStr = `${partes[2]}-${partes[1]}`;
           } else if (partes[0].length === 4) {
-            dataStr = `${partes[0]}-${partes[1]}`; // já é YYYY-MM-DD ou YYYY-MM
+            dataStr = `${partes[0]}-${partes[1]}`;
           }
         }
       }
       return dataStr.startsWith(anoMes);
     });
-    
     const qtd = vendas.length;
     const metaVendas = parseInt(v.metaVendas) || 0;
     const metaValor = parseFloat(v.metaValor) || 0;
@@ -1176,21 +1076,18 @@ function renderMetas() {
       let val = String(c.valorComDesconto || '0').replace(/\./g, '').replace(',', '.');
       return acc + (parseFloat(val) || 0);
     }, 0);
-    
     const progVendas = metaVendas > 0 ? Math.round((qtd / metaVendas) * 100) : 0;
     const progValor = metaValor > 0 ? Math.round((valorVendido / metaValor) * 100) : 0;
-    
     html += `<div class="status-item">
       <div><strong>${v.nome}</strong> ${v.codigo ? '['+v.codigo+']' : ''}</div>
       <div>
-        <span>Vendas: ${qtd}/${metaVendas} (${progVendas}%)</span>
+        <span>Implantações: ${qtd}/${metaVendas} (${progVendas}%)</span>
         <div class="progress-meta" style="width:100px;display:inline-block;margin:0 8px;"><div class="bar" style="width:${Math.min(progVendas,100)}%"></div></div>
         <span>R$ ${valorVendido.toFixed(2)} / ${metaValor.toFixed(2)} (${progValor}%)</span>
         <div class="progress-meta" style="width:100px;display:inline-block;margin:0 8px;"><div class="bar" style="width:${Math.min(progValor,100)}%"></div></div>
       </div>
     </div>`;
   });
-  
   el.innerHTML = html || '<p class="text-muted">Nenhum vendedor com metas definidas.</p>';
 }
 
@@ -1218,7 +1115,7 @@ function renderRanking() {
     return `<tr>
       <td>${i+1} ${badge}</td>
       <td>${d.nome}</td>
-      <td>${d.propostas}</td>
+      <td>${d.implantadas}</td>
       <td>R$ ${d.valorTotal.toFixed(2)}</td>
       <td>${d.taxa}%</td>
       <td>R$ ${d.ticket.toFixed(2)}</td>
@@ -1843,7 +1740,7 @@ async function uploadZipAnexos(event) {
   event.target.value='';
 }
 
-// ==================== LEADS (com Valor Estimado) ====================
+// ==================== LEADS ====================
 function renderLeads() {
   const busca=document.getElementById('searchLead').value.toLowerCase();
   const uf=document.getElementById('filterUfLead').value;
@@ -1900,24 +1797,10 @@ async function salvarNovoLead() {
   const nome=document.getElementById('novoLeadNome').value.trim();
   const telefone=document.getElementById('novoLeadTelefone').value.trim();
   if(!nome||!telefone) return alert('Nome e telefone são obrigatórios');
-  const data={
-    nome, telefone,
-    email:document.getElementById('novoLeadEmail').value.trim(),
-    cidade:document.getElementById('novoLeadCidade').value.trim(),
-    uf:document.getElementById('novoLeadUf').value,
-    status:document.getElementById('novoLeadStatus').value||'Disponível',
-    probabilidade:document.getElementById('novoLeadProbabilidade').value||50,
-    valorEstimado:parseFloat(document.getElementById('novoLeadValor').value)||0,
-    observacoes:document.getElementById('novoLeadObs').value.trim(),
-    abertura:new Date().toISOString().split('T')[0],
-    userId:currentUser.uid,
-    createdAt:new Date().toISOString()
-  };
+  const data={nome,telefone,email:document.getElementById('novoLeadEmail').value.trim(),cidade:document.getElementById('novoLeadCidade').value.trim(),uf:document.getElementById('novoLeadUf').value,status:document.getElementById('novoLeadStatus').value||'Disponível',probabilidade:document.getElementById('novoLeadProbabilidade').value||50,valorEstimado:parseFloat(document.getElementById('novoLeadValor').value)||0,observacoes:document.getElementById('novoLeadObs').value.trim(),abertura:new Date().toISOString().split('T')[0],userId:currentUser.uid,createdAt:new Date().toISOString()};
   await db.collection('leads').add(data);
   bootstrap.Modal.getInstance(document.getElementById('modalNovoLead')).hide();
-  await loadLeads();
-  renderLeads();
-  renderForecast();
+  await loadLeads(); renderLeads(); renderForecast();
 }
 
 function editarLead(id) {
@@ -1943,27 +1826,14 @@ async function atualizarLead() {
   const nome=document.getElementById('novoLeadNome').value.trim();
   const telefone=document.getElementById('novoLeadTelefone').value.trim();
   if(!nome||!telefone) return alert('Nome e telefone são obrigatórios');
-  const data={
-    nome,
-    telefone:document.getElementById('novoLeadTelefone').value.trim(),
-    email:document.getElementById('novoLeadEmail').value.trim(),
-    cidade:document.getElementById('novoLeadCidade').value.trim(),
-    uf:document.getElementById('novoLeadUf').value,
-    status:document.getElementById('novoLeadStatus').value||'Disponível',
-    probabilidade:document.getElementById('novoLeadProbabilidade').value||50,
-    valorEstimado:parseFloat(document.getElementById('novoLeadValor').value)||0,
-    observacoes:document.getElementById('novoLeadObs').value.trim(),
-    updatedAt:new Date().toISOString()
-  };
+  const data={nome,telefone:document.getElementById('novoLeadTelefone').value.trim(),email:document.getElementById('novoLeadEmail').value.trim(),cidade:document.getElementById('novoLeadCidade').value.trim(),uf:document.getElementById('novoLeadUf').value,status:document.getElementById('novoLeadStatus').value||'Disponível',probabilidade:document.getElementById('novoLeadProbabilidade').value||50,valorEstimado:parseFloat(document.getElementById('novoLeadValor').value)||0,observacoes:document.getElementById('novoLeadObs').value.trim(),updatedAt:new Date().toISOString()};
   await db.collection('leads').doc(id).update(data);
   bootstrap.Modal.getInstance(document.getElementById('modalNovoLead')).hide();
   document.querySelector('#modalNovoLead .modal-title').innerHTML='<i class="bi bi-person-plus me-2"></i>Novo Lead';
   document.getElementById('btnSalvarNovoLead').innerHTML='Salvar Lead';
   document.getElementById('btnSalvarNovoLead').onclick=salvarNovoLead;
   delete document.getElementById('modalNovoLead').dataset.editId;
-  await loadLeads();
-  renderLeads();
-  renderForecast();
+  await loadLeads(); renderLeads(); renderForecast();
 }
 
 async function excluirLead(id){ if(!confirm('Excluir este lead?')) return; await db.collection('leads').doc(id).delete(); await loadLeads(); renderLeads(); }
@@ -1979,7 +1849,7 @@ async function salvarTarefa(){ const id=document.getElementById('tarefaId').valu
 function editarTarefa(id){ const t=tarefas.find(t=>t.id===id); if(!t) return; document.getElementById('tarefaId').value=t.id; document.getElementById('tarefaTitulo').value=t.titulo||''; document.getElementById('tarefaData').value=t.data||''; document.getElementById('tarefaHora').value=t.hora||''; document.getElementById('tarefaDesc').value=t.descricao||''; document.getElementById('tarefaConcluida').checked=t.concluida||false; document.getElementById('tarefaLembrete').value=t.lembrete||0; new bootstrap.Modal(document.getElementById('modalTarefa')).show(); }
 async function excluirTarefa(id){ if(!confirm('Excluir esta tarefa?')) return; await db.collection('tarefas').doc(id).delete(); tarefas=tarefas.filter(t=>t.id!==id); renderCalendario(); renderCompromissos(diaSelecionado); }
 
-// ==================== CONFIGURAÇÕES (RENDER) ====================
+// ==================== CONFIGURAÇÕES ====================
 function renderLeadStatuses(){ const el=document.getElementById('leadStatusList'); if(!el) return; el.innerHTML=leadStatuses.map(s=>`<div class="status-item"><span>${s.name}</span><button class="btn btn-danger btn-sm" onclick="deleteLeadStatus('${s.id}')">Excluir</button></div>`).join(''); }
 async function addLeadStatus(){ const nome=prompt('Nome do novo status para leads:'); if(!nome||!nome.trim()) return; await db.collection('leadStatuses').add({name:nome.trim(),userId:currentUser.uid,createdAt:new Date().toISOString()}); await loadLeadStatuses(); renderLeadStatuses(); preencherSelectsFicha(); }
 async function deleteLeadStatus(id){ if(!confirm('Remover este status?')) return; await db.collection('leadStatuses').doc(id).delete(); await loadLeadStatuses(); renderLeadStatuses(); preencherSelectsFicha(); }
