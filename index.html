@@ -15,6 +15,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
+    /* ===== CSS COMPLETO (mesmo do anterior) ===== */
     :root {
       --bg: #f0f2f8;
       --card: #ffffff;
@@ -711,6 +712,33 @@ let isLoading = false;
 let backupIntervalId = null, backupRunning = false, lastBackupTime = null, nextBackupTime = null;
 let filtrosSalvos = [];
 
+// ==================== FUNÇÃO AUXILIAR DE FORMATAÇÃO MONETÁRIA ====================
+function formatarMoeda(valor) {
+  if (typeof valor === 'string') {
+    valor = parseFloat(valor.replace(/\./g, '').replace(',', '.'));
+  }
+  if (isNaN(valor) || valor === null || valor === undefined) {
+    return 'R$ 0,00';
+  }
+  return 'R$ ' + valor.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function formatarNumero(valor) {
+  if (typeof valor === 'string') {
+    valor = parseFloat(valor.replace(/\./g, '').replace(',', '.'));
+  }
+  if (isNaN(valor) || valor === null || valor === undefined) {
+    return '0,00';
+  }
+  return valor.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
 // ==================== SIDEBAR SIZE ====================
 function atualizarTamanhoSidebar(largura) {
   document.documentElement.style.setProperty('--sidebar-width', largura + 'px');
@@ -930,14 +958,14 @@ function updateDashboard() {
   const ticketMedio=total>0?valorTotal/total:0;
   document.getElementById('dashTotal').innerText=total;
   document.getElementById('dashImplantados').innerText=totalVidasImplantadas;
-  document.getElementById('dashProcessado').innerText='R$ '+valorTotal.toFixed(2).replace('.',',');
+  document.getElementById('dashProcessado').innerText = formatarMoeda(valorTotal);
   document.getElementById('dashConversao').innerText=taxaConversao+'%';
   document.getElementById('dashInadimplentes').innerText=inadimplentes;
   document.getElementById('dashEmDia').innerText=emDia;
   document.getElementById('dashSemInfo').innerText=semInfo;
   document.getElementById('dashMediaAtraso').innerText='0';
   document.getElementById('dashMediaTempo').innerText='0';
-  document.getElementById('dashTicketMedio').innerText='R$ '+ticketMedio.toFixed(2).replace('.',',');
+  document.getElementById('dashTicketMedio').innerText = formatarMoeda(ticketMedio);
   atualizarGraficos(filtered);
   renderUltimasVendas();
   renderVendedorChart();
@@ -998,7 +1026,7 @@ function renderForecast() {
     probMedia += prob;
   });
   if (count > 0) probMedia = Math.round(probMedia / count); else probMedia = 0;
-  document.getElementById('forecastValor').innerText = 'R$ ' + totalEsperado.toFixed(2).replace('.', ',');
+  document.getElementById('forecastValor').innerText = formatarMoeda(totalEsperado);
   document.getElementById('forecastProb').innerText = probMedia + '%';
   const ctx = document.getElementById('forecastChart')?.getContext('2d');
   if(ctx) {
@@ -1083,7 +1111,7 @@ function renderMetas() {
       <div>
         <span>Implantações: ${qtd}/${metaVendas} (${progVendas}%)</span>
         <div class="progress-meta" style="width:100px;display:inline-block;margin:0 8px;"><div class="bar" style="width:${Math.min(progVendas,100)}%"></div></div>
-        <span>R$ ${valorVendido.toFixed(2)} / ${metaValor.toFixed(2)} (${progValor}%)</span>
+        <span>R$ ${formatarNumero(valorVendido)} / ${formatarNumero(metaValor)} (${progValor}%)</span>
         <div class="progress-meta" style="width:100px;display:inline-block;margin:0 8px;"><div class="bar" style="width:${Math.min(progValor,100)}%"></div></div>
       </div>
     </div>`;
@@ -1116,9 +1144,9 @@ function renderRanking() {
       <td>${i+1} ${badge}</td>
       <td>${d.nome}</td>
       <td>${d.implantadas}</td>
-      <td>R$ ${d.valorTotal.toFixed(2)}</td>
+      <td>${formatarMoeda(d.valorTotal)}</td>
       <td>${d.taxa}%</td>
-      <td>R$ ${d.ticket.toFixed(2)}</td>
+      <td>${formatarMoeda(d.ticket)}</td>
       <td>${badges}</td>
     </tr>`;
   }).join('');
@@ -1432,7 +1460,7 @@ function renderTable() {
       <td>${c.cpfTitular||'-'}</td>
       <td>${c.modalidadePlano||'-'}</td>
       <td>${c.status||'-'}</td>
-      <td>${c.valorComDesconto?'R$ '+parseFloat(String(c.valorComDesconto).replace(/\./g,'').replace(',','.')).toFixed(2).replace('.',','):'-'}</td>
+      <td>${c.valorComDesconto ? formatarMoeda(parseFloat(String(c.valorComDesconto).replace(/\./g,'').replace(',','.'))) : '-'}</td>
       <td>${c.qtdVidas||'0'}</td>
       <td>${c.praca||'-'}</td>
       <td>${c.administradora||'-'}</td>
@@ -1567,7 +1595,7 @@ function renderPagamentos() {
   const el=document.getElementById('pagamentosList');
   if(!pagamentosTemp.length){ el.innerHTML='<p class="text-muted">Nenhum pagamento registrado.</p>'; return; }
   el.innerHTML=pagamentosTemp.map((p,i)=>`
-    <div class="status-item"><div><strong>${p.data}</strong> - R$ ${parseFloat(p.valor).toFixed(2).replace('.',',')}${p.forma?' | '+p.forma:''}${p.status?' | '+p.status:''}${p.obs?' | '+p.obs:''}</div><div><button class="btn btn-sm btn-outline-primary" onclick="editarPagamento(${i})"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" onclick="removerPagamento(${i})"><i class="bi bi-trash"></i></button></div></div>
+    <div class="status-item"><div><strong>${p.data}</strong> - R$ ${formatarMoeda(parseFloat(p.valor))}</div><div><button class="btn btn-sm btn-outline-primary" onclick="editarPagamento(${i})"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" onclick="removerPagamento(${i})"><i class="bi bi-trash"></i></button></div></div>
   `).join('');
 }
 function editarPagamento(idx){ const p=pagamentosTemp[idx]; if(!p) return; document.getElementById('pagData').value=p.data||''; document.getElementById('pagValor').value=p.valor||''; document.getElementById('pagForma').value=p.forma||''; document.getElementById('pagStatus').value=p.status||''; document.getElementById('pagObs').value=p.obs||''; pagamentosTemp.splice(idx,1); renderPagamentos(); document.getElementById('pagData').focus(); }
@@ -1620,7 +1648,7 @@ function removerInteracao(idx){ if(!confirm('Remover esta interação?')) return
 function renderPessoasList() {
   const el=document.getElementById('pessoasList'); if(!el) return;
   if(!pessoas.length){ el.innerHTML='<p class="text-muted">Nenhuma pessoa cadastrada.</p>'; return; }
-  el.innerHTML=pessoas.map(p=>`<div class="status-item"><span><strong>${p.nome}</strong> ${p.codigo?'['+p.codigo+']':''}</span><div>Meta Vendas: ${p.metaVendas||0} | Meta R$: ${p.metaValor?parseFloat(p.metaValor).toFixed(2):'0,00'}</div><button class="btn btn-danger btn-sm" onclick="deletePessoa('${p.id}')">Excluir</button></div>`).join('');
+  el.innerHTML=pessoas.map(p=>`<div class="status-item"><span><strong>${p.nome}</strong> ${p.codigo?'['+p.codigo+']':''}</span><div>Meta Vendas: ${p.metaVendas||0} | Meta R$: ${formatarMoeda(p.metaValor||0)}</div><button class="btn btn-danger btn-sm" onclick="deletePessoa('${p.id}')">Excluir</button></div>`).join('');
 }
 async function addPessoa() {
   const nome=document.getElementById('novaPessoaNome').value.trim();
@@ -1756,7 +1784,7 @@ function renderLeads() {
   const inicio=(paginaLead-1)*leadsPorPagina; const pagina=filtrados.slice(inicio,inicio+leadsPorPagina);
   const tbody=document.getElementById('leadsBody'); tbody.innerHTML='';
   if(!pagina.length){ tbody.innerHTML='<tr><td colspan="9" class="text-center text-muted py-3">Nenhum lead encontrado.</td></tr>'; }
-  else { pagina.forEach(l=>{ const s=l.status||'Disponível'; let bg='primary'; if(s==='Em Atendimento') bg='warning'; else if(s==='Em Negociação') bg='info'; else if(s==='Convertido') bg='success'; else if(s==='Perfil Inválido') bg='danger'; tbody.innerHTML+=`<tr><td>${l.abertura||'-'}</td><td>${l.nome||'-'}</td><td>${l.telefone||'-'}</td><td>${l.email||'-'}</td><td>${l.cidade||'-'}</td><td>${l.uf||'-'}</td><td><span class="badge bg-${bg}">${s}</span></td><td>${l.probabilidade||'50'}%</td><td>R$ ${(parseFloat(l.valorEstimado)||0).toFixed(2).replace('.',',')}</td><td><button class="btn btn-sm btn-outline-primary" onclick="editarLead('${l.id}')"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" onclick="excluirLead('${l.id}')"><i class="bi bi-trash"></i></button></td></tr>`; }); }
+  else { pagina.forEach(l=>{ const s=l.status||'Disponível'; let bg='primary'; if(s==='Em Atendimento') bg='warning'; else if(s==='Em Negociação') bg='info'; else if(s==='Convertido') bg='success'; else if(s==='Perfil Inválido') bg='danger'; tbody.innerHTML+=`<tr><td>${l.abertura||'-'}</td><td>${l.nome||'-'}</td><td>${l.telefone||'-'}</td><td>${l.email||'-'}</td><td>${l.cidade||'-'}</td><td>${l.uf||'-'}</td><td><span class="badge bg-${bg}">${s}</span></td><td>${l.probabilidade||'50'}%</td><td>${formatarMoeda(parseFloat(l.valorEstimado)||0)}</td><td><button class="btn btn-sm btn-outline-primary" onclick="editarLead('${l.id}')"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger" onclick="excluirLead('${l.id}')"><i class="bi bi-trash"></i></button></td></tr>`; }); }
   document.getElementById('leadCountInfo').innerText=`Mostrando ${Math.min(inicio+1,total)}-${Math.min(inicio+leadsPorPagina,total)} de ${total}`;
   document.getElementById('leadPaginaInfo').innerText=`Página ${paginaLead} de ${totalPaginas||1}`;
   document.getElementById('btnLeadPrev').disabled=paginaLead<=1;
