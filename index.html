@@ -44,7 +44,6 @@
       --shadow: 0 12px 40px rgba(108, 92, 231, 0.10);
       --shadow-hover: 0 20px 50px rgba(108, 92, 231, 0.18);
       --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      /* Largura padrão da sidebar (será sobrescrita pelo JS) */
       --sidebar-width: 220px;
       --sidebar-collapsed: 60px;
     }
@@ -652,20 +651,8 @@
   <!-- ===== ABAS ===== -->
   <div class="tab-content" id="mainTabContent">
 
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD (sem o Personalizar Widgets) -->
     <div class="tab-pane fade show active" id="dashboardTab">
-      <div class="card card-custom mb-4">
-        <h6 class="fw-bold"><i class="bi bi-eye me-2"></i>Personalizar Widgets</h6>
-        <div class="widget-control" id="widgetControls">
-          <label><input type="checkbox" class="widget-toggle" data-widget="cards1" checked> Cards Principais</label>
-          <label><input type="checkbox" class="widget-toggle" data-widget="cards2" checked> Inadimplência / Em Dia</label>
-          <label><input type="checkbox" class="widget-toggle" data-widget="ultimasVendas" checked> Últimas Vendas</label>
-          <label><input type="checkbox" class="widget-toggle" data-widget="graficos" checked> Gráficos</label>
-          <label><input type="checkbox" class="widget-toggle" data-widget="relatorioVendedor" checked> Performance Vendedores</label>
-        </div>
-        <button class="btn btn-sm btn-outline-secondary" onclick="aplicarWidgets()">Aplicar</button>
-      </div>
-
       <div class="row g-3 mb-4 align-items-end">
         <div class="col-md-2"><label>Período</label><select id="periodoFiltro" class="form-select"><option value="">Todos</option><option value="30">Últimos 30 dias</option><option value="60">Últimos 60 dias</option><option value="90">Últimos 90 dias</option><option value="120">Últimos 120 dias</option><option value="180">Últimos 180 dias</option><option value="mes">Mês atual</option><option value="intervalo">Intervalo personalizado</option></select></div>
         <div class="col-md-2" id="intervaloDiv" style="display:none;"><label>Início</label><input type="date" id="dataInicioIntervalo" class="form-control"></div>
@@ -832,7 +819,6 @@
     <!-- PESQUISA -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card card-custom">
-        <!-- Filtros principais -->
         <div class="row g-3 mb-4">
           <div class="col-md-3">
             <label for="search" class="form-label fw-bold">
@@ -875,7 +861,6 @@
           </div>
         </div>
 
-        <!-- Filtros de valor e data -->
         <div class="row g-3 mb-4">
           <div class="col-md-2">
             <label for="filterValorMin" class="form-label fw-bold">Valor mínimo (R$)</label>
@@ -905,7 +890,6 @@
           </div>
         </div>
 
-        <!-- Filtro Último Contato -->
         <div class="row g-3 mb-4">
           <div class="col-md-3">
             <label for="filterUltimoContatoDias" class="form-label fw-bold">
@@ -924,7 +908,6 @@
           </div>
         </div>
 
-        <!-- Botões de ação em lote -->
         <div class="mb-3">
           <button class="btn btn-warning" onclick="abrirModalLote()" id="btnAcaoLote" disabled>
             <i class="bi bi-stack"></i> Ações em Lote
@@ -936,7 +919,6 @@
           <span id="selecionadosCount" class="ms-2 text-muted small"></span>
         </div>
 
-        <!-- Tabela de resultados -->
         <div class="table-responsive">
           <table class="table" id="pesquisaTable">
             <thead>
@@ -1026,9 +1008,26 @@
       </div>
     </div>
 
-    <!-- CONFIGURAÇÕES -->
+    <!-- CONFIGURAÇÕES (com Personalizar Widgets movido para cá) -->
     <div class="tab-pane fade" id="configTab">
       <div class="row g-4">
+
+        <!-- Personalizar Widgets (NOVA SEÇÃO) -->
+        <div class="col-lg-12">
+          <div class="card card-custom config-section">
+            <h6><i class="bi bi-eye me-2"></i>Personalizar Widgets</h6>
+            <div class="widget-control" id="widgetControls">
+              <label><input type="checkbox" class="widget-toggle" data-widget="cards1" checked> Cards Principais</label>
+              <label><input type="checkbox" class="widget-toggle" data-widget="cards2" checked> Inadimplência / Em Dia</label>
+              <label><input type="checkbox" class="widget-toggle" data-widget="ultimasVendas" checked> Últimas Vendas</label>
+              <label><input type="checkbox" class="widget-toggle" data-widget="graficos" checked> Gráficos</label>
+              <label><input type="checkbox" class="widget-toggle" data-widget="relatorioVendedor" checked> Performance Vendedores</label>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" onclick="aplicarWidgets()">Aplicar</button>
+          </div>
+        </div>
+
+        <!-- Status de Leads -->
         <div class="col-lg-6">
           <div class="card card-custom config-section">
             <h6><i class="bi bi-tags me-2"></i>Status de Leads</h6>
@@ -1042,6 +1041,7 @@
           </div>
         </div>
 
+        <!-- Cadastros -->
         <div class="col-lg-6">
           <div class="card card-custom config-section">
             <h6><i class="bi bi-building me-2"></i>Cadastros</h6>
@@ -1080,6 +1080,7 @@
           </div>
         </div>
 
+        <!-- Pessoas (Vendedores) -->
         <div class="col-lg-12">
           <div class="card card-custom config-section">
             <h6><i class="bi bi-people me-2"></i>Pessoas (Vendedores)</h6>
@@ -1092,6 +1093,7 @@
           </div>
         </div>
 
+        <!-- Backup e Exportação -->
         <div class="col-lg-12">
           <div class="card card-custom config-section">
             <h6><i class="bi bi-cloud-upload me-2"></i>Backup e Exportação</h6>
@@ -1132,6 +1134,7 @@
             <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="importBackup(event)">
           </div>
         </div>
+
       </div>
     </div>
 
