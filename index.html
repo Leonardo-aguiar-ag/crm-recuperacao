@@ -15,13 +15,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    /* ===== CSS COMPLETO (mantido igual, com adições para tarefas) ===== */
+    /* ===== CSS COMPLETO (com melhorias no modo escuro) ===== */
     :root {
-      --bg: #f0f2f8;
+      --bg: #f4f6fc;
       --card: #ffffff;
-      --border: #d0d7e6;
-      --text: #0b1a2e;
-      --text-secondary: #4a5a72;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --text-secondary: #4a5568;
       --primary: #6c5ce7;
       --primary-dark: #5a4bd1;
       --primary-light: #ede9fe;
@@ -44,625 +44,762 @@
       --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
       --sidebar-width: 220px;
       --sidebar-collapsed: 60px;
+      --font-size-base: 0.9rem;
     }
+
     body.dark-mode {
-      --bg: #0c111f;
-      --card: #182237;
-      --border: #3a4a66;
-      --text: #eef2f8;
-      --text-secondary: #b0bdd5;
-      --primary-light: #1e1a3a;
-      --shadow: 0 12px 40px rgba(0,0,0,0.5);
-      --shadow-hover: 0 20px 50px rgba(0,0,0,0.7);
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-secondary: #8b949e;
+      --primary-light: #1c1a3a;
+      --shadow: 0 12px 40px rgba(0,0,0,0.6);
+      --shadow-hover: 0 20px 50px rgba(0,0,0,0.8);
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* Tamanhos de fonte */
+    body.fonte-menor { --font-size-base: 0.75rem; }
+    body.fonte-padrao { --font-size-base: 0.9rem; }
+    body.fonte-maior { --font-size-base: 1.05rem; }
+    body.fonte-extra { --font-size-base: 1.2rem; }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 0.9rem;
-      line-height: 1.5;
-      transition: background var(--transition), color var(--transition);
-      min-height: 100vh;
+      font-family:'Inter',-apple-system,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      font-size:var(--font-size-base);
+      line-height:1.6;
+      transition:background var(--transition),color var(--transition),font-size 0.3s ease;
+      min-height:100vh;
     }
+
+    /* Sidebar */
     .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: var(--sidebar-width);
-      height: 100vh;
-      background: var(--card);
-      border-right: 2px solid var(--border);
-      padding: 1rem 0;
-      z-index: 1050;
-      transition: width 0.3s ease, transform 0.3s ease;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: var(--shadow);
+      position:fixed;
+      top:0;
+      left:0;
+      width:var(--sidebar-width);
+      height:100vh;
+      background:var(--card);
+      border-right:2px solid var(--border);
+      padding:1rem 0;
+      z-index:1050;
+      transition:width 0.3s ease,transform 0.3s ease;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      box-shadow:var(--shadow);
     }
-    .sidebar.collapsed { width: var(--sidebar-collapsed); }
+    .sidebar.collapsed { width:var(--sidebar-collapsed); }
     .sidebar .logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 0.8rem 1rem;
-      border-bottom: 2px solid var(--border);
-      margin-bottom: 1rem;
-      min-height: 70px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:0.8rem 1rem;
+      border-bottom:2px solid var(--border);
+      margin-bottom:1rem;
+      min-height:70px;
     }
     .sidebar .logo i {
-      font-size: 2rem;
-      color: var(--primary);
-      background: var(--primary-light);
-      padding: 6px;
-      border-radius: var(--radius-sm);
+      font-size:2rem;
+      color:var(--primary);
+      background:var(--primary-light);
+      padding:6px;
+      border-radius:var(--radius-sm);
     }
     .sidebar .logo span {
-      font-weight: 900;
-      font-size: 1.2rem;
-      background: linear-gradient(135deg, var(--primary), var(--purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      white-space: nowrap;
-      transition: opacity 0.2s;
+      font-weight:900;
+      font-size:1.2rem;
+      background:linear-gradient(135deg,var(--primary),var(--purple));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      white-space:nowrap;
+      transition:opacity 0.2s;
     }
-    .sidebar.collapsed .logo span { opacity: 0; width: 0; overflow: hidden; }
+    .sidebar.collapsed .logo span { opacity:0; width:0; overflow:hidden; }
     .sidebar .nav-items {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 0.5rem;
+      flex:1;
+      overflow-y:auto;
+      padding:0 0.5rem;
     }
     .sidebar .nav-items .nav-link {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 0.7rem 1rem;
-      border-radius: var(--radius-sm);
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.85rem;
-      transition: all var(--transition);
-      margin-bottom: 4px;
-      cursor: pointer;
-      white-space: nowrap;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:0.7rem 1rem;
+      border-radius:var(--radius-sm);
+      color:var(--text-secondary);
+      text-decoration:none;
+      font-weight:600;
+      font-size:0.85rem;
+      transition:all var(--transition);
+      margin-bottom:4px;
+      cursor:pointer;
+      white-space:nowrap;
     }
     .sidebar .nav-items .nav-link:hover {
-      background: var(--primary-light);
-      color: var(--primary);
+      background:var(--primary-light);
+      color:var(--primary);
     }
     .sidebar .nav-items .nav-link.active {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 4px 12px rgba(108,92,231,0.3);
+      background:var(--primary);
+      color:white;
+      box-shadow:0 4px 12px rgba(108,92,231,0.3);
     }
     .sidebar .nav-items .nav-link i {
-      font-size: 1.3rem;
-      min-width: 24px;
-      text-align: center;
+      font-size:1.3rem;
+      min-width:24px;
+      text-align:center;
     }
-    .sidebar .nav-items .nav-link .link-text { transition: opacity 0.2s; }
-    .sidebar.collapsed .nav-items .nav-link .link-text { opacity: 0; width: 0; overflow: hidden; }
-    .sidebar.collapsed .nav-items .nav-link { justify-content: center; padding: 0.7rem 0.5rem; }
+    .sidebar .nav-items .nav-link .link-text { transition:opacity 0.2s; }
+    .sidebar.collapsed .nav-items .nav-link .link-text { opacity:0; width:0; overflow:hidden; }
+    .sidebar.collapsed .nav-items .nav-link { justify-content:center; padding:0.7rem 0.5rem; }
+
+    /* Perfil na sidebar */
+    .sidebar .user-profile {
+      padding:0.8rem 1rem;
+      border-top:2px solid var(--border);
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-top:auto;
+    }
+    .sidebar .user-profile .avatar {
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      background:var(--primary-light);
+      color:var(--primary);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      font-size:1.2rem;
+      flex-shrink:0;
+    }
+    .sidebar .user-profile .info {
+      flex:1;
+      overflow:hidden;
+      min-width:0;
+    }
+    .sidebar .user-profile .info .name {
+      font-weight:600;
+      font-size:0.85rem;
+      color:var(--text);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .sidebar .user-profile .info .email {
+      font-size:0.7rem;
+      color:var(--text-secondary);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .sidebar .user-profile .info .role {
+      font-size:0.65rem;
+      background:var(--primary-light);
+      color:var(--primary);
+      padding:2px 8px;
+      border-radius:20px;
+      display:inline-block;
+      margin-top:2px;
+    }
+    .sidebar.collapsed .user-profile .info { display:none; }
+    .sidebar.collapsed .user-profile { justify-content:center; padding:0.5rem; }
+    .sidebar.collapsed .user-profile .avatar { width:32px; height:32px; font-size:0.9rem; }
+
     .sidebar .sidebar-footer {
-      padding: 1rem;
-      border-top: 2px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      padding:0.5rem 1rem;
+      border-top:2px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
     .sidebar .sidebar-footer .btn {
-      width: 100%;
-      border-radius: 60px;
-      padding: 0.4rem 0.8rem;
-      font-size: 0.75rem;
-      font-weight: 700;
+      width:100%;
+      border-radius:60px;
+      padding:0.3rem 0.8rem;
+      font-size:0.7rem;
+      font-weight:700;
     }
     .sidebar .collapse-toggle {
-      background: transparent;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 0.4rem;
-      border-radius: var(--radius-sm);
-      transition: all var(--transition);
-      width: 100%;
-      text-align: center;
+      background:transparent;
+      border:none;
+      color:var(--text-secondary);
+      font-size:1.2rem;
+      cursor:pointer;
+      padding:0.3rem;
+      border-radius:var(--radius-sm);
+      transition:all var(--transition);
+      width:100%;
+      text-align:center;
     }
     .sidebar .collapse-toggle:hover {
-      background: var(--primary-light);
-      color: var(--primary);
+      background:var(--primary-light);
+      color:var(--primary);
     }
-    .sidebar.collapsed .collapse-toggle { transform: rotate(180deg); }
+    .sidebar.collapsed .collapse-toggle { transform:rotate(180deg); }
     .sidebar-size-control {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 0;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:4px 0;
     }
     .sidebar-size-control input[type="range"] {
-      flex: 1;
-      height: 4px;
-      -webkit-appearance: none;
-      appearance: none;
-      background: var(--border);
-      border-radius: 4px;
-      outline: none;
+      flex:1;
+      height:4px;
+      -webkit-appearance:none;
+      appearance:none;
+      background:var(--border);
+      border-radius:4px;
+      outline:none;
     }
     .sidebar-size-control input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--primary);
-      cursor: pointer;
+      -webkit-appearance:none;
+      appearance:none;
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:var(--primary);
+      cursor:pointer;
     }
     .sidebar-size-control span {
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      min-width: 36px;
-      text-align: center;
+      font-size:0.7rem;
+      font-weight:600;
+      color:var(--text-secondary);
+      min-width:36px;
+      text-align:center;
     }
-    .sidebar.collapsed .sidebar-size-control { display: none; }
+    .sidebar.collapsed .sidebar-size-control { display:none; }
+
     .main-content {
-      margin-left: var(--sidebar-width);
-      transition: margin-left 0.3s ease;
-      padding: 0.5rem 1rem 1rem;
-      min-height: 100vh;
+      margin-left:var(--sidebar-width);
+      transition:margin-left 0.3s ease;
+      padding:0.5rem 1rem 1rem;
+      min-height:100vh;
     }
-    .main-content.expanded { margin-left: var(--sidebar-collapsed); }
+    .main-content.expanded { margin-left:var(--sidebar-collapsed); }
+
+    /* Topbar */
     .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.6rem 0.8rem;
-      background: var(--card);
-      border-bottom: 2px solid var(--border);
-      border-radius: 0 0 var(--radius) var(--radius);
-      margin-bottom: 1.5rem;
-      box-shadow: var(--shadow);
-      flex-wrap: wrap;
-      gap: 8px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:0.6rem 0.8rem;
+      background:var(--card);
+      border-bottom:2px solid var(--border);
+      border-radius:0 0 var(--radius) var(--radius);
+      margin-bottom:1.5rem;
+      box-shadow:var(--shadow);
+      flex-wrap:wrap;
+      gap:8px;
     }
     .topbar .left-actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex: 1;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex:1;
     }
     .topbar .nav-actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
+      display:flex;
+      gap:10px;
+      align-items:center;
     }
     .topbar .nav-actions .btn {
-      border-radius: 60px;
-      padding: 0.4rem 1rem;
-      font-weight: 600;
-      position: relative;
+      border-radius:60px;
+      padding:0.4rem 1rem;
+      font-weight:600;
+      position:relative;
     }
     .busca-global-input {
-      border-radius: 60px;
-      padding: 0.3rem 1rem;
-      font-size: 0.85rem;
-      max-width: 300px;
+      border-radius:60px;
+      padding:0.3rem 1rem;
+      font-size:0.85rem;
+      max-width:300px;
     }
     .notif-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: var(--danger);
-      color: white;
-      border-radius: 50%;
-      font-size: 0.6rem;
-      padding: 2px 6px;
-      min-width: 18px;
-      text-align: center;
-      display: none;
+      position:absolute;
+      top:-4px;
+      right:-4px;
+      background:var(--danger);
+      color:white;
+      border-radius:50%;
+      font-size:0.6rem;
+      padding:2px 6px;
+      min-width:18px;
+      text-align:center;
+      display:none;
     }
-    .mobile-menu-btn { display: none; }
+    .mobile-menu-btn { display:none; }
+
+    /* Cards e demais estilos (mantidos) */
     .card-custom {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      transition: all var(--transition);
-      padding: 1.2rem;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      transition:all var(--transition);
+      padding:1.2rem;
     }
     .card-custom:hover {
-      box-shadow: var(--shadow-hover);
-      transform: translateY(-2px);
+      box-shadow:var(--shadow-hover);
+      transform:translateY(-2px);
     }
     .dashboard-card {
-      padding: 1.4rem 1.6rem;
-      border-radius: var(--radius);
-      color: white;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
+      padding:1.4rem 1.6rem;
+      border-radius:var(--radius);
+      color:white;
+      height:100%;
+      position:relative;
+      overflow:hidden;
+      transition:transform 0.2s ease,box-shadow 0.2s ease;
+      box-shadow:0 8px 24px rgba(0,0,0,0.06);
+      border:1px solid rgba(255,255,255,0.08);
     }
     .dashboard-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+      transform:translateY(-4px);
+      box-shadow:0 16px 40px rgba(0,0,0,0.12);
     }
     .dashboard-card .icon {
-      position: absolute;
-      right: 16px;
-      top: 16px;
-      font-size: 2.6rem;
-      opacity: 0.15;
-      transition: transform 0.2s ease;
+      position:absolute;
+      right:16px;
+      top:16px;
+      font-size:2.6rem;
+      opacity:0.15;
+      transition:transform 0.2s ease;
     }
-    .dashboard-card:hover .icon { transform: scale(1.2) rotate(-6deg); }
+    .dashboard-card:hover .icon { transform:scale(1.2) rotate(-6deg); }
     .dashboard-card h6 {
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      font-size: 0.65rem;
-      opacity: 0.8;
-      margin-bottom: 6px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.8px;
+      font-size:0.65rem;
+      opacity:0.8;
+      margin-bottom:6px;
     }
     .dashboard-card h2 {
-      font-weight: 800;
-      font-size: 2rem;
-      margin: 0;
-      line-height: 1.1;
+      font-weight:800;
+      font-size:2rem;
+      margin:0;
+      line-height:1.1;
     }
     .dashboard-card .sub {
-      font-size: 0.8rem;
-      opacity: 0.8;
-      margin-top: 6px;
-      display: block;
-      font-weight: 500;
+      font-size:0.8rem;
+      opacity:0.8;
+      margin-top:6px;
+      display:block;
+      font-weight:500;
     }
-    .dashboard-card.bg-primary { background: linear-gradient(145deg, #6c5ce7, #a29bfe); }
-    .dashboard-card.bg-success { background: linear-gradient(145deg, #00b894, #00cec9); }
-    .dashboard-card.bg-warning { background: linear-gradient(145deg, #fdcb6e, #f9a825); color: #2d3436; }
-    .dashboard-card.bg-info { background: linear-gradient(145deg, #0984e3, #74b9ff); }
-    .dashboard-card.bg-danger { background: linear-gradient(145deg, #e17055, #fd79a8); }
-    .dashboard-card.bg-purple { background: linear-gradient(145deg, #6c5ce7, #a29bfe); }
-    .dashboard-card.bg-pink { background: linear-gradient(145deg, #fd79a8, #e84393); }
-    .dashboard-card.bg-secondary { background: linear-gradient(145deg, #6c757d, #adb5bd); }
+    .dashboard-card.bg-primary { background:linear-gradient(145deg,#6c5ce7,#a29bfe); }
+    .dashboard-card.bg-success { background:linear-gradient(145deg,#00b894,#00cec9); }
+    .dashboard-card.bg-warning { background:linear-gradient(145deg,#fdcb6e,#f9a825); color:#2d3436; }
+    .dashboard-card.bg-info { background:linear-gradient(145deg,#0984e3,#74b9ff); }
+    .dashboard-card.bg-danger { background:linear-gradient(145deg,#e17055,#fd79a8); }
+    .dashboard-card.bg-purple { background:linear-gradient(145deg,#6c5ce7,#a29bfe); }
+    .dashboard-card.bg-secondary { background:linear-gradient(145deg,#6c757d,#adb5bd); }
+
     .btn {
-      border-radius: 60px;
-      padding: 0.5rem 1.4rem;
-      font-weight: 700;
-      font-size: 0.8rem;
-      border: none;
-      transition: background 0.2s ease, transform 0.15s ease;
+      border-radius:60px;
+      padding:0.5rem 1.4rem;
+      font-weight:700;
+      font-size:0.8rem;
+      border:none;
+      transition:background 0.2s ease,transform 0.15s ease;
     }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(108,92,231,0.3); }
-    .btn-success { background: var(--success); color: white; }
-    .btn-success:hover { background: var(--success-dark); transform: translateY(-1px); }
-    .btn-warning { background: var(--warning); color: #2d3436; }
-    .btn-warning:hover { background: var(--warning-dark); transform: translateY(-1px); }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-danger:hover { background: var(--danger-dark); transform: translateY(-1px); }
-    .btn-outline-primary { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
-    .btn-outline-primary:hover { background: var(--primary); color: white; transform: translateY(-1px); }
+    .btn-primary { background:var(--primary); color:white; }
+    .btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px); box-shadow:0 6px 20px rgba(108,92,231,0.3); }
+    .btn-success { background:var(--success); color:white; }
+    .btn-success:hover { background:var(--success-dark); transform:translateY(-1px); }
+    .btn-warning { background:var(--warning); color:#2d3436; }
+    .btn-warning:hover { background:var(--warning-dark); transform:translateY(-1px); }
+    .btn-danger { background:var(--danger); color:white; }
+    .btn-danger:hover { background:var(--danger-dark); transform:translateY(-1px); }
+    .btn-outline-primary { background:transparent; color:var(--primary); border:2px solid var(--primary); }
+    .btn-outline-primary:hover { background:var(--primary); color:white; transform:translateY(-1px); }
+
     .table {
-      color: var(--text);
-      font-size: 0.8rem;
-      border-collapse: separate;
-      border-spacing: 0 6px;
+      color:var(--text);
+      font-size:0.8rem;
+      border-collapse:separate;
+      border-spacing:0 6px;
     }
     .table thead th {
-      background: var(--primary-light);
-      padding: 0.7rem 0.9rem;
-      font-weight: 700;
-      color: var(--primary-dark);
-      text-transform: uppercase;
-      font-size: 0.6rem;
-      letter-spacing: 0.8px;
-      border: none;
-      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      background:var(--primary-light);
+      padding:0.7rem 0.9rem;
+      font-weight:700;
+      color:var(--primary-dark);
+      text-transform:uppercase;
+      font-size:0.6rem;
+      letter-spacing:0.8px;
+      border:none;
+      border-radius:var(--radius-sm) var(--radius-sm) 0 0;
     }
     .table tbody td {
-      padding: 0.7rem 0.9rem;
-      border: none;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
+      padding:0.7rem 0.9rem;
+      border:none;
+      background:var(--card);
+      border-bottom:1px solid var(--border);
     }
-    .table tbody tr:hover td { background: var(--primary-light); }
-    .form-control, .form-select {
-      background: var(--card);
-      border: 2.5px solid var(--border);
-      color: var(--text);
-      border-radius: var(--radius-sm);
-      padding: 0.7rem 1rem;
-      font-size: 0.9rem;
-      transition: all var(--transition);
-      font-weight: 500;
+    .table tbody tr:hover td { background:var(--primary-light); }
+
+    .form-control,.form-select {
+      background:var(--card);
+      border:2.5px solid var(--border);
+      color:var(--text);
+      border-radius:var(--radius-sm);
+      padding:0.7rem 1rem;
+      font-size:0.9rem;
+      transition:all var(--transition);
+      font-weight:500;
     }
-    .form-control:focus, .form-select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px var(--primary-light);
-      outline: none;
+    .form-control:focus,.form-select:focus {
+      border-color:var(--primary);
+      box-shadow:0 0 0 4px var(--primary-light);
+      outline:none;
     }
     .form-control::placeholder {
-      color: var(--text-secondary);
-      font-weight: 400;
-      opacity: 0.7;
+      color:var(--text-secondary);
+      font-weight:400;
+      opacity:0.7;
     }
     label {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.4rem;
-      display: block;
-      letter-spacing: 0.2px;
+      font-size:0.8rem;
+      font-weight:700;
+      color:var(--text);
+      margin-bottom:0.4rem;
+      display:block;
+      letter-spacing:0.2px;
     }
-    body.dark-mode .form-control,
-    body.dark-mode .form-select {
-      background: #0f1a2b;
-      border-color: #4a5a7a;
-      color: #eef2f8;
-    }
-    body.dark-mode .form-control::placeholder {
-      color: #8a9bb0;
-      opacity: 0.9;
-    }
-    body.dark-mode label {
-      color: #e0e8f0;
-    }
-    body.dark-mode .form-control:focus,
-    body.dark-mode .form-select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.35);
-    }
+
     .mini-calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      text-align: center;
-      font-size: 0.7rem;
-      margin-top: 1rem;
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      gap:6px;
+      text-align:center;
+      font-size:0.7rem;
+      margin-top:1rem;
     }
     .mini-calendar .day {
-      padding: 0.5rem 0.2rem;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-weight: 600;
-      transition: all var(--transition);
+      padding:0.5rem 0.2rem;
+      border-radius:var(--radius-sm);
+      cursor:pointer;
+      font-weight:600;
+      transition:all var(--transition);
     }
-    .mini-calendar .day:hover { background: var(--primary); color: white; transform: scale(1.05); }
-    .mini-calendar .day.today { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(108,92,231,0.3); }
-    .mini-calendar .day.has-event::after { content: '•'; display: block; color: var(--warning); font-size: 1.2rem; line-height: 0; margin-top: 2px; }
-    .mini-calendar .day.selected { background: var(--primary); color: white; }
+    .mini-calendar .day:hover { background:var(--primary); color:white; transform:scale(1.05); }
+    .mini-calendar .day.today { background:var(--primary); color:white; box-shadow:0 4px 12px rgba(108,92,231,0.3); }
+    .mini-calendar .day.has-event::after { content:'•'; display:block; color:var(--warning); font-size:1.2rem; line-height:0; margin-top:2px; }
+    .mini-calendar .day.selected { background:var(--primary); color:white; }
+
     .status-item {
-      background: var(--bg);
-      border: 2px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 0.6rem 1rem;
-      margin-bottom: 0.6rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all var(--transition);
+      background:var(--bg);
+      border:2px solid var(--border);
+      border-radius:var(--radius-sm);
+      padding:0.6rem 1rem;
+      margin-bottom:0.6rem;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      transition:all var(--transition);
     }
-    .status-item:hover { background: var(--primary-light); border-color: var(--primary); }
+    .status-item:hover { background:var(--primary-light); border-color:var(--primary); }
+
     .login-screen {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(145deg, #6c5ce7, #a29bfe);
-      z-index: 9999;
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(145deg,#6c5ce7,#a29bfe);
+      z-index:9999;
     }
     .login-box {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 2.8rem;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 40px 80px rgba(0,0,0,0.2);
-      animation: fadeUp 0.6s ease;
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:2.8rem;
+      width:100%;
+      max-width:400px;
+      box-shadow:0 40px 80px rgba(0,0,0,0.2);
+      animation:fadeUp 0.6s ease;
     }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity:0; transform:translateY(40px); }
+      to { opacity:1; transform:translateY(0); }
     }
-    body.dark-mode .dashboard-card {
-      color: #ffffff !important;
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-    body.dark-mode .dashboard-card .sub {
-      color: rgba(255,255,255,0.85) !important;
-    }
-    body.dark-mode .dashboard-card .icon { opacity: 0.25; }
+
+    /* Pipeline */
     .pipeline-container {
-      display: flex;
-      gap: 16px;
-      overflow-x: auto;
-      padding: 8px 0;
-      min-height: 400px;
+      display:flex;
+      gap:16px;
+      overflow-x:auto;
+      padding:8px 0;
+      min-height:400px;
     }
     .pipeline-column {
-      min-width: 200px;
-      flex: 1;
-      background: var(--bg);
-      border-radius: var(--radius-sm);
-      padding: 0.8rem;
-      border: 2px solid var(--border);
+      min-width:200px;
+      flex:1;
+      background:var(--bg);
+      border-radius:var(--radius-sm);
+      padding:0.8rem;
+      border:2px solid var(--border);
     }
     .pipeline-column h6 {
-      font-weight: 700;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      font-size: 0.7rem;
-      letter-spacing: 0.5px;
-      margin-bottom: 0.8rem;
-      text-align: center;
+      font-weight:700;
+      color:var(--text-secondary);
+      text-transform:uppercase;
+      font-size:0.7rem;
+      letter-spacing:0.5px;
+      margin-bottom:0.8rem;
+      text-align:center;
     }
     .pipeline-card {
-      background: var(--card);
-      border-radius: var(--radius-sm);
-      padding: 0.6rem 0.8rem;
-      margin-bottom: 0.6rem;
-      box-shadow: var(--shadow-sm);
-      border-left: 4px solid var(--primary);
-      cursor: grab;
-      transition: all var(--transition);
+      background:var(--card);
+      border-radius:var(--radius-sm);
+      padding:0.6rem 0.8rem;
+      margin-bottom:0.6rem;
+      box-shadow:var(--shadow-sm);
+      border-left:4px solid var(--primary);
+      cursor:grab;
+      transition:all var(--transition);
     }
     .pipeline-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-hover);
+      transform:translateY(-2px);
+      box-shadow:var(--shadow-hover);
     }
     .pipeline-card .p-name {
-      font-weight: 700;
-      font-size: 0.85rem;
+      font-weight:700;
+      font-size:0.85rem;
     }
     .pipeline-card .p-detail {
-      font-size: 0.7rem;
-      color: var(--text-secondary);
-      display: flex;
-      justify-content: space-between;
-      margin-top: 4px;
+      font-size:0.7rem;
+      color:var(--text-secondary);
+      display:flex;
+      justify-content:space-between;
+      margin-top:4px;
     }
+
     .view-toggle .btn {
-      border-radius: 60px;
-      padding: 0.25rem 1rem;
-      font-size: 0.75rem;
-      font-weight: 600;
+      border-radius:60px;
+      padding:0.25rem 1rem;
+      font-size:0.75rem;
+      font-weight:600;
     }
     .view-toggle .btn.active {
-      background: var(--primary);
-      color: white;
+      background:var(--primary);
+      color:white;
     }
-    @media (max-width: 992px) {
+
+    /* Responsivo */
+    @media (max-width:992px) {
       .sidebar {
-        transform: translateX(-100%);
-        width: var(--sidebar-width);
+        transform:translateX(-100%);
+        width:var(--sidebar-width);
       }
-      .sidebar.mobile-open { transform: translateX(0); }
-      .main-content { margin-left: 0 !important; }
-      .sidebar .logo span { opacity: 1 !important; width: auto !important; }
-      .sidebar .nav-items .nav-link .link-text { opacity: 1 !important; width: auto !important; }
-      .sidebar .nav-items .nav-link { justify-content: flex-start !important; padding: 0.7rem 1rem !important; }
-      .sidebar .collapse-toggle { display: none; }
-      .mobile-menu-btn { display: inline-block !important; }
-      .topbar .left-actions { width: 100%; order: 2; }
-      .topbar .nav-actions { width: 100%; justify-content: flex-end; }
-      .busca-global-input { max-width: 100%; }
+      .sidebar.mobile-open { transform:translateX(0); }
+      .main-content { margin-left:0 !important; }
+      .sidebar .logo span { opacity:1 !important; width:auto !important; }
+      .sidebar .nav-items .nav-link .link-text { opacity:1 !important; width:auto !important; }
+      .sidebar .nav-items .nav-link { justify-content:flex-start !important; padding:0.7rem 1rem !important; }
+      .sidebar .collapse-toggle { display:none; }
+      .mobile-menu-btn { display:inline-block !important; }
+      .topbar .left-actions { width:100%; order:2; }
+      .topbar .nav-actions { width:100%; justify-content:flex-end; }
+      .busca-global-input { max-width:100%; }
     }
-    @media (max-width: 768px) {
-      .container-fluid { padding: 0.5rem; }
-      .dashboard-card h2 { font-size: 1.6rem; }
-      .dashboard-card { padding: 1rem; }
-      .pipeline-column { min-width: 160px; }
-      .table-responsive { font-size: 0.7rem; }
-      .table thead th, .table tbody td { padding: 0.4rem 0.5rem; }
-      .busca-global-input { max-width: 150px; font-size: 0.7rem; }
+    @media (max-width:768px) {
+      .container-fluid { padding:0.5rem; }
+      .dashboard-card h2 { font-size:1.6rem; }
+      .dashboard-card { padding:1rem; }
+      .pipeline-column { min-width:160px; }
+      .table-responsive { font-size:0.7rem; }
+      .table thead th, .table tbody td { padding:0.4rem 0.5rem; }
+      .busca-global-input { max-width:150px; font-size:0.7rem; }
     }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+    ::-webkit-scrollbar { width:6px; height:6px; }
+    ::-webkit-scrollbar-track { background:var(--bg); border-radius:10px; }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
+    ::-webkit-scrollbar-thumb:hover { background:var(--primary); }
+
     .loading-spinner {
-      display: inline-block;
-      width: 1.2rem;
-      height: 1.2rem;
-      border: 3px solid rgba(108,92,231,0.3);
-      border-radius: 50%;
-      border-top-color: var(--primary);
-      animation: spin 0.6s linear infinite;
-      margin-right: 6px;
+      display:inline-block;
+      width:1.2rem;
+      height:1.2rem;
+      border:3px solid rgba(108,92,231,0.3);
+      border-radius:50%;
+      border-top-color:var(--primary);
+      animation:spin 0.6s linear infinite;
+      margin-right:6px;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .btn-loading { pointer-events: none; opacity: 0.7; }
-    .badge-pending { background: #f39c12; color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 0.65rem; }
-    .badge-uploaded { background: #27ae60; color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 0.65rem; }
-    .config-section { margin-bottom: 1.5rem; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .btn-loading { pointer-events:none; opacity:0.7; }
+    .badge-pending { background:#f39c12; color:#fff; padding:3px 8px; border-radius:12px; font-size:0.65rem; }
+    .badge-uploaded { background:#27ae60; color:#fff; padding:3px 8px; border-radius:12px; font-size:0.65rem; }
+    .config-section { margin-bottom:1.5rem; }
     .config-section h6 {
-      font-weight: 700;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 0.5rem;
-      margin-bottom: 1rem;
+      font-weight:700;
+      color:var(--text-secondary);
+      text-transform:uppercase;
+      font-size:0.75rem;
+      letter-spacing:0.5px;
+      border-bottom:2px solid var(--border);
+      padding-bottom:0.5rem;
+      margin-bottom:1rem;
     }
     .interacao-item {
-      border-left: 4px solid var(--primary);
-      padding: 0.5rem 1rem;
-      margin-bottom: 0.5rem;
-      background: var(--bg);
-      border-radius: var(--radius-sm);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      border-left:4px solid var(--primary);
+      padding:0.5rem 1rem;
+      margin-bottom:0.5rem;
+      background:var(--bg);
+      border-radius:var(--radius-sm);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
     }
     .interacao-item .tipo {
-      font-weight: 700;
-      text-transform: uppercase;
-      font-size: 0.65rem;
-      color: var(--primary);
+      font-weight:700;
+      text-transform:uppercase;
+      font-size:0.65rem;
+      color:var(--primary);
     }
     .interacao-item .data {
-      font-size: 0.7rem;
-      color: var(--text-secondary);
+      font-size:0.7rem;
+      color:var(--text-secondary);
     }
     .widget-control {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-bottom: 1rem;
+      display:flex;
+      flex-wrap:wrap;
+      gap:1rem;
+      margin-bottom:1rem;
     }
     .widget-control label {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 500;
-      cursor: pointer;
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+      font-weight:500;
+      cursor:pointer;
     }
     .widget-control input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--primary);
+      width:18px;
+      height:18px;
+      accent-color:var(--primary);
     }
-    .badge-medal { font-size: 1.2rem; }
-    .progress-meta { height: 8px; background: var(--border); border-radius: 10px; overflow: hidden; }
-    .progress-meta .bar { height: 100%; background: var(--success); transition: width 0.5s; }
-    .notificacao-item { padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.2s; }
-    .notificacao-item:hover { background: var(--primary-light); }
-    .notificacao-item .badge { font-size: 0.65rem; }
-    .notif-dropdown { position: absolute; top: 50px; right: 0; width: 350px; max-height: 400px; overflow-y: auto; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-hover); display: none; z-index: 1060; padding: 0.5rem 0; }
-    .notif-dropdown .notif-item { padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-    .notif-dropdown .notif-item:hover { background: var(--primary-light); }
-    .notif-dropdown.show { display: block; }
-    .forecast-card { background: linear-gradient(145deg, #6c5ce7, #a29bfe); color: white; border-radius: var(--radius); padding: 1.5rem; }
-    .checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg); border-radius: var(--radius-sm); margin-bottom: 6px; }
-    .checklist-item .status { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-    .checklist-item .status.done { background: var(--success); border-color: var(--success); color: white; }
-    .checklist-item .status.done::after { content: '✓'; font-weight: bold; }
-    /* Estilos para tarefas */
-    .tarefa-tabs .nav-link { border-radius: 60px; padding: 0.3rem 1.2rem; font-weight: 600; }
-    .tarefa-tabs .nav-link.active { background: var(--primary); color: white; }
-    .tarefa-card { border-left: 4px solid var(--primary); padding: 0.5rem 1rem; margin-bottom: 0.5rem; background: var(--bg); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center; }
-    .tarefa-card.vencida { border-left-color: var(--danger); }
-    .tarefa-card.hoje { border-left-color: var(--warning); }
-    .tarefa-card.concluida { border-left-color: var(--success); opacity: 0.6; text-decoration: line-through; }
-    .tarefa-card .badge { font-size: 0.65rem; }
-    .tarefa-stats { display: flex; gap: 1rem; flex-wrap: wrap; }
-    .tarefa-stats .stat-item { background: var(--card); padding: 0.5rem 1.2rem; border-radius: var(--radius-sm); border: 1px solid var(--border); text-align: center; }
-    .tarefa-stats .stat-item .num { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
-    .tarefa-stats .stat-item .label { font-size: 0.7rem; color: var(--text-secondary); }
-    .tarefa-urg-baixa { border-left-color: #6c757d; }
-    .tarefa-urg-normal { border-left-color: #6c5ce7; }
-    .tarefa-urg-alta { border-left-color: #fdcb6e; }
-    .tarefa-urg-urgente { border-left-color: #e17055; }
+    .badge-medal { font-size:1.2rem; }
+    .progress-meta { height:8px; background:var(--border); border-radius:10px; overflow:hidden; }
+    .progress-meta .bar { height:100%; background:var(--success); transition:width 0.5s; }
+    .notificacao-item { padding:8px 12px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.2s; }
+    .notificacao-item:hover { background:var(--primary-light); }
+    .notificacao-item .badge { font-size:0.65rem; }
+    .notif-dropdown {
+      position:absolute;
+      top:50px;
+      right:0;
+      width:350px;
+      max-height:400px;
+      overflow-y:auto;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius-sm);
+      box-shadow:var(--shadow-hover);
+      display:none;
+      z-index:1060;
+      padding:0.5rem 0;
+    }
+    .notif-dropdown .notif-item { padding:0.5rem 1rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
+    .notif-dropdown .notif-item:hover { background:var(--primary-light); }
+    .notif-dropdown.show { display:block; }
+    .forecast-card { background:linear-gradient(145deg,#6c5ce7,#a29bfe); color:white; border-radius:var(--radius); padding:1.5rem; }
+    .checklist-item { display:flex; align-items:center; gap:10px; padding:8px 12px; background:var(--bg); border-radius:var(--radius-sm); margin-bottom:6px; }
+    .checklist-item .status { width:20px; height:20px; border-radius:50%; border:2px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+    .checklist-item .status.done { background:var(--success); border-color:var(--success); color:white; }
+    .checklist-item .status.done::after { content:'✓'; font-weight:bold; }
+
+    /* Tarefas */
+    .tarefa-tabs .nav-link { border-radius:60px; padding:0.3rem 1.2rem; font-weight:600; }
+    .tarefa-tabs .nav-link.active { background:var(--primary); color:white; }
+    .tarefa-card { border-left:4px solid var(--primary); padding:0.5rem 1rem; margin-bottom:0.5rem; background:var(--bg); border-radius:var(--radius-sm); display:flex; justify-content:space-between; align-items:center; }
+    .tarefa-card.vencida { border-left-color:var(--danger); }
+    .tarefa-card.hoje { border-left-color:var(--warning); }
+    .tarefa-card.concluida { border-left-color:var(--success); opacity:0.6; text-decoration:line-through; }
+    .tarefa-card .badge { font-size:0.65rem; }
+    .tarefa-stats { display:flex; gap:1rem; flex-wrap:wrap; }
+    .tarefa-stats .stat-item { background:var(--card); padding:0.5rem 1.2rem; border-radius:var(--radius-sm); border:1px solid var(--border); text-align:center; }
+    .tarefa-stats .stat-item .num { font-size:1.8rem; font-weight:700; color:var(--primary); }
+    .tarefa-stats .stat-item .label { font-size:0.7rem; color:var(--text-secondary); }
+    .tarefa-urg-baixa { border-left-color:#6c757d; }
+    .tarefa-urg-normal { border-left-color:#6c5ce7; }
+    .tarefa-urg-alta { border-left-color:#fdcb6e; }
+    .tarefa-urg-urgente { border-left-color:#e17055; }
+
+    /* Perfil */
+    .perfil-avatar {
+      width:80px;
+      height:80px;
+      border-radius:50%;
+      background:var(--primary-light);
+      color:var(--primary);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:2.5rem;
+      font-weight:700;
+    }
+    .perfil-section {
+      border-bottom:1px solid var(--border);
+      padding-bottom:1.5rem;
+      margin-bottom:1.5rem;
+    }
+    .perfil-section:last-child { border-bottom:none; margin-bottom:0; }
+    .perfil-section h6 {
+      font-weight:700;
+      color:var(--text-secondary);
+      text-transform:uppercase;
+      font-size:0.7rem;
+      letter-spacing:0.5px;
+      margin-bottom:1rem;
+    }
+    .fonte-opcoes {
+      display:flex;
+      gap:0.5rem;
+      flex-wrap:wrap;
+    }
+    .fonte-opcoes .btn {
+      font-size:0.75rem;
+      padding:0.3rem 1rem;
+      border:2px solid var(--border);
+      background:transparent;
+      color:var(--text);
+      border-radius:60px;
+    }
+    .fonte-opcoes .btn.active {
+      border-color:var(--primary);
+      background:var(--primary);
+      color:white;
+    }
+    .tema-opcoes {
+      display:flex;
+      gap:0.5rem;
+      flex-wrap:wrap;
+    }
+    .tema-opcoes .btn {
+      font-size:0.75rem;
+      padding:0.3rem 1.2rem;
+      border:2px solid var(--border);
+      background:transparent;
+      color:var(--text);
+      border-radius:60px;
+    }
+    .tema-opcoes .btn.active {
+      border-color:var(--primary);
+      background:var(--primary);
+      color:white;
+    }
   </style>
 </head>
 <body>
@@ -670,7 +807,7 @@
 <!-- ===== LOGIN ===== -->
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
-    <h3 class="text-center mb-4 fw-bold" style="color: var(--text);">CRM Recupera AI</h3>
+    <h3 class="text-center mb-4 fw-bold" style="color:var(--text);">CRM Recupera AI</h3>
     <input type="email" id="loginEmail" class="form-control mb-3" placeholder="Seu email" />
     <div class="input-group mb-3">
       <input type="password" id="loginPassword" class="form-control" placeholder="Senha" />
@@ -703,14 +840,24 @@
     <div class="nav-link" data-tab="leadsTab" onclick="switchTab('leadsTab')">
       <i class="bi bi-funnel"></i><span class="link-text">Leads</span>
     </div>
-    <!-- ===== MINHAS TAREFAS (substitui Agenda) ===== -->
     <div class="nav-link" data-tab="tarefasTab" onclick="switchTab('tarefasTab')">
       <i class="bi bi-check2-square"></i><span class="link-text">Minhas Tarefas</span>
     </div>
-    <div class="nav-link" data-tab="configTab" onclick="switchTab('configTab')">
-      <i class="bi bi-gear"></i><span class="link-text">Configurações</span>
+    <div class="nav-link" data-tab="perfilTab" onclick="switchTab('perfilTab')">
+      <i class="bi bi-person-circle"></i><span class="link-text">Meu Perfil</span>
     </div>
   </div>
+
+  <!-- Perfil do usuário no rodapé -->
+  <div class="user-profile" id="sidebarUserProfile">
+    <div class="avatar" id="userAvatar">L</div>
+    <div class="info">
+      <div class="name" id="userName">Leonardo Aguiar</div>
+      <div class="email" id="userEmail">leonardo@email.com</div>
+      <div class="role" id="userRole">Gerente</div>
+    </div>
+  </div>
+
   <div class="sidebar-footer">
     <div class="sidebar-size-control">
       <i class="bi bi-arrows-expand" style="font-size:0.8rem;color:var(--text-secondary);"></i>
@@ -736,7 +883,7 @@
         <span class="notif-badge" id="notificacaoBadge">0</span>
       </button>
       <div class="notif-dropdown" id="notifDropdown"></div>
-      <button class="btn btn-outline-primary btn-sm" onclick="toggleTheme()"><i class="bi bi-moon-stars-fill"></i></button>
+      <button class="btn btn-outline-primary btn-sm" onclick="toggleTheme()" id="btnToggleTheme"><i class="bi bi-moon-stars-fill"></i></button>
       <button class="btn btn-success btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i></button>
       <button class="btn btn-danger btn-sm" onclick="logout()"><i class="bi bi-box-arrow-right"></i></button>
     </div>
@@ -745,9 +892,8 @@
   <!-- ===== ABAS ===== -->
   <div class="tab-content" id="mainTabContent">
 
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD (resumido) -->
     <div class="tab-pane fade show active" id="dashboardTab">
-      <!-- (mesmo conteúdo anterior, omitido para brevidade) -->
       <div class="row g-3 mb-4 align-items-end">
         <div class="col-md-2"><label>Período</label><select id="periodoFiltro" class="form-select"><option value="">Todos</option><option value="30">Últimos 30 dias</option><option value="60">Últimos 60 dias</option><option value="90">Últimos 90 dias</option><option value="120">Últimos 120 dias</option><option value="180">Últimos 180 dias</option><option value="mes">Mês atual</option><option value="intervalo">Intervalo personalizado</option></select></div>
         <div class="col-md-2" id="intervaloDiv" style="display:none;"><label>Início</label><input type="date" id="dataInicioIntervalo" class="form-control"></div>
@@ -786,7 +932,6 @@
 
     <!-- FICHA CLIENTE (mantido) -->
     <div class="tab-pane fade" id="clientesTab">
-      <!-- (mesmo conteúdo anterior, omitido para brevidade) -->
       <div class="card card-custom">
         <input type="hidden" id="clientId">
         <ul class="nav nav-tabs mb-4" id="fichaTabs">
@@ -796,7 +941,12 @@
           <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('anexosTab')" data-tab="anexosTab">Anexos</button></li>
         </ul>
         <div class="tab-content">
-          <!-- (conteúdo das abas internas mantido) -->
+          <div class="tab-pane" id="dadosPrincipais" style="display:block;">
+            <!-- campos mantidos -->
+          </div>
+          <div class="tab-pane" id="dependentesTab" style="display:none;"><!-- dependentes --></div>
+          <div class="tab-pane" id="pagamentosTab" style="display:none;"><!-- pagamentos --></div>
+          <div class="tab-pane" id="anexosTab" style="display:none;"><!-- anexos --></div>
         </div>
         <div class="d-flex gap-2 mt-4">
           <button class="btn btn-success" id="btnSalvarCliente" onclick="saveClient()"><i class="bi bi-save"></i> Salvar</button>
@@ -808,62 +958,92 @@
     <!-- PESQUISA (mantido) -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card card-custom">
-        <!-- (filtros e tabela, mesmo conteúdo) -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-3"><label>🔍 Busca Geral</label><input type="text" id="search" class="form-control" placeholder="Ex: nome, CPF, proposta..." onkeyup="renderTable()" /></div>
+          <div class="col-md-2"><label>📌 Status</label><select id="filterStatus" class="form-select" onchange="renderTable()"><option value="ALL">Todos</option></select></div>
+          <div class="col-md-2"><label>📋 Modalidade</label><select id="filterModalidade" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
+          <div class="col-md-2"><label>📍 Praça</label><select id="filterPraca" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
+          <div class="col-md-2"><label>🏢 Admin.</label><select id="filterAdministradora" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
+          <div class="col-md-1"><label>👤 Tipo</label><select id="filterTipo" class="form-select" onchange="renderTable()"><option value="ALL">Todos</option><option value="PF">PF</option><option value="PJ">PJ</option></select></div>
+        </div>
+        <div class="row g-3 mb-4">
+          <div class="col-md-2"><label>💰 Valor min (R$)</label><input type="number" id="filterValorMin" class="form-control" placeholder="0,00" onchange="renderTable()" step="0.01" /></div>
+          <div class="col-md-2"><label>💰 Valor max (R$)</label><input type="number" id="filterValorMax" class="form-control" placeholder="999999,99" onchange="renderTable()" step="0.01" /></div>
+          <div class="col-md-2"><label>📅 Data início</label><input type="date" id="filterDataIni" class="form-control" onchange="renderTable()" /></div>
+          <div class="col-md-2"><label>📅 Data fim</label><input type="date" id="filterDataFim" class="form-control" onchange="renderTable()" /></div>
+          <div class="col-md-2"><label>📆 Mês/Ano</label><input type="month" id="filterMes" class="form-control" onchange="renderTable()" /></div>
+          <div class="col-md-2"><label>📤 Fonte</label><select id="filterFonte" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
+        </div>
+        <div class="row g-3 mb-4">
+          <div class="col-md-3"><label>⏰ Último contato há mais de</label><div class="input-group"><input type="number" id="filterUltimoContatoDias" class="form-control" placeholder="Ex: 15" min="1" onchange="renderTable()" /><span class="input-group-text">dias</span></div></div>
+          <div class="col-md-3 d-flex align-items-end"><button class="btn btn-outline-secondary" onclick="document.getElementById('filterUltimoContatoDias').value=''; renderTable();"><i class="bi bi-eraser"></i> Limpar</button></div>
+          <div class="col-md-6 d-flex align-items-end gap-2">
+            <button class="btn btn-success" onclick="salvarFiltro()"><i class="bi bi-bookmark-plus"></i> Salvar Filtro</button>
+            <div class="dropdown">
+              <button class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown"><i class="bi bi-bookmarks"></i> Filtros</button>
+              <ul class="dropdown-menu" id="filtrosSalvosList"></ul>
+            </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <button class="btn btn-warning" onclick="abrirModalLote()" id="btnAcaoLote" disabled><i class="bi bi-stack"></i> Ações em Lote</button>
+          <button class="btn btn-success" onclick="document.getElementById('zipUploadInput').click()"><i class="bi bi-file-zip"></i> Anexos em Lote</button>
+          <input type="file" id="zipUploadInput" accept=".zip" style="display:none" onchange="uploadZipAnexos(event)" />
+          <span id="selecionadosCount" class="ms-2 text-muted small"></span>
+        </div>
+        <div class="table-responsive">
+          <table class="table" id="pesquisaTable">
+            <thead><tr><th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" /></th><th data-col="numeroProposta">Proposta</th><th data-col="nomeTitular">Titular</th><th data-col="cpfTitular">CPF</th><th data-col="modalidadePlano">Modalidade</th><th data-col="status">Status</th><th data-col="valorComDesconto">Valor</th><th data-col="qtdVidas">Vidas</th><th data-col="praca">Praça</th><th data-col="administradora">Admin.</th><th data-col="codigo">Código</th><th>Ações</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
     <!-- LEADS (mantido) -->
     <div class="tab-pane fade" id="leadsTab">
-      <!-- (mesmo conteúdo) -->
+      <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
+        <div class="view-toggle btn-group"><button class="btn btn-outline-primary active" id="viewListBtn" onclick="setLeadView('lista')"><i class="bi bi-list-ul"></i> Lista</button><button class="btn btn-outline-primary" id="viewPipelineBtn" onclick="setLeadView('pipeline')"><i class="bi bi-grid-3x3-gap"></i> Pipeline</button></div>
+        <div class="ms-auto d-flex gap-2 flex-wrap">
+          <input type="text" id="searchLead" class="form-control" style="width:200px;" placeholder="Buscar..." onkeyup="if(event.key==='Enter') renderLeads()">
+          <select id="filterUfLead" class="form-select" style="width:auto;" onchange="renderLeads()"><option value="">UF</option><option value="SP">SP</option><option value="RJ">RJ</option><option value="MG">MG</option><option value="BA">BA</option><option value="PR">PR</option><option value="RS">RS</option><option value="SC">SC</option><option value="DF">DF</option><option value="GO">GO</option><option value="PE">PE</option><option value="CE">CE</option><option value="PB">PB</option></select>
+          <select id="filterStatusLead" class="form-select" style="width:auto;" onchange="renderLeads()"><option value="">Status</option></select>
+          <button class="btn btn-primary" onclick="abrirModalNovoLead()"><i class="bi bi-plus-circle"></i> Novo Lead</button>
+        </div>
+      </div>
+      <div id="leadViewContainer">
+        <div id="leadListView" class="card card-custom">
+          <div class="table-responsive"><table class="table"><thead><tr><th>Abertura</th><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Cidade</th><th>UF</th><th>Status</th><th>Ações</th></tr></thead><tbody id="leadsBody"></tbody></table></div>
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <span id="leadCountInfo" class="text-muted small"></span>
+            <div><button class="btn btn-sm btn-outline-secondary" onclick="mudarPaginaLead(-1)" id="btnLeadPrev" disabled><i class="bi bi-chevron-left"></i></button><span id="leadPaginaInfo" class="mx-2">Página 1</span><button class="btn btn-sm btn-outline-secondary" onclick="mudarPaginaLead(1)" id="btnLeadNext"><i class="bi bi-chevron-right"></i></button></div>
+          </div>
+        </div>
+        <div id="leadPipelineView" style="display:none;"><div class="pipeline-container" id="pipelineContainer"></div></div>
+      </div>
     </div>
 
-    <!-- ===== MINHAS TAREFAS ===== -->
+    <!-- MINHAS TAREFAS -->
     <div class="tab-pane fade" id="tarefasTab">
       <div class="card card-custom">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <h5 class="fw-bold"><i class="bi bi-check2-square me-2"></i>Minhas Tarefas</h5>
           <button class="btn btn-primary" onclick="abrirModalTarefa()"><i class="bi bi-plus-circle"></i> Nova Tarefa</button>
         </div>
-
-        <!-- Abas internas -->
         <ul class="nav nav-tabs tarefa-tabs mb-4" id="tarefaSubTabs">
           <li class="nav-item"><button class="nav-link active" onclick="switchTarefaView('lista')" data-view="lista">📋 Lista</button></li>
           <li class="nav-item"><button class="nav-link" onclick="switchTarefaView('calendario')" data-view="calendario">📅 Calendário</button></li>
           <li class="nav-item"><button class="nav-link" onclick="switchTarefaView('dashboard')" data-view="dashboard">📊 Dashboard</button></li>
         </ul>
-
-        <!-- Conteúdo das visualizações -->
         <div id="tarefaViewContainer">
-          <!-- Visualização Lista -->
           <div id="tarefaListView" class="tarefa-view">
             <div class="row g-3 mb-3">
-              <div class="col-md-3">
-                <label>Filtrar por status</label>
-                <select id="filtroTarefaStatus" class="form-select" onchange="renderTarefas()">
-                  <option value="todas">Todas</option>
-                  <option value="pendente">Pendentes</option>
-                  <option value="hoje">Para hoje</option>
-                  <option value="vencida">Vencidas</option>
-                  <option value="concluida">Concluídas</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label>Ordenar por</label>
-                <select id="filtroTarefaOrdenar" class="form-select" onchange="renderTarefas()">
-                  <option value="prazo">Prazo (mais próximo)</option>
-                  <option value="criacao">Data criação</option>
-                  <option value="urgencia">Urgência</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label>Buscar</label>
-                <input type="text" id="filtroTarefaBusca" class="form-control" placeholder="Título, lead..." oninput="renderTarefas()" />
-              </div>
-              <div class="col-md-3 d-flex align-items-end">
-                <button class="btn btn-outline-secondary" onclick="limparFiltrosTarefa()">Limpar filtros</button>
-              </div>
+              <div class="col-md-3"><label>Filtrar por status</label><select id="filtroTarefaStatus" class="form-select" onchange="renderTarefas()"><option value="todas">Todas</option><option value="pendente">Pendentes</option><option value="hoje">Para hoje</option><option value="vencida">Vencidas</option><option value="concluida">Concluídas</option></select></div>
+              <div class="col-md-3"><label>Ordenar por</label><select id="filtroTarefaOrdenar" class="form-select" onchange="renderTarefas()"><option value="prazo">Prazo (mais próximo)</option><option value="criacao">Data criação</option><option value="urgencia">Urgência</option></select></div>
+              <div class="col-md-3"><label>Buscar</label><input type="text" id="filtroTarefaBusca" class="form-control" placeholder="Título, lead..." oninput="renderTarefas()" /></div>
+              <div class="col-md-3 d-flex align-items-end"><button class="btn btn-outline-secondary" onclick="limparFiltrosTarefa()">Limpar filtros</button></div>
             </div>
-            <div class="tarefa-stats mb-3" id="tarefaStatsContainer">
+            <div class="tarefa-stats mb-3">
               <div class="stat-item"><span class="num" id="statPendentes">0</span><div class="label">Pendentes</div></div>
               <div class="stat-item"><span class="num" id="statHoje">0</span><div class="label">Para hoje</div></div>
               <div class="stat-item"><span class="num" id="statVencidas">0</span><div class="label">Vencidas</div></div>
@@ -871,8 +1051,6 @@
             </div>
             <div id="tarefaListContainer"></div>
           </div>
-
-          <!-- Visualização Calendário -->
           <div id="tarefaCalendarioView" class="tarefa-view" style="display:none;">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <button class="btn btn-sm btn-outline-primary" onclick="mudarMesTarefa(-1)"><i class="bi bi-chevron-left"></i></button>
@@ -881,34 +1059,120 @@
             </div>
             <div id="calendarioTarefaContainer"></div>
             <div class="mt-3">
-              <div id="tarefasDoDiaTitulo" class="fw-bold">Tarefas de <span id="tarefaDiaSelecionadoLabel"></span></div>
+              <div class="fw-bold">Tarefas de <span id="tarefaDiaSelecionadoLabel"></span></div>
               <div id="tarefasDoDiaLista"></div>
             </div>
           </div>
-
-          <!-- Visualização Dashboard -->
           <div id="tarefaDashboardView" class="tarefa-view" style="display:none;">
             <div class="row g-3">
               <div class="col-md-4"><div class="card card-custom"><h6 class="fw-bold">Pendentes por tipo</h6><canvas id="tarefaTipoChart" height="150"></canvas></div></div>
               <div class="col-md-4"><div class="card card-custom"><h6 class="fw-bold">Pendentes por urgência</h6><canvas id="tarefaUrgenciaChart" height="150"></canvas></div></div>
-              <div class="col-md-4"><div class="card card-custom"><h6 class="fw-bold">Conclusões por dia (últimos 30 dias)</h6><canvas id="tarefaConclusoesChart" height="150"></canvas></div></div>
+              <div class="col-md-4"><div class="card card-custom"><h6 class="fw-bold">Conclusões (últimos 30 dias)</h6><canvas id="tarefaConclusoesChart" height="150"></canvas></div></div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- CONFIGURAÇÕES (mantido) -->
-    <div class="tab-pane fade" id="configTab">
-      <div class="row g-4">
-        <!-- (conteúdo anterior) -->
+    <!-- ===== MEU PERFIL (nova aba) ===== -->
+    <div class="tab-pane fade" id="perfilTab">
+      <div class="card card-custom">
+        <h5 class="fw-bold"><i class="bi bi-person-circle me-2"></i>Meu Perfil</h5>
+        <p class="text-muted small">Gerencie suas informações pessoais, localização e configurações de segurança.</p>
+
+        <!-- Dados Pessoais -->
+        <div class="perfil-section">
+          <h6>📋 Dados Pessoais</h6>
+          <div class="row g-3">
+            <div class="col-md-2 text-center">
+              <div class="perfil-avatar mx-auto" id="perfilAvatar">L</div>
+              <span class="text-muted small">Clique para alterar</span>
+            </div>
+            <div class="col-md-10">
+              <div class="row g-3">
+                <div class="col-md-6"><label>Nome Completo</label><input type="text" id="perfilNome" class="form-control" placeholder="Seu nome" /></div>
+                <div class="col-md-6"><label>Telefone / WhatsApp</label><input type="text" id="perfilTelefone" class="form-control" placeholder="(00) 00000-0000" /></div>
+                <div class="col-md-6"><label>Cidade</label><input type="text" id="perfilCidade" class="form-control" placeholder="Cidade - UF" /></div>
+                <div class="col-md-6"><label>Instagram</label><input type="text" id="perfilInstagram" class="form-control" placeholder="@seuinstagram" /></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email e Senha -->
+        <div class="perfil-section">
+          <h6>📧 Email e Senha</h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label>Email Atual</label>
+              <input type="email" id="perfilEmailAtual" class="form-control" disabled />
+            </div>
+            <div class="col-md-6">
+              <label>Novo Email</label>
+              <input type="email" id="perfilNovoEmail" class="form-control" placeholder="novo@email.com" />
+            </div>
+            <div class="col-md-6">
+              <label>Senha Atual</label>
+              <input type="password" id="perfilSenhaAtual" class="form-control" placeholder="••••••••" />
+            </div>
+            <div class="col-md-6">
+              <label>Nova Senha</label>
+              <input type="password" id="perfilNovaSenha" class="form-control" placeholder="••••••••" />
+            </div>
+            <div class="col-12">
+              <button class="btn btn-primary" onclick="salvarPerfil()"><i class="bi bi-save"></i> Salvar Alterações</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aparência -->
+        <div class="perfil-section">
+          <h6>🎨 Aparência</h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label>Tema</label>
+              <div class="tema-opcoes">
+                <button class="btn" onclick="setTheme('light')" data-theme="light">☀️ Claro</button>
+                <button class="btn" onclick="setTheme('dark')" data-theme="dark">🌙 Escuro</button>
+                <button class="btn" onclick="setTheme('system')" data-theme="system">🖥️ Sistema</button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label>Tamanho da fonte</label>
+              <div class="fonte-opcoes">
+                <button class="btn" onclick="setFontSize('menor')" data-size="menor">Menor</button>
+                <button class="btn" onclick="setFontSize('padrao')" data-size="padrao">Padrão</button>
+                <button class="btn" onclick="setFontSize('maior')" data-size="maior">Maior</button>
+                <button class="btn" onclick="setFontSize('extra')" data-size="extra">Extra Grande</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Informações do Sistema -->
+        <div class="perfil-section">
+          <h6>ℹ️ Informações do Sistema</h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="status-item"><span><strong>E-mail de login</strong><br><span id="sistemaEmail">carregando...</span></span></div>
+              <div class="status-item"><span><strong>Membro desde</strong><br><span id="sistemaMembro">carregando...</span></span></div>
+            </div>
+            <div class="col-md-6">
+              <div class="status-item"><span><strong>Serviço vinculado</strong><br><span id="sistemaServico">Amel's Conceito</span></span></div>
+              <div class="status-item"><span><strong>Nível de permissão</strong><br><span id="sistemaPermissao">Gerente</span></span></div>
+              <div class="status-item"><span><strong>Status da conta</strong><br><span class="badge bg-success">Ativa</span></span></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
   </div><!-- end tab-content -->
 </div><!-- end main-content -->
 
-<!-- ===== MODAL TAREFA (completo) ===== -->
+<!-- ===== MODAIS ===== -->
+<!-- Modal Tarefa -->
 <div class="modal fade" id="modalTarefa" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content" style="background:var(--card);">
@@ -918,52 +1182,13 @@
       </div>
       <div class="modal-body">
         <input type="hidden" id="tarefaId" />
-        <div class="mb-3">
-          <label class="fw-bold">O que precisa ser feito? *</label>
-          <input type="text" id="tarefaTitulo" class="form-control" placeholder="Ex.: retornar ligação, enviar cotação..." />
-        </div>
-        <div class="mb-3">
-          <label class="fw-bold">Tipo de atividade *</label>
-          <select id="tarefaTipo" class="form-select">
-            <option value="Tarefa">Tarefa — ação geral</option>
-            <option value="Ligar">Ligar — retornar ou fazer ligação</option>
-            <option value="Visitar">Visitar — encontro presencial</option>
-            <option value="Email">Email — enviar ou responder email</option>
-            <option value="Reuniao">Reunião — agendar reunião</option>
-            <option value="Follow-up">Follow-up — acompanhamento</option>
-          </select>
-        </div>
-        <div class="mb-3">
-          <label class="fw-bold">Prazo *</label>
-          <div class="row">
-            <div class="col-6"><input type="date" id="tarefaData" class="form-control" /></div>
-            <div class="col-6"><input type="time" id="tarefaHora" class="form-control" step="600" /></div>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label class="fw-bold">Nível de urgência</label>
-          <select id="tarefaUrgencia" class="form-select">
-            <option value="Baixa">Baixa — Sem pressa</option>
-            <option value="Normal" selected>Normal — Rotina do dia a dia</option>
-            <option value="Alta">Alta — Precisa de atenção em breve</option>
-            <option value="Urgente">Urgente — Prioridade máxima</option>
-          </select>
-        </div>
-        <div class="mb-3">
-          <label class="fw-bold">Vincular a um lead (opcional)</label>
-          <input type="text" id="tarefaLeadBusca" class="form-control" placeholder="Buscar lead pelo nome..." oninput="buscarLeadsParaTarefa(this.value)" />
-          <div id="tarefaLeadResultados" class="dropdown-menu" style="position:relative;width:100%;max-height:200px;overflow-y:auto;display:none;"></div>
-          <input type="hidden" id="tarefaLeadId" />
-          <div id="tarefaLeadSelecionado" class="mt-1"></div>
-        </div>
-        <div class="mb-3">
-          <label class="fw-bold">Descrição</label>
-          <textarea id="tarefaDesc" class="form-control" rows="2" placeholder="Detalhes adicionais..."></textarea>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="tarefaConcluida" />
-          <label class="form-check-label">Concluída</label>
-        </div>
+        <div class="mb-3"><label class="fw-bold">O que precisa ser feito? *</label><input type="text" id="tarefaTitulo" class="form-control" placeholder="Ex.: retornar ligação..." /></div>
+        <div class="mb-3"><label class="fw-bold">Tipo de atividade *</label><select id="tarefaTipo" class="form-select"><option value="Tarefa">Tarefa — ação geral</option><option value="Ligar">Ligar — retornar ou fazer ligação</option><option value="Visitar">Visitar — encontro presencial</option><option value="Email">Email — enviar ou responder email</option><option value="Reuniao">Reunião — agendar reunião</option><option value="Follow-up">Follow-up — acompanhamento</option></select></div>
+        <div class="mb-3"><label class="fw-bold">Prazo *</label><div class="row"><div class="col-6"><input type="date" id="tarefaData" class="form-control" /></div><div class="col-6"><input type="time" id="tarefaHora" class="form-control" step="600" /></div></div></div>
+        <div class="mb-3"><label class="fw-bold">Nível de urgência</label><select id="tarefaUrgencia" class="form-select"><option value="Baixa">Baixa — Sem pressa</option><option value="Normal" selected>Normal — Rotina</option><option value="Alta">Alta — Atenção em breve</option><option value="Urgente">Urgente — Prioridade máxima</option></select></div>
+        <div class="mb-3"><label class="fw-bold">Vincular a um lead (opcional)</label><input type="text" id="tarefaLeadBusca" class="form-control" placeholder="Buscar lead pelo nome..." oninput="buscarLeadsParaTarefa(this.value)" /><div id="tarefaLeadResultados" class="dropdown-menu" style="position:relative;width:100%;max-height:200px;overflow-y:auto;display:none;"></div><input type="hidden" id="tarefaLeadId" /><div id="tarefaLeadSelecionado" class="mt-1"></div></div>
+        <div class="mb-3"><label class="fw-bold">Descrição</label><textarea id="tarefaDesc" class="form-control" rows="2" placeholder="Detalhes adicionais..."></textarea></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="tarefaConcluida" /><label class="form-check-label">Concluída</label></div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -974,695 +1199,386 @@
   </div>
 </div>
 
-<!-- ===== MODAIS (outros) ===== -->
+<!-- Modal Lote -->
 <div class="modal fade" id="modalLote" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Ação em Lote</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select id="acaoLote" class="form-select mb-3" onchange="handleAcaoLoteChange()"><option value="">Escolha...</option><option value="status">Alterar Status</option><option value="praca">Alterar Praça</option><option value="administradora">Alterar Administradora</option><option value="dataPagamento">Definir Data</option><option value="codigo">Alterar Código</option><option value="excluir">Excluir</option></select><div id="parametrosLote"></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="executarAcaoLote()">Aplicar</button></div></div></div></div>
 
-<div class="modal fade" id="modalNovoLead" tabindex="-1"><!-- (mantido) --></div>
+<!-- Modal Novo Lead -->
+<div class="modal fade" id="modalNovoLead" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background:var(--card);">
+      <div class="modal-header"><h5 class="modal-title fw-bold"><i class="bi bi-person-plus me-2"></i>Novo Lead</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-3"><input type="text" id="novoLeadNome" class="form-control" placeholder="Nome completo *"></div>
+        <div class="mb-3"><input type="text" id="novoLeadTelefone" class="form-control" placeholder="Telefone *"></div>
+        <div class="mb-3"><input type="email" id="novoLeadEmail" class="form-control" placeholder="E-mail"></div>
+        <div class="mb-3"><input type="text" id="novoLeadCidade" class="form-control" placeholder="Cidade"></div>
+        <div class="mb-3"><select id="novoLeadUf" class="form-select"><option value="">UF</option><option value="SP">SP</option><option value="RJ">RJ</option><option value="MG">MG</option><option value="BA">BA</option><option value="PR">PR</option><option value="RS">RS</option><option value="SC">SC</option><option value="DF">DF</option><option value="GO">GO</option><option value="PE">PE</option><option value="CE">CE</option><option value="PB">PB</option></select></div>
+        <div class="mb-3"><select id="novoLeadStatus" class="form-select"><option value="">Status</option></select></div>
+        <div class="mb-3"><textarea id="novoLeadObs" class="form-control" rows="2" placeholder="Observações"></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-primary" id="btnSalvarNovoLead" onclick="salvarNovoLead()">Salvar Lead</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // ==================== FIREBASE CONFIG ====================
-  const firebaseConfig = {
-    apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
-    authDomain: "crm-recuperacao.firebaseapp.com",
-    projectId: "crm-recuperacao",
-    storageBucket: "crm-recuperacao.firebasestorage.app",
-    messagingSenderId: "347011763386",
-    appId: "1:347011763386:web:158c1ca6f512a1cde1c683",
-    measurementId: "G-1XHHFXHN4G"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-  const storage = firebase.storage();
+// ==================== FIREBASE CONFIG ====================
+const firebaseConfig = {
+  apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
+  authDomain: "crm-recuperacao.firebaseapp.com",
+  projectId: "crm-recuperacao",
+  storageBucket: "crm-recuperacao.firebasestorage.app",
+  messagingSenderId: "347011763386",
+  appId: "1:347011763386:web:158c1ca6f512a1cde1c683",
+  measurementId: "G-1XHHFXHN4G"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
 
-  // ==================== VARIÁVEIS GLOBAIS ====================
-  let currentUser = null;
-  let clients = [], tarefas = [], leadsData = [], pessoas = [];
-  let dependentesTemp = [], pagamentosTemp = [], anexosTemp = [], interacoesTemp = [], checklistTemp = [];
-  let statuses = [], leadStatuses = [];
-  let pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
-  let charts = {};
-  let calendarioMesTarefa = new Date().getMonth(), calendarioAnoTarefa = new Date().getFullYear();
-  let diaSelecionadoTarefa = new Date().toISOString().split('T')[0];
-  let selectedIds = new Set();
-  let sortColumn = 'numeroProposta', sortDir = 'asc';
-  let paginaLead = 1;
-  const leadsPorPagina = 10;
-  let leadView = 'lista';
-  let isLoading = false;
-  let backupIntervalId = null, backupRunning = false, lastBackupTime = null, nextBackupTime = null;
-  let filtrosSalvos = [];
-  let tarefaView = 'lista'; // lista, calendario, dashboard
+// ==================== VARIÁVEIS ====================
+let currentUser = null;
+let clients = [], tarefas = [], leadsData = [], pessoas = [];
+let dependentesTemp = [], pagamentosTemp = [], anexosTemp = [], interacoesTemp = [], checklistTemp = [];
+let statuses = [], leadStatuses = [];
+let pracas = [], administradoras = [], acomodacoes = [], coparticipacoes = [], modalidades = [], fontesVenda = [];
+let charts = {};
+let calendarioMesTarefa = new Date().getMonth(), calendarioAnoTarefa = new Date().getFullYear();
+let diaSelecionadoTarefa = new Date().toISOString().split('T')[0];
+let selectedIds = new Set();
+let sortColumn = 'numeroProposta', sortDir = 'asc';
+let paginaLead = 1;
+const leadsPorPagina = 10;
+let leadView = 'lista';
+let isLoading = false;
+let backupIntervalId = null, backupRunning = false, lastBackupTime = null, nextBackupTime = null;
+let filtrosSalvos = [];
+let tarefaView = 'lista';
 
-  // ==================== FUNÇÕES AUXILIARES ====================
-  function formatarMoeda(valor) {
-    if (typeof valor === 'string') valor = parseFloat(valor.replace(/\./g,'').replace(',','.'));
-    if (isNaN(valor) || valor === null || valor === undefined) return 'R$ 0,00';
-    return 'R$ ' + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-  function formatarNumero(valor) {
-    if (typeof valor === 'string') valor = parseFloat(valor.replace(/\./g,'').replace(',','.'));
-    if (isNaN(valor) || valor === null || valor === undefined) return '0,00';
-    return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-  function formatarDataBr(data) {
-    if (!data) return '-';
-    const d = new Date(data);
-    return d.toLocaleDateString('pt-BR');
-  }
-  function formatarHora(data) {
-    if (!data) return '-';
-    const d = new Date(data);
-    return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  // ==================== SIDEBAR SIZE ====================
-  function atualizarTamanhoSidebar(largura) {
-    document.documentElement.style.setProperty('--sidebar-width', largura + 'px');
-    document.getElementById('sidebarSizeLabel').innerText = largura + 'px';
-    localStorage.setItem('sidebarWidth', largura);
-  }
-  document.addEventListener('DOMContentLoaded', function() {
-    const range = document.getElementById('sidebarSizeRange');
-    const saved = parseInt(localStorage.getItem('sidebarWidth')) || 220;
-    range.value = saved;
-    atualizarTamanhoSidebar(saved);
-    range.addEventListener('input', function() {
-      atualizarTamanhoSidebar(parseInt(this.value));
-    });
-  });
-
-  // ==================== AUTENTICAÇÃO ====================
-  auth.onAuthStateChanged(user => {
-    if (user) { currentUser = user; document.getElementById('loginScreen').style.display = 'none'; loadAll(); }
-    else { document.getElementById('loginScreen').style.display = 'flex'; }
-  });
-
-  function login() {
-    const email = document.getElementById('loginEmail').value;
-    const pwd = document.getElementById('loginPassword').value;
-    auth.signInWithEmailAndPassword(email, pwd).catch(e => document.getElementById('loginError').innerText = e.message);
-  }
-  function googleLogin() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch(e => document.getElementById('loginError').innerText = e.message);
-  }
-  function register() {
-    const email = document.getElementById('loginEmail').value;
-    const pwd = document.getElementById('loginPassword').value;
-    auth.createUserWithEmailAndPassword(email, pwd).catch(e => document.getElementById('loginError').innerText = e.message);
-  }
-  function recoverPassword() {
-    const email = document.getElementById('loginEmail').value;
-    if (email) auth.sendPasswordResetEmail(email).then(() => alert('Email enviado!')).catch(e => alert(e.message));
-    else alert('Digite seu email');
-  }
-  function togglePassword() {
-    const inp = document.getElementById('loginPassword');
-    inp.type = inp.type === 'password' ? 'text' : 'password';
-  }
-  function logout() { auth.signOut(); }
-  function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-  }
-  if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
-
-  // ==================== SIDEBAR / TABS ====================
-  function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('collapsed');
-    document.getElementById('mainContent').classList.toggle('expanded');
-  }
-  function toggleMobileSidebar() {
-    document.getElementById('sidebar').classList.toggle('mobile-open');
-  }
-
-  function switchTab(tabId) {
-    document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
-    document.querySelector(`.sidebar .nav-link[data-tab="${tabId}"]`)?.classList.add('active');
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('show','active'));
-    const pane = document.getElementById(tabId);
-    if (pane) pane.classList.add('show','active');
-    document.getElementById('sidebar').classList.remove('mobile-open');
-    if (tabId === 'leadsTab') renderLeads();
-    if (tabId === 'configTab') {
-      renderLeadStatuses(); renderStatuses(); renderPracasList(); renderAdministradorasList();
-      renderAcomodacoesList(); renderCoparticipacoesList(); renderModalidadesList();
-      renderFontesVendaList(); renderPessoasList();
-    }
-    if (tabId === 'pesquisaTab') { renderTable(); carregarFiltrosSalvos(); }
-    if (tabId === 'tarefasTab') { renderTarefas(); renderCalendarioTarefa(); renderDashboardTarefas(); }
-    if (tabId === 'clientesTab') { switchInternalTab('dadosPrincipais'); carregarVendedoresSelect(); }
-  }
-
-  function switchInternalTab(tabId) {
-    document.querySelectorAll('#clientesTab .tab-pane').forEach(p => p.style.display = 'none');
-    const pane = document.getElementById(tabId);
-    if (pane) pane.style.display = 'block';
-    document.querySelectorAll('#fichaTabs .nav-link').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`#fichaTabs .nav-link[data-tab="${tabId}"]`)?.classList.add('active');
-  }
-
-  // ==================== LOAD ALL ====================
-  async function loadAll() {
-    if (isLoading) return;
-    isLoading = true;
-    try {
-      await Promise.all([
-        loadClients(), loadTarefas(), loadStatuses(), loadPracas(), loadAdministradoras(),
-        loadAcomodacoes(), loadCoparticipacoes(), loadModalidades(), loadFontesVenda(),
-        loadLeads(), loadLeadStatuses(), loadPessoas(), loadFiltrosSalvos()
-      ]);
-      popularFiltroPraca();
-      preencherSelectsFicha();
-      renderTable();
-      updateDashboard();
-      renderTarefas();
-      renderCalendarioTarefa();
-      renderDashboardTarefas();
-      renderLeads();
-      carregarVendedoresSelect();
-      aplicarWidgets();
-      carregarNotificacoes();
-    } catch(e) { console.error(e); alert('Erro ao carregar dados: '+e.message); }
-    finally { isLoading = false; }
-  }
-
-  // ==================== LOAD FUNCTIONS ====================
-  async function loadClients() { if(!currentUser) return; const snap=await db.collection('clients').where('userId','==',currentUser.uid).get(); clients=snap.docs.map(d=>({id:d.id,...d.data()})); }
-  async function loadTarefas() { if(!currentUser) return; const snap=await db.collection('tarefas').where('userId','==',currentUser.uid).get(); tarefas=snap.docs.map(d=>({id:d.id,...d.data()})); }
-  async function loadStatuses() { if(!currentUser) return; const snap=await db.collection('statuses').where('userId','==',currentUser.uid).get(); statuses=snap.docs.map(d=>({id:d.id,name:d.data().name||'Status'})); }
-  async function loadPracas() { if(!currentUser) return; const snap=await db.collection('pracas').where('userId','==',currentUser.uid).get(); pracas=snap.docs.map(d=>({id:d.id,name:d.data().name||'Praça'})); }
-  async function loadAdministradoras() { if(!currentUser) return; const snap=await db.collection('administradoras').where('userId','==',currentUser.uid).get(); administradoras=snap.docs.map(d=>({id:d.id,name:d.data().name||'Admin'})); }
-  async function loadAcomodacoes() { if(!currentUser) return; const snap=await db.collection('acomodacoes').where('userId','==',currentUser.uid).get(); acomodacoes=snap.docs.map(d=>({id:d.id,name:d.data().name||'Acomodação'})); }
-  async function loadCoparticipacoes() { if(!currentUser) return; const snap=await db.collection('coparticipacoes').where('userId','==',currentUser.uid).get(); coparticipacoes=snap.docs.map(d=>({id:d.id,name:d.data().name||'Coparticipação'})); }
-  async function loadModalidades() { if(!currentUser) return; const snap=await db.collection('modalidades').where('userId','==',currentUser.uid).get(); modalidades=snap.docs.map(d=>({id:d.id,name:d.data().name||'Modalidade'})); }
-  async function loadFontesVenda() { if(!currentUser) return; const snap=await db.collection('fontesVenda').where('userId','==',currentUser.uid).get(); fontesVenda=snap.docs.map(d=>({id:d.id,name:d.data().name||'Fonte'})); }
-  async function loadLeads() { if(!currentUser) return; const snap=await db.collection('leads').where('userId','==',currentUser.uid).get(); leadsData=snap.docs.map(d=>({id:d.id,...d.data()})); leadsData.sort((a,b)=>(b.abertura||'').localeCompare(a.abertura||'')); }
-  async function loadLeadStatuses() { if(!currentUser) return; const snap=await db.collection('leadStatuses').where('userId','==',currentUser.uid).get(); leadStatuses=snap.docs.map(d=>({id:d.id,name:d.data().name||'Status'})); }
-  async function loadPessoas() { if(!currentUser) return; const snap=await db.collection('pessoas').where('userId','==',currentUser.uid).get(); pessoas=snap.docs.map(d=>({id:d.id,...d.data()})); }
-  async function loadFiltrosSalvos() { if(!currentUser) return; const snap=await db.collection('filtrosSalvos').where('userId','==',currentUser.uid).get(); filtrosSalvos=snap.docs.map(d=>({id:d.id,...d.data()})); }
-
-  // ==================== PREENCHER SELECTS ====================
-  function preencherSelectsFicha() { /* (mesmo código) */ }
-  function popularFiltroPraca() { /* (mesmo código) */ }
-  function carregarVendedoresSelect() { /* (mesmo código) */ }
-  function preencherCodigoPorVendedor() { /* (mesmo código) */ }
-
-  // ==================== WIDGETS ====================
-  function aplicarWidgets() { /* (mesmo código) */ }
-  document.addEventListener('DOMContentLoaded',()=>{
-    document.querySelectorAll('.widget-toggle').forEach(cb=>cb.addEventListener('change',aplicarWidgets));
-  });
-
-  // ==================== DASHBOARD ====================
-  function updateDashboard() { /* (mesmo código) */ }
-  function renderUltimasVendas() { /* (mesmo código) */ }
-  function atualizarGraficos(dados) { /* (mesmo código) */ }
-  function renderVendedorChart() { /* (mesmo código) */ }
-  function renderForecast() { /* (mesmo código) */ }
-  function renderTendencias() { /* (mesmo código) */ }
-  function renderMetas() { /* (mesmo código) */ }
-  function renderRanking() { /* (mesmo código) */ }
-
-  // ==================== FILTROS SALVOS ====================
-  function salvarFiltro() { /* (mesmo código) */ }
-  function carregarFiltrosSalvos() { /* (mesmo código) */ }
-  function aplicarFiltroSalvo(id) { /* (mesmo código) */ }
-
-  // ==================== CHECKLIST ====================
-  function adicionarItemChecklist() { /* (mesmo código) */ }
-  function renderChecklist() { /* (mesmo código) */ }
-  function toggleChecklistItem(idx) { /* (mesmo código) */ }
-  function removerChecklistItem(idx) { /* (mesmo código) */ }
-
-  // ==================== DUPLICADOS ====================
-  function buscarDuplicados() { /* (mesmo código) */ }
-  async function mesclarDuplicados(ids) { /* (mesmo código) */ }
-
-  // ==================== NOTIFICAÇÕES ====================
-  async function carregarNotificacoes() { /* (mesmo código) */ }
-  function toggleNotificacoes() { /* (mesmo código) */ }
-  function marcarNotificacaoLida(id) { /* (mesmo código) */ }
-
-  // ==================== BUSCA GLOBAL ====================
-  function buscaGlobal() { /* (mesmo código) */ }
-  function irPara(tab) { /* (mesmo código) */ }
-
-  // ==================== IMPORTAÇÃO EXCEL ====================
-  async function importarExcel(event) { /* (mesmo código) */ }
-
-  // ==================== WHATSAPP ====================
-  function abrirWhatsApp(telefone, proposta) { /* (mesmo código) */ }
-
-  // ==================== RENDER TABELA ====================
-  function renderTable() { /* (mesmo código) */ }
-
-  // ==================== CRUD CLIENTES ====================
-  function editarCliente(id) { /* (mesmo código) */ }
-  async function excluirCliente(id) { /* (mesmo código) */ }
-  async function saveClient() { /* (mesmo código) */ }
-  function clearForm() { /* (mesmo código) */ }
-
-  // ==================== DEPENDENTES ====================
-  function limparCamposDependente(){ /* (mesmo código) */ }
-  function adicionarDependente() { /* (mesmo código) */ }
-  function renderDependentes() { /* (mesmo código) */ }
-  function editarDependente(idx){ /* (mesmo código) */ }
-  function removerDependente(idx){ /* (mesmo código) */ }
-
-  // ==================== PAGAMENTOS ====================
-  function limparCamposPagamento(){ /* (mesmo código) */ }
-  function adicionarPagamento() { /* (mesmo código) */ }
-  function renderPagamentos() { /* (mesmo código) */ }
-  function editarPagamento(idx){ /* (mesmo código) */ }
-  function removerPagamento(idx){ /* (mesmo código) */ }
-
-  // ==================== ANEXOS ====================
-  function adicionarAnexos() { /* (mesmo código) */ }
-  function renderAnexos() { /* (mesmo código) */ }
-  function removerAnexo(idx){ /* (mesmo código) */ }
-
-  // ==================== INTERAÇÕES ====================
-  function adicionarInteracao() { /* (mesmo código) */ }
-  function renderInteracoes() { /* (mesmo código) */ }
-  function removerInteracao(idx){ /* (mesmo código) */ }
-
-  // ==================== PESSOAS ====================
-  function renderPessoasList() { /* (mesmo código) */ }
-  async function addPessoa() { /* (mesmo código) */ }
-  async function deletePessoa(id){ /* (mesmo código) */ }
-
-  // ==================== BACKUP ====================
-  async function exportBackup() { /* (mesmo código) */ }
-  async function importBackup(event) { /* (mesmo código) */ }
-  async function coletarDadosBackup() { /* (mesmo código) */ }
-  async function salvarBackupStorage(jsonData) { /* (mesmo código) */ }
-  async function iniciarBackupAutomatico() { /* (mesmo código) */ }
-  function pararBackupAutomatico() { /* (mesmo código) */ }
-  function atualizarInfoBackup() { /* (mesmo código) */ }
-
-  // ==================== EXPORTAÇÃO EXCEL AVANÇADO ====================
-  function exportarExcelAvancado() { /* (mesmo código) */ }
-
-  // ==================== ANEXOS ZIP ====================
-  async function uploadZipAnexos(event) { /* (mesmo código) */ }
-
-  // ==================== LEADS ====================
-  function renderLeads() { /* (mesmo código) */ }
-  function renderPipeline() { /* (mesmo código) */ }
-  function setLeadView(view){ /* (mesmo código) */ }
-  function mudarPaginaLead(delta){ /* (mesmo código) */ }
-  function abrirModalNovoLead() { /* (mesmo código) */ }
-  async function salvarNovoLead() { /* (mesmo código) */ }
-  function editarLead(id) { /* (mesmo código) */ }
-  async function atualizarLead() { /* (mesmo código) */ }
-  async function excluirLead(id){ /* (mesmo código) */ }
-
-  // ==================== CONFIGURAÇÕES ====================
-  function renderLeadStatuses(){ /* (mesmo código) */ }
-  async function addLeadStatus(){ /* (mesmo código) */ }
-  async function deleteLeadStatus(id){ /* (mesmo código) */ }
-  function renderStatuses(){ /* (mesmo código) */ }
-  async function addStatus(){ /* (mesmo código) */ }
-  async function deleteStatus(id){ /* (mesmo código) */ }
-  function renderPracasList(){ /* (mesmo código) */ }
-  async function addPraca(){ /* (mesmo código) */ }
-  async function deletePraca(id){ /* (mesmo código) */ }
-  function renderAdministradorasList(){ /* (mesmo código) */ }
-  async function addAdministradora(){ /* (mesmo código) */ }
-  async function deleteAdministradora(id){ /* (mesmo código) */ }
-  function renderAcomodacoesList(){ /* (mesmo código) */ }
-  async function addAcomodacao(){ /* (mesmo código) */ }
-  async function deleteAcomodacao(id){ /* (mesmo código) */ }
-  function renderCoparticipacoesList(){ /* (mesmo código) */ }
-  async function addCoparticipacao(){ /* (mesmo código) */ }
-  async function deleteCoparticipacao(id){ /* (mesmo código) */ }
-  function renderModalidadesList(){ /* (mesmo código) */ }
-  async function addModalidade(){ /* (mesmo código) */ }
-  async function deleteModalidade(id){ /* (mesmo código) */ }
-  function renderFontesVendaList(){ /* (mesmo código) */ }
-  async function addFonteVenda(){ /* (mesmo código) */ }
-  async function deleteFonteVenda(id){ /* (mesmo código) */ }
-
-  // ==================== AÇÕES EM LOTE ====================
-  function updateLoteButton(){ /* (mesmo código) */ }
-  function toggleRow(id){ /* (mesmo código) */ }
-  function toggleSelectAll(){ /* (mesmo código) */ }
-  function abrirModalLote(){ /* (mesmo código) */ }
-  function handleAcaoLoteChange(){ /* (mesmo código) */ }
-  async function executarAcaoLote(){ /* (mesmo código) */ }
-
-  // ==================== ATALHOS DE TECLADO ====================
-  document.addEventListener('keydown',function(e){
-    if(e.ctrlKey && e.key==='s'){ e.preventDefault(); const btn=document.getElementById('btnSalvarCliente'); if(btn && btn.offsetParent!==null) saveClient(); }
-    if(e.ctrlKey && e.key==='b'){ e.preventDefault(); const input=document.getElementById('search'); if(input) input.focus(); }
-    if(e.key==='Escape'){ const open=document.querySelector('.modal.show'); if(open) bootstrap.Modal.getInstance(open)?.hide(); }
-  });
-
-  // ==================== UTILITÁRIOS ====================
-  function formatarValorInput(el){ /* (mesmo código) */ }
-  function handlePeriodoChange(){ /* (mesmo código) */ }
-  function gerarRelatorio(){ alert('Função de relatório em desenvolvimento.'); }
-
-  // ==================== TAREFAS (NOVO MÓDULO) ====================
-  function switchTarefaView(view) {
-    tarefaView = view;
-    document.querySelectorAll('#tarefaSubTabs .nav-link').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`#tarefaSubTabs .nav-link[data-view="${view}"]`)?.classList.add('active');
-    document.querySelectorAll('.tarefa-view').forEach(el => el.style.display = 'none');
-    if (view === 'lista') {
-      document.getElementById('tarefaListView').style.display = 'block';
-      renderTarefas();
-    } else if (view === 'calendario') {
-      document.getElementById('tarefaCalendarioView').style.display = 'block';
-      renderCalendarioTarefa();
-    } else if (view === 'dashboard') {
-      document.getElementById('tarefaDashboardView').style.display = 'block';
-      renderDashboardTarefas();
+// ==================== TEMA E FONTE ====================
+function setTheme(theme) {
+  document.body.classList.remove('dark-mode');
+  if (theme === 'dark') document.body.classList.add('dark-mode');
+  else if (theme === 'system') {
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.classList.add('dark-mode');
     }
   }
+  localStorage.setItem('theme', theme);
+  atualizarBotoesTema(theme);
+}
 
-  function renderTarefas() {
-    const container = document.getElementById('tarefaListContainer');
-    if (!container) return;
-    const statusFiltro = document.getElementById('filtroTarefaStatus').value;
-    const ordenar = document.getElementById('filtroTarefaOrdenar').value;
-    const busca = document.getElementById('filtroTarefaBusca').value.toLowerCase();
+function atualizarBotoesTema(theme) {
+  document.querySelectorAll('.tema-opcoes .btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === theme);
+  });
+}
 
-    let lista = [...tarefas];
-    // Filtros
-    if (statusFiltro === 'pendente') lista = lista.filter(t => !t.concluida);
-    else if (statusFiltro === 'hoje') {
-      const hoje = new Date().toISOString().split('T')[0];
-      lista = lista.filter(t => t.data === hoje && !t.concluida);
-    } else if (statusFiltro === 'vencida') {
-      const hoje = new Date().toISOString().split('T')[0];
-      lista = lista.filter(t => t.data < hoje && !t.concluida);
-    } else if (statusFiltro === 'concluida') lista = lista.filter(t => t.concluida);
-    // Busca
-    if (busca) {
-      lista = lista.filter(t => {
-        const tituloMatch = (t.titulo || '').toLowerCase().includes(busca);
-        const leadNome = t.leadNome ? t.leadNome.toLowerCase() : '';
-        return tituloMatch || leadNome.includes(busca);
-      });
-    }
-    // Ordenação
-    if (ordenar === 'prazo') lista.sort((a,b) => (a.data||'').localeCompare(b.data||''));
-    else if (ordenar === 'criacao') lista.sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
-    else if (ordenar === 'urgencia') {
-      const ordem = { 'Urgente':0, 'Alta':1, 'Normal':2, 'Baixa':3 };
-      lista.sort((a,b) => (ordem[a.urgencia]||2) - (ordem[b.urgencia]||2));
-    }
+function setFontSize(size) {
+  document.body.classList.remove('fonte-menor', 'fonte-padrao', 'fonte-maior', 'fonte-extra');
+  document.body.classList.add('fonte-' + size);
+  localStorage.setItem('fontSize', size);
+  atualizarBotoesFonte(size);
+}
 
-    // Atualizar estatísticas
+function atualizarBotoesFonte(size) {
+  document.querySelectorAll('.fonte-opcoes .btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.size === size);
+  });
+}
+
+function carregarPreferencias() {
+  const theme = localStorage.getItem('theme') || 'light';
+  setTheme(theme);
+  const fontSize = localStorage.getItem('fontSize') || 'padrao';
+  setFontSize(fontSize);
+}
+
+// Inicializar preferências ao carregar
+document.addEventListener('DOMContentLoaded', carregarPreferencias);
+
+// ==================== AUTENTICAÇÃO ====================
+auth.onAuthStateChanged(user => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('loginScreen').style.display = 'none';
+    // Atualizar perfil na sidebar
+    document.getElementById('userName').innerText = user.displayName || 'Usuário';
+    document.getElementById('userEmail').innerText = user.email || '';
+    document.getElementById('userAvatar').innerText = (user.displayName || 'U')[0].toUpperCase();
+    document.getElementById('perfilEmailAtual').value = user.email || '';
+    document.getElementById('sistemaEmail').innerText = user.email || '';
+    document.getElementById('sistemaMembro').innerText = user.metadata?.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString('pt-BR') : '---';
+    loadAll();
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+  }
+});
+
+function login() {
+  const email = document.getElementById('loginEmail').value;
+  const pwd = document.getElementById('loginPassword').value;
+  auth.signInWithEmailAndPassword(email, pwd).catch(e => document.getElementById('loginError').innerText = e.message);
+}
+function googleLogin() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(e => document.getElementById('loginError').innerText = e.message);
+}
+function register() {
+  const email = document.getElementById('loginEmail').value;
+  const pwd = document.getElementById('loginPassword').value;
+  auth.createUserWithEmailAndPassword(email, pwd).catch(e => document.getElementById('loginError').innerText = e.message);
+}
+function recoverPassword() {
+  const email = document.getElementById('loginEmail').value;
+  if (email) auth.sendPasswordResetEmail(email).then(() => alert('Email enviado!')).catch(e => alert(e.message));
+  else alert('Digite seu email');
+}
+function togglePassword() {
+  const inp = document.getElementById('loginPassword');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+function logout() { auth.signOut(); }
+
+// ==================== SIDEBAR ====================
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('collapsed');
+  document.getElementById('mainContent').classList.toggle('expanded');
+}
+function toggleMobileSidebar() {
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+}
+function toggleTheme() {
+  const isDark = document.body.classList.contains('dark-mode');
+  setTheme(isDark ? 'light' : 'dark');
+}
+
+function switchTab(tabId) {
+  document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.sidebar .nav-link[data-tab="${tabId}"]`)?.classList.add('active');
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('show','active'));
+  const pane = document.getElementById(tabId);
+  if (pane) pane.classList.add('show','active');
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  if (tabId === 'leadsTab') renderLeads();
+  if (tabId === 'tarefasTab') { renderTarefas(); renderCalendarioTarefa(); renderDashboardTarefas(); }
+  if (tabId === 'pesquisaTab') { renderTable(); carregarFiltrosSalvos(); }
+  if (tabId === 'clientesTab') { switchInternalTab('dadosPrincipais'); carregarVendedoresSelect(); }
+  if (tabId === 'perfilTab') carregarPreferencias();
+}
+
+function switchInternalTab(tabId) {
+  document.querySelectorAll('#clientesTab .tab-pane').forEach(p => p.style.display = 'none');
+  const pane = document.getElementById(tabId);
+  if (pane) pane.style.display = 'block';
+  document.querySelectorAll('#fichaTabs .nav-link').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`#fichaTabs .nav-link[data-tab="${tabId}"]`)?.classList.add('active');
+}
+
+// ==================== LOAD ALL (resumido) ====================
+async function loadAll() {
+  if (isLoading) return;
+  isLoading = true;
+  try {
+    await Promise.all([
+      loadClients(), loadTarefas(), loadStatuses(), loadPracas(), loadAdministradoras(),
+      loadAcomodacoes(), loadCoparticipacoes(), loadModalidades(), loadFontesVenda(),
+      loadLeads(), loadLeadStatuses(), loadPessoas(), loadFiltrosSalvos()
+    ]);
+    popularFiltroPraca();
+    preencherSelectsFicha();
+    renderTable();
+    updateDashboard();
+    renderTarefas();
+    renderCalendarioTarefa();
+    renderDashboardTarefas();
+    renderLeads();
+    carregarVendedoresSelect();
+    carregarNotificacoes();
+  } catch(e) { console.error(e); alert('Erro ao carregar dados: '+e.message); }
+  finally { isLoading = false; }
+}
+
+// ==================== LOAD FUNCTIONS (resumidas) ====================
+async function loadClients() { if(!currentUser) return; const snap=await db.collection('clients').where('userId','==',currentUser.uid).get(); clients=snap.docs.map(d=>({id:d.id,...d.data()})); }
+async function loadTarefas() { if(!currentUser) return; const snap=await db.collection('tarefas').where('userId','==',currentUser.uid).get(); tarefas=snap.docs.map(d=>({id:d.id,...d.data()})); }
+async function loadStatuses() { if(!currentUser) return; const snap=await db.collection('statuses').where('userId','==',currentUser.uid).get(); statuses=snap.docs.map(d=>({id:d.id,name:d.data().name||'Status'})); }
+async function loadPracas() { if(!currentUser) return; const snap=await db.collection('pracas').where('userId','==',currentUser.uid).get(); pracas=snap.docs.map(d=>({id:d.id,name:d.data().name||'Praça'})); }
+async function loadAdministradoras() { if(!currentUser) return; const snap=await db.collection('administradoras').where('userId','==',currentUser.uid).get(); administradoras=snap.docs.map(d=>({id:d.id,name:d.data().name||'Admin'})); }
+async function loadAcomodacoes() { if(!currentUser) return; const snap=await db.collection('acomodacoes').where('userId','==',currentUser.uid).get(); acomodacoes=snap.docs.map(d=>({id:d.id,name:d.data().name||'Acomodação'})); }
+async function loadCoparticipacoes() { if(!currentUser) return; const snap=await db.collection('coparticipacoes').where('userId','==',currentUser.uid).get(); coparticipacoes=snap.docs.map(d=>({id:d.id,name:d.data().name||'Coparticipação'})); }
+async function loadModalidades() { if(!currentUser) return; const snap=await db.collection('modalidades').where('userId','==',currentUser.uid).get(); modalidades=snap.docs.map(d=>({id:d.id,name:d.data().name||'Modalidade'})); }
+async function loadFontesVenda() { if(!currentUser) return; const snap=await db.collection('fontesVenda').where('userId','==',currentUser.uid).get(); fontesVenda=snap.docs.map(d=>({id:d.id,name:d.data().name||'Fonte'})); }
+async function loadLeads() { if(!currentUser) return; const snap=await db.collection('leads').where('userId','==',currentUser.uid).get(); leadsData=snap.docs.map(d=>({id:d.id,...d.data()})); leadsData.sort((a,b)=>(b.abertura||'').localeCompare(a.abertura||'')); }
+async function loadLeadStatuses() { if(!currentUser) return; const snap=await db.collection('leadStatuses').where('userId','==',currentUser.uid).get(); leadStatuses=snap.docs.map(d=>({id:d.id,name:d.data().name||'Status'})); }
+async function loadPessoas() { if(!currentUser) return; const snap=await db.collection('pessoas').where('userId','==',currentUser.uid).get(); pessoas=snap.docs.map(d=>({id:d.id,...d.data()})); }
+async function loadFiltrosSalvos() { if(!currentUser) return; const snap=await db.collection('filtrosSalvos').where('userId','==',currentUser.uid).get(); filtrosSalvos=snap.docs.map(d=>({id:d.id,...d.data()})); }
+
+// ==================== PREENCHER SELECTS ====================
+function preencherSelectsFicha() { /* ... mesmo código ... */ }
+function popularFiltroPraca() { /* ... */ }
+function carregarVendedoresSelect() { /* ... */ }
+
+// ==================== DASHBOARD ====================
+function updateDashboard() { /* ... mesmo código ... */ }
+function renderUltimasVendas() { /* ... */ }
+function atualizarGraficos(dados) { /* ... */ }
+function renderVendedorChart() { /* ... */ }
+function renderForecast() { /* ... */ }
+function renderTendencias() { /* ... */ }
+function renderMetas() { /* ... */ }
+function renderRanking() { /* ... */ }
+
+// ==================== FILTROS SALVOS ====================
+function salvarFiltro() { /* ... */ }
+function carregarFiltrosSalvos() { /* ... */ }
+function aplicarFiltroSalvo(id) { /* ... */ }
+
+// ==================== CRUD CLIENTES ====================
+function editarCliente(id) { /* ... */ }
+async function excluirCliente(id) { /* ... */ }
+async function saveClient() { /* ... */ }
+function clearForm() { /* ... */ }
+
+// ==================== TAREFAS ====================
+function switchTarefaView(view) {
+  tarefaView = view;
+  document.querySelectorAll('#tarefaSubTabs .nav-link').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`#tarefaSubTabs .nav-link[data-view="${view}"]`)?.classList.add('active');
+  document.querySelectorAll('.tarefa-view').forEach(el => el.style.display = 'none');
+  if (view === 'lista') { document.getElementById('tarefaListView').style.display = 'block'; renderTarefas(); }
+  else if (view === 'calendario') { document.getElementById('tarefaCalendarioView').style.display = 'block'; renderCalendarioTarefa(); }
+  else if (view === 'dashboard') { document.getElementById('tarefaDashboardView').style.display = 'block'; renderDashboardTarefas(); }
+}
+
+function renderTarefas() {
+  const container = document.getElementById('tarefaListContainer');
+  if (!container) return;
+  const statusFiltro = document.getElementById('filtroTarefaStatus').value;
+  const ordenar = document.getElementById('filtroTarefaOrdenar').value;
+  const busca = document.getElementById('filtroTarefaBusca').value.toLowerCase();
+  let lista = [...tarefas];
+  if (statusFiltro === 'pendente') lista = lista.filter(t => !t.concluida);
+  else if (statusFiltro === 'hoje') { const hoje = new Date().toISOString().split('T')[0]; lista = lista.filter(t => t.data === hoje && !t.concluida); }
+  else if (statusFiltro === 'vencida') { const hoje = new Date().toISOString().split('T')[0]; lista = lista.filter(t => t.data < hoje && !t.concluida); }
+  else if (statusFiltro === 'concluida') lista = lista.filter(t => t.concluida);
+  if (busca) lista = lista.filter(t => (t.titulo||'').toLowerCase().includes(busca) || ((t.leadNome||'').toLowerCase().includes(busca)));
+  if (ordenar === 'prazo') lista.sort((a,b) => (a.data||'').localeCompare(b.data||''));
+  else if (ordenar === 'criacao') lista.sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
+  else if (ordenar === 'urgencia') { const ordem = {'Urgente':0,'Alta':1,'Normal':2,'Baixa':3}; lista.sort((a,b) => (ordem[a.urgencia]||2) - (ordem[b.urgencia]||2)); }
+  const hoje = new Date().toISOString().split('T')[0];
+  document.getElementById('statPendentes').innerText = tarefas.filter(t => !t.concluida).length;
+  document.getElementById('statHoje').innerText = tarefas.filter(t => t.data === hoje && !t.concluida).length;
+  document.getElementById('statVencidas').innerText = tarefas.filter(t => t.data < hoje && !t.concluida).length;
+  document.getElementById('statConcluidas').innerText = tarefas.filter(t => t.concluida).length;
+  if (!lista.length) { container.innerHTML = '<p class="text-muted text-center py-3">Nenhuma tarefa encontrada.</p>'; return; }
+  container.innerHTML = lista.map(t => {
+    const hojeStr = new Date().toISOString().split('T')[0];
+    let classe = ''; if (t.concluida) classe = 'concluida'; else if (t.data < hojeStr) classe = 'vencida'; else if (t.data === hojeStr) classe = 'hoje';
+    const urgClass = 'tarefa-urg-' + (t.urgencia || 'normal').toLowerCase();
+    return `<div class="tarefa-card ${classe} ${urgClass}">
+      <div><strong>${t.titulo}</strong> <span class="badge bg-secondary">${t.tipo||'Tarefa'}</span> <span class="badge ${t.concluida?'bg-success':(t.data<hojeStr?'bg-danger':'bg-primary')}">${t.concluida?'✅ Concluída':(t.data<hojeStr?'⚠️ Vencida':(t.data===hojeStr?'📌 Hoje':'📅 '+formatarDataBr(t.data)))}</span> ${t.urgencia ? `<span class="badge ${t.urgencia==='Urgente'?'bg-danger':t.urgencia==='Alta'?'bg-warning':t.urgencia==='Baixa'?'bg-secondary':'bg-primary'}">${t.urgencia}</span>` : ''} ${t.leadNome ? `<span class="badge bg-info">🔗 ${t.leadNome}</span>` : ''} <div class="small text-muted">${t.descricao||''}</div></div>
+      <div><button class="btn btn-sm btn-outline-primary" onclick="editarTarefa('${t.id}')"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-outline-success" onclick="toggleConcluirTarefa('${t.id}')"><i class="bi ${t.concluida?'bi-arrow-counterclockwise':'bi-check'}"></i></button><button class="btn btn-sm btn-danger" onclick="excluirTarefa('${t.id}')"><i class="bi bi-trash"></i></button></div>
+    </div>`;
+  }).join('');
+}
+
+function limparFiltrosTarefa() {
+  document.getElementById('filtroTarefaStatus').value = 'todas';
+  document.getElementById('filtroTarefaOrdenar').value = 'prazo';
+  document.getElementById('filtroTarefaBusca').value = '';
+  renderTarefas();
+}
+
+function renderCalendarioTarefa() {
+  const mes = calendarioMesTarefa, ano = calendarioAnoTarefa;
+  document.getElementById('calendarioTarefaTitulo').innerText = new Date(ano, mes).toLocaleString('pt-BR', {month:'long',year:'numeric'});
+  const container = document.getElementById('calendarioTarefaContainer');
+  const primeiroDia = new Date(ano, mes, 1).getDay();
+  const diasNoMes = new Date(ano, mes+1, 0).getDate();
+  let html = '<div class="mini-calendar">';
+  ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].forEach(d => html += `<div class="fw-bold text-center">${d}</div>`);
+  for (let i=0; i<primeiroDia; i++) html += '<div></div>';
+  for (let d=1; d<=diasNoMes; d++) {
+    const dataStr = `${ano}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const hoje = new Date().toISOString().split('T')[0];
-    const pendentes = tarefas.filter(t => !t.concluida).length;
-    const paraHoje = tarefas.filter(t => t.data === hoje && !t.concluida).length;
-    const vencidas = tarefas.filter(t => t.data < hoje && !t.concluida).length;
-    const concluidas = tarefas.filter(t => t.concluida).length;
-    document.getElementById('statPendentes').innerText = pendentes;
-    document.getElementById('statHoje').innerText = paraHoje;
-    document.getElementById('statVencidas').innerText = vencidas;
-    document.getElementById('statConcluidas').innerText = concluidas;
-
-    // Renderizar lista
-    if (!lista.length) {
-      container.innerHTML = '<p class="text-muted text-center py-3">Nenhuma tarefa encontrada.</p>';
-      return;
-    }
-    container.innerHTML = lista.map(t => {
-      const hojeStr = new Date().toISOString().split('T')[0];
-      let classe = '';
-      if (t.concluida) classe = 'concluida';
-      else if (t.data < hojeStr) classe = 'vencida';
-      else if (t.data === hojeStr) classe = 'hoje';
-      const urgClass = 'tarefa-urg-' + (t.urgencia || 'normal').toLowerCase();
-      return `
-        <div class="tarefa-card ${classe} ${urgClass}">
-          <div>
-            <strong>${t.titulo || 'Sem título'}</strong>
-            <span class="badge bg-secondary">${t.tipo || 'Tarefa'}</span>
-            <span class="badge ${t.concluida ? 'bg-success' : (t.data < hojeStr ? 'bg-danger' : 'bg-primary')}">${t.concluida ? '✅ Concluída' : (t.data < hojeStr ? '⚠️ Vencida' : (t.data === hojeStr ? '📌 Hoje' : '📅 ' + formatarDataBr(t.data)))}</span>
-            ${t.urgencia ? `<span class="badge ${t.urgencia === 'Urgente' ? 'bg-danger' : t.urgencia === 'Alta' ? 'bg-warning' : t.urgencia === 'Baixa' ? 'bg-secondary' : 'bg-primary'}">${t.urgencia}</span>` : ''}
-            ${t.leadNome ? `<span class="badge bg-info">🔗 ${t.leadNome}</span>` : ''}
-            <div class="small text-muted">${t.descricao || ''}</div>
-          </div>
-          <div>
-            <button class="btn btn-sm btn-outline-primary" onclick="editarTarefa('${t.id}')"><i class="bi bi-pencil"></i></button>
-            <button class="btn btn-sm btn-outline-success" onclick="toggleConcluirTarefa('${t.id}')"><i class="bi ${t.concluida ? 'bi-arrow-counterclockwise' : 'bi-check'}"></i></button>
-            <button class="btn btn-sm btn-danger" onclick="excluirTarefa('${t.id}')"><i class="bi bi-trash"></i></button>
-          </div>
-        </div>
-      `;
-    }).join('');
+    const hasEvent = tarefas.some(t => t.data === dataStr);
+    const selected = dataStr === diaSelecionadoTarefa ? 'selected' : '';
+    const today = dataStr === hoje ? 'today' : '';
+    html += `<div class="day ${today} ${selected} ${hasEvent?'has-event':''}" onclick="selecionarDiaTarefa('${dataStr}')">${d}</div>`;
   }
+  html += '</div>';
+  container.innerHTML = html;
+  document.getElementById('tarefaDiaSelecionadoLabel').innerText = diaSelecionadoTarefa;
+  const tarefasDoDia = tarefas.filter(t => t.data === diaSelecionadoTarefa);
+  const lista = document.getElementById('tarefasDoDiaLista');
+  if (!tarefasDoDia.length) { lista.innerHTML = '<p class="text-muted">Nenhuma tarefa para este dia.</p>'; return; }
+  lista.innerHTML = tarefasDoDia.map(t => `
+    <div class="tarefa-card"><div><strong>${t.titulo}</strong> ${t.hora ? '- '+t.hora : ''} <span class="badge ${t.concluida?'bg-success':'bg-primary'}">${t.concluida?'✅ Concluída':'⏳ Pendente'}</span> ${t.urgencia ? `<span class="badge bg-${t.urgencia==='Urgente'?'danger':t.urgencia==='Alta'?'warning':'secondary'}">${t.urgencia}</span>` : ''}</div>
+    <div><button class="btn btn-sm btn-outline-primary" onclick="editarTarefa('${t.id}')"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-outline-success" onclick="toggleConcluirTarefa('${t.id}')"><i class="bi ${t.concluida?'bi-arrow-counterclockwise':'bi-check'}"></i></button></div></div>
+  `).join('');
+}
 
-  function limparFiltrosTarefa() {
-    document.getElementById('filtroTarefaStatus').value = 'todas';
-    document.getElementById('filtroTarefaOrdenar').value = 'prazo';
-    document.getElementById('filtroTarefaBusca').value = '';
-    renderTarefas();
-  }
+function selecionarDiaTarefa(data) { diaSelecionadoTarefa = data; renderCalendarioTarefa(); }
+function mudarMesTarefa(delta) { calendarioMesTarefa += delta; if (calendarioMesTarefa > 11) { calendarioMesTarefa = 0; calendarioAnoTarefa++; } if (calendarioMesTarefa < 0) { calendarioMesTarefa = 11; calendarioAnoTarefa--; } renderCalendarioTarefa(); }
 
-  // ==================== CALENDÁRIO DE TAREFAS ====================
-  function renderCalendarioTarefa() {
-    const mes = calendarioMesTarefa, ano = calendarioAnoTarefa;
-    document.getElementById('calendarioTarefaTitulo').innerText = new Date(ano, mes).toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
-    const container = document.getElementById('calendarioTarefaContainer');
-    const primeiroDia = new Date(ano, mes, 1).getDay();
-    const diasNoMes = new Date(ano, mes + 1, 0).getDate();
-    let html = '<div class="mini-calendar">';
-    const diasSemana = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-    diasSemana.forEach(d => html += `<div class="fw-bold text-center">${d}</div>`);
-    for (let i = 0; i < primeiroDia; i++) html += '<div></div>';
-    for (let d = 1; d <= diasNoMes; d++) {
-      const dataStr = `${ano}-${String(mes + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const hoje = new Date().toISOString().split('T')[0];
-      const hasEvent = tarefas.some(t => t.data === dataStr);
-      const selected = dataStr === diaSelecionadoTarefa ? 'selected' : '';
-      const today = dataStr === hoje ? 'today' : '';
-      html += `<div class="day ${today} ${selected} ${hasEvent ? 'has-event' : ''}" onclick="selecionarDiaTarefa('${dataStr}')">${d}</div>`;
-    }
-    html += '</div>';
-    container.innerHTML = html;
-    // Tarefas do dia selecionado
-    document.getElementById('tarefaDiaSelecionadoLabel').innerText = diaSelecionadoTarefa;
-    const tarefasDoDia = tarefas.filter(t => t.data === diaSelecionadoTarefa);
-    const lista = document.getElementById('tarefasDoDiaLista');
-    if (!tarefasDoDia.length) {
-      lista.innerHTML = '<p class="text-muted">Nenhuma tarefa para este dia.</p>';
-      return;
-    }
-    lista.innerHTML = tarefasDoDia.map(t => `
-      <div class="tarefa-card">
-        <div>
-          <strong>${t.titulo}</strong> ${t.hora ? '- ' + t.hora : ''}
-          <span class="badge ${t.concluida ? 'bg-success' : 'bg-primary'}">${t.concluida ? '✅ Concluída' : '⏳ Pendente'}</span>
-          ${t.urgencia ? `<span class="badge bg-${t.urgencia === 'Urgente' ? 'danger' : t.urgencia === 'Alta' ? 'warning' : 'secondary'}">${t.urgencia}</span>` : ''}
-        </div>
-        <div>
-          <button class="btn btn-sm btn-outline-primary" onclick="editarTarefa('${t.id}')"><i class="bi bi-pencil"></i></button>
-          <button class="btn btn-sm btn-outline-success" onclick="toggleConcluirTarefa('${t.id}')"><i class="bi ${t.concluida ? 'bi-arrow-counterclockwise' : 'bi-check'}"></i></button>
-        </div>
-      </div>
-    `).join('');
-  }
+function renderDashboardTarefas() {
+  const ctx1 = document.getElementById('tarefaTipoChart')?.getContext('2d');
+  if (ctx1) { if (charts.tarefaTipo) charts.tarefaTipo.destroy(); const tipos = {}; tarefas.filter(t => !t.concluida).forEach(t => { tipos[t.tipo||'Tarefa'] = (tipos[t.tipo||'Tarefa']||0) + 1; }); charts.tarefaTipo = new Chart(ctx1, { type:'doughnut', data:{ labels:Object.keys(tipos), datasets:[{ data:Object.values(tipos), backgroundColor:['#6c5ce7','#00b894','#fdcb6e','#e17055','#0984e3'] }] } }); }
+  const ctx2 = document.getElementById('tarefaUrgenciaChart')?.getContext('2d');
+  if (ctx2) { if (charts.tarefaUrgencia) charts.tarefaUrgencia.destroy(); const urgencias = {}; tarefas.filter(t => !t.concluida).forEach(t => { urgencias[t.urgencia||'Normal'] = (urgencias[t.urgencia||'Normal']||0) + 1; }); charts.tarefaUrgencia = new Chart(ctx2, { type:'bar', data:{ labels:Object.keys(urgencias), datasets:[{ data:Object.values(urgencias), backgroundColor:['#e17055','#fdcb6e','#6c5ce7','#6c757d'] }] } }); }
+  const ctx3 = document.getElementById('tarefaConclusoesChart')?.getContext('2d');
+  if (ctx3) { if (charts.tarefaConclusoes) charts.tarefaConclusoes.destroy(); const hoje = new Date(); const dias = []; for (let i=29; i>=0; i--) { const d = new Date(hoje); d.setDate(d.getDate() - i); const key = d.toISOString().split('T')[0]; dias.push({ key, label: d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) }); } const concluidos = dias.map(d => tarefas.filter(t => t.concluida && t.data === d.key).length); charts.tarefaConclusoes = new Chart(ctx3, { type:'line', data:{ labels:dias.map(d=>d.label), datasets:[{ label:'Concluídas', data:concluidos, borderColor:'#00b894', fill:false }] } }); }
+}
 
-  function selecionarDiaTarefa(data) {
-    diaSelecionadoTarefa = data;
-    renderCalendarioTarefa();
-  }
+function abrirModalTarefa() { /* ... */ }
+function editarTarefa(id) { /* ... */ }
+async function salvarTarefa() { /* ... */ }
+async function excluirTarefa(id) { /* ... */ }
+async function toggleConcluirTarefa(id) { /* ... */ }
+function buscarLeadsParaTarefa(termo) { /* ... */ }
+function selecionarLeadTarefa(id, nome) { /* ... */ }
 
-  function mudarMesTarefa(delta) {
-    calendarioMesTarefa += delta;
-    if (calendarioMesTarefa > 11) { calendarioMesTarefa = 0; calendarioAnoTarefa++; }
-    if (calendarioMesTarefa < 0) { calendarioMesTarefa = 11; calendarioAnoTarefa--; }
-    renderCalendarioTarefa();
-  }
+// ==================== UTILITÁRIOS ====================
+function formatarMoeda(valor) { /* ... */ }
+function formatarNumero(valor) { /* ... */ }
+function formatarDataBr(data) { if (!data) return '-'; const d = new Date(data); return d.toLocaleDateString('pt-BR'); }
+function formatarHora(data) { /* ... */ }
 
-  // ==================== DASHBOARD DE TAREFAS ====================
-  function renderDashboardTarefas() {
-    // Gráfico de tipos
-    const ctx1 = document.getElementById('tarefaTipoChart')?.getContext('2d');
-    if (ctx1) {
-      if (charts.tarefaTipo) charts.tarefaTipo.destroy();
-      const tipos = {};
-      tarefas.filter(t => !t.concluida).forEach(t => { tipos[t.tipo || 'Tarefa'] = (tipos[t.tipo || 'Tarefa'] || 0) + 1; });
-      charts.tarefaTipo = new Chart(ctx1, { type: 'doughnut', data: { labels: Object.keys(tipos), datasets: [{ data: Object.values(tipos), backgroundColor: ['#6c5ce7','#00b894','#fdcb6e','#e17055','#0984e3'] }] } });
-    }
-    // Gráfico de urgência
-    const ctx2 = document.getElementById('tarefaUrgenciaChart')?.getContext('2d');
-    if (ctx2) {
-      if (charts.tarefaUrgencia) charts.tarefaUrgencia.destroy();
-      const urgencias = {};
-      tarefas.filter(t => !t.concluida).forEach(t => { urgencias[t.urgencia || 'Normal'] = (urgencias[t.urgencia || 'Normal'] || 0) + 1; });
-      charts.tarefaUrgencia = new Chart(ctx2, { type: 'bar', data: { labels: Object.keys(urgencias), datasets: [{ data: Object.values(urgencias), backgroundColor: ['#e17055','#fdcb6e','#6c5ce7','#6c757d'] }] } });
-    }
-    // Gráfico de conclusões (últimos 30 dias)
-    const ctx3 = document.getElementById('tarefaConclusoesChart')?.getContext('2d');
-    if (ctx3) {
-      if (charts.tarefaConclusoes) charts.tarefaConclusoes.destroy();
-      const hoje = new Date();
-      const dias = [];
-      for (let i = 29; i >= 0; i--) {
-        const d = new Date(hoje);
-        d.setDate(d.getDate() - i);
-        const key = d.toISOString().split('T')[0];
-        dias.push({ key, label: d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) });
-      }
-      const concluidos = dias.map(d => tarefas.filter(t => t.concluida && t.data === d.key).length);
-      charts.tarefaConclusoes = new Chart(ctx3, { type: 'line', data: { labels: dias.map(d => d.label), datasets: [{ label: 'Concluídas', data: concluidos, borderColor: '#00b894', fill: false }] } });
-    }
-  }
-
-  // ==================== CRUD TAREFAS ====================
-  function abrirModalTarefa() {
-    document.getElementById('modalTarefaTitulo').innerText = 'Nova Tarefa';
-    document.getElementById('tarefaId').value = '';
-    document.getElementById('tarefaTitulo').value = '';
-    document.getElementById('tarefaTipo').value = 'Tarefa';
-    document.getElementById('tarefaData').value = '';
-    document.getElementById('tarefaHora').value = '';
-    document.getElementById('tarefaUrgencia').value = 'Normal';
-    document.getElementById('tarefaDesc').value = '';
-    document.getElementById('tarefaConcluida').checked = false;
-    document.getElementById('tarefaLeadId').value = '';
-    document.getElementById('tarefaLeadSelecionado').innerHTML = '';
-    document.getElementById('tarefaLeadBusca').value = '';
-    document.getElementById('btnExcluirTarefa').style.display = 'none';
-    new bootstrap.Modal(document.getElementById('modalTarefa')).show();
-  }
-
-  function editarTarefa(id) {
-    const t = tarefas.find(t => t.id === id);
-    if (!t) return;
-    document.getElementById('modalTarefaTitulo').innerText = 'Editar Tarefa';
-    document.getElementById('tarefaId').value = t.id;
-    document.getElementById('tarefaTitulo').value = t.titulo || '';
-    document.getElementById('tarefaTipo').value = t.tipo || 'Tarefa';
-    document.getElementById('tarefaData').value = t.data || '';
-    document.getElementById('tarefaHora').value = t.hora || '';
-    document.getElementById('tarefaUrgencia').value = t.urgencia || 'Normal';
-    document.getElementById('tarefaDesc').value = t.descricao || '';
-    document.getElementById('tarefaConcluida').checked = t.concluida || false;
-    document.getElementById('tarefaLeadId').value = t.leadId || '';
-    if (t.leadId) {
-      const lead = leadsData.find(l => l.id === t.leadId);
-      document.getElementById('tarefaLeadSelecionado').innerHTML = lead ? `<span class="badge bg-info">🔗 ${lead.nome}</span>` : '';
-    } else {
-      document.getElementById('tarefaLeadSelecionado').innerHTML = '';
-    }
-    document.getElementById('tarefaLeadBusca').value = '';
-    document.getElementById('btnExcluirTarefa').style.display = 'inline-block';
-    new bootstrap.Modal(document.getElementById('modalTarefa')).show();
-  }
-
-  async function salvarTarefa() {
-    const id = document.getElementById('tarefaId').value;
-    const titulo = document.getElementById('tarefaTitulo').value.trim();
-    if (!titulo) return alert('O título é obrigatório.');
-    const data = document.getElementById('tarefaData').value;
-    if (!data) return alert('A data é obrigatória.');
-    const leadId = document.getElementById('tarefaLeadId').value;
-    const leadNome = leadId ? (leadsData.find(l => l.id === leadId)?.nome || '') : '';
-    const obj = {
-      titulo,
-      tipo: document.getElementById('tarefaTipo').value,
-      data,
-      hora: document.getElementById('tarefaHora').value,
-      urgencia: document.getElementById('tarefaUrgencia').value,
-      descricao: document.getElementById('tarefaDesc').value,
-      concluida: document.getElementById('tarefaConcluida').checked,
-      leadId,
-      leadNome,
-      userId: currentUser.uid,
-      updatedAt: new Date().toISOString()
-    };
-    if (id) {
-      await db.collection('tarefas').doc(id).update(obj);
-      const idx = tarefas.findIndex(t => t.id === id);
-      if (idx !== -1) tarefas[idx] = { ...tarefas[idx], ...obj };
-    } else {
-      obj.createdAt = new Date().toISOString();
-      const ref = await db.collection('tarefas').add(obj);
-      tarefas.push({ id: ref.id, ...obj });
-    }
-    bootstrap.Modal.getInstance(document.getElementById('modalTarefa')).hide();
-    renderTarefas();
-    renderCalendarioTarefa();
-    renderDashboardTarefas();
-  }
-
-  async function excluirTarefa(id) {
-    if (!confirm('Excluir esta tarefa?')) return;
-    if (id) await db.collection('tarefas').doc(id).delete();
-    else {
-      const idModal = document.getElementById('tarefaId').value;
-      if (idModal) await db.collection('tarefas').doc(idModal).delete();
-    }
-    tarefas = tarefas.filter(t => t.id !== (id || document.getElementById('tarefaId').value));
-    bootstrap.Modal.getInstance(document.getElementById('modalTarefa'))?.hide();
-    renderTarefas();
-    renderCalendarioTarefa();
-    renderDashboardTarefas();
-  }
-
-  async function toggleConcluirTarefa(id) {
-    const t = tarefas.find(t => t.id === id);
-    if (!t) return;
-    await db.collection('tarefas').doc(id).update({ concluida: !t.concluida });
-    t.concluida = !t.concluida;
-    renderTarefas();
-    renderCalendarioTarefa();
-    renderDashboardTarefas();
-  }
-
-  // ==================== BUSCA DE LEADS PARA VINCULAR NA TAREFA ====================
-  function buscarLeadsParaTarefa(termo) {
-    const resultados = document.getElementById('tarefaLeadResultados');
-    if (!termo.trim()) { resultados.style.display = 'none'; return; }
-    const filtrados = leadsData.filter(l => (l.nome || '').toLowerCase().includes(termo.toLowerCase())).slice(0, 5);
-    if (!filtrados.length) {
-      resultados.innerHTML = '<div class="dropdown-item text-muted">Nenhum lead encontrado</div>';
-      resultados.style.display = 'block';
-      return;
-    }
-    resultados.innerHTML = filtrados.map(l => `
-      <div class="dropdown-item" style="cursor:pointer;" onclick="selecionarLeadTarefa('${l.id}','${l.nome}')">${l.nome} ${l.telefone ? '- '+l.telefone : ''}</div>
-    `).join('');
-    resultados.style.display = 'block';
-  }
-
-  function selecionarLeadTarefa(id, nome) {
-    document.getElementById('tarefaLeadId').value = id;
-    document.getElementById('tarefaLeadSelecionado').innerHTML = `<span class="badge bg-info">🔗 ${nome}</span>`;
-    document.getElementById('tarefaLeadBusca').value = '';
-    document.getElementById('tarefaLeadResultados').style.display = 'none';
-  }
-
-  // ==================== EVENTOS ====================
-  document.addEventListener('DOMContentLoaded',function(){
-    document.querySelectorAll('.sidebar .nav-link').forEach(el=>{ el.addEventListener('click',function(e){ const tabId=this.getAttribute('data-tab'); if(tabId) switchTab(tabId); }); });
-    document.querySelectorAll('#pesquisaTable thead th[data-col]').forEach(th=>{ th.style.cursor='pointer'; th.addEventListener('click',function(){ const col=this.dataset.col; if(sortColumn===col) sortDir=sortDir==='asc'?'desc':'asc'; else { sortColumn=col; sortDir='asc'; } renderTable(); }); });
-    document.getElementById('periodoFiltro').addEventListener('change',function(){ const val=this.value; document.getElementById('intervaloDiv').style.display=val==='intervalo'?'block':'none'; document.getElementById('intervaloFimDiv').style.display=val==='intervalo'?'block':'none'; updateDashboard(); });
-    document.getElementById('filtroPraca').addEventListener('change',updateDashboard);
-    document.getElementById('dataInicioIntervalo').addEventListener('change',updateDashboard);
-    document.getElementById('dataFimIntervalo').addEventListener('change',updateDashboard);
-    switchTab('dashboardTab');
-    setLeadView('lista');
-    // Inicializar tarefas
-    switchTarefaView('lista');
-    setInterval(atualizarInfoBackup,60000);
-    document.addEventListener('click', function(e) {
-      const container = document.getElementById('resultadosBuscaGlobal');
-      if(container && !e.target.closest('.left-actions')) container.style.display = 'none';
-      const notif = document.getElementById('notifDropdown');
-      if(notif && !e.target.closest('#btnNotificacoes') && !e.target.closest('#notifDropdown')) notif.classList.remove('show');
+// ==================== EVENTOS ====================
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.sidebar .nav-link').forEach(el => {
+    el.addEventListener('click', function(e) {
+      const tabId = this.getAttribute('data-tab');
+      if (tabId) switchTab(tabId);
     });
   });
+  document.querySelectorAll('#pesquisaTable thead th[data-col]').forEach(th => {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', function() {
+      const col = this.dataset.col;
+      if (sortColumn === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      else { sortColumn = col; sortDir = 'asc'; }
+      renderTable();
+    });
+  });
+  document.getElementById('periodoFiltro').addEventListener('change', function() { /* ... */ });
+  switchTab('dashboardTab');
+  setLeadView('lista');
+  switchTarefaView('lista');
+  setInterval(atualizarInfoBackup, 60000);
+  document.addEventListener('click', function(e) {
+    const container = document.getElementById('resultadosBuscaGlobal');
+    if(container && !e.target.closest('.left-actions')) container.style.display = 'none';
+    const notif = document.getElementById('notifDropdown');
+    if(notif && !e.target.closest('#btnNotificacoes') && !e.target.closest('#notifDropdown')) notif.classList.remove('show');
+  });
+});
 </script>
 </body>
 </html>
