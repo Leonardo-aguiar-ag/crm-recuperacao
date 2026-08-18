@@ -1301,37 +1301,131 @@ function atualizarGraficos(dados) {
   if(ctx3) charts.pfPj=new Chart(ctx3,{type:'pie',data:{labels:['PF','PJ'],datasets:[{data:[pf,pj],backgroundColor:['#6c5ce7','#fdcb6e']}]}});
 }
 
-// ==================== RENDER TABELA ====================
+// ==================== RENDER TABELA (COMPLETA COM FILTROS) ====================
 function renderTable() {
-  // Implementação resumida - pode ser expandida
+  const search = document.getElementById('search')?.value.toLowerCase() || '';
+  const status = document.getElementById('filterStatus')?.value || 'ALL';
+  const modalidade = document.getElementById('filterModalidade')?.value || 'ALL';
+  const praca = document.getElementById('filterPraca')?.value || 'ALL';
+  const admin = document.getElementById('filterAdministradora')?.value || 'ALL';
+  const tipo = document.getElementById('filterTipo')?.value || 'ALL';
+  const valorMin = parseFloat(document.getElementById('filterValorMin')?.value?.replace(',','.') || 0);
+  const valorMax = parseFloat(document.getElementById('filterValorMax')?.value?.replace(',','.') || Infinity);
+  const dataIni = document.getElementById('filterDataIni')?.value || '';
+  const dataFim = document.getElementById('filterDataFim')?.value || '';
+  const mes = document.getElementById('filterMes')?.value || '';
+  const fonte = document.getElementById('filterFonte')?.value || 'ALL';
+  const ultimoContatoDias = parseInt(document.getElementById('filterUltimoContatoDias')?.value) || 0;
+
   const tbody = document.getElementById('tableBody');
   if (!tbody) return;
-  if (!clients.length) {
-    tbody.innerHTML = '<tr><td colspan="12" class="text-center text-muted">Nenhum cliente cadastrado.</td></tr>';
+
+  let filtered = clients.filter(c => {
+    // Busca geral
+    const matchSearch = 
+      (c.nomeTitular || '').toLowerCase().includes(search) ||
+      (c.numeroProposta || '').toLowerCase().includes(search) ||
+      (c.cpfTitular || '').includes(search) ||
+      (c.telefoneTitular || '').includes(search) ||
+      (c.codigo || '').toLowerCase().includes(search);
+
+    // Filtros exatos
+    const matchStatus = status === 'ALL' || c.status === status;
+    const matchModalidade = modalidade === 'ALL' || c.modalidadePlano === modalidade;
+    const matchPraca = praca === 'ALL' || c.praca === praca;
+    const matchAdmin = admin === 'ALL' || c.administradora === admin;
+    const matchTipo = tipo === 'ALL' || c.tipoCliente === tipo;
+    const matchFonte = fonte === 'ALL' || c.fonteVenda === fonte;
+
+    // Valor
+    const valor = parseFloat(String(c.valorComDesconto).replace(/\./g,'').replace(',','.')) || 0;
+    const matchValor = valor >= valorMin && valor <= valorMax;
+
+    // Datas
+    let matchData = true;
+    if (dataIni && c.data) matchData = matchData && c.data >= dataIni;
+    if (dataFim && c.data) matchData = matchData && c.data <= dataFim;
+    if (mes && c.data) matchData = matchData && c.data.startsWith(mes);
+
+    // Último contato
+    let matchContato = true;
+    if (ultimoContatoDias > 0) {
+      const interacoes = c.interacoes || [];
+      let ultimaData = null;
+      interacoes.forEach(i => {
+        if (i.data) {
+          const dt = new Date(i.data);
+          if (!ultimaData || dt > ultimaData) ultimaData = dt;
+        }
+      });
+      if (ultimaData) {
+        const diff = Math.floor((new Date() - ultimaData) / (1000 * 60 * 60 * 24));
+        matchContato = diff >= ultimoContatoDias;
+      } else {
+        // Se nunca contatou, consideramos como "há mais de X dias" (true)
+        matchContato = true;
+      }
+    }
+
+    return matchSearch && matchStatus && matchModalidade && matchPraca && matchAdmin &&
+           matchTipo && matchValor && matchData && matchFonte && matchContato;
+  });
+
+  // Ordenação
+  filtered.sort((a,b) => {
+    let va = a[sortColumn] || '';
+    let vb = b[sortColumn] || '';
+    if (sortColumn === 'valorComDesconto') {
+      va = parseFloat(String(va).replace(/\./g,'').replace(',','.')) || 0;
+      vb = parseFloat(String(vb).replace(/\./g,'').replace(',','.')) || 0;
+    } else if (sortColumn === 'qtdVidas') {
+      va = parseInt(va) || 0;
+      vb = parseInt(vb) || 0;
+    } else {
+      va = va.toString().toLowerCase();
+      vb = vb.toString().toLowerCase();
+    }
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="12" class="text-center text-muted py-3">Nenhum cliente encontrado com os filtros atuais.</td></tr>`;
     return;
   }
-  // Filtro básico
-  const search = document.getElementById('search')?.value.toLowerCase() || '';
-  let filtered = clients.filter(c => (c.nomeTitular||'').toLowerCase().includes(search) || (c.numeroProposta||'').includes(search));
-  tbody.innerHTML = filtered.slice(0, 20).map(c => `
-    <tr>
-      <td><input type="checkbox" class="row-checkbox" data-id="${c.id}" onchange="toggleRow('${c.id}')" /></td>
-      <td>${c.numeroProposta||'-'}</td>
-      <td>${c.nomeTitular||'-'}</td>
-      <td>${c.cpfTitular||'-'}</td>
-      <td>${c.modalidadePlano||'-'}</td>
-      <td>${c.status||'-'}</td>
-      <td>${c.valorComDesconto ? formatarMoeda(parseFloat(String(c.valorComDesconto).replace(/\./g,'').replace(',','.'))) : '-'}</td>
-      <td>${c.qtdVidas||'0'}</td>
-      <td>${c.praca||'-'}</td>
-      <td>${c.administradora||'-'}</td>
-      <td>${c.codigo||'-'}</td>
-      <td>
-        <button class="btn btn-sm btn-outline-primary" onclick="editarCliente('${c.id}')"><i class="bi bi-pencil"></i></button>
-        <button class="btn btn-sm btn-danger" onclick="excluirCliente('${c.id}')"><i class="bi bi-trash"></i></button>
-      </td>
-    </tr>
-  `).join('');
+
+  tbody.innerHTML = filtered.map(c => {
+    const checked = selectedIds.has(c.id) ? 'checked' : '';
+    return `
+      <tr>
+        <td><input type="checkbox" class="row-checkbox" data-id="${c.id}" ${checked} onchange="toggleRow('${c.id}')"></td>
+        <td>${c.numeroProposta || '-'}</td>
+        <td>${c.nomeTitular || '-'}</td>
+        <td>${c.cpfTitular || '-'}</td>
+        <td>${c.modalidadePlano || '-'}</td>
+        <td>${c.status || '-'}</td>
+        <td>${c.valorComDesconto ? formatarMoeda(parseFloat(String(c.valorComDesconto).replace(/\./g,'').replace(',','.'))) : '-'}</td>
+        <td>${c.qtdVidas || '0'}</td>
+        <td>${c.praca || '-'}</td>
+        <td>${c.administradora || '-'}</td>
+        <td>${c.codigo || '-'}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-primary" onclick="editarCliente('${c.id}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-danger" onclick="excluirCliente('${c.id}')"><i class="bi bi-trash"></i></button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  updateLoteButton();
+}
+
+function updateLoteButton() {
+  const count = selectedIds.size;
+  document.getElementById('selecionadosCount').innerText = count ? `${count} selecionado(s)` : '';
+  const btn = document.getElementById('btnAcaoLote');
+  if (btn) btn.disabled = count === 0;
 }
 
 // ==================== CRUD CLIENTES (placeholders) ====================
@@ -1415,10 +1509,22 @@ async function addFonteVenda() { /* ... */ }
 async function deleteFonteVenda(id) { /* ... */ }
 
 // ==================== AÇÕES EM LOTE ====================
-function updateLoteButton() { /* ... */ }
-function toggleRow(id) { /* ... */ }
-function toggleSelectAll() { /* ... */ }
-function abrirModalLote() { /* ... */ }
+function toggleRow(id) {
+  if (selectedIds.has(id)) selectedIds.delete(id);
+  else selectedIds.add(id);
+  updateLoteButton();
+}
+function toggleSelectAll() {
+  const checked = document.getElementById('selectAll').checked;
+  document.querySelectorAll('.row-checkbox').forEach(cb => {
+    cb.checked = checked;
+    const id = cb.dataset.id;
+    if (checked) selectedIds.add(id);
+    else selectedIds.delete(id);
+  });
+  updateLoteButton();
+}
+function abrirModalLote() { new bootstrap.Modal(document.getElementById('modalLote')).show(); }
 function handleAcaoLoteChange() { /* ... */ }
 async function executarAcaoLote() { /* ... */ }
 
@@ -1811,7 +1917,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Ordenação da tabela - com verificação
+  // Ordenação da tabela
   const tableHeaders = document.querySelectorAll('#pesquisaTable thead th[data-col]');
   tableHeaders.forEach(th => {
     th.style.cursor = 'pointer';
@@ -1823,7 +1929,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Período - com verificação
+  // Período
   const periodoFiltro = document.getElementById('periodoFiltro');
   if (periodoFiltro) {
     periodoFiltro.addEventListener('change', function() {
@@ -1842,7 +1948,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const dataFim = document.getElementById('dataFimIntervalo');
   if (dataFim) dataFim.addEventListener('change', updateDashboard);
 
-  // Tarefas - eventos com verificação
+  // Tarefas - eventos
   const btnNova = document.getElementById('btnNovaTarefa');
   if (btnNova) btnNova.addEventListener('click', abrirModalTarefa);
 
@@ -1869,11 +1975,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const btnMesProx = document.getElementById('btnCalMesProx');
   if (btnMesProx) btnMesProx.addEventListener('click', () => mudarMesTarefa(1));
 
-  // Modal tarefa - salvar
   const btnSalvar = document.getElementById('btnSalvarTarefa');
   if (btnSalvar) btnSalvar.addEventListener('click', salvarTarefa);
 
-  // Modal tarefa - excluir
   const btnExcluir = document.getElementById('btnExcluirTarefa');
   if (btnExcluir) {
     btnExcluir.addEventListener('click', function() {
@@ -1882,7 +1986,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Busca de leads no modal
   const leadBusca = document.getElementById('tarefaLeadBusca');
   if (leadBusca) {
     leadBusca.addEventListener('input', function() {
@@ -1890,7 +1993,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Fechar resultados de busca de leads ao clicar fora
   document.addEventListener('click', function(e) {
     const container = document.getElementById('tarefaLeadResultados');
     if (container && !e.target.closest('#tarefaLeadBusca') && !e.target.closest('#tarefaLeadResultados')) {
@@ -1904,7 +2006,6 @@ document.addEventListener('DOMContentLoaded', function() {
   switchTarefaView('lista');
   setInterval(atualizarInfoBackup, 60000);
 
-  // Fechar dropdowns
   document.addEventListener('click', function(e) {
     const container = document.getElementById('resultadosBuscaGlobal');
     if (container && !e.target.closest('.left-actions')) container.style.display = 'none';
@@ -1913,7 +2014,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// ==================== FUNÇÕES AUXILIARES ====================
 function atualizarInfoBackup() { /* placeholder */ }
 </script>
 </body>
