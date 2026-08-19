@@ -15,7 +15,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    /* ===== CSS COMPLETO (resumido para não exceder, mas igual ao anterior) ===== */
+    /* ===== CSS COMPLETO ===== */
     :root {
       --bg: #f4f6fc;
       --card: #ffffff;
@@ -46,29 +46,136 @@
       --sidebar-collapsed: 60px;
       --font-size-base: 0.9rem;
     }
-    body.dark-mode { --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #e6edf3; --text-secondary: #8b949e; --primary-light: #1c1a3a; --shadow: 0 12px 40px rgba(0,0,0,0.6); --shadow-hover: 0 20px 50px rgba(0,0,0,0.8); }
+    body.dark-mode {
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-secondary: #8b949e;
+      --primary-light: #1c1a3a;
+      --shadow: 0 12px 40px rgba(0,0,0,0.6);
+      --shadow-hover: 0 20px 50px rgba(0,0,0,0.8);
+    }
     body.fonte-menor { --font-size-base: 0.75rem; }
     body.fonte-padrao { --font-size-base: 0.9rem; }
     body.fonte-maior { --font-size-base: 1.05rem; }
     body.fonte-extra { --font-size-base: 1.2rem; }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text); font-size:var(--font-size-base); line-height:1.6; transition:background var(--transition),color var(--transition),font-size 0.3s ease; min-height:100vh; }
-    .sidebar { position:fixed; top:0; left:0; width:var(--sidebar-width); height:100vh; background:var(--card); border-right:2px solid var(--border); padding:1rem 0; z-index:1050; transition:width 0.3s ease,transform 0.3s ease; overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow); }
+    body {
+      font-family:'Inter',-apple-system,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      font-size:var(--font-size-base);
+      line-height:1.6;
+      transition:background var(--transition),color var(--transition),font-size 0.3s ease;
+      min-height:100vh;
+    }
+    .sidebar {
+      position:fixed;
+      top:0;
+      left:0;
+      width:var(--sidebar-width);
+      height:100vh;
+      background:var(--card);
+      border-right:2px solid var(--border);
+      padding:1rem 0;
+      z-index:1050;
+      transition:width 0.3s ease,transform 0.3s ease;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      box-shadow:var(--shadow);
+    }
     .sidebar.collapsed { width:var(--sidebar-collapsed); }
-    .sidebar .logo { display:flex; align-items:center; justify-content:center; gap:10px; padding:0.8rem 1rem; border-bottom:2px solid var(--border); margin-bottom:1rem; min-height:70px; }
-    .sidebar .logo i { font-size:2rem; color:var(--primary); background:var(--primary-light); padding:6px; border-radius:var(--radius-sm); }
-    .sidebar .logo span { font-weight:900; font-size:1.2rem; background:linear-gradient(135deg,var(--primary),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; white-space:nowrap; transition:opacity 0.2s; }
+    .sidebar .logo {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:0.8rem 1rem;
+      border-bottom:2px solid var(--border);
+      margin-bottom:1rem;
+      min-height:70px;
+    }
+    .sidebar .logo i {
+      font-size:2rem;
+      color:var(--primary);
+      background:var(--primary-light);
+      padding:6px;
+      border-radius:var(--radius-sm);
+    }
+    .sidebar .logo span {
+      font-weight:900;
+      font-size:1.2rem;
+      background:linear-gradient(135deg,var(--primary),var(--purple));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      white-space:nowrap;
+      transition:opacity 0.2s;
+    }
     .sidebar.collapsed .logo span { opacity:0; width:0; overflow:hidden; }
-    .sidebar .nav-items { flex:1; overflow-y:auto; padding:0 0.5rem; }
-    .sidebar .nav-items .nav-link { display:flex; align-items:center; gap:14px; padding:0.7rem 1rem; border-radius:var(--radius-sm); color:var(--text-secondary); text-decoration:none; font-weight:600; font-size:0.85rem; transition:all var(--transition); margin-bottom:4px; cursor:pointer; white-space:nowrap; }
-    .sidebar .nav-items .nav-link:hover { background:var(--primary-light); color:var(--primary); }
-    .sidebar .nav-items .nav-link.active { background:var(--primary); color:white; box-shadow:0 4px 12px rgba(108,92,231,0.3); }
-    .sidebar .nav-items .nav-link i { font-size:1.3rem; min-width:24px; text-align:center; }
+    .sidebar .nav-items {
+      flex:1;
+      overflow-y:auto;
+      padding:0 0.5rem;
+    }
+    .sidebar .nav-items .nav-link {
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:0.7rem 1rem;
+      border-radius:var(--radius-sm);
+      color:var(--text-secondary);
+      text-decoration:none;
+      font-weight:600;
+      font-size:0.85rem;
+      transition:all var(--transition);
+      margin-bottom:4px;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .sidebar .nav-items .nav-link:hover {
+      background:var(--primary-light);
+      color:var(--primary);
+    }
+    .sidebar .nav-items .nav-link.active {
+      background:var(--primary);
+      color:white;
+      box-shadow:0 4px 12px rgba(108,92,231,0.3);
+    }
+    .sidebar .nav-items .nav-link i {
+      font-size:1.3rem;
+      min-width:24px;
+      text-align:center;
+    }
     .sidebar .nav-items .nav-link .link-text { transition:opacity 0.2s; }
     .sidebar.collapsed .nav-items .nav-link .link-text { opacity:0; width:0; overflow:hidden; }
     .sidebar.collapsed .nav-items .nav-link { justify-content:center; padding:0.7rem 0.5rem; }
-    .sidebar .user-profile { padding:0.8rem 1rem; border-top:2px solid var(--border); display:flex; align-items:center; gap:12px; margin-top:auto; }
-    .sidebar .user-profile .avatar { width:40px; height:40px; border-radius:50%; background:var(--primary-light); color:var(--primary); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.2rem; flex-shrink:0; overflow:hidden; cursor:pointer; position:relative; }
+    .sidebar .user-profile {
+      padding:0.8rem 1rem;
+      border-top:2px solid var(--border);
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-top:auto;
+    }
+    .sidebar .user-profile .avatar {
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      background:var(--primary-light);
+      color:var(--primary);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      font-size:1.2rem;
+      flex-shrink:0;
+      overflow:hidden;
+      cursor:pointer;
+      position:relative;
+    }
     .sidebar .user-profile .avatar img { width:100%; height:100%; object-fit:cover; }
     .sidebar .user-profile .avatar .texto { position:absolute; }
     .sidebar .user-profile .info { flex:1; overflow:hidden; min-width:0; }
@@ -78,7 +185,13 @@
     .sidebar.collapsed .user-profile .info { display:none; }
     .sidebar.collapsed .user-profile { justify-content:center; padding:0.5rem; }
     .sidebar.collapsed .user-profile .avatar { width:32px; height:32px; font-size:0.9rem; }
-    .sidebar .sidebar-footer { padding:0.5rem 1rem; border-top:2px solid var(--border); display:flex; flex-direction:column; gap:6px; }
+    .sidebar .sidebar-footer {
+      padding:0.5rem 1rem;
+      border-top:2px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
     .sidebar .sidebar-footer .btn { width:100%; border-radius:60px; padding:0.3rem 0.8rem; font-size:0.7rem; font-weight:700; }
     .sidebar .collapse-toggle { background:transparent; border:none; color:var(--text-secondary); font-size:1.2rem; cursor:pointer; padding:0.3rem; border-radius:var(--radius-sm); transition:all var(--transition); width:100%; text-align:center; }
     .sidebar .collapse-toggle:hover { background:var(--primary-light); color:var(--primary); }
@@ -88,9 +201,26 @@
     .sidebar-size-control input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:12px; height:12px; border-radius:50%; background:var(--primary); cursor:pointer; }
     .sidebar-size-control span { font-size:0.7rem; font-weight:600; color:var(--text-secondary); min-width:36px; text-align:center; }
     .sidebar.collapsed .sidebar-size-control { display:none; }
-    .main-content { margin-left:var(--sidebar-width); transition:margin-left 0.3s ease; padding:0.5rem 1rem 1rem; min-height:100vh; }
+    .main-content {
+      margin-left:var(--sidebar-width);
+      transition:margin-left 0.3s ease;
+      padding:0.5rem 1rem 1rem;
+      min-height:100vh;
+    }
     .main-content.expanded { margin-left:var(--sidebar-collapsed); }
-    .topbar { display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.8rem; background:var(--card); border-bottom:2px solid var(--border); border-radius:0 0 var(--radius) var(--radius); margin-bottom:1.5rem; box-shadow:var(--shadow); flex-wrap:wrap; gap:8px; }
+    .topbar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:0.6rem 0.8rem;
+      background:var(--card);
+      border-bottom:2px solid var(--border);
+      border-radius:0 0 var(--radius) var(--radius);
+      margin-bottom:1.5rem;
+      box-shadow:var(--shadow);
+      flex-wrap:wrap;
+      gap:8px;
+    }
     .topbar .left-actions { display:flex; gap:10px; align-items:center; flex:1; }
     .topbar .nav-actions { display:flex; gap:10px; align-items:center; }
     .topbar .nav-actions .btn { border-radius:60px; padding:0.4rem 1rem; font-weight:600; position:relative; }
@@ -140,8 +270,24 @@
     .mini-calendar .day.selected { background:var(--primary); color:white; }
     .status-item { background:var(--bg); border:2px solid var(--border); border-radius:var(--radius-sm); padding:0.6rem 1rem; margin-bottom:0.6rem; display:flex; justify-content:space-between; align-items:center; transition:all var(--transition); }
     .status-item:hover { background:var(--primary-light); border-color:var(--primary); }
-    .login-screen { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(145deg,#6c5ce7,#a29bfe); z-index:9999; }
-    .login-box { background:var(--card); border-radius:var(--radius); padding:2.8rem; width:100%; max-width:400px; box-shadow:0 40px 80px rgba(0,0,0,0.2); animation:fadeUp 0.6s ease; }
+    .login-screen {
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(145deg,#6c5ce7,#a29bfe);
+      z-index:9999;
+    }
+    .login-box {
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:2.8rem;
+      width:100%;
+      max-width:400px;
+      box-shadow:0 40px 80px rgba(0,0,0,0.2);
+      animation:fadeUp 0.6s ease;
+    }
     @keyframes fadeUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
     .pipeline-container { display:flex; gap:16px; overflow-x:auto; padding:8px 0; min-height:400px; }
     .pipeline-column { min-width:200px; flex:1; background:var(--bg); border-radius:var(--radius-sm); padding:0.8rem; border:2px solid var(--border); }
@@ -152,8 +298,28 @@
     .pipeline-card .p-detail { font-size:0.7rem; color:var(--text-secondary); display:flex; justify-content:space-between; margin-top:4px; }
     .view-toggle .btn { border-radius:60px; padding:0.25rem 1rem; font-size:0.75rem; font-weight:600; }
     .view-toggle .btn.active { background:var(--primary); color:white; }
-    @media (max-width:992px) { .sidebar { transform:translateX(-100%); width:var(--sidebar-width); } .sidebar.mobile-open { transform:translateX(0); } .main-content { margin-left:0 !important; } .sidebar .logo span { opacity:1 !important; width:auto !important; } .sidebar .nav-items .nav-link .link-text { opacity:1 !important; width:auto !important; } .sidebar .nav-items .nav-link { justify-content:flex-start !important; padding:0.7rem 1rem !important; } .sidebar .collapse-toggle { display:none; } .mobile-menu-btn { display:inline-block !important; } .topbar .left-actions { width:100%; order:2; } .topbar .nav-actions { width:100%; justify-content:flex-end; } .busca-global-input { max-width:100%; } }
-    @media (max-width:768px) { .container-fluid { padding:0.5rem; } .dashboard-card h2 { font-size:1.6rem; } .dashboard-card { padding:1rem; } .pipeline-column { min-width:160px; } .table-responsive { font-size:0.7rem; } .table thead th, .table tbody td { padding:0.4rem 0.5rem; } .busca-global-input { max-width:150px; font-size:0.7rem; } }
+    @media (max-width:992px) {
+      .sidebar { transform:translateX(-100%); width:var(--sidebar-width); }
+      .sidebar.mobile-open { transform:translateX(0); }
+      .main-content { margin-left:0 !important; }
+      .sidebar .logo span { opacity:1 !important; width:auto !important; }
+      .sidebar .nav-items .nav-link .link-text { opacity:1 !important; width:auto !important; }
+      .sidebar .nav-items .nav-link { justify-content:flex-start !important; padding:0.7rem 1rem !important; }
+      .sidebar .collapse-toggle { display:none; }
+      .mobile-menu-btn { display:inline-block !important; }
+      .topbar .left-actions { width:100%; order:2; }
+      .topbar .nav-actions { width:100%; justify-content:flex-end; }
+      .busca-global-input { max-width:100%; }
+    }
+    @media (max-width:768px) {
+      .container-fluid { padding:0.5rem; }
+      .dashboard-card h2 { font-size:1.6rem; }
+      .dashboard-card { padding:1rem; }
+      .pipeline-column { min-width:160px; }
+      .table-responsive { font-size:0.7rem; }
+      .table thead th, .table tbody td { padding:0.4rem 0.5rem; }
+      .busca-global-input { max-width:150px; font-size:0.7rem; }
+    }
     ::-webkit-scrollbar { width:6px; height:6px; }
     ::-webkit-scrollbar-track { background:var(--bg); border-radius:10px; }
     ::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
@@ -447,25 +613,29 @@
       </div>
     </div>
 
-    <!-- PESQUISA -->
+    <!-- PESQUISA (COM FILTRO DE CÓDIGO) -->
     <div class="tab-pane fade" id="pesquisaTab">
       <div class="card card-custom">
+        <!-- PRIMEIRA LINHA: Busca Geral + Código + Status + Modalidade -->
         <div class="row g-3 mb-4">
           <div class="col-md-3"><label>🔍 Busca Geral</label><input type="text" id="search" class="form-control" placeholder="Ex: nome, CPF, proposta..." onkeyup="renderTable()" /></div>
+          <div class="col-md-2"><label>🔑 Código</label><input type="text" id="filterCodigo" class="form-control" placeholder="Código do vendedor" oninput="renderTable()" /></div>
           <div class="col-md-2"><label>📌 Status</label><select id="filterStatus" class="form-select" onchange="renderTable()"><option value="ALL">Todos</option></select></div>
           <div class="col-md-2"><label>📋 Modalidade</label><select id="filterModalidade" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
           <div class="col-md-2"><label>📍 Praça</label><select id="filterPraca" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
-          <div class="col-md-2"><label>🏢 Admin.</label><select id="filterAdministradora" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
-          <div class="col-md-1"><label>👤 Tipo</label><select id="filterTipo" class="form-select" onchange="renderTable()"><option value="ALL">Todos</option><option value="PF">PF</option><option value="PJ">PJ</option></select></div>
+          <div class="col-md-1"><label>🏢 Admin.</label><select id="filterAdministradora" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
         </div>
+        <!-- SEGUNDA LINHA: Tipo, Valores, Datas, Mês, Fonte -->
         <div class="row g-3 mb-4">
+          <div class="col-md-1"><label>👤 Tipo</label><select id="filterTipo" class="form-select" onchange="renderTable()"><option value="ALL">Todos</option><option value="PF">PF</option><option value="PJ">PJ</option></select></div>
           <div class="col-md-2"><label>💰 Valor min (R$)</label><input type="number" id="filterValorMin" class="form-control" placeholder="0,00" onchange="renderTable()" step="0.01" /></div>
           <div class="col-md-2"><label>💰 Valor max (R$)</label><input type="number" id="filterValorMax" class="form-control" placeholder="999999,99" onchange="renderTable()" step="0.01" /></div>
           <div class="col-md-2"><label>📅 Data início</label><input type="date" id="filterDataIni" class="form-control" onchange="renderTable()" /></div>
           <div class="col-md-2"><label>📅 Data fim</label><input type="date" id="filterDataFim" class="form-control" onchange="renderTable()" /></div>
           <div class="col-md-2"><label>📆 Mês/Ano</label><input type="month" id="filterMes" class="form-control" onchange="renderTable()" /></div>
-          <div class="col-md-2"><label>📤 Fonte</label><select id="filterFonte" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
+          <div class="col-md-1"><label>📤 Fonte</label><select id="filterFonte" class="form-select" onchange="renderTable()"><option value="ALL">Todas</option></select></div>
         </div>
+        <!-- TERCEIRA LINHA: Último contato + botões -->
         <div class="row g-3 mb-4">
           <div class="col-md-3"><label>⏰ Último contato há mais de</label><div class="input-group"><input type="number" id="filterUltimoContatoDias" class="form-control" placeholder="Ex: 15" min="1" onchange="renderTable()" /><span class="input-group-text">dias</span></div></div>
           <div class="col-md-3 d-flex align-items-end"><button class="btn btn-outline-secondary" onclick="document.getElementById('filterUltimoContatoDias').value=''; renderTable();"><i class="bi bi-eraser"></i> Limpar</button></div>
@@ -515,7 +685,7 @@
       </div>
     </div>
 
-    <!-- ===== MINHAS TAREFAS ===== -->
+    <!-- MINHAS TAREFAS -->
     <div class="tab-pane fade" id="tarefasTab">
       <div class="card card-custom">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -528,7 +698,6 @@
           <li class="nav-item"><button class="nav-link" data-view="dashboard">📊 Dashboard</button></li>
         </ul>
         <div id="tarefaViewContainer">
-          <!-- Lista -->
           <div id="tarefaListView" class="tarefa-view" style="display:block;">
             <div class="row g-3 mb-3">
               <div class="col-md-3"><label>Filtrar por status</label><select id="filtroTarefaStatus" class="form-select"><option value="todas">Todas</option><option value="pendente">Pendentes</option><option value="hoje">Para hoje</option><option value="vencida">Vencidas</option><option value="concluida">Concluídas</option></select></div>
@@ -544,7 +713,6 @@
             </div>
             <div id="tarefaListContainer"></div>
           </div>
-          <!-- Calendário -->
           <div id="tarefaCalendarioView" class="tarefa-view" style="display:none;">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <button class="btn btn-sm btn-outline-primary" id="btnCalMesAnt"><i class="bi bi-chevron-left"></i></button>
@@ -557,7 +725,6 @@
               <div id="tarefasDoDiaLista"></div>
             </div>
           </div>
-          <!-- Dashboard -->
           <div id="tarefaDashboardView" class="tarefa-view" style="display:none;">
             <div class="row g-3">
               <div class="col-md-4"><div class="card card-custom"><h6 class="fw-bold">Pendentes por tipo</h6><canvas id="tarefaTipoChart" height="150"></canvas></div></div>
@@ -574,7 +741,6 @@
       <div class="card card-custom">
         <h5 class="fw-bold"><i class="bi bi-person-circle me-2"></i>Meu Perfil</h5>
         <p class="text-muted small">Gerencie suas informações pessoais, localização e configurações de segurança.</p>
-        <!-- Dados Pessoais -->
         <div class="perfil-section">
           <h6>📋 Dados Pessoais</h6>
           <div class="row g-3">
@@ -597,7 +763,6 @@
             </div>
           </div>
         </div>
-        <!-- Email e Senha -->
         <div class="perfil-section">
           <h6>📧 Email e Senha</h6>
           <div class="row g-3">
@@ -623,7 +788,6 @@
             </div>
           </div>
         </div>
-        <!-- Aparência -->
         <div class="perfil-section">
           <h6>🎨 Aparência</h6>
           <div class="row g-3">
@@ -646,7 +810,6 @@
             </div>
           </div>
         </div>
-        <!-- Informações do Sistema -->
         <div class="perfil-section">
           <h6>ℹ️ Informações do Sistema</h6>
           <div class="row g-3">
@@ -1135,9 +1298,10 @@ function atualizarGraficos(dados) {
   if(ctx3) charts.pfPj=new Chart(ctx3,{type:'pie',data:{labels:['PF','PJ'],datasets:[{data:[pf,pj],backgroundColor:['#6c5ce7','#fdcb6e']}]}});
 }
 
-// ==================== RENDER TABELA (COMPLETA COM FILTROS) ====================
+// ==================== RENDER TABELA (COM FILTRO DE CÓDIGO) ====================
 function renderTable() {
   const search = document.getElementById('search')?.value.toLowerCase() || '';
+  const codigo = document.getElementById('filterCodigo')?.value.toLowerCase() || '';
   const status = document.getElementById('filterStatus')?.value || 'ALL';
   const modalidade = document.getElementById('filterModalidade')?.value || 'ALL';
   const praca = document.getElementById('filterPraca')?.value || 'ALL';
@@ -1155,12 +1319,15 @@ function renderTable() {
   if (!tbody) return;
 
   let filtered = clients.filter(c => {
+    // Busca geral (nome, proposta, CPF, telefone) - código removido daqui
     const matchSearch = 
       (c.nomeTitular || '').toLowerCase().includes(search) ||
       (c.numeroProposta || '').toLowerCase().includes(search) ||
       (c.cpfTitular || '').includes(search) ||
-      (c.telefoneTitular || '').includes(search) ||
-      (c.codigo || '').toLowerCase().includes(search);
+      (c.telefoneTitular || '').includes(search);
+
+    // Filtro específico por código (busca parcial)
+    const matchCodigo = codigo === '' || (c.codigo || '').toLowerCase().includes(codigo);
 
     const matchStatus = status === 'ALL' || c.status === status;
     const matchModalidade = modalidade === 'ALL' || c.modalidadePlano === modalidade;
@@ -1195,10 +1362,11 @@ function renderTable() {
       }
     }
 
-    return matchSearch && matchStatus && matchModalidade && matchPraca && matchAdmin &&
+    return matchSearch && matchCodigo && matchStatus && matchModalidade && matchPraca && matchAdmin &&
            matchTipo && matchValor && matchData && matchFonte && matchContato;
   });
 
+  // Ordenação
   filtered.sort((a,b) => {
     let va = a[sortColumn] || '';
     let vb = b[sortColumn] || '';
