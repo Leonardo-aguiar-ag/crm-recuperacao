@@ -91,30 +91,17 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:10px;
       padding:0.8rem 1rem;
       border-bottom:2px solid var(--border);
       margin-bottom:1rem;
       min-height:70px;
     }
-    .sidebar .logo i {
-      font-size:2rem;
-      color:var(--primary);
-      background:var(--primary-light);
-      padding:6px;
-      border-radius:var(--radius-sm);
+    .sidebar .logo img {
+      max-height: 45px;
+      width: auto;
+      object-fit: contain;
+      display: block;
     }
-    .sidebar .logo span {
-      font-weight:900;
-      font-size:1.2rem;
-      background:linear-gradient(135deg,var(--primary),var(--purple));
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      background-clip:text;
-      white-space:nowrap;
-      transition:opacity 0.2s;
-    }
-    .sidebar.collapsed .logo span { opacity:0; width:0; overflow:hidden; }
     .sidebar .nav-items {
       flex:1;
       overflow-y:auto;
@@ -403,11 +390,13 @@
   </div>
 </div>
 
-<!-- ===== SIDEBAR ===== -->
+<!-- ===== SIDEBAR COM LOGO ===== -->
 <div class="sidebar" id="sidebar">
   <div class="logo">
-    <i class="bi bi-robot"></i>
-    <span>CRM Recupera AI</span>
+    <!-- ALTERE O NOME DO ARQUIVO AQUI: -->
+    <!-- Se a imagem estiver na raiz: "logo.png" -->
+    <!-- Se estiver em uma pasta: "img/logo.png" ou "imagens/logo.png" -->
+    <img src="logo.png" alt="Hapvida Amel's Conceito" style="max-height:45px; width:auto;" />
   </div>
   <div class="nav-items">
     <div class="nav-link active" data-tab="dashboardTab" onclick="switchTab('dashboardTab')">
