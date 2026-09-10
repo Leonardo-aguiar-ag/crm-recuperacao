@@ -229,39 +229,6 @@
     .dashboard-card.bg-danger { background:linear-gradient(145deg,#e17055,#fd79a8); }
     .dashboard-card.bg-purple { background:linear-gradient(145deg,#6c5ce7,#a29bfe); }
     .dashboard-card.bg-secondary { background:linear-gradient(145deg,#6c757d,#adb5bd); }
-
-    /* ===== NOVOS CARDS (VENDAS E VIDAS) ===== */
-    .stat-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem 1.75rem;
-      box-shadow: var(--shadow);
-      transition: all var(--transition);
-      height: 100%;
-    }
-    .stat-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
-    .stat-card .stat-label {
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-secondary);
-      letter-spacing: 0.8px;
-      margin-bottom: 0.6rem;
-    }
-    .stat-card .stat-value {
-      font-size: 2.75rem;
-      font-weight: 800;
-      color: #1a237e;
-      line-height: 1;
-    }
-    body.dark-mode .stat-card .stat-value { color: #a29bfe; }
-    .stat-card .stat-sub {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-top: 0.6rem;
-    }
-
     .btn { border-radius:60px; padding:0.5rem 1.4rem; font-weight:700; font-size:0.8rem; border:none; transition:background 0.2s ease,transform 0.15s ease; }
     .btn-primary { background:var(--primary); color:white; }
     .btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px); box-shadow:0 6px 20px rgba(108,92,231,0.3); }
@@ -338,8 +305,6 @@
       .table-responsive { font-size:0.7rem; }
       .table thead th, .table tbody td { padding:0.4rem 0.5rem; }
       .busca-global-input { max-width:150px; font-size:0.7rem; }
-      .stat-card .stat-value { font-size: 2.2rem; }
-      .stat-card { padding: 1.2rem; }
     }
     ::-webkit-scrollbar { width:6px; height:6px; }
     ::-webkit-scrollbar-track { background:var(--bg); border-radius:10px; }
@@ -507,26 +472,9 @@
         <div class="col-md-2"><button class="btn btn-warning mt-4" onclick="gerarRelatorio()"><i class="bi bi-file-earmark-pdf"></i> Relatório</button></div>
       </div>
 
-      <!-- ===== NOVOS CARDS: TOTAL DE VENDAS E TOTAL DE VIDAS ===== -->
       <div class="row g-3 mb-4">
-        <div class="col-md-6">
-          <div class="stat-card">
-            <div class="stat-label">Total de Vendas</div>
-            <div class="stat-value" id="dashVendas">0</div>
-            <div class="stat-sub">de <span id="dashTotalPropostas">0</span> no total</div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="stat-card">
-            <div class="stat-label">Total de Vidas</div>
-            <div class="stat-value" id="dashVidas">0</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row g-3 mb-4">
-        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-primary"><i class="icon bi bi-file-earmark-text"></i><h6>Propostas</h6><h2 id="dashTotal">0</h2></div></div>
-        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Implantadas</h6><h2 id="dashImplantados">0</h2></div></div>
+        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-primary"><i class="icon bi bi-file-earmark-text"></i><h6>Total de Vendas (Propostas)</h6><h2 id="dashTotal">0</h2></div></div>
+        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-success"><i class="icon bi bi-people"></i><h6>Vidas Implantadas</h6><h2 id="dashImplantados">0</h2></div></div>
         <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-info"><i class="icon bi bi-cash-stack"></i><h6>Valor Processado</h6><h2 id="dashProcessado">R$ 0,00</h2></div></div>
         <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-warning" style="color:#2d3436;"><i class="icon bi bi-graph-up"></i><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
         <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-secondary"><i class="icon bi bi-calculator"></i><h6>Ticket Médio</h6><h2 id="dashTicketMedio">R$ 0,00</h2></div></div>
@@ -565,7 +513,6 @@
           <li class="nav-item"><button class="nav-link" onclick="switchInternalTab('interacoesTab')" data-tab="interacoesTab">Interações</button></li>
         </ul>
         <div class="tab-content">
-          <!-- Dados da Proposta -->
           <div class="tab-pane" id="dadosPrincipais" style="display:block;">
             <div class="row g-3">
               <div class="col-md-3"><label>Data</label><input type="date" id="cData" class="form-control"></div>
@@ -594,7 +541,6 @@
               <div class="col-12"><label>Anotações</label><textarea id="cAnotacoes" class="form-control" rows="2"></textarea></div>
             </div>
           </div>
-          <!-- Dependentes -->
           <div class="tab-pane" id="dependentesTab" style="display:none;">
             <div class="row g-2 mb-3">
               <div class="col-md-4"><input type="text" id="depNome" class="form-control" placeholder="Nome *"></div>
@@ -608,7 +554,6 @@
             </div>
             <div id="dependentesList"></div>
           </div>
-          <!-- Pagamentos -->
           <div class="tab-pane" id="pagamentosTab" style="display:none;">
             <div class="row g-2 mb-3">
               <div class="col-md-3"><input type="date" id="pagData" class="form-control" placeholder="Data"></div>
@@ -623,7 +568,6 @@
             </div>
             <div id="pagamentosList"></div>
           </div>
-          <!-- Anexos -->
           <div class="tab-pane" id="anexosTab" style="display:none;">
             <div class="row g-2 mb-3">
               <div class="col-md-6"><input type="file" id="anexoFileInput" class="form-control" accept=".pdf,.jpg,.png,.doc,.docx,.xls,.xlsx" multiple /></div>
@@ -633,7 +577,6 @@
             <div id="anexosList"></div>
             <div class="text-muted small mt-2"><i class="bi bi-info-circle"></i> Os anexos serão enviados automaticamente ao salvar o cliente.</div>
           </div>
-          <!-- Interações -->
           <div class="tab-pane" id="interacoesTab" style="display:none;">
             <div class="row g-2 mb-3">
               <div class="col-md-3"><select id="interacaoTipo" class="form-select"><option value="Telefone">Telefone</option><option value="E-mail">E-mail</option><option value="WhatsApp">WhatsApp</option><option value="Visita">Visita</option><option value="Outro">Outro</option></select></div>
@@ -859,7 +802,6 @@
             </div>
           </div>
         </div>
-        <!-- CONFIGURAÇÕES DE ETIQUETAS -->
         <div class="perfil-section">
           <h6>🏷️ Configurações de Etiquetas</h6>
           <div class="row g-4">
@@ -1320,12 +1262,6 @@ function updateDashboard() {
   document.getElementById('dashMediaAtraso').innerText='0';
   document.getElementById('dashMediaTempo').innerText='0';
   document.getElementById('dashTicketMedio').innerText = formatarMoeda(ticketMedio);
-
-  // ===== NOVOS CARDS: TOTAL DE VENDAS E TOTAL DE VIDAS =====
-  document.getElementById('dashVendas').innerText = implantados.length;
-  document.getElementById('dashTotalPropostas').innerText = total;
-  document.getElementById('dashVidas').innerText = totalVidasImplantadas;
-
   atualizarGraficos(filtered);
   renderUltimasVendas();
 }
