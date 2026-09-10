@@ -472,18 +472,58 @@
         <div class="col-md-2"><button class="btn btn-warning mt-4" onclick="gerarRelatorio()"><i class="bi bi-file-earmark-pdf"></i> Relatório</button></div>
       </div>
 
+      <!-- ===== CARDS PRINCIPAIS (6 cards) ===== -->
       <div class="row g-3 mb-4">
-        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-primary"><i class="icon bi bi-file-earmark-text"></i><h6>Total de Vendas (Propostas)</h6><h2 id="dashTotal">0</h2></div></div>
-        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-success"><i class="icon bi bi-people"></i><h6>Vidas Implantadas</h6><h2 id="dashImplantados">0</h2></div></div>
-        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-info"><i class="icon bi bi-cash-stack"></i><h6>Valor Processado</h6><h2 id="dashProcessado">R$ 0,00</h2></div></div>
-        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-warning" style="color:#2d3436;"><i class="icon bi bi-graph-up"></i><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
-        <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-secondary"><i class="icon bi bi-calculator"></i><h6>Ticket Médio</h6><h2 id="dashTicketMedio">R$ 0,00</h2></div></div>
+        <div class="col-md-2 col-sm-6">
+          <div class="dashboard-card bg-primary">
+            <i class="icon bi bi-file-earmark-text"></i>
+            <h6>Total de Vendas</h6>
+            <h2 id="dashTotal">0</h2>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-6">
+          <div class="dashboard-card bg-success">
+            <i class="icon bi bi-people"></i>
+            <h6>Total de Vidas</h6>
+            <h2 id="dashImplantados">0</h2>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-6">
+          <div class="dashboard-card bg-danger">
+            <i class="icon bi bi-x-circle"></i>
+            <h6>Desistiu</h6>
+            <h2 id="dashDesistiu">0</h2>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-6">
+          <div class="dashboard-card bg-info">
+            <i class="icon bi bi-cash-stack"></i>
+            <h6>Valor Processado</h6>
+            <h2 id="dashProcessado">R$ 0,00</h2>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-6">
+          <div class="dashboard-card bg-warning" style="color:#2d3436;">
+            <i class="icon bi bi-graph-up"></i>
+            <h6>Taxa Conversão</h6>
+            <h2 id="dashConversao">0%</h2>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-6">
+          <div class="dashboard-card bg-secondary">
+            <i class="icon bi bi-calculator"></i>
+            <h6>Ticket Médio</h6>
+            <h2 id="dashTicketMedio">R$ 0,00</h2>
+          </div>
+        </div>
       </div>
+
       <div class="row g-3 mb-4">
         <div class="col-md-4"><div class="dashboard-card bg-danger"><i class="icon bi bi-exclamation-triangle"></i><h6>Clientes Inadimplentes</h6><h2 id="dashInadimplentes">0</h2><span class="sub">Média atraso: <span id="dashMediaAtraso">0</span> dias</span></div></div>
         <div class="col-md-4"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Clientes em Dia</h6><h2 id="dashEmDia">0</h2><span class="sub">Média tempo: <span id="dashMediaTempo">0</span> meses</span></div></div>
         <div class="col-md-4"><div class="dashboard-card bg-purple"><i class="icon bi bi-question-circle"></i><h6>Sem Info de Pagamento</h6><h2 id="dashSemInfo">0</h2></div></div>
       </div>
+
       <div class="card card-custom mb-4">
         <h5 class="fw-bold"><i class="bi bi-trophy me-2"></i>Últimas Vendas</h5>
         <div class="table-responsive">
@@ -744,22 +784,10 @@
         <div class="perfil-section">
           <h6>📧 Email e Senha</h6>
           <div class="row g-3">
-            <div class="col-md-6">
-              <label>Email Atual</label>
-              <input type="email" id="perfilEmailAtual" class="form-control" disabled />
-            </div>
-            <div class="col-md-6">
-              <label>Novo Email</label>
-              <input type="email" id="perfilNovoEmail" class="form-control" placeholder="novo@email.com" />
-            </div>
-            <div class="col-md-6">
-              <label>Senha Atual</label>
-              <input type="password" id="perfilSenhaAtual" class="form-control" placeholder="••••••••" />
-            </div>
-            <div class="col-md-6">
-              <label>Nova Senha</label>
-              <input type="password" id="perfilNovaSenha" class="form-control" placeholder="••••••••" />
-            </div>
+            <div class="col-md-6"><label>Email Atual</label><input type="email" id="perfilEmailAtual" class="form-control" disabled /></div>
+            <div class="col-md-6"><label>Novo Email</label><input type="email" id="perfilNovoEmail" class="form-control" placeholder="novo@email.com" /></div>
+            <div class="col-md-6"><label>Senha Atual</label><input type="password" id="perfilSenhaAtual" class="form-control" placeholder="••••••••" /></div>
+            <div class="col-md-6"><label>Nova Senha</label><input type="password" id="perfilNovaSenha" class="form-control" placeholder="••••••••" /></div>
             <div class="col-12">
               <button class="btn btn-primary" onclick="salvarPerfil()"><i class="bi bi-save"></i> Salvar Alterações</button>
               <button class="btn btn-danger" onclick="encerrarConta()"><i class="bi bi-trash"></i> Encerrar Conta</button>
@@ -805,75 +833,15 @@
         <div class="perfil-section">
           <h6>🏷️ Configurações de Etiquetas</h6>
           <div class="row g-4">
-            <div class="col-lg-6">
-              <div class="card card-custom">
-                <h6 class="fw-bold"><i class="bi bi-tags me-2"></i>Status de Leads</h6>
-                <button class="btn btn-success btn-sm mb-2" onclick="addLeadStatus()"><i class="bi bi-plus"></i> Adicionar</button>
-                <div id="leadStatusList"></div>
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="card card-custom">
-                <h6 class="fw-bold"><i class="bi bi-tags me-2"></i>Status de Propostas</h6>
-                <button class="btn btn-success btn-sm mb-2" onclick="addStatus()"><i class="bi bi-plus"></i> Adicionar</button>
-                <div id="statusList"></div>
-              </div>
-            </div>
-            <div class="col-lg-4">
-              <div class="card card-custom">
-                <h6 class="fw-bold"><i class="bi bi-geo-alt me-2"></i>Praças</h6>
-                <div class="input-group mb-2"><input type="text" id="novaPraca" class="form-control" placeholder="Nova praça"><button class="btn btn-primary btn-sm" onclick="addPraca()">+</button></div>
-                <div id="pracasList"></div>
-              </div>
-            </div>
-            <div class="col-lg-4">
-              <div class="card card-custom">
-                <h6 class="fw-bold"><i class="bi bi-building me-2"></i>Administradoras</h6>
-                <div class="input-group mb-2"><input type="text" id="novaAdministradora" class="form-control" placeholder="Nova admin"><button class="btn btn-primary btn-sm" onclick="addAdministradora()">+</button></div>
-                <div id="administradorasList"></div>
-              </div>
-            </div>
-            <div class="col-lg-4">
-              <div class="card card-custom">
-                <h6 class="fw-bold"><i class="bi bi-bed me-2"></i>Acomodações</h6>
-                <div class="input-group mb-2"><input type="text" id="novaAcomodacao" class="form-control" placeholder="Nova acomodação"><button class="btn btn-primary btn-sm" onclick="addAcomodacao()">+</button></div>
-                <div id="acomodacoesList"></div>
-              </div>
-            </div>
-            <div class="col-lg-4">
-              <div class="card card-custom">
-                <h6 class="fw-bold"><i class="bi bi-percent me-2"></i>Coparticipações</h6>
-                <div class="input-group mb-2"><input type="text" id="novaCoparticipacao" class="form-control" placeholder="Nova coparticipação"><button class="btn btn-primary btn-sm" onclick="addCoparticipacao()">+</button></div>
-                <div id="coparticipacoesList"></div>
-              </div>
-            </div>
-            <div class="col-lg-4">
-              <div class="card card-custom">
-                <h6 class="fw-bold"><i class="bi bi-list-ul me-2"></i>Modalidades</h6>
-                <div class="input-group mb-2"><input type="text" id="novaModalidade" class="form-control" placeholder="Nova modalidade"><button class="btn btn-primary btn-sm" onclick="addModalidade()">+</button></div>
-                <div id="modalidadesList"></div>
-              </div>
-            </div>
-            <div class="col-lg-4">
-              <div class="card card-custom">
-                <h6 class="fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Fontes Venda</h6>
-                <div class="input-group mb-2"><input type="text" id="novaFonteVenda" class="form-control" placeholder="Nova fonte"><button class="btn btn-primary btn-sm" onclick="addFonteVenda()">+</button></div>
-                <div id="fontesVendaList"></div>
-              </div>
-            </div>
-            <div class="col-lg-12">
-              <div class="card card-custom">
-                <h6 class="fw-bold"><i class="bi bi-people me-2"></i>Pessoas (Vendedores)</h6>
-                <div class="row g-2 mb-2">
-                  <div class="col-md-3"><input type="text" id="novaPessoaNome" class="form-control" placeholder="Nome"></div>
-                  <div class="col-md-2"><input type="text" id="novaPessoaCodigo" class="form-control" placeholder="Código"></div>
-                  <div class="col-md-2"><input type="number" id="novaMetaVendas" class="form-control" placeholder="Meta vendas"></div>
-                  <div class="col-md-2"><input type="number" id="novaMetaValor" class="form-control" placeholder="Meta R$"></div>
-                  <div class="col-md-1"><button class="btn btn-primary btn-sm" onclick="addPessoa()"><i class="bi bi-plus"></i></button></div>
-                </div>
-                <div id="pessoasList"></div>
-              </div>
-            </div>
+            <div class="col-lg-6"><div class="card card-custom"><h6 class="fw-bold"><i class="bi bi-tags me-2"></i>Status de Leads</h6><button class="btn btn-success btn-sm mb-2" onclick="addLeadStatus()"><i class="bi bi-plus"></i> Adicionar</button><div id="leadStatusList"></div></div></div>
+            <div class="col-lg-6"><div class="card card-custom"><h6 class="fw-bold"><i class="bi bi-tags me-2"></i>Status de Propostas</h6><button class="btn btn-success btn-sm mb-2" onclick="addStatus()"><i class="bi bi-plus"></i> Adicionar</button><div id="statusList"></div></div></div>
+            <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold"><i class="bi bi-geo-alt me-2"></i>Praças</h6><div class="input-group mb-2"><input type="text" id="novaPraca" class="form-control" placeholder="Nova praça"><button class="btn btn-primary btn-sm" onclick="addPraca()">+</button></div><div id="pracasList"></div></div></div>
+            <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold"><i class="bi bi-building me-2"></i>Administradoras</h6><div class="input-group mb-2"><input type="text" id="novaAdministradora" class="form-control" placeholder="Nova admin"><button class="btn btn-primary btn-sm" onclick="addAdministradora()">+</button></div><div id="administradorasList"></div></div></div>
+            <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold"><i class="bi bi-bed me-2"></i>Acomodações</h6><div class="input-group mb-2"><input type="text" id="novaAcomodacao" class="form-control" placeholder="Nova acomodação"><button class="btn btn-primary btn-sm" onclick="addAcomodacao()">+</button></div><div id="acomodacoesList"></div></div></div>
+            <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold"><i class="bi bi-percent me-2"></i>Coparticipações</h6><div class="input-group mb-2"><input type="text" id="novaCoparticipacao" class="form-control" placeholder="Nova coparticipação"><button class="btn btn-primary btn-sm" onclick="addCoparticipacao()">+</button></div><div id="coparticipacoesList"></div></div></div>
+            <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold"><i class="bi bi-list-ul me-2"></i>Modalidades</h6><div class="input-group mb-2"><input type="text" id="novaModalidade" class="form-control" placeholder="Nova modalidade"><button class="btn btn-primary btn-sm" onclick="addModalidade()">+</button></div><div id="modalidadesList"></div></div></div>
+            <div class="col-lg-4"><div class="card card-custom"><h6 class="fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Fontes Venda</h6><div class="input-group mb-2"><input type="text" id="novaFonteVenda" class="form-control" placeholder="Nova fonte"><button class="btn btn-primary btn-sm" onclick="addFonteVenda()">+</button></div><div id="fontesVendaList"></div></div></div>
+            <div class="col-lg-12"><div class="card card-custom"><h6 class="fw-bold"><i class="bi bi-people me-2"></i>Pessoas (Vendedores)</h6><div class="row g-2 mb-2"><div class="col-md-3"><input type="text" id="novaPessoaNome" class="form-control" placeholder="Nome"></div><div class="col-md-2"><input type="text" id="novaPessoaCodigo" class="form-control" placeholder="Código"></div><div class="col-md-2"><input type="number" id="novaMetaVendas" class="form-control" placeholder="Meta vendas"></div><div class="col-md-2"><input type="number" id="novaMetaValor" class="form-control" placeholder="Meta R$"></div><div class="col-md-1"><button class="btn btn-primary btn-sm" onclick="addPessoa()"><i class="bi bi-plus"></i></button></div></div><div id="pessoasList"></div></div></div>
           </div>
         </div>
       </div>
@@ -883,14 +851,10 @@
 </div><!-- end main-content -->
 
 <!-- ===== MODAIS ===== -->
-<!-- Modal Tarefa -->
 <div class="modal fade" id="modalTarefa" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content" style="background:var(--card);">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="modalTarefaTitulo">Nova Tarefa</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
+      <div class="modal-header"><h5 class="modal-title fw-bold" id="modalTarefaTitulo">Nova Tarefa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
         <input type="hidden" id="tarefaId" />
         <div class="mb-3"><label class="fw-bold">O que precisa ser feito? *</label><input type="text" id="tarefaTitulo" class="form-control" placeholder="Ex.: retornar ligação..." /></div>
@@ -910,10 +874,8 @@
   </div>
 </div>
 
-<!-- Modal Lote -->
 <div class="modal fade" id="modalLote" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="background:var(--card);"><div class="modal-header"><h5 class="modal-title fw-bold">Ação em Lote</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select id="acaoLote" class="form-select mb-3" onchange="handleAcaoLoteChange()"><option value="">Escolha...</option><option value="status">Alterar Status</option><option value="praca">Alterar Praça</option><option value="administradora">Alterar Administradora</option><option value="dataPagamento">Definir Data</option><option value="codigo">Alterar Código</option><option value="excluir">Excluir</option></select><div id="parametrosLote"></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" onclick="executarAcaoLote()">Aplicar</button></div></div></div></div>
 
-<!-- Modal Novo Lead -->
 <div class="modal fade" id="modalNovoLead" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content" style="background:var(--card);">
@@ -982,9 +944,7 @@ function setTheme(theme) {
   atualizarBotoesTema(theme);
 }
 function atualizarBotoesTema(theme) {
-  document.querySelectorAll('.tema-opcoes .btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.theme === theme);
-  });
+  document.querySelectorAll('.tema-opcoes .btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.theme === theme); });
 }
 function setFontSize(size) {
   document.body.classList.remove('fonte-menor','fonte-padrao','fonte-maior','fonte-extra');
@@ -993,9 +953,7 @@ function setFontSize(size) {
   atualizarBotoesFonte(size);
 }
 function atualizarBotoesFonte(size) {
-  document.querySelectorAll('.fonte-opcoes .btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.size === size);
-  });
+  document.querySelectorAll('.fonte-opcoes .btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.size === size); });
 }
 function carregarPreferencias() {
   const theme = localStorage.getItem('theme') || 'light';
@@ -1021,10 +979,7 @@ async function uploadFotoPerfil(event) {
     document.getElementById('perfilAvatarImg').style.display = 'block';
     document.getElementById('perfilAvatarTexto').style.display = 'none';
     alert('Foto atualizada com sucesso!');
-  } catch (e) {
-    console.error('Erro ao enviar foto:', e);
-    alert('Erro ao enviar foto: ' + e.message);
-  }
+  } catch (e) { console.error('Erro ao enviar foto:', e); alert('Erro ao enviar foto: ' + e.message); }
   event.target.value = '';
 }
 
@@ -1066,53 +1021,17 @@ auth.onAuthStateChanged(async user => {
   }
 });
 
-function login() {
-  const email = document.getElementById('loginEmail').value;
-  const pwd = document.getElementById('loginPassword').value;
-  auth.signInWithEmailAndPassword(email, pwd).catch(e => document.getElementById('loginError').innerText = e.message);
-}
-function googleLogin() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).catch(e => document.getElementById('loginError').innerText = e.message);
-}
-function register() {
-  const email = document.getElementById('loginEmail').value;
-  const pwd = document.getElementById('loginPassword').value;
-  auth.createUserWithEmailAndPassword(email, pwd)
-    .then(async result => {
-      await db.collection('usuarios').doc(result.user.uid).set({
-        nome: result.user.displayName || 'Usuário',
-        email: result.user.email,
-        perfil: 'Gerente',
-        servico: 'Amel\'s Conceito',
-        createdAt: new Date().toISOString()
-      });
-    })
-    .catch(e => document.getElementById('loginError').innerText = e.message);
-}
-function recoverPassword() {
-  const email = document.getElementById('loginEmail').value;
-  if (email) auth.sendPasswordResetEmail(email).then(() => alert('Email enviado!')).catch(e => alert(e.message));
-  else alert('Digite seu email');
-}
-function togglePassword() {
-  const inp = document.getElementById('loginPassword');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-}
+function login() { const email = document.getElementById('loginEmail').value; const pwd = document.getElementById('loginPassword').value; auth.signInWithEmailAndPassword(email, pwd).catch(e => document.getElementById('loginError').innerText = e.message); }
+function googleLogin() { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).catch(e => document.getElementById('loginError').innerText = e.message); }
+function register() { const email = document.getElementById('loginEmail').value; const pwd = document.getElementById('loginPassword').value; auth.createUserWithEmailAndPassword(email, pwd).then(async result => { await db.collection('usuarios').doc(result.user.uid).set({ nome: result.user.displayName || 'Usuário', email: result.user.email, perfil: 'Gerente', servico: 'Amel\'s Conceito', createdAt: new Date().toISOString() }); }).catch(e => document.getElementById('loginError').innerText = e.message); }
+function recoverPassword() { const email = document.getElementById('loginEmail').value; if (email) auth.sendPasswordResetEmail(email).then(() => alert('Email enviado!')).catch(e => alert(e.message)); else alert('Digite seu email'); }
+function togglePassword() { const inp = document.getElementById('loginPassword'); inp.type = inp.type === 'password' ? 'text' : 'password'; }
 function logout() { auth.signOut(); }
 
 // ==================== SIDEBAR ====================
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('collapsed');
-  document.getElementById('mainContent').classList.toggle('expanded');
-}
-function toggleMobileSidebar() {
-  document.getElementById('sidebar').classList.toggle('mobile-open');
-}
-function toggleTheme() {
-  const isDark = document.body.classList.contains('dark-mode');
-  setTheme(isDark ? 'light' : 'dark');
-}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); document.getElementById('mainContent').classList.toggle('expanded'); }
+function toggleMobileSidebar() { document.getElementById('sidebar').classList.toggle('mobile-open'); }
+function toggleTheme() { const isDark = document.body.classList.contains('dark-mode'); setTheme(isDark ? 'light' : 'dark'); }
 
 function switchTab(tabId) {
   document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
@@ -1202,19 +1121,13 @@ function preencherSelectsFicha() {
     if(current) sel.value=current;
   });
 }
-function popularFiltroPraca() {
-  const select=document.getElementById('filtroPraca');
-  select.innerHTML='<option value="">Todas as Praças</option>';
-  pracas.forEach(p=>select.innerHTML+=`<option value="${p.name}">${p.name}</option>`);
-}
+function popularFiltroPraca() { const select=document.getElementById('filtroPraca'); select.innerHTML='<option value="">Todas as Praças</option>'; pracas.forEach(p=>select.innerHTML+=`<option value="${p.name}">${p.name}</option>`); }
 function popularFiltroCodigo() {
   const select = document.getElementById('filterCodigo');
   if (!select) return;
   let codigos = [];
   pessoas.forEach(p => { if (p.codigo && p.codigo.trim() !== '') codigos.push(p.codigo); });
-  if (codigos.length === 0) {
-    clients.forEach(c => { if (c.codigo && c.codigo.trim() !== '') codigos.push(c.codigo); });
-  }
+  if (codigos.length === 0) { clients.forEach(c => { if (c.codigo && c.codigo.trim() !== '') codigos.push(c.codigo); }); }
   codigos = [...new Set(codigos)].sort();
   const currentValue = select.value;
   select.innerHTML = '<option value="">Todos</option>';
@@ -1228,12 +1141,7 @@ function carregarVendedoresSelect() {
   pessoas.forEach(p=>{ sel.innerHTML+=`<option value="${p.id}" data-codigo="${p.codigo||''}">${p.nome} ${p.codigo?'('+p.codigo+')':''}</option>`; });
   if(current) sel.value=current;
 }
-function preencherCodigoPorVendedor() {
-  const sel=document.getElementById('cVendedor');
-  const codInput=document.getElementById('cCodigo');
-  const opt=sel.options[sel.selectedIndex];
-  codInput.value = (opt && opt.dataset.codigo) ? opt.dataset.codigo : '';
-}
+function preencherCodigoPorVendedor() { const sel=document.getElementById('cVendedor'); const codInput=document.getElementById('cCodigo'); const opt=sel.options[sel.selectedIndex]; codInput.value = (opt && opt.dataset.codigo) ? opt.dataset.codigo : ''; }
 
 // ==================== DASHBOARD ====================
 function updateDashboard() {
@@ -1243,25 +1151,32 @@ function updateDashboard() {
   if(praca) filtered=filtered.filter(c=>c.praca===praca);
   if(periodo==='intervalo'){ const ini=document.getElementById('dataInicioIntervalo').value; const fim=document.getElementById('dataFimIntervalo').value; if(ini) filtered=filtered.filter(c=>c.data>=ini); if(fim) filtered=filtered.filter(c=>c.data<=fim); }
   else if(periodo){ const hoje=new Date(); let dataLimite=new Date(); if(periodo==='mes') dataLimite=new Date(hoje.getFullYear(),hoje.getMonth(),1); else if(periodo==='30') dataLimite.setDate(hoje.getDate()-30); else if(periodo==='60') dataLimite.setDate(hoje.getDate()-60); else if(periodo==='90') dataLimite.setDate(hoje.getDate()-90); else if(periodo==='120') dataLimite.setDate(hoje.getDate()-120); else if(periodo==='180') dataLimite.setDate(hoje.getDate()-180); const dataLimiteStr=dataLimite.toISOString().split('T')[0]; filtered=filtered.filter(c=>c.data>=dataLimiteStr); }
-  const total=filtered.length;
-  const implantados=filtered.filter(c=>c.status==='Implantado');
-  const totalVidasImplantadas=implantados.reduce((acc,c)=>acc+(parseInt(c.qtdVidas)||0),0);
-  const valorTotal=filtered.reduce((acc,c)=>{ let v=String(c.valorComDesconto||'0').replace(/\./g,'').replace(',','.'); return acc+(parseFloat(v)||0); },0);
-  const taxaConversao=total>0?Math.round((implantados.length/total)*100):0;
-  const inadimplentes=filtered.filter(c=>c.statusPagamento==='Atrasado').length;
-  const emDia=filtered.filter(c=>c.statusPagamento==='Pago').length;
-  const semInfo=filtered.filter(c=>!c.statusPagamento).length;
-  const ticketMedio=total>0?valorTotal/total:0;
-  document.getElementById('dashTotal').innerText=total;
-  document.getElementById('dashImplantados').innerText=totalVidasImplantadas;
+
+  // Cálculos
+  const total = filtered.length;
+  const implantados = filtered.filter(c => c.status === 'Implantado');
+  const totalVidasImplantadas = implantados.reduce((acc,c) => acc + (parseInt(c.qtdVidas) || 0), 0);
+  const desistiu = filtered.filter(c => c.status === 'Desistiu').length;
+  const valorTotal = filtered.reduce((acc,c)=>{ let v=String(c.valorComDesconto||'0').replace(/\./g,'').replace(',','.'); return acc+(parseFloat(v)||0); },0);
+  const taxaConversao = total>0 ? Math.round((implantados.length/total)*100) : 0;
+  const inadimplentes = filtered.filter(c=>c.statusPagamento==='Atrasado').length;
+  const emDia = filtered.filter(c=>c.statusPagamento==='Pago').length;
+  const semInfo = filtered.filter(c=>!c.statusPagamento).length;
+  const ticketMedio = total>0 ? valorTotal/total : 0;
+
+  // Atualizar cards
+  document.getElementById('dashTotal').innerText = implantados.length;   // Total de Vendas = quantidade de propostas implantadas
+  document.getElementById('dashImplantados').innerText = totalVidasImplantadas; // Total de Vidas = soma das vidas
+  document.getElementById('dashDesistiu').innerText = desistiu;
   document.getElementById('dashProcessado').innerText = formatarMoeda(valorTotal);
-  document.getElementById('dashConversao').innerText=taxaConversao+'%';
-  document.getElementById('dashInadimplentes').innerText=inadimplentes;
-  document.getElementById('dashEmDia').innerText=emDia;
-  document.getElementById('dashSemInfo').innerText=semInfo;
-  document.getElementById('dashMediaAtraso').innerText='0';
-  document.getElementById('dashMediaTempo').innerText='0';
+  document.getElementById('dashConversao').innerText = taxaConversao+'%';
+  document.getElementById('dashInadimplentes').innerText = inadimplentes;
+  document.getElementById('dashEmDia').innerText = emDia;
+  document.getElementById('dashSemInfo').innerText = semInfo;
+  document.getElementById('dashMediaAtraso').innerText = '0';
+  document.getElementById('dashMediaTempo').innerText = '0';
   document.getElementById('dashTicketMedio').innerText = formatarMoeda(ticketMedio);
+
   atualizarGraficos(filtered);
   renderUltimasVendas();
 }
@@ -1311,71 +1226,42 @@ function renderTable() {
   if (!tbody) return;
 
   let filtered = clients.filter(c => {
-    const matchSearch = 
-      (c.nomeTitular || '').toLowerCase().includes(search) ||
-      (c.numeroProposta || '').toLowerCase().includes(search) ||
-      (c.cpfTitular || '').includes(search) ||
-      (c.telefoneTitular || '').includes(search);
-
+    const matchSearch = (c.nomeTitular || '').toLowerCase().includes(search) || (c.numeroProposta || '').toLowerCase().includes(search) || (c.cpfTitular || '').includes(search) || (c.telefoneTitular || '').includes(search);
     const matchCodigo = codigo === '' || (c.codigo || '') === codigo;
-
     const matchStatus = status === 'ALL' || c.status === status;
     const matchModalidade = modalidade === 'ALL' || c.modalidadePlano === modalidade;
     const matchPraca = praca === 'ALL' || c.praca === praca;
     const matchAdmin = admin === 'ALL' || c.administradora === admin;
     const matchTipo = tipo === 'ALL' || c.tipoCliente === tipo;
     const matchFonte = fonte === 'ALL' || c.fonteVenda === fonte;
-
     const valor = parseFloat(String(c.valorComDesconto).replace(/\./g,'').replace(',','.')) || 0;
     const matchValor = valor >= valorMin && valor <= valorMax;
-
     let matchData = true;
     if (dataIni && c.data) matchData = matchData && c.data >= dataIni;
     if (dataFim && c.data) matchData = matchData && c.data <= dataFim;
     if (mes && c.data) matchData = matchData && c.data.startsWith(mes);
-
     let matchContato = true;
     if (ultimoContatoDias > 0) {
       const interacoes = c.interacoes || [];
       let ultimaData = null;
-      interacoes.forEach(i => {
-        if (i.data) {
-          const dt = new Date(i.data);
-          if (!ultimaData || dt > ultimaData) ultimaData = dt;
-        }
-      });
-      if (ultimaData) {
-        const diff = Math.floor((new Date() - ultimaData) / (1000 * 60 * 60 * 24));
-        matchContato = diff >= ultimoContatoDias;
-      }
+      interacoes.forEach(i => { if (i.data) { const dt = new Date(i.data); if (!ultimaData || dt > ultimaData) ultimaData = dt; } });
+      if (ultimaData) { const diff = Math.floor((new Date() - ultimaData) / (1000 * 60 * 60 * 24)); matchContato = diff >= ultimoContatoDias; }
     }
-
-    return matchSearch && matchCodigo && matchStatus && matchModalidade && matchPraca && matchAdmin &&
-           matchTipo && matchValor && matchData && matchFonte && matchContato;
+    return matchSearch && matchCodigo && matchStatus && matchModalidade && matchPraca && matchAdmin && matchTipo && matchValor && matchData && matchFonte && matchContato;
   });
 
   filtered.sort((a,b) => {
     let va = a[sortColumn] || '';
     let vb = b[sortColumn] || '';
-    if (sortColumn === 'valorComDesconto') {
-      va = parseFloat(String(va).replace(/\./g,'').replace(',','.')) || 0;
-      vb = parseFloat(String(vb).replace(/\./g,'').replace(',','.')) || 0;
-    } else if (sortColumn === 'qtdVidas') {
-      va = parseInt(va) || 0;
-      vb = parseInt(vb) || 0;
-    } else {
-      va = va.toString().toLowerCase();
-      vb = vb.toString().toLowerCase();
-    }
+    if (sortColumn === 'valorComDesconto') { va = parseFloat(String(va).replace(/\./g,'').replace(',','.')) || 0; vb = parseFloat(String(vb).replace(/\./g,'').replace(',','.')) || 0; }
+    else if (sortColumn === 'qtdVidas') { va = parseInt(va) || 0; vb = parseInt(vb) || 0; }
+    else { va = va.toString().toLowerCase(); vb = vb.toString().toLowerCase(); }
     if (va < vb) return sortDir === 'asc' ? -1 : 1;
     if (va > vb) return sortDir === 'asc' ? 1 : -1;
     return 0;
   });
 
-  if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="12" class="text-center text-muted py-3">Nenhum cliente encontrado com os filtros atuais.</td></tr>`;
-    return;
-  }
+  if (!filtered.length) { tbody.innerHTML = `<tr><td colspan="12" class="text-center text-muted py-3">Nenhum cliente encontrado com os filtros atuais.</td></tr>`; return; }
 
   tbody.innerHTML = filtered.map(c => {
     const checked = selectedIds.has(c.id) ? 'checked' : '';
@@ -1403,12 +1289,7 @@ function renderTable() {
   updateLoteButton();
 }
 
-function updateLoteButton() {
-  const count = selectedIds.size;
-  document.getElementById('selecionadosCount').innerText = count ? `${count} selecionado(s)` : '';
-  const btn = document.getElementById('btnAcaoLote');
-  if (btn) btn.disabled = count === 0;
-}
+function updateLoteButton() { const count = selectedIds.size; document.getElementById('selecionadosCount').innerText = count ? `${count} selecionado(s)` : ''; const btn = document.getElementById('btnAcaoLote'); if (btn) btn.disabled = count === 0; }
 
 // ==================== CRUD CLIENTES ====================
 async function saveClient() {
@@ -1488,14 +1369,8 @@ async function saveClient() {
     updateDashboard();
     alert('Cliente salvo com sucesso!');
     switchTab('dashboardTab');
-  } catch (e) {
-    console.error('Erro ao salvar:', e);
-    alert('Erro ao salvar: ' + (e.message || 'Verifique o console.'));
-  } finally {
-    btn.innerHTML = '<i class="bi bi-save"></i> Salvar';
-    btn.classList.remove('btn-loading');
-    isLoading = false;
-  }
+  } catch (e) { console.error('Erro ao salvar:', e); alert('Erro ao salvar: ' + (e.message || 'Verifique o console.')); }
+  finally { btn.innerHTML = '<i class="bi bi-save"></i> Salvar'; btn.classList.remove('btn-loading'); isLoading = false; }
 }
 
 function editarCliente(id) {
@@ -1540,60 +1415,30 @@ function editarCliente(id) {
 
 async function excluirCliente(id) {
   if (!confirm('Tem certeza que deseja excluir este cliente permanentemente?')) return;
-  try {
-    await db.collection('clients').doc(id).delete();
-    clients = clients.filter(c => c.id !== id);
-    renderTable();
-    updateDashboard();
-    alert('Cliente excluído com sucesso.');
-  } catch (e) {
-    console.error('Erro ao excluir:', e);
-    alert('Erro ao excluir: ' + e.message);
-  }
+  try { await db.collection('clients').doc(id).delete(); clients = clients.filter(c => c.id !== id); renderTable(); updateDashboard(); alert('Cliente excluído com sucesso.'); }
+  catch (e) { console.error('Erro ao excluir:', e); alert('Erro ao excluir: ' + e.message); }
 }
 
 function clearForm() {
   document.getElementById('clientId').value = '';
   const inputs = document.querySelectorAll('#dadosPrincipais input, #dadosPrincipais select, #dadosPrincipais textarea');
-  inputs.forEach(el => {
-    if (el.tagName === 'SELECT') el.selectedIndex = 0;
-    else if (el.type !== 'checkbox' && el.type !== 'radio') el.value = '';
-  });
+  inputs.forEach(el => { if (el.tagName === 'SELECT') el.selectedIndex = 0; else if (el.type !== 'checkbox' && el.type !== 'radio') el.value = ''; });
   document.getElementById('cQtdVidas').value = 1;
   document.getElementById('cPlanoEscolhido').value = '';
   document.getElementById('cVendedor').value = '';
   document.getElementById('cCodigo').value = '';
-  dependentesTemp = [];
-  renderDependentes();
-  pagamentosTemp = [];
-  renderPagamentos();
-  anexosTemp = [];
-  renderAnexos();
-  interacoesTemp = [];
-  renderInteracoes();
-  limparCamposDependente();
-  limparCamposPagamento();
+  dependentesTemp = []; renderDependentes();
+  pagamentosTemp = []; renderPagamentos();
+  anexosTemp = []; renderAnexos();
+  interacoesTemp = []; renderInteracoes();
+  limparCamposDependente(); limparCamposPagamento();
   document.getElementById('anexoFileInput').value = '';
   switchInternalTab('dadosPrincipais');
 }
 
 // ==================== DEPENDENTES ====================
-function limparCamposDependente() {
-  ['depNome','depCpf','depEmail','depTelefone'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-}
-function adicionarDependente() {
-  const nome = document.getElementById('depNome').value.trim();
-  if (!nome) return alert('Nome do dependente é obrigatório.');
-  const cpf = document.getElementById('depCpf').value.trim();
-  const email = document.getElementById('depEmail').value.trim();
-  const telefone = document.getElementById('depTelefone').value.trim();
-  dependentesTemp.push({ nome, cpf, email, telefone });
-  renderDependentes();
-  limparCamposDependente();
-}
+function limparCamposDependente() { ['depNome','depCpf','depEmail','depTelefone'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); }
+function adicionarDependente() { const nome = document.getElementById('depNome').value.trim(); if (!nome) return alert('Nome do dependente é obrigatório.'); const cpf = document.getElementById('depCpf').value.trim(); const email = document.getElementById('depEmail').value.trim(); const telefone = document.getElementById('depTelefone').value.trim(); dependentesTemp.push({ nome, cpf, email, telefone }); renderDependentes(); limparCamposDependente(); }
 function renderDependentes() {
   const el = document.getElementById('dependentesList');
   if (!el) return;
@@ -1608,41 +1453,12 @@ function renderDependentes() {
     </div>
   `).join('');
 }
-function editarDependente(idx) {
-  const dep = dependentesTemp[idx];
-  if (!dep) return;
-  document.getElementById('depNome').value = dep.nome || '';
-  document.getElementById('depCpf').value = dep.cpf || '';
-  document.getElementById('depEmail').value = dep.email || '';
-  document.getElementById('depTelefone').value = dep.telefone || '';
-  dependentesTemp.splice(idx, 1);
-  renderDependentes();
-  document.getElementById('depNome').focus();
-}
-function removerDependente(idx) {
-  if (!confirm('Remover este dependente?')) return;
-  dependentesTemp.splice(idx, 1);
-  renderDependentes();
-}
+function editarDependente(idx) { const dep = dependentesTemp[idx]; if (!dep) return; document.getElementById('depNome').value = dep.nome || ''; document.getElementById('depCpf').value = dep.cpf || ''; document.getElementById('depEmail').value = dep.email || ''; document.getElementById('depTelefone').value = dep.telefone || ''; dependentesTemp.splice(idx, 1); renderDependentes(); document.getElementById('depNome').focus(); }
+function removerDependente(idx) { if (!confirm('Remover este dependente?')) return; dependentesTemp.splice(idx, 1); renderDependentes(); }
 
 // ==================== PAGAMENTOS ====================
-function limparCamposPagamento() {
-  ['pagData','pagValor','pagForma','pagStatus','pagObs'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-}
-function adicionarPagamento() {
-  const data = document.getElementById('pagData').value;
-  const valor = document.getElementById('pagValor').value;
-  const forma = document.getElementById('pagForma').value;
-  const status = document.getElementById('pagStatus').value;
-  const obs = document.getElementById('pagObs').value;
-  if (!data || !valor) return alert('Data e Valor são obrigatórios.');
-  pagamentosTemp.push({ data, valor, forma, status, obs });
-  renderPagamentos();
-  limparCamposPagamento();
-}
+function limparCamposPagamento() { ['pagData','pagValor','pagForma','pagStatus','pagObs'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); }
+function adicionarPagamento() { const data = document.getElementById('pagData').value; const valor = document.getElementById('pagValor').value; const forma = document.getElementById('pagForma').value; const status = document.getElementById('pagStatus').value; const obs = document.getElementById('pagObs').value; if (!data || !valor) return alert('Data e Valor são obrigatórios.'); pagamentosTemp.push({ data, valor, forma, status, obs }); renderPagamentos(); limparCamposPagamento(); }
 function renderPagamentos() {
   const el = document.getElementById('pagamentosList');
   if (!el) return;
@@ -1657,33 +1473,11 @@ function renderPagamentos() {
     </div>
   `).join('');
 }
-function editarPagamento(idx) {
-  const p = pagamentosTemp[idx];
-  if (!p) return;
-  document.getElementById('pagData').value = p.data || '';
-  document.getElementById('pagValor').value = p.valor || '';
-  document.getElementById('pagForma').value = p.forma || '';
-  document.getElementById('pagStatus').value = p.status || '';
-  document.getElementById('pagObs').value = p.obs || '';
-  pagamentosTemp.splice(idx, 1);
-  renderPagamentos();
-  document.getElementById('pagData').focus();
-}
-function removerPagamento(idx) {
-  if (!confirm('Remover este pagamento?')) return;
-  pagamentosTemp.splice(idx, 1);
-  renderPagamentos();
-}
+function editarPagamento(idx) { const p = pagamentosTemp[idx]; if (!p) return; document.getElementById('pagData').value = p.data || ''; document.getElementById('pagValor').value = p.valor || ''; document.getElementById('pagForma').value = p.forma || ''; document.getElementById('pagStatus').value = p.status || ''; document.getElementById('pagObs').value = p.obs || ''; pagamentosTemp.splice(idx, 1); renderPagamentos(); document.getElementById('pagData').focus(); }
+function removerPagamento(idx) { if (!confirm('Remover este pagamento?')) return; pagamentosTemp.splice(idx, 1); renderPagamentos(); }
 
 // ==================== ANEXOS ====================
-function adicionarAnexos() {
-  const input = document.getElementById('anexoFileInput');
-  const files = input.files;
-  if (!files || !files.length) return alert('Selecione um ou mais arquivos.');
-  for (const file of files) { anexosTemp.push({ nome: file.name, file }); }
-  renderAnexos();
-  input.value = '';
-}
+function adicionarAnexos() { const input = document.getElementById('anexoFileInput'); const files = input.files; if (!files || !files.length) return alert('Selecione um ou mais arquivos.'); for (const file of files) { anexosTemp.push({ nome: file.name, file }); } renderAnexos(); input.value = ''; }
 function renderAnexos() {
   const el = document.getElementById('anexosList');
   if (!el) return;
@@ -1701,24 +1495,10 @@ function renderAnexos() {
     `;
   }).join('');
 }
-function removerAnexo(idx) {
-  if (!confirm('Remover este anexo?')) return;
-  anexosTemp.splice(idx, 1);
-  renderAnexos();
-}
+function removerAnexo(idx) { if (!confirm('Remover este anexo?')) return; anexosTemp.splice(idx, 1); renderAnexos(); }
 
 // ==================== INTERAÇÕES ====================
-function adicionarInteracao() {
-  const tipo = document.getElementById('interacaoTipo').value;
-  const desc = document.getElementById('interacaoDesc').value.trim();
-  let data = document.getElementById('interacaoData').value;
-  if (!desc) return alert('Descreva a interação.');
-  if (!data) data = new Date().toISOString().slice(0, 16);
-  interacoesTemp.push({ tipo, desc, data });
-  renderInteracoes();
-  document.getElementById('interacaoDesc').value = '';
-  document.getElementById('interacaoData').value = '';
-}
+function adicionarInteracao() { const tipo = document.getElementById('interacaoTipo').value; const desc = document.getElementById('interacaoDesc').value.trim(); let data = document.getElementById('interacaoData').value; if (!desc) return alert('Descreva a interação.'); if (!data) data = new Date().toISOString().slice(0, 16); interacoesTemp.push({ tipo, desc, data }); renderInteracoes(); document.getElementById('interacaoDesc').value = ''; document.getElementById('interacaoData').value = ''; }
 function renderInteracoes() {
   const el = document.getElementById('interacoesList');
   if (!el) return;
@@ -1735,11 +1515,7 @@ function renderInteracoes() {
     </div>
   `).join('');
 }
-function removerInteracao(idx) {
-  if (!confirm('Remover esta interação?')) return;
-  interacoesTemp.splice(idx, 1);
-  renderInteracoes();
-}
+function removerInteracao(idx) { if (!confirm('Remover esta interação?')) return; interacoesTemp.splice(idx, 1); renderInteracoes(); }
 
 // ==================== FILTROS SALVOS ====================
 function salvarFiltro() { /* ... */ }
@@ -1760,12 +1536,7 @@ function renderLeads() {
   const busca = document.getElementById('searchLead')?.value.toLowerCase() || '';
   const uf = document.getElementById('filterUfLead')?.value || '';
   const status = document.getElementById('filterStatusLead')?.value || '';
-  let filtered = leadsData.filter(l => {
-    const matchNome = (l.nome || '').toLowerCase().includes(busca);
-    const matchUf = uf === '' || l.uf === uf;
-    const matchStatus = status === '' || l.status === status;
-    return matchNome && matchUf && matchStatus;
-  });
+  let filtered = leadsData.filter(l => { const matchNome = (l.nome || '').toLowerCase().includes(busca); const matchUf = uf === '' || l.uf === uf; const matchStatus = status === '' || l.status === status; return matchNome && matchUf && matchStatus; });
   const total = filtered.length;
   const totalPaginas = Math.ceil(total / leadsPorPagina);
   if (paginaLead > totalPaginas) paginaLead = totalPaginas || 1;
@@ -1773,10 +1544,8 @@ function renderLeads() {
   const paginados = filtered.slice(inicio, inicio + leadsPorPagina);
   const tbody = document.getElementById('leadsBody');
   if (!tbody) return;
-  if (!paginados.length) {
-    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Nenhum lead encontrado.</td></tr>';
-  } else {
-    tbody.innerHTML = paginados.map(l => `
+  if (!paginados.length) { tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Nenhum lead encontrado.</td></tr>'; }
+  else { tbody.innerHTML = paginados.map(l => `
       <tr>
         <td>${l.abertura ? new Date(l.abertura).toLocaleDateString('pt-BR') : '-'}</td>
         <td>${l.nome || '-'}</td>
@@ -1790,43 +1559,21 @@ function renderLeads() {
           <button class="btn btn-sm btn-danger" onclick="excluirLead('${l.id}')"><i class="bi bi-trash"></i></button>
         </td>
       </tr>
-    `).join('');
-  }
+    `).join(''); }
   document.getElementById('leadCountInfo').innerText = `${total} lead(s)`;
   document.getElementById('leadPaginaInfo').innerText = `Página ${paginaLead} de ${totalPaginas || 1}`;
   document.getElementById('btnLeadPrev').disabled = paginaLead <= 1;
   document.getElementById('btnLeadNext').disabled = paginaLead >= totalPaginas;
 }
 function renderPipeline() { /* ... */ }
-function setLeadView(view) {
-  leadView = view;
-  document.getElementById('leadListView').style.display = view === 'lista' ? 'block' : 'none';
-  document.getElementById('leadPipelineView').style.display = view === 'pipeline' ? 'block' : 'none';
-  document.getElementById('viewListBtn').classList.toggle('active', view === 'lista');
-  document.getElementById('viewPipelineBtn').classList.toggle('active', view === 'pipeline');
-  if (view === 'pipeline') renderPipeline();
-}
-function mudarPaginaLead(delta) {
-  paginaLead += delta;
-  if (paginaLead < 1) paginaLead = 1;
-  renderLeads();
-}
+function setLeadView(view) { leadView = view; document.getElementById('leadListView').style.display = view === 'lista' ? 'block' : 'none'; document.getElementById('leadPipelineView').style.display = view === 'pipeline' ? 'block' : 'none'; document.getElementById('viewListBtn').classList.toggle('active', view === 'lista'); document.getElementById('viewPipelineBtn').classList.toggle('active', view === 'pipeline'); if (view === 'pipeline') renderPipeline(); }
+function mudarPaginaLead(delta) { paginaLead += delta; if (paginaLead < 1) paginaLead = 1; renderLeads(); }
 function abrirModalNovoLead() { new bootstrap.Modal(document.getElementById('modalNovoLead')).show(); }
 async function salvarNovoLead() {
   const nome = document.getElementById('novoLeadNome').value.trim();
   const telefone = document.getElementById('novoLeadTelefone').value.trim();
   if (!nome || !telefone) return alert('Nome e telefone são obrigatórios.');
-  const data = {
-    nome,
-    telefone,
-    email: document.getElementById('novoLeadEmail').value.trim() || '',
-    cidade: document.getElementById('novoLeadCidade').value.trim() || '',
-    uf: document.getElementById('novoLeadUf').value || '',
-    status: document.getElementById('novoLeadStatus').value || 'Novo',
-    obs: document.getElementById('novoLeadObs').value || '',
-    abertura: new Date().toISOString(),
-    userId: currentUser.uid
-  };
+  const data = { nome, telefone, email: document.getElementById('novoLeadEmail').value.trim() || '', cidade: document.getElementById('novoLeadCidade').value.trim() || '', uf: document.getElementById('novoLeadUf').value || '', status: document.getElementById('novoLeadStatus').value || 'Novo', obs: document.getElementById('novoLeadObs').value || '', abertura: new Date().toISOString(), userId: currentUser.uid };
   const ref = await db.collection('leads').add(data);
   leadsData.push({ id: ref.id, ...data });
   renderLeads();
@@ -1835,98 +1582,21 @@ async function salvarNovoLead() {
 }
 function editarLead(id) { /* ... */ }
 async function atualizarLead() { /* ... */ }
-async function excluirLead(id) {
-  if (!confirm('Excluir este lead?')) return;
-  await db.collection('leads').doc(id).delete();
-  leadsData = leadsData.filter(l => l.id !== id);
-  renderLeads();
-}
+async function excluirLead(id) { if (!confirm('Excluir este lead?')) return; await db.collection('leads').doc(id).delete(); leadsData = leadsData.filter(l => l.id !== id); renderLeads(); }
 
 // ==================== CONFIGURAÇÕES DE ETIQUETAS ====================
-function renderLeadStatuses() {
-  const el = document.getElementById('leadStatusList');
-  if (!el) return;
-  el.innerHTML = leadStatuses.map(s => `<div class="status-item"><span>${s.name}</span><button class="btn btn-danger btn-sm" onclick="deleteLeadStatus('${s.id}')">Excluir</button></div>`).join('');
-}
-async function addLeadStatus() {
-  const nome = prompt('Nome do novo status para leads:');
-  if (!nome || !nome.trim()) return;
-  await db.collection('leadStatuses').add({ name: nome.trim(), userId: currentUser.uid });
-  await loadLeadStatuses();
-  renderLeadStatuses();
-  preencherSelectsFicha();
-}
-async function deleteLeadStatus(id) {
-  if (!confirm('Remover este status?')) return;
-  await db.collection('leadStatuses').doc(id).delete();
-  await loadLeadStatuses();
-  renderLeadStatuses();
-  preencherSelectsFicha();
-}
-function renderStatuses() {
-  const el = document.getElementById('statusList');
-  if (!el) return;
-  el.innerHTML = statuses.map(s => `<div class="status-item"><span>${s.name}</span><button class="btn btn-danger btn-sm" onclick="deleteStatus('${s.id}')">Excluir</button></div>`).join('');
-}
-async function addStatus() {
-  const nome = prompt('Novo status:');
-  if (!nome || !nome.trim()) return;
-  await db.collection('statuses').add({ name: nome.trim(), userId: currentUser.uid });
-  await loadStatuses();
-  renderStatuses();
-  preencherSelectsFicha();
-}
-async function deleteStatus(id) {
-  if (!confirm('Remover?')) return;
-  await db.collection('statuses').doc(id).delete();
-  await loadStatuses();
-  renderStatuses();
-  preencherSelectsFicha();
-}
-function renderPracasList() {
-  const el = document.getElementById('pracasList');
-  if (!el) return;
-  el.innerHTML = pracas.map(p => `<div class="status-item"><span>${p.name}</span><button class="btn btn-danger btn-sm" onclick="deletePraca('${p.id}')">Excluir</button></div>`).join('');
-}
-async function addPraca() {
-  const nome = document.getElementById('novaPraca').value.trim();
-  if (!nome) return alert('Digite o nome');
-  await db.collection('pracas').add({ name: nome, userId: currentUser.uid });
-  document.getElementById('novaPraca').value = '';
-  await loadPracas();
-  renderPracasList();
-  preencherSelectsFicha();
-  popularFiltroPraca();
-}
-async function deletePraca(id) {
-  if (!confirm('Remover?')) return;
-  await db.collection('pracas').doc(id).delete();
-  await loadPracas();
-  renderPracasList();
-  preencherSelectsFicha();
-  popularFiltroPraca();
-}
-function renderAdministradorasList() {
-  const el = document.getElementById('administradorasList');
-  if (!el) return;
-  el.innerHTML = administradoras.map(a => `<div class="status-item"><span>${a.name}</span><button class="btn btn-danger btn-sm" onclick="deleteAdministradora('${a.id}')">Excluir</button></div>`).join('');
-}
-async function addAdministradora() {
-  const nome = document.getElementById('novaAdministradora').value.trim();
-  if (!nome) return alert('Digite o nome');
-  await db.collection('administradoras').add({ name: nome, userId: currentUser.uid });
-  document.getElementById('novaAdministradora').value = '';
-  await loadAdministradoras();
-  renderAdministradorasList();
-  preencherSelectsFicha();
-}
-async function deleteAdministradora(id) {
-  if (!confirm('Remover?')) return;
-  await db.collection('administradoras').doc(id).delete();
-  await loadAdministradoras();
-  renderAdministradorasList();
-  preencherSelectsFicha();
-}
+function renderLeadStatuses() { const el = document.getElementById('leadStatusList'); if (!el) return; el.innerHTML = leadStatuses.map(s => `<div class="status-item"><span>${s.name}</span><button class="btn btn-danger btn-sm" onclick="deleteLeadStatus('${s.id}')">Excluir</button></div>`).join(''); }
+async function addLeadStatus() { const nome = prompt('Nome do novo status para leads:'); if (!nome || !nome.trim()) return; await db.collection('leadStatuses').add({ name: nome.trim(), userId: currentUser.uid }); await loadLeadStatuses(); renderLeadStatuses(); preencherSelectsFicha(); }
+async function deleteLeadStatus(id) { if (!confirm('Remover este status?')) return; await db.collection('leadStatuses').doc(id).delete(); await loadLeadStatuses(); renderLeadStatuses(); preencherSelectsFicha(); }
+function renderStatuses() { const el = document.getElementById('statusList'); if (!el) return; el.innerHTML = statuses.map(s => `<div class="status-item"><span>${s.name}</span><button class="btn btn-danger btn-sm" onclick="deleteStatus('${s.id}')">Excluir</button></div>`).join(''); }
+async function addStatus() { const nome = prompt('Novo status:'); if (!nome || !nome.trim()) return; await db.collection('statuses').add({ name: nome.trim(), userId: currentUser.uid }); await loadStatuses(); renderStatuses(); preencherSelectsFicha(); }
+async function deleteStatus(id) { if (!confirm('Remover?')) return; await db.collection('statuses').doc(id).delete(); await loadStatuses(); renderStatuses(); preencherSelectsFicha(); }
+function renderPracasList() { const el = document.getElementById('pracasList'); if (!el) return; el.innerHTML = pracas.map(p => `<div class="status-item"><span>${p.name}</span><button class="btn btn-danger btn-sm" onclick="deletePraca('${p.id}')">Excluir</button></div>`).join(''); }
+async function addPraca() { const nome = document.getElementById('novaPraca').value.trim(); if (!nome) return alert('Digite o nome'); await db.collection('pracas').add({ name: nome, userId: currentUser.uid }); document.getElementById('novaPraca').value = ''; await loadPracas(); renderPracasList(); preencherSelectsFicha(); popularFiltroPraca(); }
+async function deletePraca(id) { if (!confirm('Remover?')) return; await db.collection('pracas').doc(id).delete(); await loadPracas(); renderPracasList(); preencherSelectsFicha(); popularFiltroPraca(); }
+function renderAdministradorasList() { const el = document.getElementById('administradorasList'); if (!el) return; el.innerHTML = administradoras.map(a => `<div class="status-item"><span>${a.name}</span><button class="btn btn-danger btn-sm" onclick="deleteAdministradora('${a.id}')">Excluir</button></div>`).join(''); }
+async function addAdministradora() { const nome = document.getElementById('novaAdministradora').value.trim(); if (!nome) return alert('Digite o nome'); await db.collection('administradoras').add({ name: nome, userId: currentUser.uid }); document.getElementById('novaAdministradora').value = ''; await loadAdministradoras(); renderAdministradorasList(); preencherSelectsFicha(); }
+async function deleteAdministradora(id) { if (!confirm('Remover?')) return; await db.collection('administradoras').doc(id).delete(); await loadAdministradoras(); renderAdministradorasList(); preencherSelectsFicha(); }
 function renderAcomodacoesList() { /* similar */ }
 async function addAcomodacao() { /* similar */ }
 async function deleteAcomodacao(id) { /* similar */ }
@@ -1968,46 +1638,21 @@ async function addPessoa() {
   renderPessoasList();
   carregarVendedoresSelect();
 }
-async function deletePessoa(id) {
-  if (!confirm('Remover esta pessoa?')) return;
-  await db.collection('pessoas').doc(id).delete();
-  await loadPessoas();
-  renderPessoasList();
-  carregarVendedoresSelect();
-}
+async function deletePessoa(id) { if (!confirm('Remover esta pessoa?')) return; await db.collection('pessoas').doc(id).delete(); await loadPessoas(); renderPessoasList(); carregarVendedoresSelect(); }
 
 // ==================== AÇÕES EM LOTE ====================
-function toggleRow(id) {
-  if (selectedIds.has(id)) selectedIds.delete(id);
-  else selectedIds.add(id);
-  updateLoteButton();
-}
-function toggleSelectAll() {
-  const checked = document.getElementById('selectAll').checked;
-  document.querySelectorAll('.row-checkbox').forEach(cb => {
-    cb.checked = checked;
-    const id = cb.dataset.id;
-    if (checked) selectedIds.add(id);
-    else selectedIds.delete(id);
-  });
-  updateLoteButton();
-}
+function toggleRow(id) { if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id); updateLoteButton(); }
+function toggleSelectAll() { const checked = document.getElementById('selectAll').checked; document.querySelectorAll('.row-checkbox').forEach(cb => { cb.checked = checked; const id = cb.dataset.id; if (checked) selectedIds.add(id); else selectedIds.delete(id); }); updateLoteButton(); }
 function abrirModalLote() { new bootstrap.Modal(document.getElementById('modalLote')).show(); }
 function handleAcaoLoteChange() {
   const acao = document.getElementById('acaoLote').value;
   const div = document.getElementById('parametrosLote');
   div.innerHTML = '';
-  if (acao === 'status') {
-    div.innerHTML = `<select id="loteStatus" class="form-select"><option value="">Novo Status</option>${statuses.map(s => `<option value="${s.name}">${s.name}</option>`).join('')}</select>`;
-  } else if (acao === 'praca') {
-    div.innerHTML = `<select id="lotePraca" class="form-select"><option value="">Nova Praça</option>${pracas.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}</select>`;
-  } else if (acao === 'administradora') {
-    div.innerHTML = `<select id="loteAdmin" class="form-select"><option value="">Nova Admin</option>${administradoras.map(a => `<option value="${a.name}">${a.name}</option>`).join('')}</select>`;
-  } else if (acao === 'dataPagamento') {
-    div.innerHTML = `<input type="date" id="loteData" class="form-control">`;
-  } else if (acao === 'codigo') {
-    div.innerHTML = `<input type="text" id="loteCodigo" class="form-control" placeholder="Novo Código">`;
-  }
+  if (acao === 'status') { div.innerHTML = `<select id="loteStatus" class="form-select"><option value="">Novo Status</option>${statuses.map(s => `<option value="${s.name}">${s.name}</option>`).join('')}</select>`; }
+  else if (acao === 'praca') { div.innerHTML = `<select id="lotePraca" class="form-select"><option value="">Nova Praça</option>${pracas.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}</select>`; }
+  else if (acao === 'administradora') { div.innerHTML = `<select id="loteAdmin" class="form-select"><option value="">Nova Admin</option>${administradoras.map(a => `<option value="${a.name}">${a.name}</option>`).join('')}</select>`; }
+  else if (acao === 'dataPagamento') { div.innerHTML = `<input type="date" id="loteData" class="form-control">`; }
+  else if (acao === 'codigo') { div.innerHTML = `<input type="text" id="loteCodigo" class="form-control" placeholder="Novo Código">`; }
 }
 async function executarAcaoLote() {
   const acao = document.getElementById('acaoLote').value;
@@ -2015,47 +1660,20 @@ async function executarAcaoLote() {
   const ids = Array.from(selectedIds);
   if (!ids.length) return alert('Nenhum selecionado');
   const updates = {};
-  if (acao === 'status') {
-    const val = document.getElementById('loteStatus')?.value;
-    if (!val) return alert('Selecione um status');
-    updates.status = val;
-  } else if (acao === 'praca') {
-    const val = document.getElementById('lotePraca')?.value;
-    if (!val) return alert('Selecione uma praça');
-    updates.praca = val;
-  } else if (acao === 'administradora') {
-    const val = document.getElementById('loteAdmin')?.value;
-    if (!val) return alert('Selecione uma administradora');
-    updates.administradora = val;
-  } else if (acao === 'dataPagamento') {
-    const val = document.getElementById('loteData')?.value;
-    if (!val) return alert('Selecione uma data');
-    updates.dataPagamento = val;
-  } else if (acao === 'codigo') {
-    const val = document.getElementById('loteCodigo')?.value.trim();
-    updates.codigo = val;
-  } else if (acao === 'excluir') {
+  if (acao === 'status') { const val = document.getElementById('loteStatus')?.value; if (!val) return alert('Selecione um status'); updates.status = val; }
+  else if (acao === 'praca') { const val = document.getElementById('lotePraca')?.value; if (!val) return alert('Selecione uma praça'); updates.praca = val; }
+  else if (acao === 'administradora') { const val = document.getElementById('loteAdmin')?.value; if (!val) return alert('Selecione uma administradora'); updates.administradora = val; }
+  else if (acao === 'dataPagamento') { const val = document.getElementById('loteData')?.value; if (!val) return alert('Selecione uma data'); updates.dataPagamento = val; }
+  else if (acao === 'codigo') { const val = document.getElementById('loteCodigo')?.value.trim(); updates.codigo = val; }
+  else if (acao === 'excluir') {
     if (!confirm('Excluir permanentemente os clientes selecionados?')) return;
-    for (const id of ids) {
-      await db.collection('clients').doc(id).delete();
-      clients = clients.filter(c => c.id !== id);
-    }
-    selectedIds.clear();
-    renderTable();
-    updateDashboard();
-    alert('Clientes excluídos');
+    for (const id of ids) { await db.collection('clients').doc(id).delete(); clients = clients.filter(c => c.id !== id); }
+    selectedIds.clear(); renderTable(); updateDashboard(); alert('Clientes excluídos');
     bootstrap.Modal.getInstance(document.getElementById('modalLote')).hide();
     return;
   }
-  for (const id of ids) {
-    await db.collection('clients').doc(id).update(updates);
-    const idx = clients.findIndex(c => c.id === id);
-    if (idx !== -1) clients[idx] = { ...clients[idx], ...updates };
-  }
-  selectedIds.clear();
-  renderTable();
-  updateDashboard();
-  alert('Ação aplicada com sucesso');
+  for (const id of ids) { await db.collection('clients').doc(id).update(updates); const idx = clients.findIndex(c => c.id === id); if (idx !== -1) clients[idx] = { ...clients[idx], ...updates }; }
+  selectedIds.clear(); renderTable(); updateDashboard(); alert('Ação aplicada com sucesso');
   bootstrap.Modal.getInstance(document.getElementById('modalLote')).hide();
 }
 
@@ -2083,36 +1701,20 @@ function formatarNumero(valor) {
   if (isNaN(valor) || valor === null || valor === undefined) return '0,00';
   return valor.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
-function formatarValorInput(el) {
-  let val = el.value.replace(/\D/g,'');
-  if (val) { val = (parseFloat(val)/100).toFixed(2); el.value = val.replace('.',','); }
-}
+function formatarValorInput(el) { let val = el.value.replace(/\D/g,''); if (val) { val = (parseFloat(val)/100).toFixed(2); el.value = val.replace('.',','); } }
 function gerarRelatorio(){ alert('Função de relatório em desenvolvimento.'); }
-function formatarDataBr(data) {
-  if (!data) return '-';
-  const d = new Date(data);
-  return d.toLocaleDateString('pt-BR');
-}
+function formatarDataBr(data) { if (!data) return '-'; const d = new Date(data); return d.toLocaleDateString('pt-BR'); }
 
 // ============================================================
 // ==================== FUNÇÕES DE TAREFAS (COMPLETAS) ====================
 // ============================================================
 function switchTarefaView(view) {
   tarefaView = view;
-  document.querySelectorAll('#tarefaSubTabs .nav-link').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.view === view);
-  });
+  document.querySelectorAll('#tarefaSubTabs .nav-link').forEach(btn => { btn.classList.toggle('active', btn.dataset.view === view); });
   document.querySelectorAll('.tarefa-view').forEach(el => el.style.display = 'none');
-  if (view === 'lista') {
-    document.getElementById('tarefaListView').style.display = 'block';
-    renderTarefas();
-  } else if (view === 'calendario') {
-    document.getElementById('tarefaCalendarioView').style.display = 'block';
-    renderCalendarioTarefa();
-  } else if (view === 'dashboard') {
-    document.getElementById('tarefaDashboardView').style.display = 'block';
-    renderDashboardTarefas();
-  }
+  if (view === 'lista') { document.getElementById('tarefaListView').style.display = 'block'; renderTarefas(); }
+  else if (view === 'calendario') { document.getElementById('tarefaCalendarioView').style.display = 'block'; renderCalendarioTarefa(); }
+  else if (view === 'dashboard') { document.getElementById('tarefaDashboardView').style.display = 'block'; renderDashboardTarefas(); }
 }
 function renderTarefas() {
   const container = document.getElementById('tarefaListContainer');
@@ -2122,31 +1724,19 @@ function renderTarefas() {
   const busca = document.getElementById('filtroTarefaBusca')?.value.toLowerCase() || '';
   let lista = [...tarefas];
   if (statusFiltro === 'pendente') lista = lista.filter(t => !t.concluida);
-  else if (statusFiltro === 'hoje') {
-    const hoje = new Date().toISOString().split('T')[0];
-    lista = lista.filter(t => t.data === hoje && !t.concluida);
-  } else if (statusFiltro === 'vencida') {
-    const hoje = new Date().toISOString().split('T')[0];
-    lista = lista.filter(t => t.data < hoje && !t.concluida);
-  } else if (statusFiltro === 'concluida') lista = lista.filter(t => t.concluida);
-  if (busca) {
-    lista = lista.filter(t => (t.titulo||'').toLowerCase().includes(busca) || ((t.leadNome||'').toLowerCase().includes(busca)));
-  }
+  else if (statusFiltro === 'hoje') { const hoje = new Date().toISOString().split('T')[0]; lista = lista.filter(t => t.data === hoje && !t.concluida); }
+  else if (statusFiltro === 'vencida') { const hoje = new Date().toISOString().split('T')[0]; lista = lista.filter(t => t.data < hoje && !t.concluida); }
+  else if (statusFiltro === 'concluida') lista = lista.filter(t => t.concluida);
+  if (busca) { lista = lista.filter(t => (t.titulo||'').toLowerCase().includes(busca) || ((t.leadNome||'').toLowerCase().includes(busca))); }
   if (ordenar === 'prazo') lista.sort((a,b) => (a.data||'').localeCompare(b.data||''));
   else if (ordenar === 'criacao') lista.sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
-  else if (ordenar === 'urgencia') {
-    const ordem = {'Urgente':0,'Alta':1,'Normal':2,'Baixa':3};
-    lista.sort((a,b) => (ordem[a.urgencia]||2) - (ordem[b.urgencia]||2));
-  }
+  else if (ordenar === 'urgencia') { const ordem = {'Urgente':0,'Alta':1,'Normal':2,'Baixa':3}; lista.sort((a,b) => (ordem[a.urgencia]||2) - (ordem[b.urgencia]||2)); }
   const hoje = new Date().toISOString().split('T')[0];
   document.getElementById('statPendentes').innerText = tarefas.filter(t => !t.concluida).length;
   document.getElementById('statHoje').innerText = tarefas.filter(t => t.data === hoje && !t.concluida).length;
   document.getElementById('statVencidas').innerText = tarefas.filter(t => t.data < hoje && !t.concluida).length;
   document.getElementById('statConcluidas').innerText = tarefas.filter(t => t.concluida).length;
-  if (!lista.length) {
-    container.innerHTML = '<p class="text-muted text-center py-3">Nenhuma tarefa encontrada.</p>';
-    return;
-  }
+  if (!lista.length) { container.innerHTML = '<p class="text-muted text-center py-3">Nenhuma tarefa encontrada.</p>'; return; }
   container.innerHTML = lista.map(t => {
     const hojeStr = new Date().toISOString().split('T')[0];
     let classe = '';
@@ -2173,15 +1763,7 @@ function renderTarefas() {
     `;
   }).join('');
 }
-function limparFiltrosTarefa() {
-  const status = document.getElementById('filtroTarefaStatus');
-  const ordenar = document.getElementById('filtroTarefaOrdenar');
-  const busca = document.getElementById('filtroTarefaBusca');
-  if (status) status.value = 'todas';
-  if (ordenar) ordenar.value = 'prazo';
-  if (busca) busca.value = '';
-  renderTarefas();
-}
+function limparFiltrosTarefa() { const status = document.getElementById('filtroTarefaStatus'); const ordenar = document.getElementById('filtroTarefaOrdenar'); const busca = document.getElementById('filtroTarefaBusca'); if (status) status.value = 'todas'; if (ordenar) ordenar.value = 'prazo'; if (busca) busca.value = ''; renderTarefas(); }
 function renderCalendarioTarefa() {
   const mes = calendarioMesTarefa, ano = calendarioAnoTarefa;
   const titulo = document.getElementById('calendarioTarefaTitulo');
@@ -2208,10 +1790,7 @@ function renderCalendarioTarefa() {
   const lista = document.getElementById('tarefasDoDiaLista');
   if (!lista) return;
   const tarefasDoDia = tarefas.filter(t => t.data === diaSelecionadoTarefa);
-  if (!tarefasDoDia.length) {
-    lista.innerHTML = '<p class="text-muted">Nenhuma tarefa para este dia.</p>';
-    return;
-  }
+  if (!tarefasDoDia.length) { lista.innerHTML = '<p class="text-muted">Nenhuma tarefa para este dia.</p>'; return; }
   lista.innerHTML = tarefasDoDia.map(t => `
     <div class="tarefa-card">
       <div>
@@ -2226,25 +1805,15 @@ function renderCalendarioTarefa() {
     </div>
   `).join('');
 }
-function selecionarDiaTarefa(data) {
-  diaSelecionadoTarefa = data;
-  renderCalendarioTarefa();
-}
-function mudarMesTarefa(delta) {
-  calendarioMesTarefa += delta;
-  if (calendarioMesTarefa > 11) { calendarioMesTarefa = 0; calendarioAnoTarefa++; }
-  if (calendarioMesTarefa < 0) { calendarioMesTarefa = 11; calendarioAnoTarefa--; }
-  renderCalendarioTarefa();
-}
+function selecionarDiaTarefa(data) { diaSelecionadoTarefa = data; renderCalendarioTarefa(); }
+function mudarMesTarefa(delta) { calendarioMesTarefa += delta; if (calendarioMesTarefa > 11) { calendarioMesTarefa = 0; calendarioAnoTarefa++; } if (calendarioMesTarefa < 0) { calendarioMesTarefa = 11; calendarioAnoTarefa--; } renderCalendarioTarefa(); }
 function renderDashboardTarefas() {
   const canvas1 = document.getElementById('tarefaTipoChart');
   if (canvas1) {
     if (charts.tarefaTipo) charts.tarefaTipo.destroy();
     const ctx = canvas1.getContext('2d');
     const tipos = {};
-    tarefas.filter(t => !t.concluida).forEach(t => {
-      tipos[t.tipo || 'Tarefa'] = (tipos[t.tipo || 'Tarefa'] || 0) + 1;
-    });
+    tarefas.filter(t => !t.concluida).forEach(t => { tipos[t.tipo || 'Tarefa'] = (tipos[t.tipo || 'Tarefa'] || 0) + 1; });
     charts.tarefaTipo = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(tipos), datasets: [{ data: Object.values(tipos), backgroundColor: ['#6c5ce7','#00b894','#fdcb6e','#e17055','#0984e3'] }] } });
   }
   const canvas2 = document.getElementById('tarefaUrgenciaChart');
@@ -2252,9 +1821,7 @@ function renderDashboardTarefas() {
     if (charts.tarefaUrgencia) charts.tarefaUrgencia.destroy();
     const ctx = canvas2.getContext('2d');
     const urgencias = {};
-    tarefas.filter(t => !t.concluida).forEach(t => {
-      urgencias[t.urgencia || 'Normal'] = (urgencias[t.urgencia || 'Normal'] || 0) + 1;
-    });
+    tarefas.filter(t => !t.concluida).forEach(t => { urgencias[t.urgencia || 'Normal'] = (urgencias[t.urgencia || 'Normal'] || 0) + 1; });
     charts.tarefaUrgencia = new Chart(ctx, { type: 'bar', data: { labels: Object.keys(urgencias), datasets: [{ data: Object.values(urgencias), backgroundColor: ['#e17055','#fdcb6e','#6c5ce7','#6c757d'] }] } });
   }
   const canvas3 = document.getElementById('tarefaConclusoesChart');
@@ -2263,12 +1830,7 @@ function renderDashboardTarefas() {
     const ctx = canvas3.getContext('2d');
     const hoje = new Date();
     const dias = [];
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date(hoje);
-      d.setDate(d.getDate() - i);
-      const key = d.toISOString().split('T')[0];
-      dias.push({ key, label: d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) });
-    }
+    for (let i = 29; i >= 0; i--) { const d = new Date(hoje); d.setDate(d.getDate() - i); const key = d.toISOString().split('T')[0]; dias.push({ key, label: d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) }); }
     const concluidos = dias.map(d => tarefas.filter(t => t.concluida && t.data === d.key).length);
     charts.tarefaConclusoes = new Chart(ctx, { type: 'line', data: { labels: dias.map(d => d.label), datasets: [{ label: 'Concluídas', data: concluidos, borderColor: '#00b894', fill: false }] } });
   }
@@ -2304,12 +1866,8 @@ function editarTarefa(id) {
   document.getElementById('tarefaDesc').value = t.descricao || '';
   document.getElementById('tarefaConcluida').checked = t.concluida || false;
   document.getElementById('tarefaLeadId').value = t.leadId || '';
-  if (t.leadId) {
-    const lead = leadsData.find(l => l.id === t.leadId);
-    document.getElementById('tarefaLeadSelecionado').innerHTML = lead ? `<span class="badge bg-info">🔗 ${lead.nome}</span>` : '';
-  } else {
-    document.getElementById('tarefaLeadSelecionado').innerHTML = '';
-  }
+  if (t.leadId) { const lead = leadsData.find(l => l.id === t.leadId); document.getElementById('tarefaLeadSelecionado').innerHTML = lead ? `<span class="badge bg-info">🔗 ${lead.nome}</span>` : ''; }
+  else { document.getElementById('tarefaLeadSelecionado').innerHTML = ''; }
   document.getElementById('tarefaLeadBusca').value = '';
   document.getElementById('btnExcluirTarefa').style.display = 'inline-block';
   modal.show();
@@ -2322,160 +1880,65 @@ async function salvarTarefa() {
   if (!data) return alert('A data é obrigatória.');
   const leadId = document.getElementById('tarefaLeadId').value;
   const leadNome = leadId ? (leadsData.find(l => l.id === leadId)?.nome || '') : '';
-  const obj = {
-    titulo,
-    tipo: document.getElementById('tarefaTipo').value,
-    data,
-    hora: document.getElementById('tarefaHora').value,
-    urgencia: document.getElementById('tarefaUrgencia').value,
-    descricao: document.getElementById('tarefaDesc').value,
-    concluida: document.getElementById('tarefaConcluida').checked,
-    leadId,
-    leadNome,
-    userId: currentUser.uid,
-    updatedAt: new Date().toISOString()
-  };
+  const obj = { titulo, tipo: document.getElementById('tarefaTipo').value, data, hora: document.getElementById('tarefaHora').value, urgencia: document.getElementById('tarefaUrgencia').value, descricao: document.getElementById('tarefaDesc').value, concluida: document.getElementById('tarefaConcluida').checked, leadId, leadNome, userId: currentUser.uid, updatedAt: new Date().toISOString() };
   try {
-    if (id) {
-      await db.collection('tarefas').doc(id).update(obj);
-      const idx = tarefas.findIndex(t => t.id === id);
-      if (idx !== -1) tarefas[idx] = { ...tarefas[idx], ...obj };
-    } else {
-      obj.createdAt = new Date().toISOString();
-      const ref = await db.collection('tarefas').add(obj);
-      tarefas.push({ id: ref.id, ...obj });
-    }
+    if (id) { await db.collection('tarefas').doc(id).update(obj); const idx = tarefas.findIndex(t => t.id === id); if (idx !== -1) tarefas[idx] = { ...tarefas[idx], ...obj }; }
+    else { obj.createdAt = new Date().toISOString(); const ref = await db.collection('tarefas').add(obj); tarefas.push({ id: ref.id, ...obj }); }
     bootstrap.Modal.getInstance(document.getElementById('modalTarefa')).hide();
-    renderTarefas();
-    renderCalendarioTarefa();
-    renderDashboardTarefas();
-  } catch(e) {
-    console.error('Erro ao salvar tarefa:', e);
-    alert('Erro ao salvar: ' + e.message);
-  }
+    renderTarefas(); renderCalendarioTarefa(); renderDashboardTarefas();
+  } catch(e) { console.error('Erro ao salvar tarefa:', e); alert('Erro ao salvar: ' + e.message); }
 }
 async function excluirTarefa(id) {
   if (!confirm('Excluir esta tarefa?')) return;
-  try {
-    await db.collection('tarefas').doc(id).delete();
-    tarefas = tarefas.filter(t => t.id !== id);
-    bootstrap.Modal.getInstance(document.getElementById('modalTarefa'))?.hide();
-    renderTarefas();
-    renderCalendarioTarefa();
-    renderDashboardTarefas();
-  } catch(e) {
-    console.error('Erro ao excluir tarefa:', e);
-    alert('Erro ao excluir: ' + e.message);
-  }
+  try { await db.collection('tarefas').doc(id).delete(); tarefas = tarefas.filter(t => t.id !== id); bootstrap.Modal.getInstance(document.getElementById('modalTarefa'))?.hide(); renderTarefas(); renderCalendarioTarefa(); renderDashboardTarefas(); }
+  catch(e) { console.error('Erro ao excluir tarefa:', e); alert('Erro ao excluir: ' + e.message); }
 }
 async function toggleConcluirTarefa(id) {
   const t = tarefas.find(t => t.id === id);
   if (!t) return;
-  try {
-    await db.collection('tarefas').doc(id).update({ concluida: !t.concluida });
-    t.concluida = !t.concluida;
-    renderTarefas();
-    renderCalendarioTarefa();
-    renderDashboardTarefas();
-  } catch(e) {
-    console.error('Erro ao concluir tarefa:', e);
-    alert('Erro: ' + e.message);
-  }
+  try { await db.collection('tarefas').doc(id).update({ concluida: !t.concluida }); t.concluida = !t.concluida; renderTarefas(); renderCalendarioTarefa(); renderDashboardTarefas(); }
+  catch(e) { console.error('Erro ao concluir tarefa:', e); alert('Erro: ' + e.message); }
 }
 function buscarLeadsParaTarefa(termo) {
   const resultados = document.getElementById('tarefaLeadResultados');
   if (!resultados) return;
   if (!termo.trim()) { resultados.style.display = 'none'; return; }
   const filtrados = leadsData.filter(l => (l.nome || '').toLowerCase().includes(termo.toLowerCase())).slice(0, 5);
-  if (!filtrados.length) {
-    resultados.innerHTML = '<div class="dropdown-item text-muted">Nenhum lead encontrado</div>';
-    resultados.style.display = 'block';
-    return;
-  }
-  resultados.innerHTML = filtrados.map(l => `
-    <div class="dropdown-item" style="cursor:pointer;" onclick="selecionarLeadTarefa('${l.id}','${l.nome}')">${l.nome} ${l.telefone ? '- '+l.telefone : ''}</div>
-  `).join('');
+  if (!filtrados.length) { resultados.innerHTML = '<div class="dropdown-item text-muted">Nenhum lead encontrado</div>'; resultados.style.display = 'block'; return; }
+  resultados.innerHTML = filtrados.map(l => `<div class="dropdown-item" style="cursor:pointer;" onclick="selecionarLeadTarefa('${l.id}','${l.nome}')">${l.nome} ${l.telefone ? '- '+l.telefone : ''}</div>`).join('');
   resultados.style.display = 'block';
 }
-function selecionarLeadTarefa(id, nome) {
-  document.getElementById('tarefaLeadId').value = id;
-  document.getElementById('tarefaLeadSelecionado').innerHTML = `<span class="badge bg-info">🔗 ${nome}</span>`;
-  document.getElementById('tarefaLeadBusca').value = '';
-  document.getElementById('tarefaLeadResultados').style.display = 'none';
-}
+function selecionarLeadTarefa(id, nome) { document.getElementById('tarefaLeadId').value = id; document.getElementById('tarefaLeadSelecionado').innerHTML = `<span class="badge bg-info">🔗 ${nome}</span>`; document.getElementById('tarefaLeadBusca').value = ''; document.getElementById('tarefaLeadResultados').style.display = 'none'; }
 
 // ============================================================
 // ==================== EVENTOS DOMContentLoaded ====================
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.sidebar .nav-link').forEach(el => {
-    el.addEventListener('click', function(e) {
-      const tabId = this.getAttribute('data-tab');
-      if (tabId) switchTab(tabId);
-    });
-  });
+  document.querySelectorAll('.sidebar .nav-link').forEach(el => { el.addEventListener('click', function(e) { const tabId = this.getAttribute('data-tab'); if (tabId) switchTab(tabId); }); });
   document.querySelectorAll('#pesquisaTable thead th[data-col]').forEach(th => {
     th.style.cursor = 'pointer';
-    th.addEventListener('click', function() {
-      const col = this.dataset.col;
-      if (sortColumn === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-      else { sortColumn = col; sortDir = 'asc'; }
-      renderTable();
-    });
+    th.addEventListener('click', function() { const col = this.dataset.col; if (sortColumn === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc'; else { sortColumn = col; sortDir = 'asc'; } renderTable(); });
   });
   const periodoFiltro = document.getElementById('periodoFiltro');
-  if (periodoFiltro) {
-    periodoFiltro.addEventListener('change', function() {
-      const val = this.value;
-      document.getElementById('intervaloDiv').style.display = val === 'intervalo' ? 'block' : 'none';
-      document.getElementById('intervaloFimDiv').style.display = val === 'intervalo' ? 'block' : 'none';
-      updateDashboard();
-    });
-  }
+  if (periodoFiltro) { periodoFiltro.addEventListener('change', function() { const val = this.value; document.getElementById('intervaloDiv').style.display = val === 'intervalo' ? 'block' : 'none'; document.getElementById('intervaloFimDiv').style.display = val === 'intervalo' ? 'block' : 'none'; updateDashboard(); }); }
   document.getElementById('filtroPraca')?.addEventListener('change', updateDashboard);
   document.getElementById('dataInicioIntervalo')?.addEventListener('change', updateDashboard);
   document.getElementById('dataFimIntervalo')?.addEventListener('change', updateDashboard);
   document.getElementById('btnNovaTarefa')?.addEventListener('click', abrirModalTarefa);
-  document.querySelectorAll('#tarefaSubTabs .nav-link').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      const view = this.dataset.view;
-      if (view) switchTarefaView(view);
-    });
-  });
-  ['filtroTarefaStatus', 'filtroTarefaOrdenar', 'filtroTarefaBusca'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.addEventListener('change', renderTarefas);
-      if (id === 'filtroTarefaBusca') el.addEventListener('input', renderTarefas);
-    }
-  });
+  document.querySelectorAll('#tarefaSubTabs .nav-link').forEach(btn => { btn.addEventListener('click', function(e) { const view = this.dataset.view; if (view) switchTarefaView(view); }); });
+  ['filtroTarefaStatus', 'filtroTarefaOrdenar', 'filtroTarefaBusca'].forEach(id => { const el = document.getElementById(id); if (el) { el.addEventListener('change', renderTarefas); if (id === 'filtroTarefaBusca') el.addEventListener('input', renderTarefas); } });
   document.getElementById('btnLimparFiltrosTarefa')?.addEventListener('click', limparFiltrosTarefa);
   document.getElementById('btnCalMesAnt')?.addEventListener('click', () => mudarMesTarefa(-1));
   document.getElementById('btnCalMesProx')?.addEventListener('click', () => mudarMesTarefa(1));
   document.getElementById('btnSalvarTarefa')?.addEventListener('click', salvarTarefa);
-  document.getElementById('btnExcluirTarefa')?.addEventListener('click', function() {
-    const id = document.getElementById('tarefaId').value;
-    if (id) excluirTarefa(id);
-  });
-  document.getElementById('tarefaLeadBusca')?.addEventListener('input', function() {
-    buscarLeadsParaTarefa(this.value);
-  });
-  document.addEventListener('click', function(e) {
-    const container = document.getElementById('tarefaLeadResultados');
-    if (container && !e.target.closest('#tarefaLeadBusca') && !e.target.closest('#tarefaLeadResultados')) {
-      container.style.display = 'none';
-    }
-  });
+  document.getElementById('btnExcluirTarefa')?.addEventListener('click', function() { const id = document.getElementById('tarefaId').value; if (id) excluirTarefa(id); });
+  document.getElementById('tarefaLeadBusca')?.addEventListener('input', function() { buscarLeadsParaTarefa(this.value); });
+  document.addEventListener('click', function(e) { const container = document.getElementById('tarefaLeadResultados'); if (container && !e.target.closest('#tarefaLeadBusca') && !e.target.closest('#tarefaLeadResultados')) container.style.display = 'none'; });
   switchTab('dashboardTab');
   setLeadView('lista');
   switchTarefaView('lista');
   setInterval(atualizarInfoBackup, 60000);
-  document.addEventListener('click', function(e) {
-    const container = document.getElementById('resultadosBuscaGlobal');
-    if (container && !e.target.closest('.left-actions')) container.style.display = 'none';
-    const notif = document.getElementById('notifDropdown');
-    if (notif && !e.target.closest('#btnNotificacoes') && !e.target.closest('#notifDropdown')) notif.classList.remove('show');
-  });
+  document.addEventListener('click', function(e) { const container = document.getElementById('resultadosBuscaGlobal'); if (container && !e.target.closest('.left-actions')) container.style.display = 'none'; const notif = document.getElementById('notifDropdown'); if (notif && !e.target.closest('#btnNotificacoes') && !e.target.closest('#notifDropdown')) notif.classList.remove('show'); });
 });
 function atualizarInfoBackup() { /* placeholder */ }
 </script>
