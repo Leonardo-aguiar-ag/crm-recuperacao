@@ -15,7 +15,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    /* ===== CSS COMPLETO ===== */
     :root {
       --bg: #f4f6fc;
       --card: #ffffff;
@@ -230,6 +229,39 @@
     .dashboard-card.bg-danger { background:linear-gradient(145deg,#e17055,#fd79a8); }
     .dashboard-card.bg-purple { background:linear-gradient(145deg,#6c5ce7,#a29bfe); }
     .dashboard-card.bg-secondary { background:linear-gradient(145deg,#6c757d,#adb5bd); }
+
+    /* ===== NOVOS CARDS (VENDAS E VIDAS) ===== */
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      box-shadow: var(--shadow);
+      transition: all var(--transition);
+      height: 100%;
+    }
+    .stat-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+    .stat-card .stat-label {
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      letter-spacing: 0.8px;
+      margin-bottom: 0.6rem;
+    }
+    .stat-card .stat-value {
+      font-size: 2.75rem;
+      font-weight: 800;
+      color: #1a237e;
+      line-height: 1;
+    }
+    body.dark-mode .stat-card .stat-value { color: #a29bfe; }
+    .stat-card .stat-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 0.6rem;
+    }
+
     .btn { border-radius:60px; padding:0.5rem 1.4rem; font-weight:700; font-size:0.8rem; border:none; transition:background 0.2s ease,transform 0.15s ease; }
     .btn-primary { background:var(--primary); color:white; }
     .btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px); box-shadow:0 6px 20px rgba(108,92,231,0.3); }
@@ -306,6 +338,8 @@
       .table-responsive { font-size:0.7rem; }
       .table thead th, .table tbody td { padding:0.4rem 0.5rem; }
       .busca-global-input { max-width:150px; font-size:0.7rem; }
+      .stat-card .stat-value { font-size: 2.2rem; }
+      .stat-card { padding: 1.2rem; }
     }
     ::-webkit-scrollbar { width:6px; height:6px; }
     ::-webkit-scrollbar-track { background:var(--bg); border-radius:10px; }
@@ -393,9 +427,6 @@
 <!-- ===== SIDEBAR COM LOGO ===== -->
 <div class="sidebar" id="sidebar">
   <div class="logo">
-    <!-- ALTERE O NOME DO ARQUIVO AQUI: -->
-    <!-- Se a imagem estiver na raiz: "logo.png" -->
-    <!-- Se estiver em uma pasta: "img/logo.png" ou "imagens/logo.png" -->
     <img src="logo.png" alt="Hapvida Amel's Conceito" style="max-height:45px; width:auto;" />
   </div>
   <div class="nav-items">
@@ -475,6 +506,24 @@
         <div class="col-md-2"><label>Praça</label><select id="filtroPraca" class="form-select"><option value="">Todas as Praças</option></select></div>
         <div class="col-md-2"><button class="btn btn-warning mt-4" onclick="gerarRelatorio()"><i class="bi bi-file-earmark-pdf"></i> Relatório</button></div>
       </div>
+
+      <!-- ===== NOVOS CARDS: TOTAL DE VENDAS E TOTAL DE VIDAS ===== -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div class="stat-card">
+            <div class="stat-label">Total de Vendas</div>
+            <div class="stat-value" id="dashVendas">0</div>
+            <div class="stat-sub">de <span id="dashTotalPropostas">0</span> no total</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="stat-card">
+            <div class="stat-label">Total de Vidas</div>
+            <div class="stat-value" id="dashVidas">0</div>
+          </div>
+        </div>
+      </div>
+
       <div class="row g-3 mb-4">
         <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-primary"><i class="icon bi bi-file-earmark-text"></i><h6>Propostas</h6><h2 id="dashTotal">0</h2></div></div>
         <div class="col-md-2 col-sm-6"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Implantadas</h6><h2 id="dashImplantados">0</h2></div></div>
@@ -1271,6 +1320,12 @@ function updateDashboard() {
   document.getElementById('dashMediaAtraso').innerText='0';
   document.getElementById('dashMediaTempo').innerText='0';
   document.getElementById('dashTicketMedio').innerText = formatarMoeda(ticketMedio);
+
+  // ===== NOVOS CARDS: TOTAL DE VENDAS E TOTAL DE VIDAS =====
+  document.getElementById('dashVendas').innerText = implantados.length;
+  document.getElementById('dashTotalPropostas').innerText = total;
+  document.getElementById('dashVidas').innerText = totalVidasImplantadas;
+
   atualizarGraficos(filtered);
   renderUltimasVendas();
 }
