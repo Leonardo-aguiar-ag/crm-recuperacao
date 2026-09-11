@@ -163,6 +163,7 @@
     .dashboard-card.bg-purple { background:linear-gradient(145deg,#6c5ce7,#a29bfe); }
     .dashboard-card.bg-secondary { background:linear-gradient(145deg,#6c757d,#adb5bd); }
     .dashboard-card.bg-dark-blue { background:linear-gradient(145deg,#1a237e,#3949ab); }
+    .dashboard-card.bg-teal { background:linear-gradient(145deg,#00838f,#26c6da); }
     .btn { border-radius:60px; padding:0.5rem 1.4rem; font-weight:700; font-size:0.8rem; border:none; transition:background 0.2s ease,transform 0.15s ease; }
     .btn-primary { background:var(--primary); color:white; }
     .btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px); box-shadow:0 6px 20px rgba(108,92,231,0.3); }
@@ -376,18 +377,11 @@
         <div class="col-md-2"><button class="btn btn-warning mt-4" onclick="gerarRelatorio()"><i class="bi bi-file-earmark-pdf"></i> Relatório</button></div>
       </div>
 
-      <!-- ===== LINHA 1: PROPOSTAS / VENDAS / VIDAS / DESISTIU ===== -->
+      <!-- ===== LINHA 1: VENDAS / VIDAS / DESISTIU / MÉDIA ===== -->
       <div class="row g-3 mb-3">
         <div class="col-md-3 col-sm-6">
-          <div class="dashboard-card bg-dark-blue">
-            <i class="icon bi bi-file-earmark-text"></i>
-            <h6>Total de Propostas</h6>
-            <h2 id="dashTotalPropostas">0</h2>
-          </div>
-        </div>
-        <div class="col-md-3 col-sm-6">
           <div class="dashboard-card bg-primary">
-            <i class="icon bi bi-check2-square"></i>
+            <i class="icon bi bi-file-earmark-text"></i>
             <h6>Total de Vendas</h6>
             <h2 id="dashTotal">0</h2>
           </div>
@@ -404,6 +398,13 @@
             <i class="icon bi bi-x-circle"></i>
             <h6>Desistiu</h6>
             <h2 id="dashDesistiu">0</h2>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="dashboard-card bg-dark-blue">
+            <i class="icon bi bi-bar-chart-line"></i>
+            <h6>Média de Vidas / Venda</h6>
+            <h2 id="dashMediaVidas">0,00</h2>
           </div>
         </div>
       </div>
@@ -1062,23 +1063,25 @@ function updateDashboard() {
   }
 
   // ===== CÁLCULOS =====
-  const totalPropostas = filtered.length;                                      // TOTAL de propostas no período (qualquer status)
-  const implantados = filtered.filter(c => c.status === 'Implantado');         // Somente implantadas
-  const totalVendas = implantados.length;                                      // Total de VENDAS (implantadas)
-  const totalVidasImplantadas = implantados.reduce((acc,c) => acc + (parseInt(c.qtdVidas) || 0), 0);
+  const totalPropostas = filtered.length;
   const desistiu = filtered.filter(c => c.status === 'Desistiu').length;
+  const propostasAtivas = filtered.filter(c => c.status !== 'Desistiu');       // exclui desistidas
+  const totalVendas = propostasAtivas.length;                                   // Total de Vendas SEM desistidas
+  const implantados = filtered.filter(c => c.status === 'Implantado');
+  const totalVidas = implantados.reduce((acc,c) => acc + (parseInt(c.qtdVidas) || 0), 0);
+  const mediaVidas = totalVendas > 0 ? (totalVidas / totalVendas) : 0;         // Média sobre propostas ativas
   const valorTotal = filtered.reduce((acc,c) => { let v=String(c.valorComDesconto||'0').replace(/\./g,'').replace(',','.'); return acc+(parseFloat(v)||0); },0);
-  const taxaConversao = totalPropostas > 0 ? Math.round((totalVendas / totalPropostas) * 100) : 0;
+  const taxaConversao = totalPropostas > 0 ? Math.round((implantados.length / totalPropostas) * 100) : 0;
   const inadimplentes = filtered.filter(c => c.statusPagamento === 'Atrasado').length;
   const emDia = filtered.filter(c => c.statusPagamento === 'Pago').length;
   const semInfo = filtered.filter(c => !c.statusPagamento).length;
-  const ticketMedio = totalPropostas > 0 ? valorTotal / totalPropostas : 0;
+  const ticketMedio = totalVendas > 0 ? valorTotal / totalVendas : 0;
 
   // ===== ATUALIZAR CARDS =====
-  document.getElementById('dashTotalPropostas').innerText = totalPropostas;   // Total de Propostas (todas)
-  document.getElementById('dashTotal').innerText = totalVendas;                // Total de Vendas (só implantadas)
-  document.getElementById('dashImplantados').innerText = totalVidasImplantadas; // Total de Vidas
+  document.getElementById('dashTotal').innerText = totalVendas;
+  document.getElementById('dashImplantados').innerText = totalVidas;
   document.getElementById('dashDesistiu').innerText = desistiu;
+  document.getElementById('dashMediaVidas').innerText = mediaVidas.toFixed(2).replace('.', ',');
   document.getElementById('dashProcessado').innerText = formatarMoeda(valorTotal);
   document.getElementById('dashConversao').innerText = taxaConversao + '%';
   document.getElementById('dashInadimplentes').innerText = inadimplentes;
