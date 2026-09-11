@@ -1,0 +1,14 @@
+{
+  "name": "CRM Recupera AI",
+  "short_name": "CRM Recupera",
+  "description": "Sistema de gestão de clientes e leads",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#6c5ce7",
+  "theme_color": "#6c5ce7",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "logo.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "logo.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
