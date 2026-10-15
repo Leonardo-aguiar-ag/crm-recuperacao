@@ -31,10 +31,7 @@
       --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
       --sidebar-width: 220px; --sidebar-collapsed: 60px; --font-size-base: 0.9rem;
     }
-    body.dark-mode {
-      --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #e6edf3; --text-secondary: #8b949e;
-      --primary-light: #1c1a3a; --shadow: 0 12px 40px rgba(0,0,0,0.6); --shadow-hover: 0 20px 50px rgba(0,0,0,0.8);
-    }
+    body.dark-mode { --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #e6edf3; --text-secondary: #8b949e; --primary-light: #1c1a3a; --shadow: 0 12px 40px rgba(0,0,0,0.6); --shadow-hover: 0 20px 50px rgba(0,0,0,0.8); }
     body.fonte-menor { --font-size-base: 0.75rem; }
     body.fonte-padrao { --font-size-base: 0.9rem; }
     body.fonte-maior { --font-size-base: 1.05rem; }
@@ -140,28 +137,8 @@
     .pipeline-card .p-detail { font-size:0.7rem; color:var(--text-secondary); display:flex; justify-content:space-between; margin-top:4px; }
     .view-toggle .btn { border-radius:60px; padding:0.25rem 1rem; font-size:0.75rem; font-weight:600; }
     .view-toggle .btn.active { background:var(--primary); color:white; }
-    @media (max-width:992px) {
-      .sidebar { transform:translateX(-100%); width:var(--sidebar-width); }
-      .sidebar.mobile-open { transform:translateX(0); }
-      .main-content { margin-left:0 !important; }
-      .sidebar .logo span { opacity:1 !important; width:auto !important; }
-      .sidebar .nav-items .nav-link .link-text { opacity:1 !important; width:auto !important; }
-      .sidebar .nav-items .nav-link { justify-content:flex-start !important; padding:0.7rem 1rem !important; }
-      .sidebar .collapse-toggle { display:none; }
-      .mobile-menu-btn { display:inline-block !important; }
-      .topbar .left-actions { width:100%; order:2; }
-      .topbar .nav-actions { width:100%; justify-content:flex-end; }
-      .busca-global-input { max-width:100%; }
-    }
-    @media (max-width:768px) {
-      .container-fluid { padding:0.5rem; }
-      .dashboard-card h2 { font-size:1.6rem; }
-      .dashboard-card { padding:1rem; }
-      .pipeline-column { min-width:160px; }
-      .table-responsive { font-size:0.7rem; }
-      .table thead th, .table tbody td { padding:0.4rem 0.5rem; }
-      .busca-global-input { max-width:150px; font-size:0.7rem; }
-    }
+    @media (max-width:992px) { .sidebar { transform:translateX(-100%); width:var(--sidebar-width); } .sidebar.mobile-open { transform:translateX(0); } .main-content { margin-left:0 !important; } .sidebar .logo span { opacity:1 !important; width:auto !important; } .sidebar .nav-items .nav-link .link-text { opacity:1 !important; width:auto !important; } .sidebar .nav-items .nav-link { justify-content:flex-start !important; padding:0.7rem 1rem !important; } .sidebar .collapse-toggle { display:none; } .mobile-menu-btn { display:inline-block !important; } .topbar .left-actions { width:100%; order:2; } .topbar .nav-actions { width:100%; justify-content:flex-end; } .busca-global-input { max-width:100%; } }
+    @media (max-width:768px) { .container-fluid { padding:0.5rem; } .dashboard-card h2 { font-size:1.6rem; } .dashboard-card { padding:1rem; } .pipeline-column { min-width:160px; } .table-responsive { font-size:0.7rem; } .table thead th, .table tbody td { padding:0.4rem 0.5rem; } .busca-global-input { max-width:150px; font-size:0.7rem; } }
     ::-webkit-scrollbar { width:6px; height:6px; }
     ::-webkit-scrollbar-track { background:var(--bg); border-radius:10px; }
     ::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
@@ -182,13 +159,9 @@
     .badge-medal { font-size:1.2rem; }
     .progress-meta { height:8px; background:var(--border); border-radius:10px; overflow:hidden; }
     .progress-meta .bar { height:100%; background:var(--success); transition:width 0.5s; }
-    .notificacao-item { padding:8px 12px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.2s; }
-    .notificacao-item:hover { background:var(--primary-light); }
-    .notificacao-item .badge { font-size:0.65rem; }
-    .notif-dropdown { position:absolute; top:50px; right:0; width:350px; max-height:400px; overflow-y:auto; background:var(--card); border:1px solid var(--border); border-radius:var(--radius-sm); box-shadow:var(--shadow-hover); display:none; z-index:1060; padding:0.5rem 0; }
-    .notif-dropdown .notif-item { padding:0.5rem 1rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
-    .notif-dropdown .notif-item:hover { background:var(--primary-light); }
-    .notif-dropdown.show { display:block; }
+    .notif-item { padding:8px 12px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.2s; }
+    .notif-item:hover { background:var(--primary-light); }
+    .notif-item .badge { font-size:0.65rem; }
     .forecast-card { background:linear-gradient(145deg,#6c5ce7,#a29bfe); color:white; border-radius:var(--radius); padding:1.5rem; }
     .checklist-item { display:flex; align-items:center; gap:10px; padding:8px 12px; background:var(--bg); border-radius:var(--radius-sm); margin-bottom:6px; }
     .checklist-item .status { width:20px; height:20px; border-radius:50%; border:2px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
@@ -229,6 +202,13 @@
     #tabelaPraca td, #tabelaAdmin td, #tabelaComissoes td { font-size: 0.8rem; }
     .meta-atingida { color: #00b894; font-weight: 700; }
     .meta-abaixo { color: #e17055; font-weight: 700; }
+    #previsaoPagamentosContainer table th { font-size: 0.7rem; }
+    #previsaoPagamentosContainer table td { font-size: 0.8rem; vertical-align: middle; }
+    #previsaoPagamentosContainer .parcela-paga { background: rgba(0,184,148,0.08); }
+    #previsaoPagamentosContainer .parcela-pendente { background: rgba(253,203,110,0.08); }
+    #previsaoPagamentosContainer .parcela-atrasada { background: rgba(225,112,85,0.08); }
+    .notif-dropdown { display: none; }
+    .notif-dropdown.show { display: block; }
   </style>
 </head>
 <body>
@@ -296,12 +276,13 @@
       <div id="resultadosBuscaGlobal" class="dropdown-menu" style="position:absolute;top:40px;left:0;width:100%;max-width:400px;z-index:999;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);max-height:300px;overflow-y:auto;display:none;"></div>
     </div>
     <div class="nav-actions">
-      <button class="btn btn-outline-primary btn-sm" onclick="ativarNotificacoes()" title="Ativar Notificações"><i class="bi bi-bell-fill"></i></button>
-      <button class="btn btn-outline-primary btn-sm position-relative" onclick="toggleNotificacoes()" id="btnNotificacoes">
-        <i class="bi bi-bell"></i>
-        <span class="notif-badge" id="notificacaoBadge">0</span>
-      </button>
-      <div class="notif-dropdown" id="notifDropdown"></div>
+      <div class="position-relative" style="display:inline-block;">
+        <button class="btn btn-outline-primary btn-sm position-relative" onclick="toggleNotificacoes(event)" id="btnNotificacoes" title="Notificações" type="button">
+          <i class="bi bi-bell-fill"></i>
+          <span class="notif-badge" id="notificacaoBadge">0</span>
+        </button>
+        <div id="notifDropdown"></div>
+      </div>
       <button class="btn btn-outline-primary btn-sm" onclick="toggleTheme()" id="btnToggleTheme"><i class="bi bi-moon-stars-fill"></i></button>
       <button class="btn btn-success btn-sm" onclick="exportBackup()"><i class="bi bi-download"></i></button>
       <button class="btn btn-danger btn-sm" onclick="logout()"><i class="bi bi-box-arrow-right"></i></button>
@@ -375,9 +356,14 @@
               <div class="col-md-3"><label>Número Proposta</label><input type="text" id="cNumeroProposta" class="form-control"></div>
               <div class="col-md-6"><label>Nome Titular</label><input type="text" id="cNomeTitular" class="form-control"></div>
               <div class="col-md-3"><label>CPF Titular</label><input type="text" id="cCpfTitular" class="form-control"></div>
-              <div class="col-md-3"><label>CNPJ/CAEPF</label><input type="text" id="cCnpjTitular" class="form-control"></div>
+
+              <!-- CNPJ/CAEPF + Tipo lado a lado -->
+              <div class="col-md-3"><label>CNPJ/CAEPF</label><input type="text" id="cCnpjTitular" class="form-control" placeholder="Digite o número"></div>
+              <div class="col-md-2"><label>Tipo</label><select id="cTipoDocEmp" class="form-select"><option value="CNPJ">CNPJ</option><option value="CAEPF">CAEPF</option></select></div>
+
               <div class="col-md-3"><label>Telefone</label><input type="text" id="cTelefoneTitular" class="form-control"></div>
-              <div class="col-md-3"><label>Email</label><input type="email" id="cEmailTitular" class="form-control"></div>
+              <div class="col-md-2"><label>Email</label><input type="email" id="cEmailTitular" class="form-control"></div>
+
               <div class="col-md-2"><label>Qtd Vidas</label><input type="number" id="cQtdVidas" class="form-control" min="1" value="1"></div>
               <div class="col-md-2"><label>Tipo Cliente</label><select id="cTipoCliente" class="form-select"><option value="">Selecione</option><option value="PF">PF</option><option value="PJ">PJ</option></select></div>
               <div class="col-md-4"><label>Modalidade</label><select id="cModalidadePlano" class="form-select"></select></div>
@@ -386,7 +372,10 @@
               <div class="col-md-3"><label>Acomodação</label><select id="cAcomodacao" class="form-select"></select></div>
               <div class="col-md-3"><label>Status</label><select id="cStatus" class="form-select"></select></div>
               <div class="col-md-3"><label>Implantação</label><input type="date" id="cDataImplantacao" class="form-control"></div>
+
               <div class="col-md-3"><label>Pagamento</label><input type="date" id="cDataPagamento" class="form-control"></div>
+              <div class="col-md-3"><label>Data da Vigência</label><input type="date" id="cDataVigencia" class="form-control"></div>
+
               <div class="col-md-3"><label>Fonte Venda</label><select id="cFonteVenda" class="form-select"></select></div>
               <div class="col-md-3"><label>Valor s/ Desconto</label><input type="text" id="cValorSemDesconto" class="form-control" onblur="formatarValorInput(this)" onfocus="this.value=this.value.replace(/\./g,'').replace(',','.')"></div>
               <div class="col-md-3"><label>Valor c/ Desconto</label><input type="text" id="cValorComDesconto" class="form-control" onblur="formatarValorInput(this)" onfocus="this.value=this.value.replace(/\./g,'').replace(',','.')"></div>
@@ -423,6 +412,10 @@
               <button class="btn btn-secondary btn-sm" onclick="limparCamposPagamento()"><i class="bi bi-eraser"></i> Limpar</button>
             </div>
             <div id="pagamentosList"></div>
+            <div class="card card-custom mt-4" style="background:var(--bg);">
+              <h6 class="fw-bold mb-3"><i class="bi bi-calendar-check me-2"></i>Previsão de Pagamentos <span id="previsaoPlanoLabel" class="badge bg-primary ms-2" style="font-size:0.65rem;"></span></h6>
+              <div id="previsaoPagamentosContainer"><p class="text-muted small">Preencha <strong>Praça</strong>, <strong>Tipo de Cliente</strong>, <strong>Valor c/ Desconto</strong> e <strong>Data de Pagamento</strong> na aba "Dados da Proposta" para ver a previsão.</p></div>
+            </div>
           </div>
           <div class="tab-pane" id="anexosTab" style="display:none;">
             <div class="row g-2 mb-3">
@@ -579,82 +572,22 @@
         <div class="col-md-2"><label>Meta de vendas</label><input type="number" id="anMetaVendas" class="form-control" placeholder="Ex: 20"></div>
         <div class="col-md-1"><button class="btn btn-primary w-100" onclick="salvarMetas()"><i class="bi bi-save"></i></button></div>
       </div>
-
       <div class="row g-3 mb-4">
-        <div class="col-lg-6">
-          <div class="card card-custom h-100">
-            <h6 class="fw-bold mb-3"><i class="bi bi-bar-chart-line me-2"></i>Comparativo de Períodos</h6>
-            <div style="height:200px;"><canvas id="comparativoChart"></canvas></div>
-            <div id="comparativoResumo" class="mt-3 small"></div>
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="card card-custom h-100">
-            <h6 class="fw-bold mb-3"><i class="bi bi-graph-up me-2"></i>Projeção de Receita</h6>
-            <div style="height:200px;"><canvas id="projecaoChart"></canvas></div>
-            <div id="projecaoResumo" class="mt-3 small"></div>
-          </div>
-        </div>
+        <div class="col-lg-6"><div class="card card-custom h-100"><h6 class="fw-bold mb-3"><i class="bi bi-bar-chart-line me-2"></i>Comparativo de Períodos</h6><div style="height:200px;"><canvas id="comparativoChart"></canvas></div><div id="comparativoResumo" class="mt-3 small"></div></div></div>
+        <div class="col-lg-6"><div class="card card-custom h-100"><h6 class="fw-bold mb-3"><i class="bi bi-graph-up me-2"></i>Projeção de Receita</h6><div style="height:200px;"><canvas id="projecaoChart"></canvas></div><div id="projecaoResumo" class="mt-3 small"></div></div></div>
       </div>
-
       <div class="row g-3 mb-4">
-        <div class="col-md-6">
-          <div class="card card-custom">
-            <h6 class="fw-bold mb-3"><i class="bi bi-bullseye me-2"></i>Meta de Valor</h6>
-            <div class="d-flex justify-content-between small mb-2"><span>Progresso</span><span id="metaValorPct">0%</span></div>
-            <div class="progress-meta mb-3" style="height:14px;"><div class="bar" id="metaValorBar" style="width:0%; background:#00b894;"></div></div>
-            <div class="d-flex justify-content-between small"><span>Realizado: <strong id="metaValorReal">R$ 0,00</strong></span><span>Meta: <strong id="metaValorMeta">R$ 0,00</strong></span></div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="card card-custom">
-            <h6 class="fw-bold mb-3"><i class="bi bi-trophy me-2"></i>Meta de Vendas</h6>
-            <div class="d-flex justify-content-between small mb-2"><span>Progresso</span><span id="metaVendasPct">0%</span></div>
-            <div class="progress-meta mb-3" style="height:14px;"><div class="bar" id="metaVendasBar" style="width:0%; background:#6c5ce7;"></div></div>
-            <div class="d-flex justify-content-between small"><span>Realizado: <strong id="metaVendasReal">0</strong></span><span>Meta: <strong id="metaVendasMeta">0</strong></span></div>
-          </div>
-        </div>
+        <div class="col-md-6"><div class="card card-custom"><h6 class="fw-bold mb-3"><i class="bi bi-bullseye me-2"></i>Meta de Valor</h6><div class="d-flex justify-content-between small mb-2"><span>Progresso</span><span id="metaValorPct">0%</span></div><div class="progress-meta mb-3" style="height:14px;"><div class="bar" id="metaValorBar" style="width:0%; background:#00b894;"></div></div><div class="d-flex justify-content-between small"><span>Realizado: <strong id="metaValorReal">R$ 0,00</strong></span><span>Meta: <strong id="metaValorMeta">R$ 0,00</strong></span></div></div></div>
+        <div class="col-md-6"><div class="card card-custom"><h6 class="fw-bold mb-3"><i class="bi bi-trophy me-2"></i>Meta de Vendas</h6><div class="d-flex justify-content-between small mb-2"><span>Progresso</span><span id="metaVendasPct">0%</span></div><div class="progress-meta mb-3" style="height:14px;"><div class="bar" id="metaVendasBar" style="width:0%; background:#6c5ce7;"></div></div><div class="d-flex justify-content-between small"><span>Realizado: <strong id="metaVendasReal">0</strong></span><span>Meta: <strong id="metaVendasMeta">0</strong></span></div></div></div>
       </div>
-
-      <div class="card card-custom mb-4">
-        <h6 class="fw-bold mb-3"><i class="bi bi-geo-alt me-2"></i>Análise por Praça</h6>
-        <div class="table-responsive">
-          <table class="table" id="tabelaPraca">
-            <thead><tr><th>Praça</th><th>Vendas</th><th>Vidas</th><th>Valor Total</th><th>Ticket Médio</th><th>Conversão</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card card-custom mb-4">
-        <h6 class="fw-bold mb-3"><i class="bi bi-building me-2"></i>Análise por Administradora</h6>
-        <div class="table-responsive">
-          <table class="table" id="tabelaAdmin">
-            <thead><tr><th>Administradora</th><th>Vendas</th><th>Vidas</th><th>Valor Total</th><th>Ticket Médio</th><th>% do Total</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card card-custom mb-4">
-        <h6 class="fw-bold mb-3"><i class="bi bi-map me-2"></i>Distribuição por Estado</h6>
-        <div id="mapaBrasil" style="height:500px; border-radius:12px;"></div>
-      </div>
-
+      <div class="card card-custom mb-4"><h6 class="fw-bold mb-3"><i class="bi bi-geo-alt me-2"></i>Análise por Praça</h6><div class="table-responsive"><table class="table" id="tabelaPraca"><thead><tr><th>Praça</th><th>Vendas</th><th>Vidas</th><th>Valor Total</th><th>Ticket Médio</th><th>Conversão</th></tr></thead><tbody></tbody></table></div></div>
+      <div class="card card-custom mb-4"><h6 class="fw-bold mb-3"><i class="bi bi-building me-2"></i>Análise por Administradora</h6><div class="table-responsive"><table class="table" id="tabelaAdmin"><thead><tr><th>Administradora</th><th>Vendas</th><th>Vidas</th><th>Valor Total</th><th>Ticket Médio</th><th>% do Total</th></tr></thead><tbody></tbody></table></div></div>
+      <div class="card card-custom mb-4"><h6 class="fw-bold mb-3"><i class="bi bi-map me-2"></i>Distribuição por Estado</h6><div id="mapaBrasil" style="height:500px; border-radius:12px;"></div></div>
       <div class="card card-custom mb-4">
         <h6 class="fw-bold mb-3"><i class="bi bi-cash-coin me-2"></i>Controle de Comissões (mês atual)</h6>
-        <div class="mb-3">
-          <label>% Comissão padrão</label>
-          <input type="number" id="comissaoPct" class="form-control" style="max-width:200px;" value="5" step="0.1" onchange="renderComissoes()">
-        </div>
-        <div class="table-responsive">
-          <table class="table" id="tabelaComissoes">
-            <thead><tr><th>Vendedor</th><th>Vendas</th><th>Vidas</th><th>Valor Total</th><th>Comissão</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <div class="mb-3"><label>% Comissão padrão</label><input type="number" id="comissaoPct" class="form-control" style="max-width:200px;" value="5" step="0.1" onchange="renderComissoes()"></div>
+        <div class="table-responsive"><table class="table" id="tabelaComissoes"><thead><tr><th>Vendedor</th><th>Vendas</th><th>Vidas</th><th>Valor Total</th><th>Comissão</th></tr></thead><tbody></tbody></table></div>
       </div>
-
       <div class="card card-custom mb-4">
         <h6 class="fw-bold mb-3"><i class="bi bi-wallet2 me-2"></i>Fluxo de Caixa (últimos 6 meses)</h6>
         <div style="height:250px;"><canvas id="fluxoCaixaChart"></canvas></div>
@@ -676,22 +609,16 @@
           <h6>📋 Dados Pessoais</h6>
           <div class="row g-3">
             <div class="col-md-2 text-center">
-              <div class="perfil-avatar mx-auto" id="perfilAvatar" onclick="document.getElementById('uploadFotoPerfilInput').click()">
-                <span class="texto" id="perfilAvatarTexto">L</span>
-                <img id="perfilAvatarImg" style="display:none;" />
-                <div class="overlay">📷</div>
-              </div>
+              <div class="perfil-avatar mx-auto" id="perfilAvatar" onclick="document.getElementById('uploadFotoPerfilInput').click()"><span class="texto" id="perfilAvatarTexto">L</span><img id="perfilAvatarImg" style="display:none;" /><div class="overlay">📷</div></div>
               <input type="file" id="uploadFotoPerfilInput" accept="image/*" style="display:none" onchange="uploadFotoPerfil(event)" />
               <span class="text-muted small">Clique para alterar</span>
             </div>
-            <div class="col-md-10">
-              <div class="row g-3">
-                <div class="col-md-6"><label>Nome Completo</label><input type="text" id="perfilNome" class="form-control" placeholder="Seu nome" /></div>
-                <div class="col-md-6"><label>Telefone / WhatsApp</label><input type="text" id="perfilTelefone" class="form-control" placeholder="(00) 00000-0000" /></div>
-                <div class="col-md-6"><label>Cidade</label><input type="text" id="perfilCidade" class="form-control" placeholder="Cidade - UF" /></div>
-                <div class="col-md-6"><label>Instagram</label><input type="text" id="perfilInstagram" class="form-control" placeholder="@seuinstagram" /></div>
-              </div>
-            </div>
+            <div class="col-md-10"><div class="row g-3">
+              <div class="col-md-6"><label>Nome Completo</label><input type="text" id="perfilNome" class="form-control" placeholder="Seu nome" /></div>
+              <div class="col-md-6"><label>Telefone / WhatsApp</label><input type="text" id="perfilTelefone" class="form-control" placeholder="(00) 00000-0000" /></div>
+              <div class="col-md-6"><label>Cidade</label><input type="text" id="perfilCidade" class="form-control" placeholder="Cidade - UF" /></div>
+              <div class="col-md-6"><label>Instagram</label><input type="text" id="perfilInstagram" class="form-control" placeholder="@seuinstagram" /></div>
+            </div></div>
           </div>
         </div>
         <div class="perfil-section">
@@ -701,46 +628,21 @@
             <div class="col-md-6"><label>Novo Email</label><input type="email" id="perfilNovoEmail" class="form-control" placeholder="novo@email.com" /></div>
             <div class="col-md-6"><label>Senha Atual</label><input type="password" id="perfilSenhaAtual" class="form-control" placeholder="••••••••" /></div>
             <div class="col-md-6"><label>Nova Senha</label><input type="password" id="perfilNovaSenha" class="form-control" placeholder="••••••••" /></div>
-            <div class="col-12">
-              <button class="btn btn-primary" onclick="salvarPerfil()"><i class="bi bi-save"></i> Salvar Alterações</button>
-              <button class="btn btn-danger" onclick="encerrarConta()"><i class="bi bi-trash"></i> Encerrar Conta</button>
-            </div>
+            <div class="col-12"><button class="btn btn-primary" onclick="salvarPerfil()"><i class="bi bi-save"></i> Salvar Alterações</button> <button class="btn btn-danger" onclick="encerrarConta()"><i class="bi bi-trash"></i> Encerrar Conta</button></div>
           </div>
         </div>
         <div class="perfil-section">
           <h6>🎨 Aparência</h6>
           <div class="row g-3">
-            <div class="col-md-6">
-              <label>Tema</label>
-              <div class="tema-opcoes">
-                <button class="btn" onclick="setTheme('light')" data-theme="light">☀️ Claro</button>
-                <button class="btn" onclick="setTheme('dark')" data-theme="dark">🌙 Escuro</button>
-                <button class="btn" onclick="setTheme('system')" data-theme="system">🖥️ Sistema</button>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <label>Tamanho da fonte</label>
-              <div class="fonte-opcoes">
-                <button class="btn" onclick="setFontSize('menor')" data-size="menor">Menor</button>
-                <button class="btn" onclick="setFontSize('padrao')" data-size="padrao">Padrão</button>
-                <button class="btn" onclick="setFontSize('maior')" data-size="maior">Maior</button>
-                <button class="btn" onclick="setFontSize('extra')" data-size="extra">Extra Grande</button>
-              </div>
-            </div>
+            <div class="col-md-6"><label>Tema</label><div class="tema-opcoes"><button class="btn" onclick="setTheme('light')" data-theme="light">☀️ Claro</button><button class="btn" onclick="setTheme('dark')" data-theme="dark">🌙 Escuro</button><button class="btn" onclick="setTheme('system')" data-theme="system">🖥️ Sistema</button></div></div>
+            <div class="col-md-6"><label>Tamanho da fonte</label><div class="fonte-opcoes"><button class="btn" onclick="setFontSize('menor')" data-size="menor">Menor</button><button class="btn" onclick="setFontSize('padrao')" data-size="padrao">Padrão</button><button class="btn" onclick="setFontSize('maior')" data-size="maior">Maior</button><button class="btn" onclick="setFontSize('extra')" data-size="extra">Extra Grande</button></div></div>
           </div>
         </div>
         <div class="perfil-section">
           <h6>ℹ️ Informações do Sistema</h6>
           <div class="row g-3">
-            <div class="col-md-6">
-              <div class="status-item"><span><strong>E-mail de login</strong><br><span id="sistemaEmail">carregando...</span></span></div>
-              <div class="status-item"><span><strong>Membro desde</strong><br><span id="sistemaMembro">carregando...</span></span></div>
-            </div>
-            <div class="col-md-6">
-              <div class="status-item"><span><strong>Serviço vinculado</strong><br><input type="text" id="sistemaServico" class="form-control form-control-sm" value="Amel's Conceito" /></span></div>
-              <div class="status-item"><span><strong>Nível de permissão</strong><br><span id="sistemaPermissao">Gerente</span></span></div>
-              <div class="status-item"><span><strong>Status da conta</strong><br><span class="badge bg-success">Ativa</span></span></div>
-            </div>
+            <div class="col-md-6"><div class="status-item"><span><strong>E-mail de login</strong><br><span id="sistemaEmail">carregando...</span></span></div><div class="status-item"><span><strong>Membro desde</strong><br><span id="sistemaMembro">carregando...</span></span></div></div>
+            <div class="col-md-6"><div class="status-item"><span><strong>Serviço vinculado</strong><br><input type="text" id="sistemaServico" class="form-control form-control-sm" value="Amel's Conceito" /></span></div><div class="status-item"><span><strong>Nível de permissão</strong><br><span id="sistemaPermissao">Gerente</span></span></div><div class="status-item"><span><strong>Status da conta</strong><br><span class="badge bg-success">Ativa</span></span></div></div>
           </div>
         </div>
         <div class="perfil-section">
@@ -778,11 +680,7 @@
         <div class="mb-3"><label class="fw-bold">Descrição</label><textarea id="tarefaDesc" class="form-control" rows="2" placeholder="Detalhes adicionais..."></textarea></div>
         <div class="form-check"><input class="form-check-input" type="checkbox" id="tarefaConcluida" /><label class="form-check-label">Concluída</label></div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button class="btn btn-danger" id="btnExcluirTarefa" style="display:none;">Excluir</button>
-        <button class="btn btn-primary" id="btnSalvarTarefa">Salvar</button>
-      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-danger" id="btnExcluirTarefa" style="display:none;">Excluir</button><button class="btn btn-primary" id="btnSalvarTarefa">Salvar</button></div>
     </div>
   </div>
 </div>
@@ -802,10 +700,7 @@
         <div class="mb-3"><select id="novoLeadStatus" class="form-select"><option value="">Status</option></select></div>
         <div class="mb-3"><textarea id="novoLeadObs" class="form-control" rows="2" placeholder="Observações"></textarea></div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button class="btn btn-primary" id="btnSalvarNovoLead" onclick="salvarNovoLead()">Salvar Lead</button>
-      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" id="btnSalvarNovoLead" onclick="salvarNovoLead()">Salvar Lead</button></div>
     </div>
   </div>
 </div>
@@ -846,6 +741,7 @@ let backupIntervalId = null, backupRunning = false, lastBackupTime = null, nextB
 let filtrosSalvos = [];
 let tarefaView = 'lista';
 let mapaBrasilInstance = null;
+let notificacoesCache = [];
 
 // ==================== TEMA E FONTE ====================
 function setTheme(theme) { document.body.classList.remove('dark-mode'); if (theme === 'dark') document.body.classList.add('dark-mode'); else if (theme === 'system') { if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.body.classList.add('dark-mode'); } localStorage.setItem('theme', theme); atualizarBotoesTema(theme); }
@@ -856,22 +752,16 @@ function carregarPreferencias() { const theme = localStorage.getItem('theme') ||
 
 // ==================== UPLOAD DE FOTO ====================
 async function uploadFotoPerfil(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  if (!currentUser) return alert('Usuário não logado.');
+  const file = event.target.files[0]; if (!file) return; if (!currentUser) return alert('Usuário não logado.');
   try {
     const ref = storage.ref(`perfis/${currentUser.uid}/foto`);
     const snapshot = await ref.put(file);
     const url = await snapshot.ref.getDownloadURL();
     await db.collection('usuarios').doc(currentUser.uid).set({ fotoURL: url }, { merge: true });
-    document.getElementById('userAvatarImg').src = url;
-    document.getElementById('userAvatarImg').style.display = 'block';
-    document.getElementById('userAvatarTexto').style.display = 'none';
-    document.getElementById('perfilAvatarImg').src = url;
-    document.getElementById('perfilAvatarImg').style.display = 'block';
-    document.getElementById('perfilAvatarTexto').style.display = 'none';
-    alert('Foto atualizada com sucesso!');
-  } catch (e) { alert('Erro ao enviar foto: ' + e.message); }
+    document.getElementById('userAvatarImg').src = url; document.getElementById('userAvatarImg').style.display = 'block'; document.getElementById('userAvatarTexto').style.display = 'none';
+    document.getElementById('perfilAvatarImg').src = url; document.getElementById('perfilAvatarImg').style.display = 'block'; document.getElementById('perfilAvatarTexto').style.display = 'none';
+    alert('Foto atualizada!');
+  } catch (e) { alert('Erro: ' + e.message); }
   event.target.value = '';
 }
 
@@ -891,14 +781,7 @@ auth.onAuthStateChanged(async user => {
       document.getElementById('userName').innerText = nome;
       document.getElementById('userEmail').innerText = email;
       document.getElementById('userAvatarTexto').innerText = nome[0].toUpperCase();
-      if (fotoURL) {
-        document.getElementById('userAvatarImg').src = fotoURL;
-        document.getElementById('userAvatarImg').style.display = 'block';
-        document.getElementById('userAvatarTexto').style.display = 'none';
-        document.getElementById('perfilAvatarImg').src = fotoURL;
-        document.getElementById('perfilAvatarImg').style.display = 'block';
-        document.getElementById('perfilAvatarTexto').style.display = 'none';
-      }
+      if (fotoURL) { document.getElementById('userAvatarImg').src = fotoURL; document.getElementById('userAvatarImg').style.display = 'block'; document.getElementById('userAvatarTexto').style.display = 'none'; document.getElementById('perfilAvatarImg').src = fotoURL; document.getElementById('perfilAvatarImg').style.display = 'block'; document.getElementById('perfilAvatarTexto').style.display = 'none'; }
       document.getElementById('userRole').innerText = perfil;
       document.getElementById('perfilNome').value = nome;
       document.getElementById('perfilEmailAtual').value = email;
@@ -906,12 +789,9 @@ auth.onAuthStateChanged(async user => {
       document.getElementById('sistemaMembro').innerText = membroDesde;
       document.getElementById('sistemaPermissao').innerText = perfil;
       document.getElementById('sistemaServico').value = dados.servico || 'Amel\'s Conceito';
-    } catch(e) { console.warn('Erro perfil:', e); }
+    } catch(e) { console.warn(e); }
     loadAll();
-    setTimeout(() => {
-      if (Notification.permission !== 'granted') ativarNotificacoes();
-      verificarTarefasVencidas();
-    }, 5000);
+    setTimeout(() => { if (Notification.permission !== 'granted') ativarNotificacoes(); verificarTarefasVencidas(); }, 5000);
   } else {
     document.getElementById('loginScreen').style.display = 'flex';
   }
@@ -950,6 +830,7 @@ function switchInternalTab(tabId) {
   if (pane) pane.style.display = 'block';
   document.querySelectorAll('#fichaTabs .nav-link').forEach(btn => btn.classList.remove('active'));
   document.querySelector(`#fichaTabs .nav-link[data-tab="${tabId}"]`)?.classList.add('active');
+  if (tabId === 'pagamentosTab') setTimeout(() => renderPrevisaoPagamentos(), 50);
 }
 
 // ==================== LOAD ALL ====================
@@ -957,11 +838,7 @@ async function loadAll() {
   if (isLoading) return;
   isLoading = true;
   try {
-    await Promise.all([
-      loadClients(), loadTarefas(), loadStatuses(), loadPracas(), loadAdministradoras(),
-      loadAcomodacoes(), loadCoparticipacoes(), loadModalidades(), loadFontesVenda(),
-      loadLeads(), loadLeadStatuses(), loadPessoas(), loadFiltrosSalvos()
-    ]);
+    await Promise.all([loadClients(), loadTarefas(), loadStatuses(), loadPracas(), loadAdministradoras(), loadAcomodacoes(), loadCoparticipacoes(), loadModalidades(), loadFontesVenda(), loadLeads(), loadLeadStatuses(), loadPessoas(), loadFiltrosSalvos()]);
     popularFiltroPraca();
     preencherSelectsFicha();
     popularFiltroCodigo();
@@ -973,7 +850,8 @@ async function loadAll() {
     renderLeads();
     carregarVendedoresSelect();
     carregarNotificacoes();
-  } catch(e) { console.error(e); alert('Erro ao carregar: '+e.message); }
+    setInterval(carregarNotificacoes, 60000);
+  } catch(e) { console.error(e); }
   finally { isLoading = false; }
 }
 
@@ -997,23 +875,20 @@ function preencherSelectsFicha() {
   const selects={cStatus:statuses,cPraca:pracas,cAdministradora:administradoras,cAcomodacao:acomodacoes,cCoparticipacao:coparticipacoes,cModalidadePlano:modalidades,cFonteVenda:fontesVenda};
   for(const [id,data] of Object.entries(selects)) {
     const sel=document.getElementById(id); if(!sel) continue;
-    const current=sel.value;
-    sel.innerHTML='<option value="">Selecione</option>';
+    const current=sel.value; sel.innerHTML='<option value="">Selecione</option>';
     data.forEach(item=>{ const name=item.name||item; sel.innerHTML+=`<option value="${name}">${name}</option>`; });
     if(current) sel.value=current;
   }
   const filterSelects={filterStatus:statuses,filterModalidade:modalidades,filterPraca:pracas,filterAdministradora:administradoras,filterFonte:fontesVenda};
   for(const [id,data] of Object.entries(filterSelects)) {
     const sel=document.getElementById(id); if(!sel) continue;
-    const current=sel.value;
-    sel.innerHTML='<option value="ALL">Todos</option>';
+    const current=sel.value; sel.innerHTML='<option value="ALL">Todos</option>';
     data.forEach(item=>sel.innerHTML+=`<option value="${item.name}">${item.name}</option>`);
     if(current && current!=='ALL') sel.value=current;
   }
   ['filterStatusLead','novoLeadStatus'].forEach(id=>{
     const sel=document.getElementById(id); if(!sel) return;
-    const current=sel.value;
-    sel.innerHTML='<option value="">Status</option>';
+    const current=sel.value; sel.innerHTML='<option value="">Status</option>';
     leadStatuses.forEach(s=>sel.innerHTML+=`<option value="${s.name}">${s.name}</option>`);
     if(current) sel.value=current;
   });
@@ -1025,8 +900,7 @@ function popularFiltroCodigo() {
   pessoas.forEach(p => { if (p.codigo && p.codigo.trim() !== '') codigos.push(p.codigo); });
   if (codigos.length === 0) { clients.forEach(c => { if (c.codigo && c.codigo.trim() !== '') codigos.push(c.codigo); }); }
   codigos = [...new Set(codigos)].sort();
-  const currentValue = select.value;
-  select.innerHTML = '<option value="">Todos</option>';
+  const currentValue = select.value; select.innerHTML = '<option value="">Todos</option>';
   codigos.forEach(cod => { select.innerHTML += `<option value="${cod}">${cod}</option>`; });
   if (currentValue && codigos.includes(currentValue)) select.value = currentValue;
 }
@@ -1070,12 +944,7 @@ function updateDashboard() {
   renderUltimasVendas();
 }
 
-function renderUltimasVendas() {
-  const tbody=document.getElementById('ultimasVendasBody'); if(!tbody) return;
-  const ultimas=[...clients].filter(c=>c.data).sort((a,b)=>(b.data||'').localeCompare(a.data||'')).slice(0,5);
-  if(!ultimas.length){ tbody.innerHTML='<tr><td colspan="4" class="text-center text-muted py-3">Nenhuma venda cadastrada.</td></tr>'; return; }
-  tbody.innerHTML=ultimas.map(c=>`<tr><td>${c.numeroProposta||'-'}</td><td>${c.nomeTitular||'-'}</td><td>${c.tipoCliente||'-'}</td><td>${c.data?new Date(c.data).toLocaleDateString('pt-BR'):'-'}</td></tr>`).join('');
-}
+function renderUltimasVendas() { const tbody=document.getElementById('ultimasVendasBody'); if(!tbody) return; const ultimas=[...clients].filter(c=>c.data).sort((a,b)=>(b.data||'').localeCompare(a.data||'')).slice(0,5); if(!ultimas.length){ tbody.innerHTML='<tr><td colspan="4" class="text-center text-muted py-3">Nenhuma venda.</td></tr>'; return; } tbody.innerHTML=ultimas.map(c=>`<tr><td>${c.numeroProposta||'-'}</td><td>${c.nomeTitular||'-'}</td><td>${c.tipoCliente||'-'}</td><td>${c.data?new Date(c.data).toLocaleDateString('pt-BR'):'-'}</td></tr>`).join(''); }
 
 function atualizarGraficos(dados) {
   if(charts.status) charts.status.destroy();
@@ -1155,53 +1024,33 @@ async function saveClient() {
   if (isLoading) return;
   const btn = document.getElementById('btnSalvarCliente'); if (!btn) return;
   const nome = document.getElementById('cNomeTitular').value.trim();
-  if (!nome) { alert('O campo Nome Titular é obrigatório.'); document.getElementById('cNomeTitular').focus(); return; }
+  if (!nome) { alert('Nome Titular é obrigatório.'); document.getElementById('cNomeTitular').focus(); return; }
   btn.innerHTML = '<span class="loading-spinner"></span> Salvando...'; btn.classList.add('btn-loading'); isLoading = true;
   try {
     if (!currentUser) throw new Error('Usuário não logado.');
     const id = document.getElementById('clientId').value;
     const data = {
-      data: document.getElementById('cData').value || '',
-      numeroProposta: document.getElementById('cNumeroProposta').value.trim() || '',
-      nomeTitular: nome,
-      cpfTitular: document.getElementById('cCpfTitular').value.trim() || '',
+      data: document.getElementById('cData').value || '', numeroProposta: document.getElementById('cNumeroProposta').value.trim() || '',
+      nomeTitular: nome, cpfTitular: document.getElementById('cCpfTitular').value.trim() || '',
       cnpjTitular: document.getElementById('cCnpjTitular').value.trim() || '',
+      tipoDocEmp: document.getElementById('cTipoDocEmp').value || 'CNPJ',
+      dataVigencia: document.getElementById('cDataVigencia').value || '',
       telefoneTitular: document.getElementById('cTelefoneTitular').value.trim() || '',
-      emailTitular: document.getElementById('cEmailTitular').value.trim() || '',
-      qtdVidas: parseInt(document.getElementById('cQtdVidas').value) || 1,
-      tipoCliente: document.getElementById('cTipoCliente').value || '',
-      modalidadePlano: document.getElementById('cModalidadePlano').value || '',
-      coparticipacao: document.getElementById('cCoparticipacao').value || '',
-      planoEscolhido: document.getElementById('cPlanoEscolhido').value.trim() || '',
-      acomodacao: document.getElementById('cAcomodacao').value || '',
-      status: document.getElementById('cStatus').value || '',
-      dataImplantacao: document.getElementById('cDataImplantacao').value || '',
-      dataPagamento: document.getElementById('cDataPagamento').value || '',
-      fonteVenda: document.getElementById('cFonteVenda').value || '',
-      valorSemDesconto: document.getElementById('cValorSemDesconto').value || '',
-      valorComDesconto: document.getElementById('cValorComDesconto').value || '',
-      praca: document.getElementById('cPraca').value || '',
-      administradora: document.getElementById('cAdministradora').value || '',
-      vendedorId: document.getElementById('cVendedor').value || '',
-      codigo: document.getElementById('cCodigo').value.trim() || '',
-      anotacoes: document.getElementById('cAnotacoes').value || '',
-      dependentes: dependentesTemp || [],
-      pagamentos: pagamentosTemp || [],
-      interacoes: interacoesTemp || [],
-      userId: currentUser.uid,
-      updatedAt: new Date().toISOString()
+      emailTitular: document.getElementById('cEmailTitular').value.trim() || '', qtdVidas: parseInt(document.getElementById('cQtdVidas').value) || 1,
+      tipoCliente: document.getElementById('cTipoCliente').value || '', modalidadePlano: document.getElementById('cModalidadePlano').value || '',
+      coparticipacao: document.getElementById('cCoparticipacao').value || '', planoEscolhido: document.getElementById('cPlanoEscolhido').value.trim() || '',
+      acomodacao: document.getElementById('cAcomodacao').value || '', status: document.getElementById('cStatus').value || '',
+      dataImplantacao: document.getElementById('cDataImplantacao').value || '', dataPagamento: document.getElementById('cDataPagamento').value || '',
+      fonteVenda: document.getElementById('cFonteVenda').value || '', valorSemDesconto: document.getElementById('cValorSemDesconto').value || '',
+      valorComDesconto: document.getElementById('cValorComDesconto').value || '', praca: document.getElementById('cPraca').value || '',
+      administradora: document.getElementById('cAdministradora').value || '', vendedorId: document.getElementById('cVendedor').value || '',
+      codigo: document.getElementById('cCodigo').value.trim() || '', anotacoes: document.getElementById('cAnotacoes').value || '',
+      dependentes: dependentesTemp || [], pagamentos: pagamentosTemp || [], interacoes: interacoesTemp || [],
+      userId: currentUser.uid, updatedAt: new Date().toISOString()
     };
     let clientId = id;
-    if (id) {
-      await db.collection('clients').doc(id).update(data);
-      const idx = clients.findIndex(c => c.id === id);
-      if (idx !== -1) clients[idx] = { ...clients[idx], ...data };
-    } else {
-      data.createdAt = new Date().toISOString();
-      const ref = await db.collection('clients').add(data);
-      clientId = ref.id;
-      clients.push({ id: ref.id, ...data });
-    }
+    if (id) { await db.collection('clients').doc(id).update(data); const idx = clients.findIndex(c => c.id === id); if (idx !== -1) clients[idx] = { ...clients[idx], ...data }; }
+    else { data.createdAt = new Date().toISOString(); const ref = await db.collection('clients').add(data); clientId = ref.id; clients.push({ id: ref.id, ...data }); }
     const pendentes = anexosTemp.filter(a => a.file && !a.url);
     if (pendentes.length) {
       const uploaded = [];
@@ -1213,68 +1062,56 @@ async function saveClient() {
       }
       anexosTemp = anexosTemp.filter(a => !a.file).concat(uploaded);
       await db.collection('clients').doc(clientId).update({ anexos: anexosTemp });
-      const idx = clients.findIndex(c => c.id === clientId);
-      if (idx !== -1) clients[idx].anexos = anexosTemp;
+      const idx = clients.findIndex(c => c.id === clientId); if (idx !== -1) clients[idx].anexos = anexosTemp;
       renderAnexos();
     }
-    clearForm(); renderTable(); updateDashboard();
-    alert('Cliente salvo com sucesso!');
-    switchTab('dashboardTab');
-  } catch (e) { alert('Erro ao salvar: ' + e.message); }
+    clearForm(); renderTable(); updateDashboard(); carregarNotificacoes();
+    alert('Cliente salvo!'); switchTab('dashboardTab');
+  } catch (e) { alert('Erro: ' + e.message); }
   finally { btn.innerHTML = '<i class="bi bi-save"></i> Salvar'; btn.classList.remove('btn-loading'); isLoading = false; }
 }
 
 function editarCliente(id) {
   const c = clients.find(c => c.id === id); if (!c) { alert('Cliente não encontrado.'); return; }
   document.getElementById('clientId').value = c.id;
-  document.getElementById('cData').value = c.data || '';
-  document.getElementById('cNumeroProposta').value = c.numeroProposta || '';
-  document.getElementById('cNomeTitular').value = c.nomeTitular || '';
-  document.getElementById('cCpfTitular').value = c.cpfTitular || '';
+  document.getElementById('cData').value = c.data || ''; document.getElementById('cNumeroProposta').value = c.numeroProposta || '';
+  document.getElementById('cNomeTitular').value = c.nomeTitular || ''; document.getElementById('cCpfTitular').value = c.cpfTitular || '';
   document.getElementById('cCnpjTitular').value = c.cnpjTitular || '';
+  document.getElementById('cTipoDocEmp').value = c.tipoDocEmp || 'CNPJ';
+  document.getElementById('cDataVigencia').value = c.dataVigencia || '';
   document.getElementById('cTelefoneTitular').value = c.telefoneTitular || '';
-  document.getElementById('cEmailTitular').value = c.emailTitular || '';
-  document.getElementById('cQtdVidas').value = c.qtdVidas || 1;
-  document.getElementById('cTipoCliente').value = c.tipoCliente || '';
-  document.getElementById('cModalidadePlano').value = c.modalidadePlano || '';
-  document.getElementById('cCoparticipacao').value = c.coparticipacao || '';
-  document.getElementById('cPlanoEscolhido').value = c.planoEscolhido || '';
-  document.getElementById('cAcomodacao').value = c.acomodacao || '';
-  document.getElementById('cStatus').value = c.status || '';
-  document.getElementById('cDataImplantacao').value = c.dataImplantacao || '';
-  document.getElementById('cDataPagamento').value = c.dataPagamento || '';
-  document.getElementById('cFonteVenda').value = c.fonteVenda || '';
-  document.getElementById('cValorSemDesconto').value = c.valorSemDesconto || '';
-  document.getElementById('cValorComDesconto').value = c.valorComDesconto || '';
-  document.getElementById('cPraca').value = c.praca || '';
-  document.getElementById('cAdministradora').value = c.administradora || '';
-  document.getElementById('cVendedor').value = c.vendedorId || '';
-  document.getElementById('cCodigo').value = c.codigo || '';
-  document.getElementById('cAnotacoes').value = c.anotacoes || '';
+  document.getElementById('cEmailTitular').value = c.emailTitular || ''; document.getElementById('cQtdVidas').value = c.qtdVidas || 1;
+  document.getElementById('cTipoCliente').value = c.tipoCliente || ''; document.getElementById('cModalidadePlano').value = c.modalidadePlano || '';
+  document.getElementById('cCoparticipacao').value = c.coparticipacao || ''; document.getElementById('cPlanoEscolhido').value = c.planoEscolhido || '';
+  document.getElementById('cAcomodacao').value = c.acomodacao || ''; document.getElementById('cStatus').value = c.status || '';
+  document.getElementById('cDataImplantacao').value = c.dataImplantacao || ''; document.getElementById('cDataPagamento').value = c.dataPagamento || '';
+  document.getElementById('cFonteVenda').value = c.fonteVenda || ''; document.getElementById('cValorSemDesconto').value = c.valorSemDesconto || '';
+  document.getElementById('cValorComDesconto').value = c.valorComDesconto || ''; document.getElementById('cPraca').value = c.praca || '';
+  document.getElementById('cAdministradora').value = c.administradora || ''; document.getElementById('cVendedor').value = c.vendedorId || '';
+  document.getElementById('cCodigo').value = c.codigo || ''; document.getElementById('cAnotacoes').value = c.anotacoes || '';
   dependentesTemp = c.dependentes ? JSON.parse(JSON.stringify(c.dependentes)) : []; renderDependentes();
   pagamentosTemp = c.pagamentos ? JSON.parse(JSON.stringify(c.pagamentos)) : []; renderPagamentos();
   anexosTemp = c.anexos ? c.anexos.map(a => ({ nome: a.nome, url: a.url })) : []; renderAnexos();
   interacoesTemp = c.interacoes ? JSON.parse(JSON.stringify(c.interacoes)) : []; renderInteracoes();
+  setTimeout(() => renderPrevisaoPagamentos(), 100);
   switchTab('clientesTab'); switchInternalTab('dadosPrincipais');
 }
 
-async function excluirCliente(id) {
-  if (!confirm('Excluir este cliente permanentemente?')) return;
-  try { await db.collection('clients').doc(id).delete(); clients = clients.filter(c => c.id !== id); renderTable(); updateDashboard(); alert('Cliente excluído.'); }
-  catch (e) { alert('Erro: ' + e.message); }
-}
+async function excluirCliente(id) { if (!confirm('Excluir este cliente?')) return; try { await db.collection('clients').doc(id).delete(); clients = clients.filter(c => c.id !== id); renderTable(); updateDashboard(); carregarNotificacoes(); alert('Excluído.'); } catch (e) { alert('Erro: ' + e.message); } }
 
 function clearForm() {
   document.getElementById('clientId').value = '';
   const inputs = document.querySelectorAll('#dadosPrincipais input, #dadosPrincipais select, #dadosPrincipais textarea');
   inputs.forEach(el => { if (el.tagName === 'SELECT') el.selectedIndex = 0; else if (el.type !== 'checkbox' && el.type !== 'radio') el.value = ''; });
   document.getElementById('cQtdVidas').value = 1;
+  document.getElementById('cTipoDocEmp').value = 'CNPJ';
   dependentesTemp = []; renderDependentes();
   pagamentosTemp = []; renderPagamentos();
   anexosTemp = []; renderAnexos();
   interacoesTemp = []; renderInteracoes();
   limparCamposDependente(); limparCamposPagamento();
   document.getElementById('anexoFileInput').value = '';
+  setTimeout(() => renderPrevisaoPagamentos(), 100);
   switchInternalTab('dadosPrincipais');
 }
 
@@ -1287,10 +1124,10 @@ function removerDependente(idx) { if (!confirm('Remover?')) return; dependentesT
 
 // ==================== PAGAMENTOS ====================
 function limparCamposPagamento() { ['pagData','pagValor','pagForma','pagStatus','pagObs'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); }
-function adicionarPagamento() { const data = document.getElementById('pagData').value; const valor = document.getElementById('pagValor').value; const forma = document.getElementById('pagForma').value; const status = document.getElementById('pagStatus').value; const obs = document.getElementById('pagObs').value; if (!data || !valor) return alert('Data e Valor obrigatórios.'); pagamentosTemp.push({ data, valor, forma, status, obs }); renderPagamentos(); limparCamposPagamento(); }
-function renderPagamentos() { const el = document.getElementById('pagamentosList'); if (!el) return; if (!pagamentosTemp.length) { el.innerHTML = '<p class="text-muted">Nenhum pagamento.</p>'; return; } el.innerHTML = pagamentosTemp.map((p, i) => `<div class="status-item"><div><strong>${p.data}</strong> - ${formatarMoeda(parseFloat(p.valor))}${p.forma ? ' | '+p.forma : ''}${p.status ? ' | '+p.status : ''}${p.obs ? ' | '+p.obs : ''}</div><div><button class="btn btn-sm btn-outline-primary" onclick="editarPagamento(${i})"><i class="bi bi-pencil"></i></button> <button class="btn btn-sm btn-danger" onclick="removerPagamento(${i})"><i class="bi bi-trash"></i></button></div></div>`).join(''); }
-function editarPagamento(idx) { const p = pagamentosTemp[idx]; if (!p) return; document.getElementById('pagData').value = p.data || ''; document.getElementById('pagValor').value = p.valor || ''; document.getElementById('pagForma').value = p.forma || ''; document.getElementById('pagStatus').value = p.status || ''; document.getElementById('pagObs').value = p.obs || ''; pagamentosTemp.splice(idx, 1); renderPagamentos(); }
-function removerPagamento(idx) { if (!confirm('Remover?')) return; pagamentosTemp.splice(idx, 1); renderPagamentos(); }
+function adicionarPagamento() { const data = document.getElementById('pagData').value; const valor = document.getElementById('pagValor').value; const forma = document.getElementById('pagForma').value; const status = document.getElementById('pagStatus').value; const obs = document.getElementById('pagObs').value; if (!data || !valor) return alert('Data e Valor obrigatórios.'); pagamentosTemp.push({ data, valor, forma, status, obs }); renderPagamentos(); limparCamposPagamento(); renderPrevisaoPagamentos(); }
+function renderPagamentos() { const el = document.getElementById('pagamentosList'); if (!el) return; if (!pagamentosTemp.length) { el.innerHTML = '<p class="text-muted">Nenhum pagamento.</p>'; return; } el.innerHTML = pagamentosTemp.map((p, i) => `<div class="status-item"><div><strong>${p.parcela ? `[${p.parcela}ª] ` : ''}${p.data}</strong> - ${formatarMoeda(parseFloat(String(p.valor).replace(/\./g,'').replace(',','.')))}${p.forma ? ' | '+p.forma : ''}${p.status ? ' | '+p.status : ''}${p.obs ? ' | '+p.obs : ''}</div><div><button class="btn btn-sm btn-outline-primary" onclick="editarPagamento(${i})"><i class="bi bi-pencil"></i></button> <button class="btn btn-sm btn-danger" onclick="removerPagamento(${i})"><i class="bi bi-trash"></i></button></div></div>`).join(''); }
+function editarPagamento(idx) { const p = pagamentosTemp[idx]; if (!p) return; document.getElementById('pagData').value = p.data || ''; document.getElementById('pagValor').value = p.valor || ''; document.getElementById('pagForma').value = p.forma || ''; document.getElementById('pagStatus').value = p.status || ''; document.getElementById('pagObs').value = p.obs || ''; pagamentosTemp.splice(idx, 1); renderPagamentos(); renderPrevisaoPagamentos(); }
+function removerPagamento(idx) { if (!confirm('Remover?')) return; pagamentosTemp.splice(idx, 1); renderPagamentos(); renderPrevisaoPagamentos(); }
 
 // ==================== ANEXOS ====================
 function adicionarAnexos() { const input = document.getElementById('anexoFileInput'); const files = input.files; if (!files || !files.length) return alert('Selecione arquivos.'); for (const file of files) { anexosTemp.push({ nome: file.name, file }); } renderAnexos(); input.value = ''; }
@@ -1302,15 +1139,64 @@ function adicionarInteracao() { const tipo = document.getElementById('interacaoT
 function renderInteracoes() { const el = document.getElementById('interacoesList'); if (!el) return; if (!interacoesTemp.length) { el.innerHTML = '<p class="text-muted">Nenhuma interação.</p>'; return; } const sorted = [...interacoesTemp].sort((a,b) => (b.data || '').localeCompare(a.data || '')); el.innerHTML = sorted.map((i, idx) => `<div class="interacao-item"><div><span class="tipo">${i.tipo}</span> <span class="data">${i.data ? new Date(i.data).toLocaleString() : ''}</span><p class="mb-0">${i.desc}</p></div><button class="btn btn-sm btn-danger" onclick="removerInteracao(${idx})"><i class="bi bi-trash"></i></button></div>`).join(''); }
 function removerInteracao(idx) { if (!confirm('Remover?')) return; interacoesTemp.splice(idx, 1); renderInteracoes(); }
 
-// ==================== FILTROS SALVOS / NOTIFICAÇÕES / BUSCA ====================
-function salvarFiltro() { /* ... */ }
-function carregarFiltrosSalvos() { /* ... */ }
-function aplicarFiltroSalvo(id) { /* ... */ }
-async function carregarNotificacoes() { /* ... */ }
-function toggleNotificacoes() { /* ... */ }
-function marcarNotificacaoLida(id) { /* ... */ }
-function buscaGlobal() { /* ... */ }
-function irPara(tab) { /* ... */ }
+// ==================== PREVISÃO DE PAGAMENTOS ====================
+const PLANOS_PAGAMENTO = {
+  fortaleza_individual:   { nome: 'Fortaleza - Individual',   parcelas: [33.33, 33.33, 33.34], desc: '3 parcelas' },
+  fortaleza_empresarial:  { nome: 'Fortaleza - Empresarial',  parcelas: [100],                 desc: 'À vista' },
+  sp_individual:          { nome: 'SP Capital - Individual',  parcelas: [100],                 desc: 'À vista' },
+  sp_empresarial:         { nome: 'SP Capital - Empresarial', parcelas: [33.33, 33.33, 33.34], desc: '3 parcelas' }
+};
+function detectarPlanoPagamento(praca, tipoCliente) {
+  const p = (praca || '').toUpperCase(); const t = (tipoCliente || '').toUpperCase();
+  const isIndividual = (t === 'PF' || t.includes('INDIVIDUAL'));
+  const isEmpresarial = (t === 'PJ' || t.includes('EMPRESARIAL'));
+  if (p.includes('FORTALEZA')) { if (isIndividual) return PLANOS_PAGAMENTO.fortaleza_individual; if (isEmpresarial) return PLANOS_PAGAMENTO.fortaleza_empresarial; }
+  if (p.includes('SÃO PAULO') || p.includes('SAO PAULO') || p.includes('CAPITAL')) { if (isIndividual) return PLANOS_PAGAMENTO.sp_individual; if (isEmpresarial) return PLANOS_PAGAMENTO.sp_empresarial; }
+  return null;
+}
+function renderPrevisaoPagamentos() {
+  const praca = document.getElementById('cPraca')?.value || '';
+  const tipo  = document.getElementById('cTipoCliente')?.value || '';
+  const valorTotalStr = document.getElementById('cValorComDesconto')?.value || '';
+  const valorTotal = parseFloat(String(valorTotalStr).replace(/\./g,'').replace(',','.')) || 0;
+  const container = document.getElementById('previsaoPagamentosContainer');
+  const labelEl = document.getElementById('previsaoPlanoLabel');
+  if (!container || !labelEl) return;
+  if (!praca || !tipo || valorTotal <= 0) { container.innerHTML = '<p class="text-muted small">Preencha <strong>Praça</strong>, <strong>Tipo</strong>, <strong>Valor</strong> e <strong>Data</strong> na aba "Dados da Proposta".</p>'; labelEl.innerText = ''; return; }
+  const plano = detectarPlanoPagamento(praca, tipo);
+  if (!plano) { container.innerHTML = '<p class="text-muted small">Nenhum plano cadastrado para esta combinação.</p>'; labelEl.innerText = ''; return; }
+  labelEl.innerText = plano.nome + ' — ' + plano.desc;
+  const dataPrimeiroStr = document.getElementById('cDataPagamento')?.value || new Date().toISOString().split('T')[0];
+  const dataBase = new Date(dataPrimeiroStr + 'T12:00:00');
+  let html = `<div class="table-responsive"><table class="table" style="margin:0;"><thead><tr><th>#</th><th>Data Prevista</th><th>Valor</th><th>%</th><th>Status</th><th>Ação</th></tr></thead><tbody>`;
+  plano.parcelas.forEach((pct, i) => {
+    const num = i + 1; const valorParcela = valorTotal * pct / 100;
+    const dataPrev = new Date(dataBase); if (i > 0) dataPrev.setDate(dataPrev.getDate() + (i * 30));
+    const dataStr = dataPrev.toISOString().split('T')[0];
+    const registrado = pagamentosTemp.find(pg => pg.parcela === num);
+    let status = 'Pendente', statusClass = 'warning', classeLinha = 'parcela-pendente';
+    if (registrado) { status = registrado.status || 'Pendente'; if (status === 'Pago') { statusClass = 'success'; classeLinha = 'parcela-paga'; } else if (status === 'Atrasado') { statusClass = 'danger'; classeLinha = 'parcela-atrasada'; } }
+    else { const hoje = new Date().toISOString().split('T')[0]; if (dataStr < hoje) { status = 'Atrasado'; statusClass = 'danger'; classeLinha = 'parcela-atrasada'; } }
+    html += `<tr class="${classeLinha}"><td><strong>${num}ª</strong></td><td>${dataPrev.toLocaleDateString('pt-BR')}</td><td>${formatarMoeda(valorParcela)}</td><td>${pct.toFixed(2)}%</td><td><span class="badge bg-${statusClass}">${status}</span></td><td>${registrado ? `<button class="btn btn-sm btn-outline-danger" onclick="removerPagamentoParcela(${num})"><i class="bi bi-x-circle"></i></button>` : `<button class="btn btn-sm btn-success" onclick="registrarPagamentoParcela(${num}, ${valorParcela.toFixed(2)}, '${dataStr}')"><i class="bi bi-check2"></i> Pagar</button>`}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+  const totalPrevisto = plano.parcelas.reduce((acc, pct) => acc + (valorTotal * pct / 100), 0);
+  const totalPago = pagamentosTemp.filter(p => p.parcela).reduce((acc, p) => acc + (parseFloat(String(p.valor||'0').replace(/\./g,'').replace(',','.')) || 0), 0);
+  const totalRestante = totalPrevisto - totalPago;
+  html += `<div class="row g-2 mt-3"><div class="col-md-4"><div class="p-2 rounded" style="background:var(--card);border:1px solid var(--border);text-align:center;"><div style="font-size:0.65rem;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">Total Previsto</div><div style="font-size:1.1rem;font-weight:800;">${formatarMoeda(totalPrevisto)}</div></div></div><div class="col-md-4"><div class="p-2 rounded" style="background:var(--card);border:1px solid var(--border);text-align:center;"><div style="font-size:0.65rem;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">Total Pago</div><div style="font-size:1.1rem;font-weight:800;color:#00b894;">${formatarMoeda(totalPago)}</div></div></div><div class="col-md-4"><div class="p-2 rounded" style="background:var(--card);border:1px solid var(--border);text-align:center;"><div style="font-size:0.65rem;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">Restante</div><div style="font-size:1.1rem;font-weight:800;color:#e17055;">${formatarMoeda(totalRestante)}</div></div></div></div>`;
+  container.innerHTML = html;
+}
+function registrarPagamentoParcela(numParcela, valor, dataStr) {
+  const existente = pagamentosTemp.findIndex(p => p.parcela === numParcela);
+  if (existente !== -1) { alert('Esta parcela já está registrada.'); return; }
+  pagamentosTemp.push({ data: dataStr, valor: valor.toFixed(2).replace('.', ','), forma: 'Boleto', status: 'Pago', obs: `${numParcela}ª parcela`, parcela: numParcela });
+  renderPagamentos(); renderPrevisaoPagamentos();
+}
+function removerPagamentoParcela(numParcela) {
+  if (!confirm(`Remover o registro da ${numParcela}ª parcela?`)) return;
+  pagamentosTemp = pagamentosTemp.filter(p => p.parcela !== numParcela);
+  renderPagamentos(); renderPrevisaoPagamentos();
+}
 
 // ==================== LEADS ====================
 function renderLeads() {
@@ -1334,7 +1220,7 @@ function renderPipeline() { /* ... */ }
 function setLeadView(view) { leadView = view; document.getElementById('leadListView').style.display = view === 'lista' ? 'block' : 'none'; document.getElementById('leadPipelineView').style.display = view === 'pipeline' ? 'block' : 'none'; document.getElementById('viewListBtn').classList.toggle('active', view === 'lista'); document.getElementById('viewPipelineBtn').classList.toggle('active', view === 'pipeline'); if (view === 'pipeline') renderPipeline(); }
 function mudarPaginaLead(delta) { paginaLead += delta; if (paginaLead < 1) paginaLead = 1; renderLeads(); }
 function abrirModalNovoLead() { new bootstrap.Modal(document.getElementById('modalNovoLead')).show(); }
-async function salvarNovoLead() { const nome = document.getElementById('novoLeadNome').value.trim(); const telefone = document.getElementById('novoLeadTelefone').value.trim(); if (!nome || !telefone) return alert('Nome e telefone obrigatórios.'); const data = { nome, telefone, email: document.getElementById('novoLeadEmail').value.trim() || '', cidade: document.getElementById('novoLeadCidade').value.trim() || '', uf: document.getElementById('novoLeadUf').value || '', status: document.getElementById('novoLeadStatus').value || 'Novo', obs: document.getElementById('novoLeadObs').value || '', abertura: new Date().toISOString(), userId: currentUser.uid }; const ref = await db.collection('leads').add(data); leadsData.push({ id: ref.id, ...data }); renderLeads(); bootstrap.Modal.getInstance(document.getElementById('modalNovoLead')).hide(); alert('Lead salvo!'); }
+async function salvarNovoLead() { const nome = document.getElementById('novoLeadNome').value.trim(); const telefone = document.getElementById('novoLeadTelefone').value.trim(); if (!nome || !telefone) return alert('Nome e telefone obrigatórios.'); const data = { nome, telefone, email: document.getElementById('novoLeadEmail').value.trim() || '', cidade: document.getElementById('novoLeadCidade').value.trim() || '', uf: document.getElementById('novoLeadUf').value || '', status: document.getElementById('novoLeadStatus').value || 'Novo', obs: document.getElementById('novoLeadObs').value || '', abertura: new Date().toISOString(), userId: currentUser.uid }; const ref = await db.collection('leads').add(data); leadsData.push({ id: ref.id, ...data }); renderLeads(); bootstrap.Modal.getInstance(document.getElementById('modalNovoLead')).hide(); alert('Lead salvo!'); carregarNotificacoes(); }
 function editarLead(id) { /* ... */ }
 async function atualizarLead() { /* ... */ }
 async function excluirLead(id) { if (!confirm('Excluir?')) return; await db.collection('leads').doc(id).delete(); leadsData = leadsData.filter(l => l.id !== id); renderLeads(); }
@@ -1440,10 +1326,7 @@ function renderTarefas() {
   if (!lista.length) { container.innerHTML = '<p class="text-muted text-center py-3">Nenhuma tarefa.</p>'; return; }
   container.innerHTML = lista.map(t => {
     const hojeStr = new Date().toISOString().split('T')[0];
-    let classe = '';
-    if (t.concluida) classe = 'concluida';
-    else if (t.data < hojeStr) classe = 'vencida';
-    else if (t.data === hojeStr) classe = 'hoje';
+    let classe = ''; if (t.concluida) classe = 'concluida'; else if (t.data < hojeStr) classe = 'vencida'; else if (t.data === hojeStr) classe = 'hoje';
     const urgClass = 'tarefa-urg-' + (t.urgencia || 'normal').toLowerCase();
     return `<div class="tarefa-card ${classe} ${urgClass}"><div><strong>${t.titulo || 'Sem título'}</strong> <span class="badge bg-secondary">${t.tipo || 'Tarefa'}</span> <span class="badge ${t.concluida ? 'bg-success' : (t.data < hojeStr ? 'bg-danger' : 'bg-primary')}">${t.concluida ? '✅' : (t.data < hojeStr ? '⚠️ Vencida' : (t.data === hojeStr ? '📌 Hoje' : '📅 ' + formatarDataBr(t.data)))}</span> ${t.urgencia ? `<span class="badge bg-${t.urgencia === 'Urgente' ? 'danger' : t.urgencia === 'Alta' ? 'warning' : 'secondary'}">${t.urgencia}</span>` : ''} ${t.leadNome ? `<span class="badge bg-info">🔗 ${t.leadNome}</span>` : ''}<div class="small text-muted">${t.descricao || ''}</div></div><div><button class="btn btn-sm btn-outline-primary" onclick="editarTarefa('${t.id}')"><i class="bi bi-pencil"></i></button> <button class="btn btn-sm btn-outline-success" onclick="toggleConcluirTarefa('${t.id}')"><i class="bi ${t.concluida ? 'bi-arrow-counterclockwise' : 'bi-check'}"></i></button> <button class="btn btn-sm btn-danger" onclick="excluirTarefa('${t.id}')"><i class="bi bi-trash"></i></button></div></div>`;
   }).join('');
@@ -1482,52 +1365,104 @@ function renderDashboardTarefas() {
   const canvas3 = document.getElementById('tarefaConclusoesChart');
   if (canvas3) { if (charts.tarefaConclusoes) charts.tarefaConclusoes.destroy(); const ctx = canvas3.getContext('2d'); const hoje = new Date(); const dias = []; for (let i = 29; i >= 0; i--) { const d = new Date(hoje); d.setDate(d.getDate() - i); const key = d.toISOString().split('T')[0]; dias.push({ key, label: d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) }); } const concluidos = dias.map(d => tarefas.filter(t => t.concluida && t.data === d.key).length); charts.tarefaConclusoes = new Chart(ctx, { type: 'line', data: { labels: dias.map(d => d.label), datasets: [{ label: 'Concluídas', data: concluidos, borderColor: '#00b894', fill: false }] } }); }
 }
-function abrirModalTarefa() {
-  const modal = new bootstrap.Modal(document.getElementById('modalTarefa'));
-  document.getElementById('modalTarefaTitulo').innerText = 'Nova Tarefa';
-  document.getElementById('tarefaId').value = ''; document.getElementById('tarefaTitulo').value = ''; document.getElementById('tarefaTipo').value = 'Tarefa';
-  document.getElementById('tarefaData').value = ''; document.getElementById('tarefaHora').value = ''; document.getElementById('tarefaUrgencia').value = 'Normal';
-  document.getElementById('tarefaDesc').value = ''; document.getElementById('tarefaConcluida').checked = false;
-  document.getElementById('tarefaLeadId').value = ''; document.getElementById('tarefaLeadSelecionado').innerHTML = ''; document.getElementById('tarefaLeadBusca').value = '';
-  document.getElementById('btnExcluirTarefa').style.display = 'none';
-  modal.show();
-}
-function editarTarefa(id) {
-  const t = tarefas.find(t => t.id === id); if (!t) return;
-  const modal = new bootstrap.Modal(document.getElementById('modalTarefa'));
-  document.getElementById('modalTarefaTitulo').innerText = 'Editar Tarefa';
-  document.getElementById('tarefaId').value = t.id; document.getElementById('tarefaTitulo').value = t.titulo || '';
-  document.getElementById('tarefaTipo').value = t.tipo || 'Tarefa'; document.getElementById('tarefaData').value = t.data || '';
-  document.getElementById('tarefaHora').value = t.hora || ''; document.getElementById('tarefaUrgencia').value = t.urgencia || 'Normal';
-  document.getElementById('tarefaDesc').value = t.descricao || ''; document.getElementById('tarefaConcluida').checked = t.concluida || false;
-  document.getElementById('tarefaLeadId').value = t.leadId || '';
-  if (t.leadId) { const lead = leadsData.find(l => l.id === t.leadId); document.getElementById('tarefaLeadSelecionado').innerHTML = lead ? `<span class="badge bg-info">🔗 ${lead.nome}</span>` : ''; } else { document.getElementById('tarefaLeadSelecionado').innerHTML = ''; }
-  document.getElementById('tarefaLeadBusca').value = ''; document.getElementById('btnExcluirTarefa').style.display = 'inline-block';
-  modal.show();
-}
-async function salvarTarefa() {
-  const id = document.getElementById('tarefaId').value; const titulo = document.getElementById('tarefaTitulo').value.trim();
-  if (!titulo) return alert('Título obrigatório.'); const data = document.getElementById('tarefaData').value;
-  if (!data) return alert('Data obrigatória.'); const leadId = document.getElementById('tarefaLeadId').value;
-  const leadNome = leadId ? (leadsData.find(l => l.id === leadId)?.nome || '') : '';
-  const obj = { titulo, tipo: document.getElementById('tarefaTipo').value, data, hora: document.getElementById('tarefaHora').value, urgencia: document.getElementById('tarefaUrgencia').value, descricao: document.getElementById('tarefaDesc').value, concluida: document.getElementById('tarefaConcluida').checked, leadId, leadNome, userId: currentUser.uid, updatedAt: new Date().toISOString() };
-  try {
-    if (id) { await db.collection('tarefas').doc(id).update(obj); const idx = tarefas.findIndex(t => t.id === id); if (idx !== -1) tarefas[idx] = { ...tarefas[idx], ...obj }; }
-    else { obj.createdAt = new Date().toISOString(); const ref = await db.collection('tarefas').add(obj); tarefas.push({ id: ref.id, ...obj }); }
-    bootstrap.Modal.getInstance(document.getElementById('modalTarefa')).hide(); renderTarefas(); renderCalendarioTarefa(); renderDashboardTarefas();
-  } catch(e) { alert('Erro: ' + e.message); }
-}
-async function excluirTarefa(id) { if (!confirm('Excluir?')) return; try { await db.collection('tarefas').doc(id).delete(); tarefas = tarefas.filter(t => t.id !== id); bootstrap.Modal.getInstance(document.getElementById('modalTarefa'))?.hide(); renderTarefas(); renderCalendarioTarefa(); renderDashboardTarefas(); } catch(e) { alert('Erro: ' + e.message); } }
-async function toggleConcluirTarefa(id) { const t = tarefas.find(t => t.id === id); if (!t) return; try { await db.collection('tarefas').doc(id).update({ concluida: !t.concluida }); t.concluida = !t.concluida; renderTarefas(); renderCalendarioTarefa(); renderDashboardTarefas(); } catch(e) { alert('Erro: ' + e.message); } }
-function buscarLeadsParaTarefa(termo) {
-  const resultados = document.getElementById('tarefaLeadResultados'); if (!resultados) return;
-  if (!termo.trim()) { resultados.style.display = 'none'; return; }
-  const filtrados = leadsData.filter(l => (l.nome || '').toLowerCase().includes(termo.toLowerCase())).slice(0, 5);
-  if (!filtrados.length) { resultados.innerHTML = '<div class="dropdown-item text-muted">Nenhum lead.</div>'; resultados.style.display = 'block'; return; }
-  resultados.innerHTML = filtrados.map(l => `<div class="dropdown-item" style="cursor:pointer;" onclick="selecionarLeadTarefa('${l.id}','${l.nome}')">${l.nome} ${l.telefone ? '- '+l.telefone : ''}</div>`).join('');
-  resultados.style.display = 'block';
-}
+function abrirModalTarefa() { const modal = new bootstrap.Modal(document.getElementById('modalTarefa')); document.getElementById('modalTarefaTitulo').innerText = 'Nova Tarefa'; document.getElementById('tarefaId').value = ''; document.getElementById('tarefaTitulo').value = ''; document.getElementById('tarefaTipo').value = 'Tarefa'; document.getElementById('tarefaData').value = ''; document.getElementById('tarefaHora').value = ''; document.getElementById('tarefaUrgencia').value = 'Normal'; document.getElementById('tarefaDesc').value = ''; document.getElementById('tarefaConcluida').checked = false; document.getElementById('tarefaLeadId').value = ''; document.getElementById('tarefaLeadSelecionado').innerHTML = ''; document.getElementById('tarefaLeadBusca').value = ''; document.getElementById('btnExcluirTarefa').style.display = 'none'; modal.show(); }
+function editarTarefa(id) { const t = tarefas.find(t => t.id === id); if (!t) return; const modal = new bootstrap.Modal(document.getElementById('modalTarefa')); document.getElementById('modalTarefaTitulo').innerText = 'Editar Tarefa'; document.getElementById('tarefaId').value = t.id; document.getElementById('tarefaTitulo').value = t.titulo || ''; document.getElementById('tarefaTipo').value = t.tipo || 'Tarefa'; document.getElementById('tarefaData').value = t.data || ''; document.getElementById('tarefaHora').value = t.hora || ''; document.getElementById('tarefaUrgencia').value = t.urgencia || 'Normal'; document.getElementById('tarefaDesc').value = t.descricao || ''; document.getElementById('tarefaConcluida').checked = t.concluida || false; document.getElementById('tarefaLeadId').value = t.leadId || ''; if (t.leadId) { const lead = leadsData.find(l => l.id === t.leadId); document.getElementById('tarefaLeadSelecionado').innerHTML = lead ? `<span class="badge bg-info">🔗 ${lead.nome}</span>` : ''; } else { document.getElementById('tarefaLeadSelecionado').innerHTML = ''; } document.getElementById('tarefaLeadBusca').value = ''; document.getElementById('btnExcluirTarefa').style.display = 'inline-block'; modal.show(); }
+async function salvarTarefa() { const id = document.getElementById('tarefaId').value; const titulo = document.getElementById('tarefaTitulo').value.trim(); if (!titulo) return alert('Título obrigatório.'); const data = document.getElementById('tarefaData').value; if (!data) return alert('Data obrigatória.'); const leadId = document.getElementById('tarefaLeadId').value; const leadNome = leadId ? (leadsData.find(l => l.id === leadId)?.nome || '') : ''; const obj = { titulo, tipo: document.getElementById('tarefaTipo').value, data, hora: document.getElementById('tarefaHora').value, urgencia: document.getElementById('tarefaUrgencia').value, descricao: document.getElementById('tarefaDesc').value, concluida: document.getElementById('tarefaConcluida').checked, leadId, leadNome, userId: currentUser.uid, updatedAt: new Date().toISOString() }; try { if (id) { await db.collection('tarefas').doc(id).update(obj); const idx = tarefas.findIndex(t => t.id === id); if (idx !== -1) tarefas[idx] = { ...tarefas[idx], ...obj }; } else { obj.createdAt = new Date().toISOString(); const ref = await db.collection('tarefas').add(obj); tarefas.push({ id: ref.id, ...obj }); } bootstrap.Modal.getInstance(document.getElementById('modalTarefa')).hide(); renderTarefas(); renderCalendarioTarefa(); renderDashboardTarefas(); carregarNotificacoes(); } catch(e) { alert('Erro: ' + e.message); } }
+async function excluirTarefa(id) { if (!confirm('Excluir?')) return; try { await db.collection('tarefas').doc(id).delete(); tarefas = tarefas.filter(t => t.id !== id); bootstrap.Modal.getInstance(document.getElementById('modalTarefa'))?.hide(); renderTarefas(); renderCalendarioTarefa(); renderDashboardTarefas(); carregarNotificacoes(); } catch(e) { alert('Erro: ' + e.message); } }
+async function toggleConcluirTarefa(id) { const t = tarefas.find(t => t.id === id); if (!t) return; try { await db.collection('tarefas').doc(id).update({ concluida: !t.concluida }); t.concluida = !t.concluida; renderTarefas(); renderCalendarioTarefa(); renderDashboardTarefas(); carregarNotificacoes(); } catch(e) { alert('Erro: ' + e.message); } }
+function buscarLeadsParaTarefa(termo) { const resultados = document.getElementById('tarefaLeadResultados'); if (!resultados) return; if (!termo.trim()) { resultados.style.display = 'none'; return; } const filtrados = leadsData.filter(l => (l.nome || '').toLowerCase().includes(termo.toLowerCase())).slice(0, 5); if (!filtrados.length) { resultados.innerHTML = '<div class="dropdown-item text-muted">Nenhum lead.</div>'; resultados.style.display = 'block'; return; } resultados.innerHTML = filtrados.map(l => `<div class="dropdown-item" style="cursor:pointer;" onclick="selecionarLeadTarefa('${l.id}','${l.nome}')">${l.nome} ${l.telefone ? '- '+l.telefone : ''}</div>`).join(''); resultados.style.display = 'block'; }
 function selecionarLeadTarefa(id, nome) { document.getElementById('tarefaLeadId').value = id; document.getElementById('tarefaLeadSelecionado').innerHTML = `<span class="badge bg-info">🔗 ${nome}</span>`; document.getElementById('tarefaLeadBusca').value = ''; document.getElementById('tarefaLeadResultados').style.display = 'none'; }
+
+// ============================================================
+// ==================== NOTIFICAÇÕES DO CRM ====================
+// ============================================================
+function gerarNotificacoes() {
+  const hoje = new Date().toISOString().split('T')[0];
+  const notifs = [];
+  tarefas.filter(t => !t.concluida && t.data && t.data < hoje).forEach(t => { notifs.push({ id: 'tar-venc-' + t.id, tipo: 'tarefa-vencida', icone: 'bi-exclamation-triangle-fill', cor: 'danger', titulo: 'Tarefa vencida', texto: t.titulo + (t.leadNome ? ' — ' + t.leadNome : ''), data: t.data, acao: () => switchTab('tarefasTab') }); });
+  tarefas.filter(t => !t.concluida && t.data === hoje).forEach(t => { notifs.push({ id: 'tar-hoje-' + t.id, tipo: 'tarefa-hoje', icone: 'bi-calendar-check-fill', cor: 'primary', titulo: 'Tarefa para hoje', texto: t.titulo + (t.hora ? ' às ' + t.hora : ''), data: t.data, acao: () => switchTab('tarefasTab') }); });
+  clients.forEach(c => { (c.pagamentos || []).forEach(p => { if (p.status === 'Atrasado') { notifs.push({ id: 'inad-' + c.id + '-' + (p.data || ''), tipo: 'inadimplente', icone: 'bi-cash-coin', cor: 'danger', titulo: 'Pagamento em atraso', texto: c.nomeTitular + ' — ' + formatarMoeda(parseFloat(String(p.valor||'0').replace(/\./g,'').replace(',','.'))), data: p.data, acao: () => editarCliente(c.id) }); } }); });
+  const tresDiasAtras = new Date(); tresDiasAtras.setDate(tresDiasAtras.getDate() - 3);
+  const tresDiasStr = tresDiasAtras.toISOString().split('T')[0];
+  clients.filter(c => c.status === 'Implantado' && c.data >= tresDiasStr).forEach(c => { notifs.push({ id: 'venda-' + c.id, tipo: 'venda', icone: 'bi-trophy-fill', cor: 'success', titulo: '🎉 Nova venda implantada', texto: c.nomeTitular + ' — ' + (c.qtdVidas || 0) + ' vida(s)', data: c.data, acao: () => editarCliente(c.id) }); });
+  const doisDiasAtras = new Date(); doisDiasAtras.setDate(doisDiasAtras.getDate() - 2);
+  leadsData.filter(l => l.abertura && new Date(l.abertura) >= doisDiasAtras).forEach(l => { notifs.push({ id: 'lead-' + l.id, tipo: 'lead', icone: 'bi-person-plus-fill', cor: 'info', titulo: 'Novo lead', texto: l.nome + (l.telefone ? ' — ' + l.telefone : ''), data: l.abertura?.split('T')[0], acao: () => switchTab('leadsTab') }); });
+  clients.forEach(c => {
+    const inter = c.interacoes || []; let ultima = null;
+    inter.forEach(i => { if (i.data) { const d = new Date(i.data); if (!ultima || d > ultima) ultima = d; } });
+    if (ultima) {
+      const diff = Math.floor((new Date() - ultima) / (1000 * 60 * 60 * 24));
+      if (diff >= 15 && c.status !== 'Implantado' && c.status !== 'Desistiu') { notifs.push({ id: 'contato-' + c.id, tipo: 'sem-contato', icone: 'bi-telephone-x', cor: 'warning', titulo: 'Cliente sem contato há ' + diff + ' dias', texto: c.nomeTitular, data: ultima.toISOString().split('T')[0], acao: () => editarCliente(c.id) }); }
+    }
+  });
+  notifs.sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+  return notifs;
+}
+
+async function carregarNotificacoes() {
+  notificacoesCache = gerarNotificacoes();
+  const badge = document.getElementById('notificacaoBadge');
+  if (!badge) return;
+  const total = notificacoesCache.length;
+  if (total > 0) { badge.style.display = 'inline'; badge.innerText = total > 99 ? '99+' : total; }
+  else { badge.style.display = 'none'; }
+}
+
+function renderNotificacoesDropdown() {
+  const dropdown = document.getElementById('notifDropdown');
+  if (!dropdown) return;
+  if (!notificacoesCache.length) {
+    dropdown.innerHTML = `<div style="text-align:center;padding:2rem 1rem;"><i class="bi bi-bell-slash" style="font-size:2.5rem;opacity:0.3;"></i><p style="margin-top:0.8rem;color:var(--text-secondary);font-size:0.85rem;">Nenhuma notificação no momento</p></div>`;
+    return;
+  }
+  const porTipo = notificacoesCache.reduce((acc, n) => { acc[n.tipo] = (acc[n.tipo] || 0) + 1; return acc; }, {});
+  let html = `<div style="padding:0.8rem 1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><strong style="font-size:0.9rem;">Notificações (${notificacoesCache.length})</strong><button class="btn btn-sm btn-outline-secondary" onclick="ativarNotificacoes()" title="Ativar notificações do navegador" style="font-size:0.7rem;padding:2px 8px;"><i class="bi bi-bell"></i> Ativar push</button></div>`;
+  if (Object.keys(porTipo).length > 1) {
+    html += `<div style="padding:0.5rem 1rem;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;">`;
+    const labels = { 'tarefa-vencida': 'Vencidas', 'tarefa-hoje': 'Hoje', 'inadimplente': 'Inadimpl.', 'venda': 'Vendas', 'lead': 'Leads', 'sem-contato': 'Sem contato' };
+    Object.entries(porTipo).forEach(([tipo, qtd]) => { html += `<span class="badge bg-secondary" style="font-size:0.65rem;">${labels[tipo] || tipo}: ${qtd}</span>`; });
+    html += `</div>`;
+  }
+  html += `<div style="max-height:400px;overflow-y:auto;">`;
+  notificacoesCache.slice(0, 30).forEach(n => {
+    html += `<div class="notif-item" onclick="abrirNotificacao('${n.id}')" style="cursor:pointer;"><div style="display:flex;gap:10px;align-items:flex-start;"><div style="background:var(--bs-${n.cor});color:#fff;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi ${n.icone}"></i></div><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:0.8rem;">${n.titulo}</div><div style="font-size:0.75rem;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${n.texto}</div><div style="font-size:0.65rem;color:var(--text-secondary);margin-top:2px;">${n.data ? new Date(n.data + 'T12:00:00').toLocaleDateString('pt-BR') : ''}</div></div></div></div>`;
+  });
+  html += `</div>`;
+  if (notificacoesCache.length > 30) html += `<div style="padding:0.6rem 1rem;text-align:center;border-top:1px solid var(--border);font-size:0.75rem;color:var(--text-secondary);">Mostrando 30 de ${notificacoesCache.length} notificações</div>`;
+  dropdown.innerHTML = html;
+}
+
+function abrirNotificacao(id) {
+  const n = notificacoesCache.find(x => x.id === id);
+  if (!n) return;
+  const dropdown = document.getElementById('notifDropdown');
+  if (dropdown) { dropdown.style.display = 'none'; dropdown.classList.remove('show'); }
+  if (typeof n.acao === 'function') n.acao();
+}
+
+function toggleNotificacoes(e) {
+  if (e) { e.stopPropagation(); }
+  const dropdown = document.getElementById('notifDropdown');
+  if (!dropdown) { console.error('❌ notifDropdown não encontrado'); return; }
+  if (dropdown.style.display === 'block') { dropdown.style.display = 'none'; dropdown.classList.remove('show'); return; }
+  try { carregarNotificacoes(); renderNotificacoesDropdown(); } catch(err) { console.error('Erro:', err); }
+  dropdown.style.display = 'block';
+  dropdown.classList.add('show');
+  dropdown.style.position = 'absolute';
+  dropdown.style.top = '45px';
+  dropdown.style.right = '0';
+  dropdown.style.width = '380px';
+  dropdown.style.maxHeight = '520px';
+  dropdown.style.overflowY = 'auto';
+  dropdown.style.background = getComputedStyle(document.body).getPropertyValue('--card') || '#fff';
+  dropdown.style.color = getComputedStyle(document.body).getPropertyValue('--text') || '#000';
+  dropdown.style.border = '1px solid ' + (getComputedStyle(document.body).getPropertyValue('--border') || '#e2e8f0');
+  dropdown.style.borderRadius = '12px';
+  dropdown.style.boxShadow = '0 20px 50px rgba(0,0,0,0.2)';
+  dropdown.style.zIndex = '99999';
+}
+
+function marcarNotificacaoLida(id) { notificacoesCache = notificacoesCache.filter(n => n.id !== id); carregarNotificacoes(); }
 
 // ============================================================
 // ==================== FUNÇÕES DA ABA ANÁLISES ====================
@@ -1543,19 +1478,11 @@ function switchAnalisesView() {
 function renderAnalises() {
   const dias = parseInt(document.getElementById('anPeriodo').value) || 90;
   const pracaFiltro = document.getElementById('anPraca').value;
-  const dataLimite = new Date();
-  dataLimite.setDate(dataLimite.getDate() - dias);
+  const dataLimite = new Date(); dataLimite.setDate(dataLimite.getDate() - dias);
   const dataLimiteStr = dataLimite.toISOString().split('T')[0];
   let base = clients.filter(c => c.data >= dataLimiteStr);
   if (pracaFiltro) base = base.filter(c => c.praca === pracaFiltro);
-  renderComparativo(base);
-  renderProjecao(base);
-  renderAnalisePraca(base);
-  renderAnaliseAdmin(base);
-  renderMapaBrasil(base);
-  renderComissoes();
-  renderFluxoCaixa();
-  renderMetas();
+  renderComparativo(base); renderProjecao(base); renderAnalisePraca(base); renderAnaliseAdmin(base); renderMapaBrasil(base); renderComissoes(); renderFluxoCaixa(); renderMetas();
 }
 
 function renderComparativo(dados) {
@@ -1581,8 +1508,7 @@ function renderComparativo(dados) {
 }
 
 function renderProjecao(dados) {
-  const meses = {};
-  dados.forEach(c => { if (!c.data) return; const m = c.data.substring(0, 7); let v = String(c.valorComDesconto||'0').replace(/\./g,'').replace(',','.'); meses[m] = (meses[m] || 0) + (parseFloat(v) || 0); });
+  const meses = {}; dados.forEach(c => { if (!c.data) return; const m = c.data.substring(0, 7); let v = String(c.valorComDesconto||'0').replace(/\./g,'').replace(',','.'); meses[m] = (meses[m] || 0) + (parseFloat(v) || 0); });
   const chaves = Object.keys(meses).sort(); const valores = chaves.map(k => meses[k]);
   const media = valores.length ? valores.reduce((a,b) => a+b, 0) / valores.length : 0;
   const hoje = new Date(); const proximos = [];
@@ -1596,15 +1522,7 @@ function renderProjecao(dados) {
 function renderAnalisePraca(dados) {
   const tbody = document.querySelector('#tabelaPraca tbody'); if (!tbody) return;
   const porPraca = {};
-  dados.forEach(c => {
-    const p = c.praca || '(sem praça)';
-    if (!porPraca[p]) porPraca[p] = { total: 0, vendas: 0, vidas: 0, valor: 0 };
-    porPraca[p].total++;
-    if (c.status !== 'Desistiu') porPraca[p].vendas++;
-    if (c.status === 'Implantado') porPraca[p].vidas += parseInt(c.qtdVidas) || 0;
-    let v = String(c.valorComDesconto||'0').replace(/\./g,'').replace(',','.');
-    porPraca[p].valor += parseFloat(v) || 0;
-  });
+  dados.forEach(c => { const p = c.praca || '(sem praça)'; if (!porPraca[p]) porPraca[p] = { total: 0, vendas: 0, vidas: 0, valor: 0 }; porPraca[p].total++; if (c.status !== 'Desistiu') porPraca[p].vendas++; if (c.status === 'Implantado') porPraca[p].vidas += parseInt(c.qtdVidas) || 0; let v = String(c.valorComDesconto||'0').replace(/\./g,'').replace(',','.'); porPraca[p].valor += parseFloat(v) || 0; });
   const linhas = Object.entries(porPraca).sort((a,b) => b[1].valor - a[1].valor);
   if (!linhas.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Nenhum dado.</td></tr>'; return; }
   tbody.innerHTML = linhas.map(([nome, d]) => { const ticket = d.vendas > 0 ? d.valor / d.vendas : 0; const conv = d.total > 0 ? Math.round((d.vendas / d.total) * 100) : 0; return `<tr><td><strong>${nome}</strong></td><td>${d.vendas}</td><td>${d.vidas}</td><td>${formatarMoeda(d.valor)}</td><td>${formatarMoeda(ticket)}</td><td>${conv}%</td></tr>`; }).join('');
@@ -1613,14 +1531,7 @@ function renderAnalisePraca(dados) {
 function renderAnaliseAdmin(dados) {
   const tbody = document.querySelector('#tabelaAdmin tbody'); if (!tbody) return;
   const porAdmin = {}; let totalValor = 0;
-  dados.forEach(c => {
-    const a = c.administradora || '(sem admin)';
-    if (!porAdmin[a]) porAdmin[a] = { vendas: 0, vidas: 0, valor: 0 };
-    if (c.status !== 'Desistiu') porAdmin[a].vendas++;
-    if (c.status === 'Implantado') porAdmin[a].vidas += parseInt(c.qtdVidas) || 0;
-    let v = String(c.valorComDesconto||'0').replace(/\./g,'').replace(',','.');
-    const num = parseFloat(v) || 0; porAdmin[a].valor += num; totalValor += num;
-  });
+  dados.forEach(c => { const a = c.administradora || '(sem admin)'; if (!porAdmin[a]) porAdmin[a] = { vendas: 0, vidas: 0, valor: 0 }; if (c.status !== 'Desistiu') porAdmin[a].vendas++; if (c.status === 'Implantado') porAdmin[a].vidas += parseInt(c.qtdVidas) || 0; let v = String(c.valorComDesconto||'0').replace(/\./g,'').replace(',','.'); const num = parseFloat(v) || 0; porAdmin[a].valor += num; totalValor += num; });
   const linhas = Object.entries(porAdmin).sort((a,b) => b[1].valor - a[1].valor);
   if (!linhas.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Nenhum dado.</td></tr>'; return; }
   tbody.innerHTML = linhas.map(([nome, d]) => { const ticket = d.vendas > 0 ? d.valor / d.vendas : 0; const pct = totalValor > 0 ? ((d.valor / totalValor) * 100).toFixed(1) : '0'; return `<tr><td><strong>${nome}</strong></td><td>${d.vendas}</td><td>${d.vidas}</td><td>${formatarMoeda(d.valor)}</td><td>${formatarMoeda(ticket)}</td><td>${pct}%</td></tr>`; }).join('');
@@ -1633,40 +1544,13 @@ function renderMapaBrasil(dados) {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(mapaBrasilInstance);
   const coords = { 'SP': [-23.55, -46.63], 'RJ': [-22.91, -43.17], 'MG': [-19.92, -43.94], 'BA': [-12.97, -38.50], 'PR': [-25.43, -49.27], 'RS': [-30.03, -51.23], 'SC': [-27.59, -48.55], 'DF': [-15.78, -47.93], 'GO': [-16.68, -49.25], 'PE': [-8.05, -34.88], 'CE': [-3.73, -38.52], 'PB': [-7.12, -34.88], 'AM': [-3.10, -60.02], 'PA': [-1.46, -48.49], 'MA': [-2.53, -44.30], 'ES': [-20.32, -40.34], 'MT': [-15.60, -56.10], 'MS': [-20.44, -54.65], 'RO': [-8.76, -63.90], 'AC': [-9.97, -67.81], 'AP': [0.03, -51.07], 'RR': [2.82, -60.67], 'TO': [-10.25, -48.32], 'PI': [-5.09, -42.80], 'RN': [-5.79, -35.21], 'AL': [-9.67, -35.74], 'SE': [-10.91, -37.07] };
   const porUF = {};
-  dados.forEach(c => {
-    const praca = c.praca || '';
-    const match = praca.match(/\(([A-Z]{2})\)/);
-    const uf = match ? match[1] : null;
-    if (uf) porUF[uf] = (porUF[uf] || 0) + 1;
-  });
-  Object.entries(porUF).forEach(([uf, qtd]) => {
-    if (coords[uf]) {
-      const raio = Math.max(10, Math.min(40, qtd * 3));
-      L.circleMarker(coords[uf], { radius: raio, fillColor: '#6c5ce7', color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.6 }).addTo(mapaBrasilInstance).bindPopup(`<strong>${uf}</strong><br>${qtd} cliente(s)`);
-    }
-  });
+  dados.forEach(c => { const praca = c.praca || ''; const match = praca.match(/\(([A-Z]{2})\)/); const uf = match ? match[1] : null; if (uf) porUF[uf] = (porUF[uf] || 0) + 1; });
+  Object.entries(porUF).forEach(([uf, qtd]) => { if (coords[uf]) { const raio = Math.max(10, Math.min(40, qtd * 3)); L.circleMarker(coords[uf], { radius: raio, fillColor: '#6c5ce7', color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.6 }).addTo(mapaBrasilInstance).bindPopup(`<strong>${uf}</strong><br>${qtd} cliente(s)`); } });
   if (!Object.keys(porUF).length) { L.marker([-15.78, -47.93]).addTo(mapaBrasilInstance).bindPopup('Nenhum cliente com UF identificada').openPopup(); }
 }
 
-async function carregarMetas() {
-  try {
-    const doc = await db.collection('configuracoes').doc(currentUser.uid + '_metas').get();
-    if (doc.exists) {
-      const d = doc.data();
-      document.getElementById('anMetaValor').value = d.metaValor || '';
-      document.getElementById('anMetaVendas').value = d.metaVendas || '';
-    }
-  } catch(e) { console.warn(e); }
-}
-
-async function salvarMetas() {
-  const metaValor = parseFloat(document.getElementById('anMetaValor').value) || 0;
-  const metaVendas = parseInt(document.getElementById('anMetaVendas').value) || 0;
-  try {
-    await db.collection('configuracoes').doc(currentUser.uid + '_metas').set({ metaValor, metaVendas, userId: currentUser.uid, updatedAt: new Date().toISOString() }, { merge: true });
-    alert('Metas salvas!'); renderMetas();
-  } catch(e) { alert('Erro: ' + e.message); }
-}
+async function carregarMetas() { try { const doc = await db.collection('configuracoes').doc(currentUser.uid + '_metas').get(); if (doc.exists) { const d = doc.data(); document.getElementById('anMetaValor').value = d.metaValor || ''; document.getElementById('anMetaVendas').value = d.metaVendas || ''; } } catch(e) { console.warn(e); } }
+async function salvarMetas() { const metaValor = parseFloat(document.getElementById('anMetaValor').value) || 0; const metaVendas = parseInt(document.getElementById('anMetaVendas').value) || 0; try { await db.collection('configuracoes').doc(currentUser.uid + '_metas').set({ metaValor, metaVendas, userId: currentUser.uid, updatedAt: new Date().toISOString() }, { merge: true }); alert('Metas salvas!'); renderMetas(); } catch(e) { alert('Erro: ' + e.message); } }
 
 function renderMetas() {
   const hoje = new Date(); const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString().split('T')[0];
@@ -1693,14 +1577,7 @@ function renderComissoes() {
   const hoje = new Date(); const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString().split('T')[0];
   const mesAtual = clients.filter(c => c.data >= inicioMes && c.status !== 'Desistiu');
   const porVendedor = {};
-  mesAtual.forEach(c => {
-    const v = c.codigo || '(sem vendedor)';
-    if (!porVendedor[v]) porVendedor[v] = { vendas: 0, vidas: 0, valor: 0 };
-    porVendedor[v].vendas++;
-    if (c.status === 'Implantado') porVendedor[v].vidas += parseInt(c.qtdVidas) || 0;
-    let val = String(c.valorComDesconto||'0').replace(/\./g,'').replace(',','.');
-    porVendedor[v].valor += parseFloat(val) || 0;
-  });
+  mesAtual.forEach(c => { const v = c.codigo || '(sem vendedor)'; if (!porVendedor[v]) porVendedor[v] = { vendas: 0, vidas: 0, valor: 0 }; porVendedor[v].vendas++; if (c.status === 'Implantado') porVendedor[v].vidas += parseInt(c.qtdVidas) || 0; let val = String(c.valorComDesconto||'0').replace(/\./g,'').replace(',','.'); porVendedor[v].valor += parseFloat(val) || 0; });
   const linhas = Object.entries(porVendedor).sort((a,b) => b[1].valor - a[1].valor);
   if (!linhas.length) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Nenhuma venda.</td></tr>'; return; }
   tbody.innerHTML = linhas.map(([nome, d]) => { const comissao = d.valor * (pct / 100); return `<tr><td><strong>${nome}</strong></td><td>${d.vendas}</td><td>${d.vidas}</td><td>${formatarMoeda(d.valor)}</td><td><strong style="color:#00b894;">${formatarMoeda(comissao)}</strong></td></tr>`; }).join('');
@@ -1710,18 +1587,7 @@ function renderFluxoCaixa() {
   const hoje = new Date(); const meses = [];
   for (let i = 5; i >= 0; i--) { const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1); const key = d.toISOString().substring(0, 7); meses.push({ key, label: d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }) }); }
   const dadosPorMes = {}; let totalPago = 0, totalPendente = 0, totalAtrasado = 0;
-  clients.forEach(c => {
-    const pagamentos = c.pagamentos || [];
-    pagamentos.forEach(p => {
-      if (!p.data) return;
-      const key = p.data.substring(0, 7);
-      if (!dadosPorMes[key]) dadosPorMes[key] = { pago: 0, pendente: 0, atrasado: 0 };
-      const val = parseFloat(String(p.valor||'0').replace(/\./g,'').replace(',','.')) || 0;
-      if (p.status === 'Pago') { dadosPorMes[key].pago += val; totalPago += val; }
-      else if (p.status === 'Atrasado') { dadosPorMes[key].atrasado += val; totalAtrasado += val; }
-      else { dadosPorMes[key].pendente += val; totalPendente += val; }
-    });
-  });
+  clients.forEach(c => { (c.pagamentos || []).forEach(p => { if (!p.data) return; const key = p.data.substring(0, 7); if (!dadosPorMes[key]) dadosPorMes[key] = { pago: 0, pendente: 0, atrasado: 0 }; const val = parseFloat(String(p.valor||'0').replace(/\./g,'').replace(',','.')) || 0; if (p.status === 'Pago') { dadosPorMes[key].pago += val; totalPago += val; } else if (p.status === 'Atrasado') { dadosPorMes[key].atrasado += val; totalAtrasado += val; } else { dadosPorMes[key].pendente += val; totalPendente += val; } }); });
   const ctx = document.getElementById('fluxoCaixaChart')?.getContext('2d'); if (!ctx) return;
   if (charts.fluxoCaixa) charts.fluxoCaixa.destroy();
   charts.fluxoCaixa = new Chart(ctx, { type: 'bar', data: { labels: meses.map(m => m.label), datasets: [ { label: 'Recebido', data: meses.map(m => (dadosPorMes[m.key]?.pago || 0)), backgroundColor: '#00b894' }, { label: 'Pendente', data: meses.map(m => (dadosPorMes[m.key]?.pendente || 0)), backgroundColor: '#fdcb6e' }, { label: 'Em Atraso', data: meses.map(m => (dadosPorMes[m.key]?.atrasado || 0)), backgroundColor: '#e17055' } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
@@ -1732,23 +1598,17 @@ function renderFluxoCaixa() {
 }
 
 // ==================== PWA + NOTIFICAÇÕES ====================
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').then(reg => { console.log('SW registrado:', reg.scope); }).catch(err => console.warn('Erro SW:', err));
-}
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').then(reg => console.log('SW:', reg.scope)).catch(err => console.warn('Erro SW:', err)); }
 async function ativarNotificacoes() {
   if (!('Notification' in window)) return alert('Notificações não suportadas.');
   const permission = await Notification.requestPermission();
-  if (permission === 'granted') {
-    new Notification('CRM Recupera AI', { body: 'Notificações ativadas! 🔔', icon: 'logo.png' });
-  }
+  if (permission === 'granted') { new Notification('CRM Recupera AI', { body: 'Notificações ativadas! 🔔', icon: 'logo.png' }); }
 }
 function verificarTarefasVencidas() {
   if (Notification.permission !== 'granted') return;
   const hoje = new Date().toISOString().split('T')[0];
   const vencidas = tarefas.filter(t => !t.concluida && t.data < hoje);
-  if (vencidas.length > 0) {
-    new Notification('⚠️ Tarefas Vencidas', { body: `Você tem ${vencidas.length} tarefa(s) vencida(s).`, icon: 'logo.png', tag: 'tarefas-vencidas' });
-  }
+  if (vencidas.length > 0) { new Notification('⚠️ Tarefas Vencidas', { body: `Você tem ${vencidas.length} tarefa(s) vencida(s).`, icon: 'logo.png', tag: 'tarefas-vencidas' }); }
 }
 
 // ============================================================
@@ -1764,6 +1624,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('dataFimIntervalo')?.addEventListener('change', updateDashboard);
   document.getElementById('anPeriodo')?.addEventListener('change', renderAnalises);
   document.getElementById('anPraca')?.addEventListener('change', renderAnalises);
+  ['cPraca','cTipoCliente','cDataPagamento','cValorComDesconto'].forEach(id => { const el = document.getElementById(id); if (el) { el.addEventListener('change', renderPrevisaoPagamentos); el.addEventListener('blur', renderPrevisaoPagamentos); } });
   document.getElementById('btnNovaTarefa')?.addEventListener('click', abrirModalTarefa);
   document.querySelectorAll('#tarefaSubTabs .nav-link').forEach(btn => { btn.addEventListener('click', function(e) { const view = this.dataset.view; if (view) switchTarefaView(view); }); });
   ['filtroTarefaStatus', 'filtroTarefaOrdenar', 'filtroTarefaBusca'].forEach(id => { const el = document.getElementById(id); if (el) { el.addEventListener('change', renderTarefas); if (id === 'filtroTarefaBusca') el.addEventListener('input', renderTarefas); } });
@@ -1773,13 +1634,31 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('btnSalvarTarefa')?.addEventListener('click', salvarTarefa);
   document.getElementById('btnExcluirTarefa')?.addEventListener('click', function() { const id = document.getElementById('tarefaId').value; if (id) excluirTarefa(id); });
   document.getElementById('tarefaLeadBusca')?.addEventListener('input', function() { buscarLeadsParaTarefa(this.value); });
-  document.addEventListener('click', function(e) { const container = document.getElementById('tarefaLeadResultados'); if (container && !e.target.closest('#tarefaLeadBusca') && !e.target.closest('#tarefaLeadResultados')) container.style.display = 'none'; });
+
+  document.addEventListener('click', function(e) {
+    const container = document.getElementById('tarefaLeadResultados');
+    if (container && !e.target.closest('#tarefaLeadBusca') && !e.target.closest('#tarefaLeadResultados')) container.style.display = 'none';
+
+    const notif = document.getElementById('notifDropdown');
+    const btnNotif = document.getElementById('btnNotificacoes');
+    if (notif && notif.style.display === 'block') {
+      const clicouNoBotao = e.target === btnNotif || btnNotif?.contains(e.target);
+      const clicouNoDropdown = notif.contains(e.target);
+      if (!clicouNoBotao && !clicouNoDropdown) {
+        notif.style.display = 'none';
+        notif.classList.remove('show');
+      }
+    }
+
+    const containerBusca = document.getElementById('resultadosBuscaGlobal');
+    if (containerBusca && !e.target.closest('.left-actions')) containerBusca.style.display = 'none';
+  });
+
   switchTab('dashboardTab');
   setLeadView('lista');
   switchTarefaView('lista');
   setInterval(atualizarInfoBackup, 60000);
   setInterval(verificarTarefasVencidas, 3600000);
-  document.addEventListener('click', function(e) { const container = document.getElementById('resultadosBuscaGlobal'); if (container && !e.target.closest('.left-actions')) container.style.display = 'none'; const notif = document.getElementById('notifDropdown'); if (notif && !e.target.closest('#btnNotificacoes') && !e.target.closest('#notifDropdown')) notif.classList.remove('show'); });
 });
 function atualizarInfoBackup() { /* placeholder */ }
 </script>
