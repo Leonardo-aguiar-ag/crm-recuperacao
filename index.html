@@ -213,7 +213,6 @@
 </head>
 <body>
 
-<!-- ===== LOGIN ===== -->
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
     <h3 class="text-center mb-4 fw-bold" style="color:var(--text);">CRM Recupera AI</h3>
@@ -230,7 +229,6 @@
   </div>
 </div>
 
-<!-- ===== SIDEBAR ===== -->
 <div class="sidebar" id="sidebar">
   <div class="logo">
     <img src="logo.png" alt="Hapvida Amel's Conceito" style="max-height:45px; width:auto;" />
@@ -242,6 +240,7 @@
     <div class="nav-link" data-tab="leadsTab" onclick="switchTab('leadsTab')"><i class="bi bi-funnel"></i><span class="link-text">Leads</span></div>
     <div class="nav-link" data-tab="tarefasTab" onclick="switchTab('tarefasTab')"><i class="bi bi-check2-square"></i><span class="link-text">Minhas Tarefas</span></div>
     <div class="nav-link" data-tab="analisesTab" onclick="switchTab('analisesTab')"><i class="bi bi-graph-up-arrow"></i><span class="link-text">Análises</span></div>
+    <div class="nav-link" data-tab="importarTab" onclick="switchTab('importarTab')"><i class="bi bi-file-earmark-arrow-up"></i><span class="link-text">Importar CSV</span></div>
     <div class="nav-link" data-tab="perfilTab" onclick="switchTab('perfilTab')"><i class="bi bi-person-circle"></i><span class="link-text">Meu Perfil</span></div>
   </div>
   <div class="user-profile" id="sidebarUserProfile">
@@ -267,7 +266,6 @@
   </div>
 </div>
 
-<!-- ===== CONTEÚDO PRINCIPAL ===== -->
 <div class="main-content" id="mainContent">
   <div class="topbar">
     <div class="left-actions">
@@ -289,7 +287,6 @@
     </div>
   </div>
 
-  <!-- ===== ABAS ===== -->
   <div class="tab-content" id="mainTabContent">
 
     <!-- DASHBOARD -->
@@ -301,26 +298,22 @@
         <div class="col-md-2"><label>Praça</label><select id="filtroPraca" class="form-select"><option value="">Todas as Praças</option></select></div>
         <div class="col-md-2"><button class="btn btn-warning mt-4" onclick="gerarRelatorio()"><i class="bi bi-file-earmark-pdf"></i> Relatório</button></div>
       </div>
-
       <div class="row g-3 mb-3">
         <div class="col-md-3 col-sm-6"><div class="dashboard-card bg-primary"><i class="icon bi bi-file-earmark-text"></i><h6>Total de Vendas</h6><h2 id="dashTotal">0</h2></div></div>
         <div class="col-md-3 col-sm-6"><div class="dashboard-card bg-success"><i class="icon bi bi-people"></i><h6>Total de Vidas</h6><h2 id="dashImplantados">0</h2></div></div>
         <div class="col-md-3 col-sm-6"><div class="dashboard-card bg-danger"><i class="icon bi bi-x-circle"></i><h6>Desistiu</h6><h2 id="dashDesistiu">0</h2></div></div>
         <div class="col-md-3 col-sm-6"><div class="dashboard-card bg-dark-blue"><i class="icon bi bi-bar-chart-line"></i><h6>Média de Vidas / Venda</h6><h2 id="dashMediaVidas">0,00</h2></div></div>
       </div>
-
       <div class="row g-3 mb-3">
         <div class="col-md-4 col-sm-6"><div class="dashboard-card bg-info"><i class="icon bi bi-cash-stack"></i><h6>Valor Processado</h6><h2 id="dashProcessado">R$ 0,00</h2></div></div>
         <div class="col-md-4 col-sm-6"><div class="dashboard-card bg-warning" style="color:#2d3436;"><i class="icon bi bi-graph-up"></i><h6>Taxa Conversão</h6><h2 id="dashConversao">0%</h2></div></div>
         <div class="col-md-4 col-sm-6"><div class="dashboard-card bg-secondary"><i class="icon bi bi-calculator"></i><h6>Ticket Médio</h6><h2 id="dashTicketMedio">R$ 0,00</h2></div></div>
       </div>
-
       <div class="row g-3 mb-4">
         <div class="col-md-4"><div class="dashboard-card bg-danger"><i class="icon bi bi-exclamation-triangle"></i><h6>Clientes Inadimplentes</h6><h2 id="dashInadimplentes">0</h2><span class="sub">Média atraso: <span id="dashMediaAtraso">0</span> dias</span></div></div>
         <div class="col-md-4"><div class="dashboard-card bg-success"><i class="icon bi bi-check-circle"></i><h6>Clientes em Dia</h6><h2 id="dashEmDia">0</h2><span class="sub">Média tempo: <span id="dashMediaTempo">0</span> meses</span></div></div>
         <div class="col-md-4"><div class="dashboard-card bg-purple"><i class="icon bi bi-question-circle"></i><h6>Sem Info de Pagamento</h6><h2 id="dashSemInfo">0</h2></div></div>
       </div>
-
       <div class="card card-custom mb-4">
         <h5 class="fw-bold"><i class="bi bi-trophy me-2"></i>Últimas Vendas</h5>
         <div class="table-responsive">
@@ -356,14 +349,10 @@
               <div class="col-md-3"><label>Número Proposta</label><input type="text" id="cNumeroProposta" class="form-control"></div>
               <div class="col-md-6"><label>Nome Titular</label><input type="text" id="cNomeTitular" class="form-control"></div>
               <div class="col-md-3"><label>CPF Titular</label><input type="text" id="cCpfTitular" class="form-control"></div>
-
-              <!-- CNPJ/CAEPF + Tipo lado a lado -->
               <div class="col-md-3"><label>CNPJ/CAEPF</label><input type="text" id="cCnpjTitular" class="form-control" placeholder="Digite o número"></div>
               <div class="col-md-2"><label>Tipo</label><select id="cTipoDocEmp" class="form-select"><option value="CNPJ">CNPJ</option><option value="CAEPF">CAEPF</option></select></div>
-
               <div class="col-md-3"><label>Telefone</label><input type="text" id="cTelefoneTitular" class="form-control"></div>
               <div class="col-md-2"><label>Email</label><input type="email" id="cEmailTitular" class="form-control"></div>
-
               <div class="col-md-2"><label>Qtd Vidas</label><input type="number" id="cQtdVidas" class="form-control" min="1" value="1"></div>
               <div class="col-md-2"><label>Tipo Cliente</label><select id="cTipoCliente" class="form-select"><option value="">Selecione</option><option value="PF">PF</option><option value="PJ">PJ</option></select></div>
               <div class="col-md-4"><label>Modalidade</label><select id="cModalidadePlano" class="form-select"></select></div>
@@ -372,10 +361,8 @@
               <div class="col-md-3"><label>Acomodação</label><select id="cAcomodacao" class="form-select"></select></div>
               <div class="col-md-3"><label>Status</label><select id="cStatus" class="form-select"></select></div>
               <div class="col-md-3"><label>Implantação</label><input type="date" id="cDataImplantacao" class="form-control"></div>
-
               <div class="col-md-3"><label>Pagamento</label><input type="date" id="cDataPagamento" class="form-control"></div>
               <div class="col-md-3"><label>Data da Vigência</label><input type="date" id="cDataVigencia" class="form-control"></div>
-
               <div class="col-md-3"><label>Fonte Venda</label><select id="cFonteVenda" class="form-select"></select></div>
               <div class="col-md-3"><label>Valor s/ Desconto</label><input type="text" id="cValorSemDesconto" class="form-control" onblur="formatarValorInput(this)" onfocus="this.value=this.value.replace(/\./g,'').replace(',','.')"></div>
               <div class="col-md-3"><label>Valor c/ Desconto</label><input type="text" id="cValorComDesconto" class="form-control" onblur="formatarValorInput(this)" onfocus="this.value=this.value.replace(/\./g,'').replace(',','.')"></div>
@@ -662,10 +649,152 @@
       </div>
     </div>
 
-  </div><!-- end tab-content -->
-</div><!-- end main-content -->
+    <!-- IMPORTAR CSV -->
+    <div class="tab-pane fade" id="importarTab">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h5 class="fw-bold"><i class="bi bi-file-earmark-arrow-up me-2"></i>Importação de Leads por CSV</h5>
+        <div class="btn-group view-toggle">
+          <button class="btn btn-primary" id="importNavUpload" onclick="irParaPassoImport(1)">1. Upload</button>
+          <button class="btn btn-outline-primary" id="importNavMapping" onclick="irParaPassoImport(2)">2. Mapeamento</button>
+          <button class="btn btn-outline-primary" id="importNavPreview" onclick="irParaPassoImport(3)">3. Prévia</button>
+          <button class="btn btn-outline-primary" id="importNavResult" onclick="irParaPassoImport(4)">4. Resultado</button>
+          <button class="btn btn-outline-secondary" onclick="renderImportHistory()"><i class="bi bi-clock-history"></i> Histórico</button>
+        </div>
+      </div>
 
-<!-- ===== MODAIS ===== -->
+      <div class="import-step" id="importStep1">
+        <div class="card card-custom">
+          <h6 class="fw-bold mb-3"><i class="bi bi-upload me-2"></i>Selecione o arquivo CSV exportado do site de origem</h6>
+          <div class="alert alert-warning small mb-3">
+            <i class="bi bi-info-circle"></i> <strong>Importante:</strong> utilize somente arquivos CSV exportados legitimamente pelo próprio usuário.
+            Tamanho máximo: <strong>10 MB</strong>. Limite: <strong>50.000 linhas</strong>. Não são aceitos .xlsx, .zip, .exe ou outros formatos.
+          </div>
+          <div class="d-flex gap-3 flex-wrap align-items-center mb-3">
+            <input type="file" id="importFileInput" class="form-control" accept=".csv,text/csv" style="max-width:400px;" />
+            <button class="btn btn-primary" id="btnDetectarFormato" onclick="detectarFormatoCSV()"><i class="bi bi-search"></i> Detectar Formato</button>
+            <button class="btn btn-outline-secondary" onclick="cancelarImport()">Cancelar</button>
+          </div>
+          <div id="importFileInfo" class="text-muted small"></div>
+          <div id="importUploadError" class="text-danger small mt-2"></div>
+        </div>
+      </div>
+
+      <div class="import-step" id="importStep2" style="display:none;">
+        <div class="card card-custom mb-3">
+          <h6 class="fw-bold mb-3"><i class="bi bi-sliders me-2"></i>Configurações do arquivo</h6>
+          <div class="row g-3">
+            <div class="col-md-3"><label>Delimitador</label>
+              <select id="importDelimiter" class="form-select" onchange="reprocessarPreview()">
+                <option value=",">Vírgula (,)</option>
+                <option value=";">Ponto e vírgula (;)</option>
+                <option value="\t">Tabulação</option>
+              </select>
+            </div>
+            <div class="col-md-3"><label>Encoding</label>
+              <select id="importEncoding" class="form-select" onchange="reprocessarPreview()">
+                <option value="utf-8">UTF-8</option>
+                <option value="utf-8-bom">UTF-8 com BOM</option>
+                <option value="windows-1252">Windows-1252</option>
+                <option value="iso-8859-1">ISO-8859-1</option>
+              </select>
+            </div>
+            <div class="col-md-2"><label>Tem cabeçalho?</label>
+              <select id="importHasHeader" class="form-select" onchange="reprocessarPreview()">
+                <option value="1">Sim</option>
+                <option value="0">Não</option>
+              </select>
+            </div>
+            <div class="col-md-4"><label>Nome do mapeamento (opcional)</label>
+              <div class="input-group">
+                <input type="text" id="importMappingName" class="form-control" placeholder="Ex: Site Origem - Padrão" />
+                <button class="btn btn-success" onclick="salvarMapeamentoCSV()"><i class="bi bi-save"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-custom mb-3">
+          <h6 class="fw-bold mb-3"><i class="bi bi-columns-gap me-2"></i>Mapeamento de colunas</h6>
+          <div class="table-responsive"><table class="table" id="importMappingTable">
+            <thead><tr><th>Coluna do CSV</th><th>Campo no CRM</th><th>Amostra</th></tr></thead>
+            <tbody></tbody>
+          </table></div>
+          <div class="d-flex gap-2 flex-wrap mt-2">
+            <button class="btn btn-outline-primary" onclick="carregarMapeamentoSalvo()"><i class="bi bi-bookmark"></i> Carregar Mapeamento</button>
+            <button class="btn btn-outline-secondary" onclick="autoMapearColunas()"><i class="bi bi-magic"></i> Auto-mapear</button>
+          </div>
+        </div>
+
+        <div class="card card-custom mb-3">
+          <h6 class="fw-bold mb-3"><i class="bi bi-table me-2"></i>Amostra dos dados (5 primeiras linhas)</h6>
+          <div class="table-responsive" style="max-height:320px;"><table class="table" id="importSampleTable"></table></div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button class="btn btn-secondary" onclick="irParaPassoImport(1)"><i class="bi bi-arrow-left"></i> Voltar</button>
+          <button class="btn btn-primary" onclick="validarImport()"><i class="bi bi-check-circle"></i> Validar e Gerar Prévia</button>
+        </div>
+      </div>
+
+      <div class="import-step" id="importStep3" style="display:none;">
+        <div class="row g-2 mb-3" id="importSummaryCards"></div>
+        <div class="card card-custom mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <h6 class="fw-bold m-0"><i class="bi bi-list-check me-2"></i>Prévia da importação</h6>
+            <div class="d-flex gap-2 flex-wrap">
+              <select id="importFilter" class="form-select" style="width:auto;font-size:0.8rem;" onchange="renderPreviewRows()">
+                <option value="all">Todos</option>
+                <option value="NOVO">Novos</option>
+                <option value="EXISTENTE_SEM_ALTERACAO">Sem Alteração</option>
+                <option value="EXISTENTE_COM_ALTERACAO">Com Alteração</option>
+                <option value="DUPLICADO_NO_ARQUIVO">Duplicados</option>
+                <option value="INVALIDO">Inválidos</option>
+                <option value="CONFLITO">Conflitos</option>
+              </select>
+              <select id="importPolicy" class="form-select" style="width:auto;font-size:0.8rem;" title="Política para registros existentes">
+                <option value="skip">Manter existentes (não sobrescrever)</option>
+                <option value="update_empty">Atualizar somente campos vazios</option>
+                <option value="update_all">Atualizar com dados do CSV</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-responsive" style="max-height:420px;overflow:auto;">
+            <table class="table" id="importPreviewTable" style="font-size:0.75rem;">
+              <thead><tr><th>Linha</th><th>Nome</th><th>Telefone</th><th>E-mail</th><th>CPF/CNPJ</th><th>Status</th><th>Classificação</th><th>Ação</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-secondary" onclick="irParaPassoImport(2)"><i class="bi bi-arrow-left"></i> Voltar</button>
+          <button class="btn btn-success" id="btnConfirmarImport" onclick="executarImportacao()"><i class="bi bi-cloud-upload"></i> Confirmar Importação</button>
+        </div>
+      </div>
+
+      <div class="import-step" id="importStep4" style="display:none;">
+        <div class="card card-custom" id="importResultContent">
+          <p class="text-muted">Nenhuma importação em andamento.</p>
+        </div>
+      </div>
+
+      <div class="import-step" id="importHistory" style="display:none;">
+        <div class="card card-custom">
+          <h6 class="fw-bold mb-3"><i class="bi bi-clock-history me-2"></i>Histórico de Importações</h6>
+          <div class="table-responsive">
+            <table class="table" id="importHistoryTable">
+              <thead><tr><th>Data</th><th>Arquivo</th><th>Total</th><th>Criados</th><th>Atualizados</th><th>Ignorados</th><th>Falhas</th><th>Status</th><th>Ações</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <button class="btn btn-secondary mt-3" onclick="voltarImport()"><i class="bi bi-arrow-left"></i> Voltar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAIS -->
 <div class="modal fade" id="modalTarefa" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content" style="background:var(--card);">
@@ -707,7 +836,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ==================== FIREBASE CONFIG ====================
 const firebaseConfig = {
   apiKey: "AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",
   authDomain: "crm-recuperacao.firebaseapp.com",
@@ -722,7 +850,6 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-// ==================== VARIÁVEIS ====================
 let currentUser = null;
 let clients = [], tarefas = [], leadsData = [], pessoas = [];
 let dependentesTemp = [], pagamentosTemp = [], anexosTemp = [], interacoesTemp = [], checklistTemp = [];
@@ -743,14 +870,12 @@ let tarefaView = 'lista';
 let mapaBrasilInstance = null;
 let notificacoesCache = [];
 
-// ==================== TEMA E FONTE ====================
 function setTheme(theme) { document.body.classList.remove('dark-mode'); if (theme === 'dark') document.body.classList.add('dark-mode'); else if (theme === 'system') { if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.body.classList.add('dark-mode'); } localStorage.setItem('theme', theme); atualizarBotoesTema(theme); }
 function atualizarBotoesTema(theme) { document.querySelectorAll('.tema-opcoes .btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.theme === theme); }); }
 function setFontSize(size) { document.body.classList.remove('fonte-menor','fonte-padrao','fonte-maior','fonte-extra'); document.body.classList.add('fonte-'+size); localStorage.setItem('fontSize', size); atualizarBotoesFonte(size); }
 function atualizarBotoesFonte(size) { document.querySelectorAll('.fonte-opcoes .btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.size === size); }); }
 function carregarPreferencias() { const theme = localStorage.getItem('theme') || 'light'; setTheme(theme); const fontSize = localStorage.getItem('fontSize') || 'padrao'; setFontSize(fontSize); }
 
-// ==================== UPLOAD DE FOTO ====================
 async function uploadFotoPerfil(event) {
   const file = event.target.files[0]; if (!file) return; if (!currentUser) return alert('Usuário não logado.');
   try {
@@ -765,7 +890,6 @@ async function uploadFotoPerfil(event) {
   event.target.value = '';
 }
 
-// ==================== AUTENTICAÇÃO ====================
 auth.onAuthStateChanged(async user => {
   if (user) {
     currentUser = user;
@@ -804,7 +928,6 @@ function recoverPassword() { const email = document.getElementById('loginEmail')
 function togglePassword() { const inp = document.getElementById('loginPassword'); inp.type = inp.type === 'password' ? 'text' : 'password'; }
 function logout() { auth.signOut(); }
 
-// ==================== SIDEBAR ====================
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); document.getElementById('mainContent').classList.toggle('expanded'); }
 function toggleMobileSidebar() { document.getElementById('sidebar').classList.toggle('mobile-open'); }
 function toggleTheme() { const isDark = document.body.classList.contains('dark-mode'); setTheme(isDark ? 'light' : 'dark'); }
@@ -822,6 +945,7 @@ function switchTab(tabId) {
   if (tabId === 'clientesTab') { switchInternalTab('dadosPrincipais'); carregarVendedoresSelect(); }
   if (tabId === 'analisesTab') switchAnalisesView();
   if (tabId === 'perfilTab') { carregarPreferencias(); renderLeadStatuses(); renderStatuses(); renderPracasList(); renderAdministradorasList(); renderAcomodacoesList(); renderCoparticipacoesList(); renderModalidadesList(); renderFontesVendaList(); renderPessoasList(); }
+  if (tabId === 'importarTab') { irParaPassoImport(1); }
 }
 
 function switchInternalTab(tabId) {
@@ -833,7 +957,6 @@ function switchInternalTab(tabId) {
   if (tabId === 'pagamentosTab') setTimeout(() => renderPrevisaoPagamentos(), 50);
 }
 
-// ==================== LOAD ALL ====================
 async function loadAll() {
   if (isLoading) return;
   isLoading = true;
@@ -855,7 +978,6 @@ async function loadAll() {
   finally { isLoading = false; }
 }
 
-// ==================== LOAD FUNCTIONS ====================
 async function loadClients() { if(!currentUser) return; const snap=await db.collection('clients').where('userId','==',currentUser.uid).get(); clients=snap.docs.map(d=>({id:d.id,...d.data()})); }
 async function loadTarefas() { if(!currentUser) return; const snap=await db.collection('tarefas').where('userId','==',currentUser.uid).get(); tarefas=snap.docs.map(d=>({id:d.id,...d.data()})); }
 async function loadStatuses() { if(!currentUser) return; const snap=await db.collection('statuses').where('userId','==',currentUser.uid).get(); statuses=snap.docs.map(d=>({id:d.id,name:d.data().name||'Status'})); }
@@ -870,7 +992,6 @@ async function loadLeadStatuses() { if(!currentUser) return; const snap=await db
 async function loadPessoas() { if(!currentUser) return; const snap=await db.collection('pessoas').where('userId','==',currentUser.uid).get(); pessoas=snap.docs.map(d=>({id:d.id,...d.data()})); }
 async function loadFiltrosSalvos() { if(!currentUser) return; const snap=await db.collection('filtrosSalvos').where('userId','==',currentUser.uid).get(); filtrosSalvos=snap.docs.map(d=>({id:d.id,...d.data()})); }
 
-// ==================== PREENCHER SELECTS ====================
 function preencherSelectsFicha() {
   const selects={cStatus:statuses,cPraca:pracas,cAdministradora:administradoras,cAcomodacao:acomodacoes,cCoparticipacao:coparticipacoes,cModalidadePlano:modalidades,cFonteVenda:fontesVenda};
   for(const [id,data] of Object.entries(selects)) {
@@ -907,7 +1028,6 @@ function popularFiltroCodigo() {
 function carregarVendedoresSelect() { const sel=document.getElementById('cVendedor'); if(!sel) return; const current=sel.value; sel.innerHTML='<option value="">Selecione</option>'; pessoas.forEach(p=>{ sel.innerHTML+=`<option value="${p.id}" data-codigo="${p.codigo||''}">${p.nome} ${p.codigo?'('+p.codigo+')':''}</option>`; }); if(current) sel.value=current; }
 function preencherCodigoPorVendedor() { const sel=document.getElementById('cVendedor'); const codInput=document.getElementById('cCodigo'); const opt=sel.options[sel.selectedIndex]; codInput.value = (opt && opt.dataset.codigo) ? opt.dataset.codigo : ''; }
 
-// ==================== DASHBOARD ====================
 function updateDashboard() {
   const periodo=document.getElementById('periodoFiltro').value;
   const praca=document.getElementById('filtroPraca').value;
@@ -962,7 +1082,6 @@ function atualizarGraficos(dados) {
   if(ctx3) charts.pfPj=new Chart(ctx3,{type:'pie',data:{labels:['PF','PJ'],datasets:[{data:[pf,pj],backgroundColor:['#6c5ce7','#fdcb6e']}]}});
 }
 
-// ==================== RENDER TABELA ====================
 function renderTable() {
   const search = document.getElementById('search')?.value.toLowerCase() || '';
   const codigo = document.getElementById('filterCodigo')?.value || '';
@@ -1019,7 +1138,6 @@ function renderTable() {
 }
 function updateLoteButton() { const count = selectedIds.size; document.getElementById('selecionadosCount').innerText = count ? `${count} selecionado(s)` : ''; const btn = document.getElementById('btnAcaoLote'); if (btn) btn.disabled = count === 0; }
 
-// ==================== CRUD CLIENTES ====================
 async function saveClient() {
   if (isLoading) return;
   const btn = document.getElementById('btnSalvarCliente'); if (!btn) return;
@@ -1115,31 +1233,26 @@ function clearForm() {
   switchInternalTab('dadosPrincipais');
 }
 
-// ==================== DEPENDENTES ====================
 function limparCamposDependente() { ['depNome','depCpf','depEmail','depTelefone'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); }
 function adicionarDependente() { const nome = document.getElementById('depNome').value.trim(); if (!nome) return alert('Nome obrigatório.'); const cpf = document.getElementById('depCpf').value.trim(); const email = document.getElementById('depEmail').value.trim(); const telefone = document.getElementById('depTelefone').value.trim(); dependentesTemp.push({ nome, cpf, email, telefone }); renderDependentes(); limparCamposDependente(); }
 function renderDependentes() { const el = document.getElementById('dependentesList'); if (!el) return; if (!dependentesTemp.length) { el.innerHTML = '<p class="text-muted">Nenhum dependente.</p>'; return; } el.innerHTML = dependentesTemp.map((dep, i) => `<div class="status-item"><div><strong>${dep.nome}</strong>${dep.cpf ? ' | '+dep.cpf : ''}${dep.email ? ' | '+dep.email : ''}${dep.telefone ? ' | '+dep.telefone : ''}</div><div><button class="btn btn-sm btn-outline-primary" onclick="editarDependente(${i})"><i class="bi bi-pencil"></i></button> <button class="btn btn-sm btn-danger" onclick="removerDependente(${i})"><i class="bi bi-trash"></i></button></div></div>`).join(''); }
 function editarDependente(idx) { const dep = dependentesTemp[idx]; if (!dep) return; document.getElementById('depNome').value = dep.nome || ''; document.getElementById('depCpf').value = dep.cpf || ''; document.getElementById('depEmail').value = dep.email || ''; document.getElementById('depTelefone').value = dep.telefone || ''; dependentesTemp.splice(idx, 1); renderDependentes(); }
 function removerDependente(idx) { if (!confirm('Remover?')) return; dependentesTemp.splice(idx, 1); renderDependentes(); }
 
-// ==================== PAGAMENTOS ====================
 function limparCamposPagamento() { ['pagData','pagValor','pagForma','pagStatus','pagObs'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); }
 function adicionarPagamento() { const data = document.getElementById('pagData').value; const valor = document.getElementById('pagValor').value; const forma = document.getElementById('pagForma').value; const status = document.getElementById('pagStatus').value; const obs = document.getElementById('pagObs').value; if (!data || !valor) return alert('Data e Valor obrigatórios.'); pagamentosTemp.push({ data, valor, forma, status, obs }); renderPagamentos(); limparCamposPagamento(); renderPrevisaoPagamentos(); }
 function renderPagamentos() { const el = document.getElementById('pagamentosList'); if (!el) return; if (!pagamentosTemp.length) { el.innerHTML = '<p class="text-muted">Nenhum pagamento.</p>'; return; } el.innerHTML = pagamentosTemp.map((p, i) => `<div class="status-item"><div><strong>${p.parcela ? `[${p.parcela}ª] ` : ''}${p.data}</strong> - ${formatarMoeda(parseFloat(String(p.valor).replace(/\./g,'').replace(',','.')))}${p.forma ? ' | '+p.forma : ''}${p.status ? ' | '+p.status : ''}${p.obs ? ' | '+p.obs : ''}</div><div><button class="btn btn-sm btn-outline-primary" onclick="editarPagamento(${i})"><i class="bi bi-pencil"></i></button> <button class="btn btn-sm btn-danger" onclick="removerPagamento(${i})"><i class="bi bi-trash"></i></button></div></div>`).join(''); }
 function editarPagamento(idx) { const p = pagamentosTemp[idx]; if (!p) return; document.getElementById('pagData').value = p.data || ''; document.getElementById('pagValor').value = p.valor || ''; document.getElementById('pagForma').value = p.forma || ''; document.getElementById('pagStatus').value = p.status || ''; document.getElementById('pagObs').value = p.obs || ''; pagamentosTemp.splice(idx, 1); renderPagamentos(); renderPrevisaoPagamentos(); }
 function removerPagamento(idx) { if (!confirm('Remover?')) return; pagamentosTemp.splice(idx, 1); renderPagamentos(); renderPrevisaoPagamentos(); }
 
-// ==================== ANEXOS ====================
 function adicionarAnexos() { const input = document.getElementById('anexoFileInput'); const files = input.files; if (!files || !files.length) return alert('Selecione arquivos.'); for (const file of files) { anexosTemp.push({ nome: file.name, file }); } renderAnexos(); input.value = ''; }
 function renderAnexos() { const el = document.getElementById('anexosList'); if (!el) return; if (!anexosTemp.length) { el.innerHTML = '<p class="text-muted">Nenhum anexo.</p>'; return; } el.innerHTML = anexosTemp.map((a, i) => { const status = a.url ? '<span class="badge-uploaded"><i class="bi bi-check-circle"></i> Enviado</span>' : '<span class="badge-pending"><i class="bi bi-clock"></i> Pendente</span>'; return `<div class="status-item"><span><i class="bi bi-file-earmark me-2"></i>${a.nome} ${status}</span><div>${a.url ? `<a href="${a.url}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i></a>` : ''}<button class="btn btn-sm btn-danger" onclick="removerAnexo(${i})"><i class="bi bi-trash"></i></button></div></div>`; }).join(''); }
 function removerAnexo(idx) { if (!confirm('Remover?')) return; anexosTemp.splice(idx, 1); renderAnexos(); }
 
-// ==================== INTERAÇÕES ====================
 function adicionarInteracao() { const tipo = document.getElementById('interacaoTipo').value; const desc = document.getElementById('interacaoDesc').value.trim(); let data = document.getElementById('interacaoData').value; if (!desc) return alert('Descreva.'); if (!data) data = new Date().toISOString().slice(0, 16); interacoesTemp.push({ tipo, desc, data }); renderInteracoes(); document.getElementById('interacaoDesc').value = ''; document.getElementById('interacaoData').value = ''; }
 function renderInteracoes() { const el = document.getElementById('interacoesList'); if (!el) return; if (!interacoesTemp.length) { el.innerHTML = '<p class="text-muted">Nenhuma interação.</p>'; return; } const sorted = [...interacoesTemp].sort((a,b) => (b.data || '').localeCompare(a.data || '')); el.innerHTML = sorted.map((i, idx) => `<div class="interacao-item"><div><span class="tipo">${i.tipo}</span> <span class="data">${i.data ? new Date(i.data).toLocaleString() : ''}</span><p class="mb-0">${i.desc}</p></div><button class="btn btn-sm btn-danger" onclick="removerInteracao(${idx})"><i class="bi bi-trash"></i></button></div>`).join(''); }
 function removerInteracao(idx) { if (!confirm('Remover?')) return; interacoesTemp.splice(idx, 1); renderInteracoes(); }
 
-// ==================== PREVISÃO DE PAGAMENTOS ====================
 const PLANOS_PAGAMENTO = {
   fortaleza_individual:   { nome: 'Fortaleza - Individual',   parcelas: [33.33, 33.33, 33.34], desc: '3 parcelas' },
   fortaleza_empresarial:  { nome: 'Fortaleza - Empresarial',  parcelas: [100],                 desc: 'À vista' },
@@ -1198,7 +1311,6 @@ function removerPagamentoParcela(numParcela) {
   renderPagamentos(); renderPrevisaoPagamentos();
 }
 
-// ==================== LEADS ====================
 function renderLeads() {
   const busca = document.getElementById('searchLead')?.value.toLowerCase() || '';
   const uf = document.getElementById('filterUfLead')?.value || '';
@@ -1225,7 +1337,6 @@ function editarLead(id) { /* ... */ }
 async function atualizarLead() { /* ... */ }
 async function excluirLead(id) { if (!confirm('Excluir?')) return; await db.collection('leads').doc(id).delete(); leadsData = leadsData.filter(l => l.id !== id); renderLeads(); }
 
-// ==================== CONFIGURAÇÕES ====================
 function renderLeadStatuses() { const el = document.getElementById('leadStatusList'); if (!el) return; el.innerHTML = leadStatuses.map(s => `<div class="status-item"><span>${s.name}</span><button class="btn btn-danger btn-sm" onclick="deleteLeadStatus('${s.id}')">Excluir</button></div>`).join(''); }
 async function addLeadStatus() { const nome = prompt('Nome do status:'); if (!nome || !nome.trim()) return; await db.collection('leadStatuses').add({ name: nome.trim(), userId: currentUser.uid }); await loadLeadStatuses(); renderLeadStatuses(); preencherSelectsFicha(); }
 async function deleteLeadStatus(id) { if (!confirm('Remover?')) return; await db.collection('leadStatuses').doc(id).delete(); await loadLeadStatuses(); renderLeadStatuses(); preencherSelectsFicha(); }
@@ -1251,12 +1362,10 @@ function renderFontesVendaList() { const el = document.getElementById('fontesVen
 async function addFonteVenda() { const nome = document.getElementById('novaFonteVenda').value.trim(); if (!nome) return alert('Digite o nome'); await db.collection('fontesVenda').add({ name: nome, userId: currentUser.uid }); document.getElementById('novaFonteVenda').value = ''; await loadFontesVenda(); renderFontesVendaList(); preencherSelectsFicha(); }
 async function deleteFonteVenda(id) { if (!confirm('Remover?')) return; await db.collection('fontesVenda').doc(id).delete(); await loadFontesVenda(); renderFontesVendaList(); preencherSelectsFicha(); }
 
-// ==================== PESSOAS ====================
 function renderPessoasList() { const el = document.getElementById('pessoasList'); if (!el) return; if (!pessoas.length) { el.innerHTML = '<p class="text-muted">Nenhuma pessoa.</p>'; return; } el.innerHTML = pessoas.map(p => `<div class="status-item"><span><strong>${p.nome}</strong> ${p.codigo ? '['+p.codigo+']' : ''}</span><div>Meta Vendas: ${p.metaVendas||0} | Meta R$: ${formatarMoeda(p.metaValor||0)}</div><button class="btn btn-danger btn-sm" onclick="deletePessoa('${p.id}')">Excluir</button></div>`).join(''); }
 async function addPessoa() { const nome = document.getElementById('novaPessoaNome').value.trim(); const codigo = document.getElementById('novaPessoaCodigo').value.trim(); const metaVendas = parseInt(document.getElementById('novaMetaVendas').value) || 0; const metaValor = parseFloat(document.getElementById('novaMetaValor').value) || 0; if (!nome) return alert('Digite o nome.'); await db.collection('pessoas').add({ nome, codigo, metaVendas, metaValor, userId: currentUser.uid }); document.getElementById('novaPessoaNome').value = ''; document.getElementById('novaPessoaCodigo').value = ''; document.getElementById('novaMetaVendas').value = ''; document.getElementById('novaMetaValor').value = ''; await loadPessoas(); renderPessoasList(); carregarVendedoresSelect(); }
 async function deletePessoa(id) { if (!confirm('Remover?')) return; await db.collection('pessoas').doc(id).delete(); await loadPessoas(); renderPessoasList(); carregarVendedoresSelect(); }
 
-// ==================== AÇÕES EM LOTE ====================
 function toggleRow(id) { if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id); updateLoteButton(); }
 function toggleSelectAll() { const checked = document.getElementById('selectAll').checked; document.querySelectorAll('.row-checkbox').forEach(cb => { cb.checked = checked; const id = cb.dataset.id; if (checked) selectedIds.add(id); else selectedIds.delete(id); }); updateLoteButton(); }
 function abrirModalLote() { new bootstrap.Modal(document.getElementById('modalLote')).show(); }
@@ -1282,7 +1391,6 @@ async function executarAcaoLote() {
   selectedIds.clear(); renderTable(); updateDashboard(); alert('Aplicado'); bootstrap.Modal.getInstance(document.getElementById('modalLote')).hide();
 }
 
-// ==================== BACKUP / PERFIL ====================
 async function exportBackup() { alert('Função em desenvolvimento.'); }
 async function importBackup(event) { /* ... */ }
 async function coletarDadosBackup() { /* ... */ }
@@ -1293,16 +1401,12 @@ function atualizarInfoBackup() { /* ... */ }
 async function salvarPerfil() { alert('Função em desenvolvimento.'); }
 function encerrarConta() { /* ... */ }
 
-// ==================== UTILITÁRIOS ====================
 function formatarMoeda(valor) { if (typeof valor === 'string') valor = parseFloat(valor.replace(/\./g,'').replace(',','.')); if (isNaN(valor) || valor === null || valor === undefined) return 'R$ 0,00'; return 'R$ ' + valor.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function formatarNumero(valor) { if (typeof valor === 'string') valor = parseFloat(valor.replace(/\./g,'').replace(',','.')); if (isNaN(valor) || valor === null || valor === undefined) return '0,00'; return valor.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function formatarValorInput(el) { let val = el.value.replace(/\D/g,''); if (val) { val = (parseFloat(val)/100).toFixed(2); el.value = val.replace('.',','); } }
 function gerarRelatorio(){ alert('Função em desenvolvimento.'); }
 function formatarDataBr(data) { if (!data) return '-'; const d = new Date(data); return d.toLocaleDateString('pt-BR'); }
 
-// ============================================================
-// ==================== FUNÇÕES DE TAREFAS ====================
-// ============================================================
 function switchTarefaView(view) { tarefaView = view; document.querySelectorAll('#tarefaSubTabs .nav-link').forEach(btn => { btn.classList.toggle('active', btn.dataset.view === view); }); document.querySelectorAll('.tarefa-view').forEach(el => el.style.display = 'none'); if (view === 'lista') { document.getElementById('tarefaListView').style.display = 'block'; renderTarefas(); } else if (view === 'calendario') { document.getElementById('tarefaCalendarioView').style.display = 'block'; renderCalendarioTarefa(); } else if (view === 'dashboard') { document.getElementById('tarefaDashboardView').style.display = 'block'; renderDashboardTarefas(); } }
 function renderTarefas() {
   const container = document.getElementById('tarefaListContainer'); if (!container) return;
@@ -1373,9 +1477,6 @@ async function toggleConcluirTarefa(id) { const t = tarefas.find(t => t.id === i
 function buscarLeadsParaTarefa(termo) { const resultados = document.getElementById('tarefaLeadResultados'); if (!resultados) return; if (!termo.trim()) { resultados.style.display = 'none'; return; } const filtrados = leadsData.filter(l => (l.nome || '').toLowerCase().includes(termo.toLowerCase())).slice(0, 5); if (!filtrados.length) { resultados.innerHTML = '<div class="dropdown-item text-muted">Nenhum lead.</div>'; resultados.style.display = 'block'; return; } resultados.innerHTML = filtrados.map(l => `<div class="dropdown-item" style="cursor:pointer;" onclick="selecionarLeadTarefa('${l.id}','${l.nome}')">${l.nome} ${l.telefone ? '- '+l.telefone : ''}</div>`).join(''); resultados.style.display = 'block'; }
 function selecionarLeadTarefa(id, nome) { document.getElementById('tarefaLeadId').value = id; document.getElementById('tarefaLeadSelecionado').innerHTML = `<span class="badge bg-info">🔗 ${nome}</span>`; document.getElementById('tarefaLeadBusca').value = ''; document.getElementById('tarefaLeadResultados').style.display = 'none'; }
 
-// ============================================================
-// ==================== NOTIFICAÇÕES DO CRM ====================
-// ============================================================
 function gerarNotificacoes() {
   const hoje = new Date().toISOString().split('T')[0];
   const notifs = [];
@@ -1464,9 +1565,6 @@ function toggleNotificacoes(e) {
 
 function marcarNotificacaoLida(id) { notificacoesCache = notificacoesCache.filter(n => n.id !== id); carregarNotificacoes(); }
 
-// ============================================================
-// ==================== FUNÇÕES DA ABA ANÁLISES ====================
-// ============================================================
 function switchAnalisesView() {
   const selPraca = document.getElementById('anPraca');
   selPraca.innerHTML = '<option value="">Todas as Praças</option>';
@@ -1597,7 +1695,532 @@ function renderFluxoCaixa() {
   document.getElementById('fluxoSaldoLiquido').innerText = formatarMoeda(totalPago - totalAtrasado);
 }
 
-// ==================== PWA + NOTIFICAÇÕES ====================
+// ============================================================
+// ============ IMPORTADOR CSV (MÓDULO ISOLADO) ===============
+// ============================================================
+const IMPORT_MAX_SIZE = 10 * 1024 * 1024;
+const IMPORT_MAX_ROWS = 50000;
+const IMPORT_ORIGIN = 'site_origem';
+const IMPORT_UF_LIST = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+
+let importState = {
+  file: null, rawText: '', delimiter: ',', encoding: 'utf-8', hasHeader: true,
+  headers: [], rows: [], parsedRows: [], mapping: {},
+  validatedRows: [], currentStep: 1, jobRef: null
+};
+
+function _esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function _maskEmail(e) { if (!e) return '—'; const p = String(e).split('@'); return p.length === 2 ? p[0][0] + '***@' + p[1] : '***'; }
+function _maskPhone(p) { const d = String(p || '').replace(/\D/g, ''); return d ? '****' + d.slice(-4) : '—'; }
+function _maskDoc(d) { const v = String(d || '').replace(/\D/g, ''); return v ? '***.***.***-' + v.slice(-2) : '—'; }
+function _stripControl(s) { return String(s == null ? '' : s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ''); }
+function _csvSafe(s) { const v = String(s == null ? '' : s); return /^[=+\-@]/.test(v) ? "'" + v : v; }
+
+async function _sha256(text) {
+  const buf = new TextEncoder().encode(text);
+  const h = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function _normName(s) { return _stripControl(String(s || '')).replace(/\s+/g, ' ').trim(); }
+function _normPhone(s) {
+  const d = String(s || '').replace(/\D/g, '');
+  if (!d) return { valid: false, value: '' };
+  let n = d;
+  if (n.length >= 12 && n.startsWith('55')) n = n.slice(2);
+  if (n.length !== 10 && n.length !== 11) return { valid: false, value: d };
+  return { valid: true, value: '+55' + n };
+}
+function _normEmail(s) {
+  const v = String(s || '').trim().toLowerCase();
+  if (!v) return { valid: false, value: '' };
+  return { valid: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), value: v };
+}
+function _validCPF(cpf) {
+  cpf = String(cpf || '').replace(/\D/g, '');
+  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+  let s = 0; for (let i = 0; i < 9; i++) s += parseInt(cpf[i]) * (10 - i);
+  let d1 = (s * 10) % 11; if (d1 === 10) d1 = 0; if (d1 !== parseInt(cpf[9])) return false;
+  s = 0; for (let i = 0; i < 10; i++) s += parseInt(cpf[i]) * (11 - i);
+  let d2 = (s * 10) % 11; if (d2 === 10) d2 = 0; return d2 === parseInt(cpf[10]);
+}
+function _validCNPJ(cnpj) {
+  cnpj = String(cnpj || '').replace(/\D/g, '');
+  if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
+  const w1 = [5,4,3,2,9,8,7,6,5,4,3,2], w2 = [6,5,4,3,2,9,8,7,6,5,4,3,2];
+  let s = 0; for (let i = 0; i < 12; i++) s += parseInt(cnpj[i]) * w1[i];
+  let d1 = s % 11; d1 = d1 < 2 ? 0 : 11 - d1; if (d1 !== parseInt(cnpj[12])) return false;
+  s = 0; for (let i = 0; i < 13; i++) s += parseInt(cnpj[i]) * w2[i];
+  let d2 = s % 11; d2 = d2 < 2 ? 0 : 11 - d2; return d2 === parseInt(cnpj[13]);
+}
+function _normDoc(s) {
+  const d = String(s || '').replace(/\D/g, '');
+  if (!d) return { valid: false, value: '', type: null };
+  if (d.length === 11) return { valid: _validCPF(d), value: d, type: 'cpf' };
+  if (d.length === 14) return { valid: _validCNPJ(d), value: d, type: 'cnpj' };
+  return { valid: false, value: d, type: null };
+}
+function _normUF(s) { const v = String(s || '').trim().toUpperCase(); return { valid: IMPORT_UF_LIST.includes(v), value: v }; }
+function _normDate(s) {
+  const v = String(s || '').trim(); if (!v) return { valid: false, value: '' };
+  let m;
+  if ((m = v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/))) return _mkDate(+m[3], +m[2], +m[1]);
+  if ((m = v.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/))) return _mkDate(+m[3], +m[2], +m[1]);
+  if ((m = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/))) return _mkDate(+m[1], +m[2], +m[3]);
+  return { valid: false, value: v };
+}
+function _mkDate(y, m, d) {
+  if (m < 1 || m > 12 || d < 1 || d > 31) return { valid: false, value: '' };
+  const dt = new Date(y, m - 1, d);
+  if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return { valid: false, value: '' };
+  return { valid: true, value: `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}` };
+}
+
+function _parseCSV(text, delimiter) {
+  const rows = []; let row = [], field = '', inQ = false, i = 0;
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  while (i < text.length) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') { if (text[i+1] === '"') { field += '"'; i += 2; continue; } inQ = false; i++; continue; }
+      field += c; i++; continue;
+    }
+    if (c === '"' && field === '') { inQ = true; i++; continue; }
+    if (c === delimiter) { row.push(field); field = ''; i++; continue; }
+    if (c === '\r') { i++; continue; }
+    if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; i++; continue; }
+    field += c; i++;
+  }
+  if (field !== '' || row.length > 0) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 0 && !(r.length === 1 && r[0] === ''));
+}
+
+function _detectDelimiter(text) {
+  const sample = text.split(/\r?\n/).slice(0, 10).join('\n');
+  const counts = { ',': 0, ';': 0, '\t': 0 };
+  let inQ = false;
+  for (const c of sample) {
+    if (c === '"') inQ = !inQ;
+    else if (!inQ && counts[c] !== undefined) counts[c]++;
+  }
+  return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+}
+
+async function _readFile(file, encoding) {
+  const buf = await file.arrayBuffer();
+  const map = { 'utf-8': 'utf-8', 'utf-8-bom': 'utf-8', 'windows-1252': 'windows-1252', 'iso-8859-1': 'iso-8859-1' };
+  try { return new TextDecoder(map[encoding] || 'utf-8').decode(buf); }
+  catch (e) { return new TextDecoder('utf-8').decode(buf); }
+}
+
+async function _detectEncoding(file) {
+  const head = await file.slice(0, 4096).arrayBuffer();
+  const b = new Uint8Array(head);
+  if (b[0] === 0xEF && b[1] === 0xBB && b[2] === 0xBF) return 'utf-8-bom';
+  try { new TextDecoder('utf-8', { fatal: true }).decode(head); return 'utf-8'; }
+  catch (e) { return 'windows-1252'; }
+}
+
+async function detectarFormatoCSV() {
+  const errEl = document.getElementById('importUploadError'); errEl.innerText = '';
+  const file = document.getElementById('importFileInput').files[0];
+  if (!file) { errEl.innerText = 'Selecione um arquivo CSV.'; return; }
+  if (!/\.csv$/i.test(file.name)) { errEl.innerText = 'Extensão inválida. Use apenas .csv'; return; }
+  if (file.size > IMPORT_MAX_SIZE) { errEl.innerText = 'Arquivo maior que 10 MB.'; return; }
+  if (file.type && !['text/csv', 'application/csv', 'text/plain', 'application/vnd.ms-excel', ''].includes(file.type)) { errEl.innerText = 'Tipo MIME não permitido: ' + file.type; return; }
+  try {
+    const enc = await _detectEncoding(file);
+    const text = await _readFile(file, enc);
+    const rows = _parseCSV(text, _detectDelimiter(text));
+    if (!rows.length) { errEl.innerText = 'Arquivo CSV vazio ou inválido.'; return; }
+    if (rows.length > IMPORT_MAX_ROWS) { errEl.innerText = 'Arquivo excede o limite de ' + IMPORT_MAX_ROWS + ' linhas.'; return; }
+    importState.file = file;
+    importState.rawText = text;
+    importState.encoding = enc;
+    importState.delimiter = _detectDelimiter(text);
+    importState.hasHeader = true;
+    importState.rows = rows;
+    importState.headers = rows[0].map(h => String(h).trim());
+    importState.mapping = {};
+    document.getElementById('importDelimiter').value = importState.delimiter;
+    document.getElementById('importEncoding').value = enc;
+    document.getElementById('importHasHeader').value = '1';
+    document.getElementById('importFileInfo').innerHTML = `<i class="bi bi-check-circle text-success"></i> <strong>${_esc(file.name)}</strong> — ${(file.size/1024).toFixed(1)} KB — ${rows.length} linha(s) — encoding detectado: <strong>${enc}</strong> — delimitador: <strong>${importState.delimiter === '\t' ? 'Tab' : importState.delimiter}</strong>`;
+    autoMapearColunas();
+    renderMappingTable();
+    renderSampleTable();
+    irParaPassoImport(2);
+  } catch (e) {
+    console.error(e);
+    errEl.innerText = 'Erro ao processar arquivo: ' + e.message;
+  }
+}
+
+function reprocessarPreview() {
+  if (!importState.rawText) return;
+  importState.delimiter = document.getElementById('importDelimiter').value === '\\t' ? '\t' : document.getElementById('importDelimiter').value;
+  importState.encoding = document.getElementById('importEncoding').value;
+  importState.hasHeader = document.getElementById('importHasHeader').value === '1';
+  _readFile(importState.file, importState.encoding).then(text => {
+    importState.rawText = text;
+    const rows = _parseCSV(text, importState.delimiter);
+    importState.rows = rows;
+    importState.headers = importState.hasHeader ? rows[0].map(h => String(h).trim()) : rows[0].map((_, i) => 'Coluna ' + (i + 1));
+    renderMappingTable(); renderSampleTable();
+  });
+}
+
+const INTERNAL_FIELDS = [
+  { key: 'id_origem', label: 'ID Origem', aliases: ['id','id_origem','codigo','code','protocolo','proposta'] },
+  { key: 'nome', label: 'Nome *', aliases: ['nome','name','cliente','titular','razao'] },
+  { key: 'telefone', label: 'Telefone', aliases: ['telefone','phone','celular','fone','whatsapp','tel'] },
+  { key: 'email', label: 'E-mail', aliases: ['email','e-mail','mail','correio'] },
+  { key: 'cpf_cnpj', label: 'CPF/CNPJ', aliases: ['cpf','cnpj','cpf_cnpj','documento','doc'] },
+  { key: 'cidade', label: 'Cidade', aliases: ['cidade','city','municipio'] },
+  { key: 'uf', label: 'UF', aliases: ['uf','estado','state'] },
+  { key: 'data_abertura', label: 'Data Abertura', aliases: ['data','data_abertura','dt_abertura','created_at','criado'] },
+  { key: 'status', label: 'Status', aliases: ['status','status_lead','situacao'] },
+  { key: 'observacao', label: 'Observação', aliases: ['observacao','obs','nota','notes','comentario'] },
+  { key: 'vendedor', label: 'Vendedor', aliases: ['vendedor','seller','consultor','corretor'] }
+];
+
+function _normHeader(h) { return String(h || '').toLowerCase().trim().replace(/[^\w]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, ''); }
+
+function autoMapearColunas() {
+  importState.mapping = {};
+  importState.headers.forEach((h, idx) => {
+    const key = _normHeader(h);
+    for (const f of INTERNAL_FIELDS) {
+      if (f.aliases.some(a => key === a || key.includes(a) || a.includes(key))) {
+        if (!Object.values(importState.mapping).includes(f.key)) { importState.mapping[idx] = f.key; break; }
+      }
+    }
+  });
+  if (document.getElementById('importMappingTable')) renderMappingTable();
+}
+
+function renderMappingTable() {
+  const tbody = document.querySelector('#importMappingTable tbody');
+  if (!tbody) return;
+  tbody.innerHTML = importState.headers.map((h, i) => {
+    const sample = (importState.rows[importState.hasHeader ? 1 : 0] || [])[i] || '';
+    const opts = ['<option value="">— Ignorar —</option>']
+      .concat(INTERNAL_FIELDS.map(f => `<option value="${f.key}" ${importState.mapping[i] === f.key ? 'selected' : ''}>${_esc(f.label)}</option>`)).join('');
+    return `<tr>
+      <td><strong>${_esc(h || 'Coluna ' + (i+1))}</strong></td>
+      <td><select class="form-select form-select-sm" data-col="${i}" onchange="atualizarMapeamento(${i}, this.value)">${opts}</select></td>
+      <td class="text-muted small">${_esc(String(sample).slice(0, 40))}</td>
+    </tr>`;
+  }).join('');
+}
+function atualizarMapeamento(idx, key) { if (key) importState.mapping[idx] = key; else delete importState.mapping[idx]; }
+
+function renderSampleTable() {
+  const tbl = document.getElementById('importSampleTable'); if (!tbl) return;
+  const start = importState.hasHeader ? 1 : 0;
+  const sample = importState.rows.slice(start, start + 5);
+  const head = importState.headers.map(h => `<th>${_esc(h)}</th>`).join('');
+  tbl.innerHTML = `<thead><tr>${head}</tr></thead><tbody>${sample.map(r => '<tr>' + r.map(c => `<td>${_esc(String(c).slice(0, 40))}</td>`).join('') + '</tr>').join('')}</tbody>`;
+}
+
+async function salvarMapeamentoCSV() {
+  const nome = document.getElementById('importMappingName').value.trim();
+  if (!nome) return alert('Informe um nome para o mapeamento.');
+  if (!currentUser) return;
+  await db.collection('csv_mappings').add({
+    userId: currentUser.uid, nome, headers: importState.headers,
+    mapping: importState.mapping, createdAt: new Date().toISOString()
+  });
+  alert('Mapeamento salvo com sucesso!');
+  document.getElementById('importMappingName').value = '';
+}
+
+async function carregarMapeamentoSalvo() {
+  if (!currentUser) return;
+  const snap = await db.collection('csv_mappings').where('userId', '==', currentUser.uid).get();
+  if (snap.empty) return alert('Nenhum mapeamento salvo.');
+  const mapas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const nomes = mapas.map((m, i) => `${i + 1}. ${m.nome}`).join('\n');
+  const escolha = parseInt(prompt(`Mapeamentos salvos:\n${nomes}\n\nDigite o número:`));
+  if (!escolha || !mapas[escolha - 1]) return;
+  const m = mapas[escolha - 1];
+  importState.mapping = {};
+  m.headers.forEach((h, idx) => {
+    if (m.mapping[idx]) {
+      const matchIdx = importState.headers.findIndex(x => x.toLowerCase() === h.toLowerCase());
+      if (matchIdx !== -1) importState.mapping[matchIdx] = m.mapping[idx];
+    }
+  });
+  renderMappingTable();
+  alert('Mapeamento carregado.');
+}
+
+function validarImport() {
+  const errEl = document.getElementById('importUploadError'); errEl.innerText = '';
+  if (!Object.values(importState.mapping).includes('nome')) {
+    errEl.innerText = 'Mapeie ao menos a coluna de Nome.'; return;
+  }
+  const start = importState.hasHeader ? 1 : 0;
+  const dataRows = importState.rows.slice(start);
+  importState.validatedRows = [];
+  dataRows.forEach((row, i) => {
+    const lineNum = start + i + 1;
+    const obj = {
+      _rowNum: lineNum, _raw: row, _valid: true, _errors: [],
+      id_origem: '', nome: '', telefone: '', email: '', cpf_cnpj: '',
+      cidade: '', uf: '', data_abertura: '', status: '', observacao: '', vendedor: '',
+      origem: IMPORT_ORIGIN
+    };
+    Object.entries(importState.mapping).forEach(([idx, key]) => { obj[key] = _stripControl(String(row[idx] || '')).trim(); });
+    obj.nome = _normName(obj.nome);
+    if (!obj.nome) { obj._valid = false; obj._errors.push('Nome vazio'); }
+    const ph = _normPhone(obj.telefone); if (obj.telefone && !ph.valid) { obj._errors.push('Telefone inválido'); } else obj.telefone = ph.value;
+    const em = _normEmail(obj.email); if (obj.email && !em.valid) { obj._errors.push('E-mail inválido'); } else obj.email = em.value;
+    const dc = _normDoc(obj.cpf_cnpj); if (obj.cpf_cnpj && !dc.valid) { obj._errors.push('CPF/CNPJ inválido'); } else obj.cpf_cnpj = dc.value;
+    const uf = _normUF(obj.uf); if (obj.uf && !uf.valid) { obj._errors.push('UF inválida'); } else obj.uf = uf.value;
+    const dt = _normDate(obj.data_abertura); if (obj.data_abertura && !dt.valid) { obj._errors.push('Data inválida'); } else obj.data_abertura = dt.value;
+    if (obj.observacao && obj.observacao.length > 2000) obj.observacao = obj.observacao.slice(0, 2000);
+    if (!obj.telefone && !obj.email) obj._errors.push('Sem contato válido (telefone ou e-mail)');
+    if (obj._errors.length > 0) obj._valid = false;
+    importState.validatedRows.push(obj);
+  });
+  const seenFile = new Map();
+  importState.validatedRows.forEach(r => {
+    r._dupe = '';
+    if (!r._valid) { r._dupe = 'INVALIDO'; return; }
+    if (r.id_origem) {
+      const existing = leadsData.find(l => l.origin === IMPORT_ORIGIN && String(l.origin_id) === String(r.id_origem));
+      if (existing) {
+        r._existingId = existing.id;
+        const diff = ['nome','telefone','email','cidade','uf','status'].filter(f => String(existing[f] || '') !== String(r[f] || ''));
+        r._dupe = diff.length ? 'EXISTENTE_COM_ALTERACAO' : 'EXISTENTE_SEM_ALTERACAO';
+        r._diff = diff;
+        return;
+      }
+    }
+    const key = r.id_origem ? `id:${r.id_origem}`
+      : r.cpf_cnpj ? `doc:${r.cpf_cnpj}`
+      : r.email ? `email:${r.email}`
+      : r.telefone ? `tel:${r.telefone}` : null;
+    if (key) {
+      if (seenFile.has(key)) { r._dupe = 'DUPLICADO_NO_ARQUIVO'; r._dupeReason = 'Linha ' + seenFile.get(key); return; }
+      seenFile.set(key, r._rowNum);
+    }
+    if (r.cpf_cnpj) {
+      const existing = leadsData.find(l => String(l.cpf_cnpj || '').replace(/\D/g, '') === r.cpf_cnpj);
+      if (existing) { r._existingId = existing.id; r._dupe = 'EXISTENTE_COM_ALTERACAO'; r._diff = ['(match por CPF/CNPJ)']; return; }
+    }
+    if (r.email) {
+      const existing = leadsData.find(l => (l.email || '').toLowerCase() === r.email);
+      if (existing) { r._existingId = existing.id; r._dupe = 'EXISTENTE_COM_ALTERACAO'; r._diff = ['(match por e-mail)']; return; }
+    }
+    if (r.telefone) {
+      const existing = leadsData.find(l => String(l.telefone || '').replace(/\D/g, '') === r.telefone.replace(/\D/g, ''));
+      if (existing) { r._existingId = existing.id; r._dupe = 'EXISTENTE_COM_ALTERACAO'; r._diff = ['(match por telefone)']; return; }
+    }
+    r._dupe = 'NOVO';
+  });
+  renderPreviewSummary();
+  renderPreviewRows();
+  irParaPassoImport(3);
+}
+
+function renderPreviewSummary() {
+  const c = { NOVO: 0, EXISTENTE_SEM_ALTERACAO: 0, EXISTENTE_COM_ALTERACAO: 0, DUPLICADO_NO_ARQUIVO: 0, INVALIDO: 0, CONFLITO: 0 };
+  importState.validatedRows.forEach(r => c[r._dupe] = (c[r._dupe] || 0) + 1);
+  const total = importState.validatedRows.length;
+  const cards = [
+    { label: 'Total de linhas', val: total, cls: 'bg-primary' },
+    { label: 'Novos', val: c.NOVO, cls: 'bg-success' },
+    { label: 'Atualizar', val: c.EXISTENTE_COM_ALTERACAO, cls: 'bg-info' },
+    { label: 'Sem alteração', val: c.EXISTENTE_SEM_ALTERACAO, cls: 'bg-secondary' },
+    { label: 'Duplicados', val: c.DUPLICADO_NO_ARQUIVO, cls: 'bg-warning' },
+    { label: 'Inválidos', val: c.INVALIDO, cls: 'bg-danger' }
+  ];
+  document.getElementById('importSummaryCards').innerHTML = cards.map(k =>
+    `<div class="col-md-2 col-6"><div class="dashboard-card ${k.cls}"><h6>${k.label}</h6><h2>${k.val}</h2></div></div>`
+  ).join('');
+}
+
+function renderPreviewRows() {
+  const filter = document.getElementById('importFilter').value;
+  const tbody = document.querySelector('#importPreviewTable tbody');
+  if (!tbody) return;
+  const list = importState.validatedRows.filter(r => filter === 'all' || r._dupe === filter);
+  tbody.innerHTML = list.slice(0, 500).map(r => {
+    const cls = {
+      NOVO: 'bg-success', EXISTENTE_SEM_ALTERACAO: 'bg-secondary',
+      EXISTENTE_COM_ALTERACAO: 'bg-info', DUPLICADO_NO_ARQUIVO: 'bg-warning',
+      INVALIDO: 'bg-danger', CONFLITO: 'bg-danger'
+    }[r._dupe] || 'bg-secondary';
+    return `<tr>
+      <td>${r._rowNum}</td>
+      <td>${_esc(r.nome || '—')}</td>
+      <td>${_maskPhone(r.telefone)}</td>
+      <td>${_maskEmail(r.email)}</td>
+      <td>${_maskDoc(r.cpf_cnpj)}</td>
+      <td>${_esc(r.status || '—')}</td>
+      <td><span class="badge ${cls}">${r._dupe}</span>${r._errors.length ? '<br><small class="text-danger">' + r._errors.join('; ') + '</small>' : ''}</td>
+      <td>${r._dupe === 'INVALIDO' || r._dupe === 'DUPLICADO_NO_ARQUIVO' ? 'Ignorar' : (r._existingId ? 'Atualizar' : 'Criar')}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" class="text-center text-muted">Nenhuma linha</td></tr>';
+  if (list.length > 500) tbody.innerHTML += '<tr><td colspan="8" class="text-center text-muted">Exibindo 500 de ' + list.length + '</td></tr>';
+}
+
+async function executarImportacao() {
+  if (!currentUser) return alert('Sessão expirada.');
+  const policy = document.getElementById('importPolicy').value;
+  const btn = document.getElementById('btnConfirmarImport');
+  btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span> Importando...';
+  const job = {
+    organization_id: currentUser.uid, user_id: currentUser.uid,
+    original_filename: importState.file.name,
+    file_hash: await _sha256(importState.rawText),
+    total_rows: importState.validatedRows.length,
+    valid_rows: importState.validatedRows.filter(r => r._dupe !== 'INVALIDO').length,
+    invalid_rows: importState.validatedRows.filter(r => r._dupe === 'INVALIDO').length,
+    created_count: 0, updated_count: 0, skipped_count: 0, failed_count: 0,
+    status: 'IMPORTING', started_at: new Date().toISOString(), completed_at: null,
+    error_summary: '', origin: IMPORT_ORIGIN
+  };
+  const jobRef = await db.collection('import_jobs').add(job);
+  importState.jobRef = jobRef.id;
+  const result = { created: 0, updated: 0, skipped: 0, failed: 0, errors: [] };
+  const newLeads = [];
+  for (const r of importState.validatedRows) {
+    try {
+      if (r._dupe === 'INVALIDO' || r._dupe === 'DUPLICADO_NO_ARQUIVO') { result.skipped++; continue; }
+      if (r._dupe === 'NOVO') {
+        const doc = {
+          nome: r.nome, telefone: r.telefone, email: r.email, cpf_cnpj: r.cpf_cnpj,
+          cidade: r.cidade, uf: r.uf, status: r.status || 'Novo',
+          abertura: r.data_abertura || new Date().toISOString(),
+          obs: r.observacao, vendedor_nome: r.vendedor,
+          origin: IMPORT_ORIGIN, origin_id: r.id_origem || null,
+          data_importacao: new Date().toISOString(),
+          import_job_id: importState.jobRef,
+          userId: currentUser.uid
+        };
+        const ref = await db.collection('leads').add(doc);
+        newLeads.push({ id: ref.id, ...doc });
+        result.created++;
+      } else if (r._dupe === 'EXISTENTE_COM_ALTERACAO' && r._existingId) {
+        if (policy === 'skip') { result.skipped++; continue; }
+        const existing = leadsData.find(l => l.id === r._existingId);
+        const upd = {};
+        const fields = { nome: r.nome, telefone: r.telefone, email: r.email, cpf_cnpj: r.cpf_cnpj,
+          cidade: r.cidade, uf: r.uf, status: r.status, abertura: r.data_abertura, obs: r.observacao };
+        Object.entries(fields).forEach(([k, v]) => {
+          if (!v) return;
+          if (policy === 'update_empty' && existing && existing[k]) return;
+          if (existing && String(existing[k] || '') !== String(v)) upd[k] = v;
+        });
+        if (Object.keys(upd).length === 0) { result.skipped++; continue; }
+        upd.last_imported_at = new Date().toISOString();
+        await db.collection('leads').doc(r._existingId).update(upd);
+        Object.assign(existing || {}, upd);
+        result.updated++;
+      } else { result.skipped++; }
+    } catch (e) {
+      result.failed++;
+      result.errors.push({ linha: r._rowNum, msg: String(e.message || e).replace(/(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11,}|\S+@\S+)/g, '***') });
+    }
+  }
+  leadsData.push(...newLeads);
+  await jobRef.update({
+    status: result.failed > 0 ? 'COMPLETED_WITH_ERRORS' : 'COMPLETED',
+    created_count: result.created, updated_count: result.updated,
+    skipped_count: result.skipped, failed_count: result.failed,
+    completed_at: new Date().toISOString(),
+    error_summary: result.errors.slice(0, 20).map(e => `Linha ${e.linha}: ${e.msg}`).join(' | ')
+  });
+  renderImportResult(result, job, jobRef.id);
+  if (typeof renderLeads === 'function') renderLeads();
+  btn.disabled = false; btn.innerHTML = '<i class="bi bi-cloud-upload"></i> Confirmar Importação';
+  irParaPassoImport(4);
+}
+
+function renderImportResult(result, job, jobId) {
+  const el = document.getElementById('importResultContent');
+  el.innerHTML = `
+    <h6 class="fw-bold mb-3"><i class="bi bi-check-circle text-success me-2"></i>Importação concluída</h6>
+    <div class="row g-2 mb-3">
+      <div class="col-md-3"><div class="dashboard-card bg-success"><h6>Criados</h6><h2>${result.created}</h2></div></div>
+      <div class="col-md-3"><div class="dashboard-card bg-info"><h6>Atualizados</h6><h2>${result.updated}</h2></div></div>
+      <div class="col-md-3"><div class="dashboard-card bg-secondary"><h6>Ignorados</h6><h2>${result.skipped}</h2></div></div>
+      <div class="col-md-3"><div class="dashboard-card bg-danger"><h6>Falhas</h6><h2>${result.failed}</h2></div></div>
+    </div>
+    <p class="text-muted small mb-2">ID da importação: <strong>${_esc(jobId)}</strong> · Arquivo: <strong>${_esc(job.original_filename)}</strong> · ${new Date().toLocaleString('pt-BR')}</p>
+    ${result.errors.length ? '<div class="alert alert-warning small"><strong>Erros (até 20):</strong><ul class="mb-0">' + result.errors.slice(0,20).map(e => `<li>Linha ${e.linha}: ${_esc(e.msg)}</li>`).join('') + '</ul></div>' : ''}
+    <div class="d-flex gap-2 mt-3">
+      <button class="btn btn-success" onclick="baixarRelatorioImport('${jobId}')"><i class="bi bi-download"></i> Baixar Relatório CSV</button>
+      <button class="btn btn-primary" onclick="cancelarImport()"><i class="bi bi-plus-circle"></i> Nova Importação</button>
+    </div>`;
+}
+
+async function baixarRelatorioImport(jobId) {
+  const lines = ['linha;status;acao;nome;telefone_mascarado;email_mascarado;cpf_cnpj_mascarado;crm_lead_id;erros'];
+  importState.validatedRows.forEach(r => {
+    lines.push([
+      r._rowNum, r._dupe, r._existingId ? 'UPDATE' : 'CREATE',
+      _csvSafe(r.nome || ''), _csvSafe(_maskPhone(r.telefone)), _csvSafe(_maskEmail(r.email)),
+      _csvSafe(_maskDoc(r.cpf_cnpj)), _csvSafe(r._existingId || ''),
+      _csvSafe(r._errors.join('; '))
+    ].join(';'));
+  });
+  const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `relatorio_import_${jobId}.csv`;
+  a.click();
+}
+
+async function renderImportHistory() {
+  document.querySelectorAll('.import-step').forEach(e => e.style.display = 'none');
+  document.getElementById('importHistory').style.display = 'block';
+  const tbody = document.querySelector('#importHistoryTable tbody');
+  tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Carregando...</td></tr>';
+  if (!currentUser) return;
+  const snap = await db.collection('import_jobs').where('user_id', '==', currentUser.uid).get();
+  const jobs = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.started_at || '').localeCompare(a.started_at || ''));
+  if (!jobs.length) { tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Nenhuma importação.</td></tr>'; return; }
+  tbody.innerHTML = jobs.map(j => `
+    <tr>
+      <td>${j.started_at ? new Date(j.started_at).toLocaleString('pt-BR') : '—'}</td>
+      <td>${_esc(j.original_filename || '—')}</td>
+      <td>${j.total_rows || 0}</td>
+      <td>${j.created_count || 0}</td>
+      <td>${j.updated_count || 0}</td>
+      <td>${j.skipped_count || 0}</td>
+      <td>${j.failed_count || 0}</td>
+      <td><span class="badge bg-${j.status === 'COMPLETED' ? 'success' : j.status === 'COMPLETED_WITH_ERRORS' ? 'warning' : 'danger'}">${_esc(j.status || '—')}</span></td>
+      <td><button class="btn btn-sm btn-outline-primary" onclick="baixarRelatorioImport('${j.id}')"><i class="bi bi-download"></i></button></td>
+    </tr>`).join('');
+}
+
+function irParaPassoImport(p) {
+  importState.currentStep = p;
+  document.querySelectorAll('.import-step').forEach(e => e.style.display = 'none');
+  const map = { 1: 'importStep1', 2: 'importStep2', 3: 'importStep3', 4: 'importStep4' };
+  const id = map[p]; if (id) document.getElementById(id).style.display = 'block';
+  ['importNavUpload','importNavMapping','importNavPreview','importNavResult'].forEach((bid, i) => {
+    const b = document.getElementById(bid); if (!b) return;
+    b.classList.toggle('active', (i + 1) === p);
+    b.classList.toggle('btn-primary', (i + 1) === p);
+    b.classList.toggle('btn-outline-primary', (i + 1) !== p);
+  });
+}
+function voltarImport() { irParaPassoImport(1); }
+function cancelarImport() {
+  importState = { file: null, rawText: '', delimiter: ',', encoding: 'utf-8', hasHeader: true,
+    headers: [], rows: [], parsedRows: [], mapping: {}, validatedRows: [], currentStep: 1, jobRef: null };
+  const fi = document.getElementById('importFileInput'); if (fi) fi.value = '';
+  const info = document.getElementById('importFileInfo'); if (info) info.innerHTML = '';
+  const er = document.getElementById('importUploadError'); if (er) er.innerText = '';
+  const rc = document.getElementById('importResultContent'); if (rc) rc.innerHTML = '<p class="text-muted">Nenhuma importação em andamento.</p>';
+  irParaPassoImport(1);
+}
+
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').then(reg => console.log('SW:', reg.scope)).catch(err => console.warn('Erro SW:', err)); }
 async function ativarNotificacoes() {
   if (!('Notification' in window)) return alert('Notificações não suportadas.');
@@ -1611,9 +2234,6 @@ function verificarTarefasVencidas() {
   if (vencidas.length > 0) { new Notification('⚠️ Tarefas Vencidas', { body: `Você tem ${vencidas.length} tarefa(s) vencida(s).`, icon: 'logo.png', tag: 'tarefas-vencidas' }); }
 }
 
-// ============================================================
-// ==================== EVENTOS DOMContentLoaded ====================
-// ============================================================
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.sidebar .nav-link').forEach(el => { el.addEventListener('click', function(e) { const tabId = this.getAttribute('data-tab'); if (tabId) switchTab(tabId); }); });
   document.querySelectorAll('#pesquisaTable thead th[data-col]').forEach(th => { th.style.cursor = 'pointer'; th.addEventListener('click', function() { const col = this.dataset.col; if (sortColumn === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc'; else { sortColumn = col; sortDir = 'asc'; } renderTable(); }); });
@@ -1638,18 +2258,13 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('click', function(e) {
     const container = document.getElementById('tarefaLeadResultados');
     if (container && !e.target.closest('#tarefaLeadBusca') && !e.target.closest('#tarefaLeadResultados')) container.style.display = 'none';
-
     const notif = document.getElementById('notifDropdown');
     const btnNotif = document.getElementById('btnNotificacoes');
     if (notif && notif.style.display === 'block') {
       const clicouNoBotao = e.target === btnNotif || btnNotif?.contains(e.target);
       const clicouNoDropdown = notif.contains(e.target);
-      if (!clicouNoBotao && !clicouNoDropdown) {
-        notif.style.display = 'none';
-        notif.classList.remove('show');
-      }
+      if (!clicouNoBotao && !clicouNoDropdown) { notif.style.display = 'none'; notif.classList.remove('show'); }
     }
-
     const containerBusca = document.getElementById('resultadosBuscaGlobal');
     if (containerBusca && !e.target.closest('.left-actions')) containerBusca.style.display = 'none';
   });
