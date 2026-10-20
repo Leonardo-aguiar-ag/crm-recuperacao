@@ -4,6 +4,7 @@
 <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>CRM Recupera AI</title>
 <link rel="manifest" href="manifest.json" /><meta name="theme-color" content="#6c5ce7">
+<link rel="icon" type="image/png" href="logo.png" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -725,8 +726,14 @@ const firebaseConfig = {apiKey:"AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",authDom
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth(); const db = firebase.firestore(); const storage = firebase.storage();
 
-// Ativar Persistência Offline
-db.enablePersistence({synchronizeTabs: true}).catch((err) => { console.warn("Offline persistence error:", err.code); });
+// Ativar Persistência Offline (mantém API compatível; warning de deprecation é inofensivo)
+try {
+  db.enablePersistence({synchronizeTabs: true}).catch((err) => {
+    console.warn("Offline persistence error:", err.code || err.message);
+  });
+} catch(e) {
+  console.warn("Offline persistence não disponível:", e.message);
+}
 
 let currentUser=null, userRole='vendedor', clients=[],tarefas=[],leadsData=[],pessoas=[],dependentesTemp=[],pagamentosTemp=[],anexosTemp=[],interacoesTemp=[],statuses=[],leadStatuses=[],pracas=[],administradoras=[],acomodacoes=[],coparticipacoes=[],modalidades=[],fontesVenda=[],charts={},calendarioMesTarefa=new Date().getMonth(),calendarioAnoTarefa=new Date().getFullYear(),diaSelecionadoTarefa=new Date().toISOString().split('T')[0],selectedIds=new Set(),sortColumn='numeroProposta',sortDir='asc',paginaLead=1,leadsPorPagina=10,leadView='lista',isLoading=false,backupIntervalId=null,backupRunning=false,lastBackupTime=null,nextBackupTime=null,filtrosSalvos=[],tarefaView='lista',mapaBrasilInstance=null,notificacoesCache=[],buscaGlobalTimeout=null,paginaClientes=1,clientesPorPagina=25,paginaTarefas=1,tarefasPorPagina=20;
 const AUTOSAVE_KEY='rascunhoFichaCliente';let autosaveInterval=null;
@@ -1027,6 +1034,110 @@ function renderTarefasPaginadas(){
 }
 function limparFiltrosTarefa(){const s=document.getElementById('filtroTarefaStatus'),o=document.getElementById('filtroTarefaOrdenar'),b=document.getElementById('filtroTarefaBusca');if(s)s.value='todas';if(o)o.value='prazo';if(b)b.value='';renderTarefasPaginadas();}
 function popularFiltroVendedorAnalises(){const sel=document.getElementById('anVendedor');if(!sel)return;const cur=sel.value;sel.innerHTML='<option value="">Todos</option>';pessoas.forEach(p=>{sel.innerHTML+=`<option value="${p.id}">${p.nome}</option>`;});if(cur)sel.value=cur;}
+
+/* ============================================================
+   FUNÇÕES DE POPULAÇÃO DE SELECTS (adicionadas para corrigir
+   os ReferenceError: popularFiltroPraca / carregarVendedoresSelect
+   / preencherSelectsFicha / popularFiltroCodigo / preencherCodigoPorVendedor
+   ============================================================ */
+function carregarVendedoresSelect(){
+  const sel = document.getElementById('cVendedor');
+  if(!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Selecione</option>';
+  pessoas.forEach(p => {
+    sel.innerHTML += `<option value="${p.id}">${p.nome}${p.codigo?' ('+p.codigo+')':''}</option>`;
+  });
+  if(cur) sel.value = cur;
+}
+
+function preencherCodigoPorVendedor(){
+  const vid = document.getElementById('cVendedor')?.value;
+  if(!vid) return;
+  const p = pessoas.find(x => x.id === vid);
+  if(p && p.codigo){
+    const el = document.getElementById('cCodigo');
+    if(el && !el.value) el.value = p.codigo;
+  }
+}
+
+function popularFiltroPraca(){
+  const d = document.getElementById('filtroPraca');
+  if(d){
+    const cur = d.value;
+    d.innerHTML = '<option value="">Todas as Praças</option>';
+    pracas.forEach(p => { d.innerHTML += `<option value="${p.name}">${p.name}</option>`; });
+    if(cur) d.value = cur;
+  }
+  const p = document.getElementById('filterPraca');
+  if(p){
+    const cur = p.value;
+    p.innerHTML = '<option value="ALL">Todas</option>';
+    pracas.forEach(x => { p.innerHTML += `<option value="${x.name}">${x.name}</option>`; });
+    if(cur) p.value = cur;
+  }
+}
+
+function popularFiltroCodigo(){
+  const sel = document.getElementById('filterCodigo');
+  if(!sel) return;
+  const cur = sel.value;
+  const codes = [...new Set(clients.map(c => c.codigo).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Todos</option>';
+  codes.forEach(c => { sel.innerHTML += `<option value="${c}">${c}</option>`; });
+  if(cur) sel.value = cur;
+}
+
+function preencherSelectsFicha(){
+  const map = {
+    'cModalidadePlano': modalidades,
+    'cCoparticipacao': coparticipacoes,
+    'cAcomodacao': acomodacoes,
+    'cStatus': statuses,
+    'cFonteVenda': fontesVenda,
+    'cPraca': pracas,
+    'cAdministradora': administradoras
+  };
+  for(const [id, list] of Object.entries(map)){
+    const sel = document.getElementById(id);
+    if(!sel) continue;
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">Selecione</option>';
+    list.forEach(item => { sel.innerHTML += `<option value="${item.name}">${item.name}</option>`; });
+    if(cur) sel.value = cur;
+  }
+  carregarVendedoresSelect();
+
+  const filterMap = {
+    'filterStatus': statuses,
+    'filterModalidade': modalidades,
+    'filterAdministradora': administradoras,
+    'filterFonte': fontesVenda
+  };
+  for(const [id, list] of Object.entries(filterMap)){
+    const sel = document.getElementById(id);
+    if(!sel) continue;
+    const cur = sel.value;
+    sel.innerHTML = '<option value="ALL">Todos</option>';
+    list.forEach(item => { sel.innerHTML += `<option value="${item.name}">${item.name}</option>`; });
+    if(cur) sel.value = cur;
+  }
+
+  const leadMap = {
+    'novoLeadStatus': '<option value="">Status</option>',
+    'filterStatusLead': '<option value="">Status</option>'
+  };
+  for(const [id, defaultOpt] of Object.entries(leadMap)){
+    const sel = document.getElementById(id);
+    if(!sel) continue;
+    const cur = sel.value;
+    sel.innerHTML = defaultOpt;
+    leadStatuses.forEach(s => { sel.innerHTML += `<option value="${s.name}">${s.name}</option>`; });
+    if(cur) sel.value = cur;
+  }
+}
+/* ===== FIM DAS FUNÇÕES DE POPULAÇÃO ===== */
+
 function _ultimaAtividadeLead(l){const datas=[];if(l.ultimoContato)datas.push(new Date(l.ultimoContato));if(l.updatedAt)datas.push(new Date(l.updatedAt));if(l.abertura)datas.push(new Date(l.abertura));const t=tarefas.filter(t=>t.leadId===l.id&&t.createdAt);t.forEach(x=>datas.push(new Date(x.createdAt)));if(!datas.length)return null;return new Date(Math.max(...datas.map(d=>d.getTime())));}
 
 function setPesqView(v){document.getElementById('pesqListView').style.display=v==='lista'?'block':'none';document.getElementById('pesqPipelineView').style.display=v==='pipeline'?'block':'none';document.getElementById('pesqViewList').classList.toggle('active',v==='lista');document.getElementById('pesqViewPipe').classList.toggle('active',v==='pipeline');if(v==='pipeline')renderPipelinePropostas();}
