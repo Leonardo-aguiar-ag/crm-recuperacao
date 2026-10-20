@@ -832,26 +832,40 @@ function toggleTheme(){setTheme(document.body.classList.contains('dark-mode')?'l
 function toggleModoApresentacao(){document.body.classList.toggle('modo-apresentacao');const ativo=document.body.classList.contains('modo-apresentacao');showToast(ativo?'Modo apresentação ATIVO (ESC para sair)':'Desativado','info',3000);localStorage.setItem('modoApresentacao',ativo?'1':'0');}
 
 function switchTab(id){
-  document.querySelectorAll('.sidebar .nav-link').forEach(e=>e.classList.remove('active'));
-  document.querySelector(`.sidebar .nav-link[data-tab="${id}"]`)?.classList.add('active');
-  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('show','active'));
-  const pane=document.getElementById(id);if(pane)pane.classList.add('show','active');
-  document.getElementById('sidebar').classList.remove('mobile-open');
-  if(id==='leadsTab')renderLeads();
-  if(id==='tarefasTab'){renderTarefasPaginadas();renderCalendarioTarefa();renderDashboardTarefas();}
-  if(id==='pesquisaTab'){renderTable();renderFiltrosSalvos();}
-  if(id==='clientesTab'){switchInternalTab('dadosPrincipais');carregarVendedoresSelect();setTimeout(restaurarRascunho,300);}
-  if(id==='analisesTab'){switchAnalisesView();popularFiltroVendedorAnalises();}
-  if(id==='perfilTab'){carregarPreferencias();renderLeadStatuses();renderStatuses();renderPracasList();renderAdministradorasList();renderAcomodacoesList();renderCoparticipacoesList();renderModalidadesList();renderFontesVendaList();renderPessoasList();}
-  if(id==='importarTab')irParaPassoImport(1);
+  try {
+    document.querySelectorAll('.sidebar .nav-link').forEach(e=>e.classList.remove('active'));
+    document.querySelector(`.sidebar .nav-link[data-tab="${id}"]`)?.classList.add('active');
+    document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('show','active'));
+    const pane=document.getElementById(id);if(pane)pane.classList.add('show','active');
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    if(id==='leadsTab')renderLeads();
+    if(id==='tarefasTab'){renderTarefasPaginadas();renderCalendarioTarefa();renderDashboardTarefas();}
+    if(id==='pesquisaTab'){renderTable();renderFiltrosSalvos();}
+    if(id==='clientesTab'){switchInternalTab('dadosPrincipais');carregarVendedoresSelect();setTimeout(restaurarRascunho,300);}
+    if(id==='analisesTab'){switchAnalisesView();popularFiltroVendedorAnalises();}
+    if(id==='perfilTab'){carregarPreferencias();renderLeadStatuses();renderStatuses();renderPracasList();renderAdministradorasList();renderAcomodacoesList();renderCoparticipacoesList();renderModalidadesList();renderFontesVendaList();renderPessoasList();}
+    if(id==='importarTab')irParaPassoImport(1);
+  } catch (error) {
+    console.error('Error switching tab:', error);
+    showToast('Erro ao mudar de aba. Verifique o console.', 'danger');
+  }
 }
 function switchInternalTab(id){document.querySelectorAll('#clientesTab .tab-pane').forEach(p=>p.style.display='none');const pane=document.getElementById(id);if(pane)pane.style.display='block';document.querySelectorAll('#fichaTabs .nav-link').forEach(b=>b.classList.remove('active'));document.querySelector(`#fichaTabs .nav-link[data-tab="${id}"]`)?.classList.add('active');if(id==='pagamentosTab')setTimeout(()=>renderPrevisaoPagamentos(),50);}
 
 async function loadAll(){
   if(isLoading)return;isLoading=true;
   const tasks=[['clients',loadClients],['tarefas',loadTarefas],['statuses',loadStatuses],['pracas',loadPracas],['administradoras',loadAdministradoras],['acomodacoes',loadAcomodacoes],['coparticipacoes',loadCoparticipacoes],['modalidades',loadModalidades],['fontesVenda',loadFontesVenda],['leads',loadLeads],['leadStatuses',loadLeadStatuses],['pessoas',loadPessoas],['filtrosSalvos',loadFiltrosSalvos]];
-  for(const [n,fn] of tasks){try{await fn();}catch(e){console.warn('Falha '+n+':',e);}}
-  try{popularFiltroPraca();preencherSelectsFicha();popularFiltroCodigo();renderTable();updateDashboard();renderTarefasPaginadas();renderCalendarioTarefa();renderDashboardTarefas();renderLeads();renderFiltrosSalvos();carregarVendedoresSelect();carregarNotificacoes();setInterval(carregarNotificacoes,60000);}
+  let fails = 0;
+  for(const [n,fn] of tasks){try{await fn();}catch(e){console.warn('Falha '+n+':',e); fails++;}}
+  
+  if (fails > 0) {
+    showToast('Atenção: ' + fails + ' coleções falharam ao carregar. Verifique as regras do Firestore ou o console (F12).', 'warning', 8000);
+  }
+
+  try{
+    popularFiltroPraca();preencherSelectsFicha();popularFiltroCodigo();
+    renderTable();updateDashboard();renderTarefasPaginadas();renderCalendarioTarefa();renderDashboardTarefas();renderLeads();renderFiltrosSalvos();carregarVendedoresSelect();carregarNotificacoes();setInterval(carregarNotificacoes,60000);
+  }
   catch(e){console.error('Erro pós-load:',e);}
   finally{isLoading=false;iniciarAutosave();}
 }
@@ -933,7 +947,19 @@ async function saveClient(){
     clearForm();limparRascunho();renderTable();updateDashboard();carregarNotificacoes();showToast('Cliente salvo!','success');switchTab('dashboardTab');await logAuditoria('SAVE_CLIENT',{id:clientId});
   }catch(e){showToast('Erro: '+e.message,'danger');}finally{btn.innerHTML='<i class="bi bi-save"></i> Salvar';btn.classList.remove('btn-loading');isLoading=false;}
 }
-function editarCliente(id){const c=clients.find(x=>x.id===id);if(!c){showToast('Não encontrado','danger');return;}document.getElementById('clientId').value=c.id;const m={cData:'data',cNumeroProposta:'numeroProposta',cNomeTitular:'nomeTitular',cCpfTitular:'cpfTitular',cCnpjTitular:'cnpjTitular',cTipoDocEmp:'tipoDocEmp',cDataVigencia:'dataVigencia',cTelefoneTitular:'telefoneTitular',cEmailTitular:'emailTitular',cQtdVidas:'qtdVidas',cTipoCliente:'tipoCliente',cModalidadePlano:'modalidadePlano',cCoparticipacao:'coparticipacao',cPlanoEscolhido:'planoEscolhido',cAcomodacao:'acomodacao',cStatus:'status',cDataImplantacao:'dataImplantacao',cDataPagamento:'dataPagamento',cFonteVenda:'fonteVenda',cValorSemDesconto:'valorSemDesconto',cValorComDesconto:'valorComDesconto',cPraca:'praca',cAdministradora:'administradora',cVendedor:'vendedorId',cCodigo:'codigo',cAnotacoes:'anotacoes'};for(const [e,k] of Object.entries(m)){const el=document.getElementById(e);if(el)el.value=c[k]||(e==='cQtdVidas'?1:'');}dependentesTemp=c.dependentes?JSON.parse(JSON.stringify(c.dependentes)):[];renderDependentes();pagamentosTemp=c.pagamentos?JSON.parse(JSON.stringify(c.pagamentos)):[];renderPagamentos();anexosTemp=c.anexos?c.anexos.map(a=>({nome:a.nome,url:a.url})):[];renderAnexos();interacoesTemp=c.interacoes?JSON.parse(JSON.stringify(c.interacoes)):[];renderInteracoes();setTimeout(()=>renderPrevisaoPagamentos(),100);switchTab('clientesTab');switchInternalTab('dadosPrincipais');}
+function editarCliente(id){
+  const c=clients.find(x=>x.id===id);
+  if(!c){showToast('Cliente não encontrado. Pode ter sido excluído.','danger');return;}
+  document.getElementById('clientId').value=c.id;
+  const m={cData:'data',cNumeroProposta:'numeroProposta',cNomeTitular:'nomeTitular',cCpfTitular:'cpfTitular',cCnpjTitular:'cnpjTitular',cTipoDocEmp:'tipoDocEmp',cDataVigencia:'dataVigencia',cTelefoneTitular:'telefoneTitular',cEmailTitular:'emailTitular',cQtdVidas:'qtdVidas',cTipoCliente:'tipoCliente',cModalidadePlano:'modalidadePlano',cCoparticipacao:'coparticipacao',cPlanoEscolhido:'planoEscolhido',cAcomodacao:'acomodacao',cStatus:'status',cDataImplantacao:'dataImplantacao',cDataPagamento:'dataPagamento',cFonteVenda:'fonteVenda',cValorSemDesconto:'valorSemDesconto',cValorComDesconto:'valorComDesconto',cPraca:'praca',cAdministradora:'administradora',cVendedor:'vendedorId',cCodigo:'codigo',cAnotacoes:'anotacoes'};
+  for(const [e,k] of Object.entries(m)){const el=document.getElementById(e);if(el)el.value=c[k]||(e==='cQtdVidas'?1:'');}
+  dependentesTemp=c.dependentes?JSON.parse(JSON.stringify(c.dependentes)):[];renderDependentes();
+  pagamentosTemp=c.pagamentos?JSON.parse(JSON.stringify(c.pagamentos)):[];renderPagamentos();
+  anexosTemp=c.anexos?c.anexos.map(a=>({nome:a.nome,url:a.url})):[];renderAnexos();
+  interacoesTemp=c.interacoes?JSON.parse(JSON.stringify(c.interacoes)):[];renderInteracoes();
+  setTimeout(()=>renderPrevisaoPagamentos(),100);
+  switchTab('clientesTab');switchInternalTab('dadosPrincipais');
+}
 async function excluirCliente(id){if(!confirm('Excluir?'))return;try{await db.collection('clients').doc(id).delete();clients=clients.filter(c=>c.id!==id);renderTable();updateDashboard();carregarNotificacoes();showToast('Excluído.','success');}catch(e){showToast('Erro: '+e.message,'danger');}}
 function clearForm(){document.getElementById('clientId').value='';document.querySelectorAll('#dadosPrincipais input, #dadosPrincipais select, #dadosPrincipais textarea').forEach(el=>{if(el.tagName==='SELECT')el.selectedIndex=0;else if(el.type!=='checkbox'&&el.type!=='radio')el.value='';});document.getElementById('cQtdVidas').value=1;document.getElementById('cTipoDocEmp').value='CNPJ';dependentesTemp=[];renderDependentes();pagamentosTemp=[];renderPagamentos();anexosTemp=[];renderAnexos();interacoesTemp=[];renderInteracoes();limparCamposDependente();limparCamposPagamento();document.getElementById('anexoFileInput').value='';setTimeout(()=>renderPrevisaoPagamentos(),100);switchInternalTab('dadosPrincipais');}
 
@@ -962,6 +988,7 @@ function renderTarefasPaginadas(){
   cont.innerHTML=pg.map(t=>{let cls='';if(t.concluida)cls='concluida';else if(t.data<hoje)cls='vencida';else if(t.data===hoje)cls='hoje';const uc='tarefa-urg-'+(t.urgencia||'normal').toLowerCase();return `<div class="tarefa-card ${cls} ${uc}"><div><strong>${t.titulo||'Sem título'}</strong> <span class="badge bg-secondary">${t.tipo||'Tarefa'}</span> <span class="badge ${t.concluida?'bg-success':(t.data<hoje?'bg-danger':'bg-primary')}">${t.concluida?'✅':(t.data<hoje?'⚠ Vencida':(t.data===hoje?'📌 Hoje':'📅 '+formatarDataBr(t.data)))}</span> ${t.leadNome?`<span class="badge bg-info">🔗 ${t.leadNome}</span>`:''}${t.cadencia?' <span class="cadencia-badge">⚡ Cadência</span>':''}<div class="small text-muted">${t.descricao||''}</div></div><div><button class="btn btn-sm btn-outline-primary" onclick="editarTarefa('${t.id}')"><i class="bi bi-pencil"></i></button> <button class="btn btn-sm btn-outline-success" onclick="toggleConcluirTarefa('${t.id}')"><i class="bi ${t.concluida?'bi-arrow-counterclockwise':'bi-check'}"></i></button> <button class="btn btn-sm btn-danger" onclick="excluirTarefa('${t.id}')"><i class="bi bi-trash"></i></button></div></div>`;}).join('');
   cont.innerHTML+=`<div class="pagination-bar"><span class="text-muted small">${total} tarefa(s)</span><div class="pagination-controls"><button onclick="mudarPaginaTarefa(-1)" ${paginaTarefas<=1?'disabled':''}><i class="bi bi-chevron-left"></i></button><span class="mx-2 small fw-bold">Página ${paginaTarefas} de ${tp||1}</span><button onclick="mudarPaginaTarefa(1)" ${paginaTarefas>=tp?'disabled':''}><i class="bi bi-chevron-right"></i></button></div></div>`;
 }
+function limparFiltrosTarefa(){const s=document.getElementById('filtroTarefaStatus'),o=document.getElementById('filtroTarefaOrdenar'),b=document.getElementById('filtroTarefaBusca');if(s)s.value='todas';if(o)o.value='prazo';if(b)b.value='';renderTarefasPaginadas();}
 function popularFiltroVendedorAnalises(){const sel=document.getElementById('anVendedor');if(!sel)return;const cur=sel.value;sel.innerHTML='<option value="">Todos</option>';pessoas.forEach(p=>{sel.innerHTML+=`<option value="${p.id}">${p.nome}</option>`;});if(cur)sel.value=cur;}
 function _ultimaAtividadeLead(l){const datas=[];if(l.ultimoContato)datas.push(new Date(l.ultimoContato));if(l.updatedAt)datas.push(new Date(l.updatedAt));if(l.abertura)datas.push(new Date(l.abertura));const t=tarefas.filter(t=>t.leadId===l.id&&t.createdAt);t.forEach(x=>datas.push(new Date(x.createdAt)));if(!datas.length)return null;return new Date(Math.max(...datas.map(d=>d.getTime())));}
 
