@@ -1,5 +1,4 @@
-// Service Worker - CRM Recupera AI
-const CACHE_NAME = 'crm-recupera-v1';
+const CACHE_NAME = 'crm-recupera-v2';
 const URLS_TO_CACHE = [
   './',
   './index.html',
@@ -25,25 +24,22 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Estratégia Network First para permitir sincronização offline do Firestore
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );
 });
 
-// Notificações push
-self.addEventListener('push', event => {
-  const data = event.data ? event.data.json() : { title: 'CRM Recupera', body: 'Nova notificação' };
-  event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: './logo.png',
-      badge: './logo.png',
-      vibrate: [200, 100, 200]
-    })
-  );
+// Background Sync para quando a internet voltar
+self.addEventListener('sync', event => {
+  if (event.tag === 'sync-leads') {
+    event.waitUntil(syncLeadsOffline());
+  }
 });
 
-self.addEventListener('notificationclick', event => {
-  event.notification.close();
-  event.waitUntil(clients.openWindow('./'));
-});
+async function syncLeadsOffline() {
+  // O Firestore já gerencia a fila offline internamente (enablePersistence).
+  // Este evento pode ser usado para notificar o usuário ou disparar lógicas adicionais.
+  const clients = await self.clients.matchAll();
+  clients.forEach(client => client.postMessage({ type: 'SYNC_COMPLETE' }));
+}
