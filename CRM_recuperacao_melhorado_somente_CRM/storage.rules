@@ -1,0 +1,26 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function isOwner(clientId) {
+      return signedIn() && (
+        firestore.get(/databases/(default)/documents/clients/$(clientId)).data.userId == request.auth.uid ||
+        firestore.get(/databases/(default)/documents/clients/$(clientId)).data.vendedorId == request.auth.uid
+      );
+    }
+    function isManager() {
+      return signedIn() && firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role in ['admin','gerente','supervisor'];
+    }
+    match /clientes/{clientId}/anexos/{fileName} {
+      allow read: if isOwner(clientId) || isManager();
+      allow write: if (isOwner(clientId) || isManager())
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('application/(pdf|zip)|image/.*|text/plain|application/msword|application/vnd.openxmlformats-officedocument.*');
+      allow delete: if isOwner(clientId) || isManager();
+    }
+    match /backups/{userId}/{fileName} {
+      allow read, write, delete: if signedIn() && (request.auth.uid == userId || isManager());
+    }
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

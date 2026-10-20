@@ -1,0 +1,72 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function userDoc() { return get(/databases/$(database)/documents/usuarios/$(uid())).data; }
+    function role() { return signedIn() && exists(/databases/$(database)/documents/usuarios/$(uid())) ? userDoc().role : 'vendedor'; }
+    function admin() { return signedIn() && role() == 'admin'; }
+    function manager() { return admin() || (signedIn() && role() in ['gerente', 'supervisor']); }
+    function sameOrg(data) { return data.organizationId == uid() || data.userId == uid(); }
+    function owner(data) { return signedIn() && sameOrg(data); }
+    function immutableOwner(existing, incoming) {
+      return incoming.userId == existing.userId
+        && (!existing.keys().hasAny(['organizationId']) || incoming.organizationId == existing.organizationId)
+        && (!existing.keys().hasAny(['createdBy']) || incoming.createdBy == existing.createdBy);
+    }
+    function safeAudit() {
+      return request.resource.data.keys().hasOnly(['userId','userEmail','acao','detalhes','timestamp','userAgent','organizationId','createdAt'])
+        && request.resource.data.userId == uid();
+    }
+
+    match /usuarios/{userId} {
+      allow read: if signedIn() && (uid() == userId || manager());
+      allow create: if signedIn() && uid() == userId;
+      allow update: if signedIn() && (admin() || (uid() == userId && request.resource.data.role == resource.data.role));
+      allow delete: if admin() && userId != uid();
+    }
+
+    match /audit_events/{eventId} {
+      allow create: if signedIn() && safeAudit();
+      allow read: if signedIn() && (resource.data.userId == uid() || manager());
+      allow update, delete: if admin();
+    }
+
+    match /notificacoes/{id} {
+      allow read, update, delete: if signedIn() && (resource.data.userId == uid() || manager());
+      allow create: if signedIn() && (request.resource.data.userId == uid() || manager());
+    }
+
+    match /clients/{id} {
+      allow read: if signedIn() && (owner(resource.data) || manager());
+      allow create: if signedIn() && (request.resource.data.userId == uid() || manager());
+      allow update: if signedIn() && (owner(resource.data) || manager()) && immutableOwner(resource.data, request.resource.data);
+      allow delete: if signedIn() && (owner(resource.data) || manager());
+    }
+
+    match /leads/{id} {
+      allow read: if signedIn() && (owner(resource.data) || manager());
+      allow create: if signedIn() && (request.resource.data.userId == uid() || manager());
+      allow update: if signedIn() && (owner(resource.data) || manager()) && immutableOwner(resource.data, request.resource.data);
+      allow delete: if signedIn() && (owner(resource.data) || manager());
+    }
+
+    match /tarefas/{id} {
+      allow read: if signedIn() && (owner(resource.data) || manager());
+      allow create: if signedIn() && (request.resource.data.userId == uid() || manager());
+      allow update, delete: if signedIn() && (owner(resource.data) || manager()) && immutableOwner(resource.data, request.resource.data);
+    }
+
+    match /import_jobs/{id} {
+      allow read: if signedIn() && (resource.data.user_id == uid() || manager());
+      allow create: if signedIn() && request.resource.data.user_id == uid();
+      allow update: if signedIn() && (resource.data.user_id == uid() || manager());
+    }
+
+    match /{collection}/{id} {
+      allow read: if signedIn() && (admin() || owner(resource.data));
+      allow create: if signedIn() && (request.resource.data.userId == uid() || admin());
+      allow update, delete: if signedIn() && (admin() || owner(resource.data));
+    }
+  }
+}
