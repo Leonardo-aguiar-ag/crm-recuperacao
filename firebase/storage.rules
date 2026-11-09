@@ -5,8 +5,7 @@ service firebase.storage {
     function isOwner(clientId) {
       return signedIn() && (
         firestore.get(/databases/(default)/documents/clients/$(clientId)).data.userId == request.auth.uid ||
-        firestore.get(/databases/(default)/documents/clients/$(clientId)).data.vendedorId == request.auth.uid ||
-        firestore.get(/databases/(default)/documents/clients/$(clientId)).data.organizationId == request.auth.uid
+        firestore.get(/databases/(default)/documents/clients/$(clientId)).data.vendedorId == request.auth.uid
       );
     }
     function isManager() {
@@ -16,15 +15,8 @@ service firebase.storage {
       allow read: if isOwner(clientId) || isManager();
       allow write: if (isOwner(clientId) || isManager())
         && request.resource.size < 10 * 1024 * 1024
-        && request.resource.contentType.matches('application/(pdf|zip|x-zip-compressed|vnd.ms-excel|octet-stream)|image/.*|text/(plain|csv)|application/msword|application/vnd.openxmlformats-officedocument.*');
+        && request.resource.contentType.matches('application/(pdf|zip|vnd.ms-excel)|image/.*|text/plain|application/msword|application/vnd.openxmlformats-officedocument.*');
       allow delete: if isOwner(clientId) || isManager();
-    }
-    match /usuarios/{userId}/perfil/{fileName} {
-      allow read: if signedIn();
-      allow write: if signedIn() && request.auth.uid == userId
-        && request.resource.size < 5 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
-      allow delete: if signedIn() && request.auth.uid == userId;
     }
     match /backups/{userId}/{fileName} {
       allow read, write, delete: if signedIn() && (request.auth.uid == userId || isManager());

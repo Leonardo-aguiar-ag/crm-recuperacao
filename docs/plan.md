@@ -4,7 +4,7 @@
 Evoluir o CRM para uma operação comercial orientada por tarefas, previsão de fechamento, metas por vendedor, origem de receita, pós-venda, financeiro, relatórios e recuperação confiável, sem perder a compatibilidade com o Firebase e com os dados existentes.
 
 ## Estratégia de implementação
-A aplicação atual é um frontend estático concentrado em `index.html`, com Firebase Auth/Firestore/Storage e Cloud Functions em `functions/functions/index.js`. A mudança será incremental:
+A aplicação atual é um frontend estático concentrado em `index.html`, com Firebase Auth/Firestore/Storage e Cloud Functions em `functions/index.js`. A mudança será incremental:
 
 1. Criar uma camada de estado e filtros compartilhados para a aba Análises e corrigir a aplicação uniforme dos filtros em gráficos, tabelas, pivot, comissões, fluxo de caixa, metas e origem.
 2. Criar módulos JavaScript em `modules/`, carregados pelo `index.html`, mantendo funções globais temporárias para compatibilidade com os handlers existentes.

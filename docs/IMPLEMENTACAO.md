@@ -27,7 +27,7 @@
 4. Instale as funções:
 
 ```bash
-cd functions/functions
+cd functions
 npm install
 ```
 
