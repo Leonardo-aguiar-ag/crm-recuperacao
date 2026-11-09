@@ -15,7 +15,7 @@ service firebase.storage {
       allow read: if isOwner(clientId) || isManager();
       allow write: if (isOwner(clientId) || isManager())
         && request.resource.size < 10 * 1024 * 1024
-        && request.resource.contentType.matches('application/(pdf|zip)|image/.*|text/plain|application/msword|application/vnd.openxmlformats-officedocument.*');
+        && request.resource.contentType.matches('application/(pdf|zip|vnd.ms-excel)|image/.*|text/plain|application/msword|application/vnd.openxmlformats-officedocument.*');
       allow delete: if isOwner(clientId) || isManager();
     }
     match /backups/{userId}/{fileName} {
