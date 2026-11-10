@@ -30,6 +30,14 @@ test('login oferece Facebook e Microsoft via Firebase Auth', () => {
   assert.match(index, /microsoftLogin/);
 });
 
+test('cadastro solicita nome, e-mail, senha e confirmação da senha', () => {
+  assert.match(index, /id="cadastroNome"/);
+  assert.match(index, /id="cadastroEmail"/);
+  assert.match(index, /id="cadastroSenha"/);
+  assert.match(index, /id="cadastroSenhaConfirmacao"/);
+  assert.match(index, /p!==confirmacao/);
+});
+
 test('regras exigem segundo fator para administradores', () => {
   assert.match(rules, /hasSecondFactor\(\)/);
   assert.match(rules, /function isAdmin\(\)[\s\S]*hasSecondFactor/);

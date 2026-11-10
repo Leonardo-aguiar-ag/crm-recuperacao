@@ -149,12 +149,38 @@ body.modo-apresentacao .sidebar{display:none}body.modo-apresentacao .main-conten
     <button class="btn btn-danger w-100 mb-2" onclick="googleLogin()"><i class="bi bi-google"></i> Entrar com Google</button>
     <button class="btn btn-primary w-100 mb-2" onclick="facebookLogin()"><i class="bi bi-facebook"></i> Entrar com Facebook</button>
     <button class="btn btn-dark w-100 mb-2" onclick="microsoftLogin()"><i class="bi bi-microsoft"></i> Entrar com Microsoft</button>
-    <button class="btn btn-outline-primary w-100 mb-2" onclick="register()">Criar Conta</button>
+    <button class="btn btn-outline-primary w-100 mb-2" onclick="abrirCadastro()">Criar Conta</button>
     <button class="btn btn-link w-100" onclick="recoverPassword()">Esqueci minha senha</button>
     <div id="loginError" class="text-danger text-center mt-3 small"></div>
   </div>
 </div>
 
+<div class="modal fade" id="modalCadastro" tabindex="-1" aria-labelledby="modalCadastroLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--card);color:var(--text);">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="modalCadastroLabel">Criar sua conta</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <p class="small text-muted">Preencha seus dados para começar a usar o CRM.</p>
+        <label for="cadastroNome">Nome completo</label>
+        <input type="text" id="cadastroNome" class="form-control mb-3" autocomplete="name" placeholder="Seu nome e sobrenome" required />
+        <label for="cadastroEmail">E-mail</label>
+        <input type="email" id="cadastroEmail" class="form-control mb-3" autocomplete="email" placeholder="seuemail@exemplo.com" required />
+        <label for="cadastroSenha">Senha</label>
+        <input type="password" id="cadastroSenha" class="form-control" autocomplete="new-password" minlength="6" placeholder="Mínimo de 6 caracteres" required />
+        <label for="cadastroSenhaConfirmacao" class="mt-3">Confirmação da senha</label>
+        <input type="password" id="cadastroSenhaConfirmacao" class="form-control" autocomplete="new-password" minlength="6" placeholder="Digite a senha novamente" required />
+        <div id="cadastroError" class="text-danger small mt-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="register()">Criar conta</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="sidebar" id="sidebar">
   <div class="logo"><img src="logo.png" alt="Hapvida" style="max-height:45px;width:auto;" /></div>
   <div class="nav-items">
@@ -985,7 +1011,28 @@ async function loginWithProvider(provider, providerName) {
 async function googleLogin(){await loginWithProvider(new firebase.auth.GoogleAuthProvider(),'Google');}
 async function facebookLogin(){const p=new firebase.auth.FacebookAuthProvider();p.addScope('email');await loginWithProvider(p,'Facebook');}
 async function microsoftLogin(){await loginWithProvider(new firebase.auth.OAuthProvider('microsoft.com'),'Microsoft');}
-function register(){const e=document.getElementById('loginEmail').value,p=document.getElementById('loginPassword').value;auth.createUserWithEmailAndPassword(e,p).then(async r=>{await db.collection('usuarios').doc(r.user.uid).set({nome:r.user.displayName||'Usuário',email:r.user.email,role:'vendedor',servico:"Amel's Conceito",createdAt:new Date().toISOString()});}).catch(x=>document.getElementById('loginError').innerText=x.message);}
+function abrirCadastro(){
+  document.getElementById('cadastroNome').value='';
+  document.getElementById('cadastroEmail').value=document.getElementById('loginEmail').value||'';
+  document.getElementById('cadastroSenha').value='';
+  document.getElementById('cadastroSenhaConfirmacao').value='';
+  document.getElementById('cadastroError').innerText='';
+  bootstrap.Modal.getOrCreateInstance(document.getElementById('modalCadastro')).show();
+}
+async function register(){
+  const nome=document.getElementById('cadastroNome').value.trim(), e=document.getElementById('cadastroEmail').value.trim().toLowerCase(), p=document.getElementById('cadastroSenha').value, confirmacao=document.getElementById('cadastroSenhaConfirmacao').value;
+  const error=document.getElementById('cadastroError');
+  error.innerText='';
+  if(nome.split(/\s+/).filter(Boolean).length<2)return error.innerText='Informe nome e sobrenome.';
+  if(!e||!/^\S+@\S+\.\S+$/.test(e))return error.innerText='Informe um e-mail válido.';
+  if(p.length<6)return error.innerText='A senha deve ter pelo menos 6 caracteres.';
+  if(p!==confirmacao)return error.innerText='A confirmação da senha não confere.';
+  try{
+    const r=await auth.createUserWithEmailAndPassword(e,p);
+    await db.collection('usuarios').doc(r.user.uid).set({nome,email:e,role:'vendedor',servico:"Amel's Conceito",createdAt:new Date().toISOString()});
+    bootstrap.Modal.getInstance(document.getElementById('modalCadastro'))?.hide();
+  }catch(x){error.innerText=x.code==='auth/email-already-in-use'?'Este e-mail já está cadastrado.':x.message;}
+}
 function recoverPassword(){const e=document.getElementById('loginEmail').value;if(e)auth.sendPasswordResetEmail(e).then(()=>showToast('Email enviado!','success')).catch(x=>showToast(x.message,'danger'));else showToast('Digite seu email','warning');}
 function togglePassword(){const i=document.getElementById('loginPassword');i.type=i.type==='password'?'text':'password';}
 function logout(){auth.signOut();}
