@@ -16,7 +16,6 @@
       "firebase/**",
       "functions/**",
       "docs/**",
-      "backups/**",
       "README.md",
       "**/.*",
       "**/node_modules/**"

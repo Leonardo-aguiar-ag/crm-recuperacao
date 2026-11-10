@@ -9,8 +9,9 @@
 | `functions/` | Cloud Functions do Firebase |
 | `firebase/` | Regras do Firestore e do Storage e índices |
 | `firebase.json` | Configuração do Firebase (fica na raiz) |
-| `docs/` | Documentação, plano e lista de tarefas |
-| `backups/` | Cópias antigas dos arquivos, antes das melhorias |
+| `docs/` | Documentação, plano, tarefas e arquivos históricos |
+| `api/` | Endpoints serverless da Vercel para anexos |
+| `lib/` | Código compartilhado pelas funções da Vercel |
 
 ## Publicar no Firebase
 
