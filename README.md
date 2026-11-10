@@ -5,7 +5,10 @@
 | Pasta / arquivo | O que é |
 |---|---|
 | `index.html`, `sw.js`, `manifest.json`, `logo.png`, `.nojekyll` | Site do CRM (precisam ficar na raiz para o GitHub Pages) |
-| `modules/` | Módulos JavaScript com as melhorias do CRM |
+| `scripts/app/` | Código legado do frontend dividido por área e carregado em ordem clássica |
+| `scripts/analytics.js` | Bootstrap do Vercel Web Analytics |
+| `styles/` | Estilos do frontend separados do HTML |
+| `modules/` | Módulos JavaScript independentes de melhorias do CRM |
 | `functions/` | Cloud Functions do Firebase |
 | `firebase/` | Regras do Firestore e do Storage e índices |
 | `firebase.json` | Configuração do Firebase (fica na raiz) |

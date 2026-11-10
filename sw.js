@@ -1,8 +1,19 @@
-const CACHE_NAME = 'crm-recupera-v2';
+const CACHE_NAME = 'crm-recupera-v3';
 const URLS_TO_CACHE = [
   './',
   './index.html',
   './logo.png',
+  './styles/app.css',
+  './scripts/analytics.js',
+  './scripts/app/00-core.js',
+  './scripts/app/10-dashboard.js',
+  './scripts/app/20-clients.js',
+  './scripts/app/30-client-details.js',
+  './scripts/app/40-leads.js',
+  './scripts/app/50-admin-backups.js',
+  './scripts/app/60-import.js',
+  './modules/crm-enhancements.js',
+  './modules/crm-tags.js',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'
 ];
