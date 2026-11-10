@@ -934,6 +934,7 @@ function switchTab(id){
 function switchInternalTab(id){document.querySelectorAll('#clientesTab .tab-pane').forEach(p=>p.style.display='none');const pane=document.getElementById(id);if(pane)pane.style.display='block';document.querySelectorAll('#fichaTabs .nav-link').forEach(b=>b.classList.remove('active'));document.querySelector(`#fichaTabs .nav-link[data-tab="${id}"]`)?.classList.add('active');if(id==='pagamentosTab')setTimeout(()=>renderPrevisaoPagamentos(),50);}
 
 async function loadPaged(query,pageSize=500){const docs=[];let last=null;while(true){let q=query.limit(pageSize);if(last)q=q.startAfter(last);const snap=await q.get();docs.push(...snap.docs);if(snap.size<pageSize)break;last=snap.docs[snap.docs.length-1];}return docs;}
+function descricaoErroFirestore(e){const c=e?.code||'unknown';if(c==='permission-denied')return 'permissão negada (publique as regras e confirme o usuário)';if(c==='failed-precondition')return 'índice/configuração pendente';if(c==='unavailable')return 'Firestore indisponível ou sem conexão';if(c==='not-found')return 'banco ou documento não encontrado';if(c==='unauthenticated')return 'sessão não autenticada';return `${c}: ${e?.message||'erro desconhecido'}`;}
 async function loadAll(){
   if(isLoading)return;isLoading=true;
   try {
@@ -950,9 +951,9 @@ async function loadAll(){
       ['leads',()=>loadPaged(qLeads).then(docs=>leadsData=docs.map(d=>({id:d.id,...d.data()})))],
       ['leadStatuses',loadLeadStatuses],['pessoas',loadPessoas],['filtrosSalvos',loadFiltrosSalvos]
     ];
-    let fails = 0;
-    await Promise.all(tasks.map(async ([n,fn])=>{try{await fn();}catch(e){console.warn('Falha '+n+':',e);fails++;}}));
-    if (fails > 0) showToast('Atenção: ' + fails + ' coleções falharam. Verifique o Firestore.', 'warning', 8000);
+    const fails = [];
+    await Promise.all(tasks.map(async ([n,fn])=>{try{await fn();}catch(e){const detalhe=`${n}: ${descricaoErroFirestore(e)}`;console.warn('Falha '+detalhe,e);fails.push(detalhe);}}));
+    if (fails.length){const resumo=fails.slice(0,4).join(' · ')+(fails.length>4?` · +${fails.length-4} outra(s)`:'' );showToast(`Firestore: ${fails.length} carga(s) falharam. ${resumo}`, 'danger', 15000);}
     popularFiltroPraca();preencherSelectsFicha();popularFiltroCodigo();
     renderTable();updateDashboard();renderTarefasPaginadas();renderCalendarioTarefa();renderDashboardTarefas();renderLeads();renderFiltrosSalvos();carregarVendedoresSelect();carregarNotificacoes();if(notificationTimer)clearInterval(notificationTimer);notificationTimer=setInterval(carregarNotificacoes,60000);
     setTimeout(()=>{try{updateDashboard()}catch(e){console.warn(e)}},400);
