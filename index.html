@@ -160,7 +160,7 @@ body.modo-apresentacao .sidebar{display:none}body.modo-apresentacao .main-conten
     <div class="modal-content" style="background:var(--card);color:var(--text);">
       <div class="modal-header">
         <h5 class="modal-title fw-bold" id="modalCadastroLabel">Criar sua conta</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        <button type="button" class="btn-close" onclick="fecharCadastro()" aria-label="Fechar"></button>
       </div>
       <div class="modal-body">
         <p class="small text-muted">Preencha seus dados para começar a usar o CRM.</p>
@@ -175,7 +175,7 @@ body.modo-apresentacao .sidebar{display:none}body.modo-apresentacao .main-conten
         <div id="cadastroError" class="text-danger small mt-3"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-outline-secondary" onclick="fecharCadastro()">Cancelar</button>
         <button type="button" class="btn btn-primary" onclick="register()">Criar conta</button>
       </div>
     </div>
@@ -1012,12 +1012,19 @@ async function googleLogin(){await loginWithProvider(new firebase.auth.GoogleAut
 async function facebookLogin(){const p=new firebase.auth.FacebookAuthProvider();p.addScope('email');await loginWithProvider(p,'Facebook');}
 async function microsoftLogin(){await loginWithProvider(new firebase.auth.OAuthProvider('microsoft.com'),'Microsoft');}
 function abrirCadastro(){
+  const modal=document.getElementById('modalCadastro');
   document.getElementById('cadastroNome').value='';
   document.getElementById('cadastroEmail').value=document.getElementById('loginEmail').value||'';
   document.getElementById('cadastroSenha').value='';
   document.getElementById('cadastroSenhaConfirmacao').value='';
   document.getElementById('cadastroError').innerText='';
-  bootstrap.Modal.getOrCreateInstance(document.getElementById('modalCadastro')).show();
+  if(window.bootstrap?.Modal) bootstrap.Modal.getOrCreateInstance(modal).show();
+  else { modal.style.display='block'; modal.classList.add('show','d-block'); modal.removeAttribute('aria-hidden'); }
+}
+function fecharCadastro(){
+  const modal=document.getElementById('modalCadastro');
+  if(window.bootstrap?.Modal) bootstrap.Modal.getInstance(modal)?.hide();
+  modal.style.display='none'; modal.classList.remove('show','d-block'); modal.setAttribute('aria-hidden','true');
 }
 async function register(){
   const nome=document.getElementById('cadastroNome').value.trim(), e=document.getElementById('cadastroEmail').value.trim().toLowerCase(), p=document.getElementById('cadastroSenha').value, confirmacao=document.getElementById('cadastroSenhaConfirmacao').value;
@@ -1030,7 +1037,7 @@ async function register(){
   try{
     const r=await auth.createUserWithEmailAndPassword(e,p);
     await db.collection('usuarios').doc(r.user.uid).set({nome,email:e,role:'vendedor',servico:"Amel's Conceito",createdAt:new Date().toISOString()});
-    bootstrap.Modal.getInstance(document.getElementById('modalCadastro'))?.hide();
+    fecharCadastro();
   }catch(x){error.innerText=x.code==='auth/email-already-in-use'?'Este e-mail já está cadastrado.':x.message;}
 }
 function recoverPassword(){const e=document.getElementById('loginEmail').value;if(e)auth.sendPasswordResetEmail(e).then(()=>showToast('Email enviado!','success')).catch(x=>showToast(x.message,'danger'));else showToast('Digite seu email','warning');}
