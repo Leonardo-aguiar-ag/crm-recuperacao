@@ -1,8 +1,15 @@
-const { createRemoteJWKSet, jwtVerify } = require('jose');
-
 const PROJECT_ID = 'crm-recuperacao';
 const issuer = `https://securetoken.google.com/${PROJECT_ID}`;
-const jwks = createRemoteJWKSet(new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'));
+const jwksUrl = new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com');
+let joseModulePromise;
+let jwks;
+
+async function loadJose() {
+  if (!joseModulePromise) joseModulePromise = import('jose');
+  const jose = await joseModulePromise;
+  if (!jwks) jwks = jose.createRemoteJWKSet(jwksUrl);
+  return { jwtVerify: jose.jwtVerify, jwks };
+}
 
 async function requireFirebaseUser(req) {
   const header = req.headers.authorization || '';
@@ -15,7 +22,8 @@ async function requireFirebaseUser(req) {
 
   let payload;
   try {
-    ({ payload } = await jwtVerify(match[1], jwks, {
+    const jose = await loadJose();
+    ({ payload } = await jose.jwtVerify(match[1], jose.jwks, {
       issuer,
       audience: PROJECT_ID,
     }));
