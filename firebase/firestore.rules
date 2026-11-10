@@ -22,31 +22,30 @@ service cloud.firestore {
         : 'vendedor';
     }
 
-    function isManager() {
-      return signedIn() && role() in ['admin', 'gerente', 'supervisor'];
-    }
-
     function isAdmin() {
       return signedIn() && role() == 'admin';
     }
 
-    // Os registros antigos usam userId; alguns registros administrativos
-    // também usam organizationId. Ambos permanecem suportados.
+    // Se houver userId, ele é a fonte de propriedade. organizationId só
+    // funciona como fallback em registros legados sem userId.
     function belongsToUser(data) {
       return signedIn()
-        && ((data.keys().hasAny(['userId']) && data.userId == uid())
-          || (data.keys().hasAny(['organizationId']) && data.organizationId == uid()));
+        && (data.keys().hasAny(['userId'])
+          ? data.userId == uid()
+          : (data.keys().hasAny(['organizationId']) && data.organizationId == uid()));
     }
 
     function canRead(data) {
-      return isManager() || belongsToUser(data);
+      return isAdmin() || belongsToUser(data);
     }
 
     function canCreate(data) {
       return signedIn()
         && (isAdmin()
           || (data.keys().hasAny(['userId']) && data.userId == uid())
-          || (data.keys().hasAny(['organizationId']) && data.organizationId == uid()));
+          || (!data.keys().hasAny(['userId'])
+            && data.keys().hasAny(['organizationId'])
+            && data.organizationId == uid()));
     }
 
     function preservesOwner(existing, incoming) {
@@ -59,7 +58,7 @@ service cloud.firestore {
     }
 
     function canUpdate(existing, incoming) {
-      return isManager()
+      return isAdmin()
         || (belongsToUser(existing)
           && preservesOwner(existing, incoming)
           && ((incoming.keys().hasAny(['userId']) && incoming.userId == uid())
@@ -76,26 +75,50 @@ service cloud.firestore {
     }
 
     match /usuarios/{userId} {
-      allow read: if signedIn() && (uid() == userId || isManager());
-      allow create: if signedIn() && uid() == userId;
-      allow update: if signedIn()
-        && (isAdmin() || (uid() == userId
-          && request.resource.data.role == resource.data.role));
+      allow read: if signedIn() && (uid() == userId || isAdmin());
+      // O autocadastro só pode criar um perfil básico de vendedor.
+      // organizationId e papéis privilegiados são atribuídos por processo confiável.
+      allow create: if signedIn()
+        && uid() == userId
+        && request.resource.data.keys().hasOnly([
+          'nome', 'email', 'role', 'servico', 'createdAt', 'telefone',
+          'cidade', 'instagram', 'updatedAt', 'fotoURL'
+        ])
+        && (!request.resource.data.keys().hasAny(['role'])
+          || request.resource.data.role == 'vendedor');
+      allow update: if signedIn() && (
+        (uid() == userId
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'nome', 'email', 'telefone', 'cidade', 'instagram',
+            'servico', 'updatedAt', 'fotoURL'
+          ]))
+        || (isAdmin()
+          && userId != uid()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'role', 'organizationId', 'nome', 'email', 'telefone',
+            'cidade', 'instagram', 'servico', 'updatedAt', 'fotoURL'
+          ])
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])
+            || request.resource.data.role in ['vendedor', 'gerente', 'supervisor', 'admin'])
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['organizationId'])
+            || (request.resource.data.organizationId is string
+              && request.resource.data.organizationId.size() > 0)))
+      );
       allow delete: if isAdmin() && userId != uid();
     }
 
     match /audit_events/{eventId} {
       allow create: if safeAudit();
       allow read: if signedIn()
-        && (resource.data.userId == uid() || isManager());
-      allow update, delete: if isAdmin();
+        && (resource.data.userId == uid() || isAdmin());
+      allow update, delete: if false;
     }
 
     match /notificacoes/{id} {
       allow read, update, delete: if signedIn()
-        && (resource.data.userId == uid() || isManager());
+        && (resource.data.userId == uid() || isAdmin());
       allow create: if signedIn()
-        && (request.resource.data.userId == uid() || isManager());
+        && (request.resource.data.userId == uid() || isAdmin());
     }
 
     match /clients/{id} {
@@ -190,6 +213,13 @@ service cloud.firestore {
       allow delete: if canRead(resource.data);
     }
 
+    match /csv_mappings/{id} {
+      allow read: if canRead(resource.data);
+      allow create: if canCreate(request.resource.data);
+      allow update: if canUpdate(resource.data, request.resource.data);
+      allow delete: if canRead(resource.data);
+    }
+
     match /configuracoes/{id} {
       allow read: if canRead(resource.data);
       allow create: if canCreate(request.resource.data);
@@ -206,19 +236,34 @@ service cloud.firestore {
 
     match /import_jobs/{id} {
       allow read: if signedIn()
-        && (resource.data.user_id == uid() || isManager());
-      allow create: if signedIn() && request.resource.data.user_id == uid();
+        && (resource.data.user_id == uid() || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.user_id == uid()
+        && request.resource.data.organization_id == uid()
+        && request.resource.data.status == 'IMPORTING'
+        && request.resource.data.keys().hasOnly([
+          'organization_id', 'user_id', 'original_filename', 'file_hash',
+          'total_rows', 'valid_rows', 'invalid_rows', 'created_count',
+          'updated_count', 'skipped_count', 'failed_count', 'status',
+          'started_at', 'completed_at', 'error_summary', 'origin',
+          'base_legal', 'base_legal_declarada_em'
+        ]);
       allow update: if signedIn()
-        && (resource.data.user_id == uid() || isManager());
+        && resource.data.user_id == uid()
+        && request.resource.data.user_id == resource.data.user_id
+        && request.resource.data.organization_id == resource.data.organization_id
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status', 'created_count', 'updated_count', 'skipped_count',
+          'failed_count', 'completed_at', 'error_summary'
+        ])
+        && request.resource.data.status in ['COMPLETED', 'COMPLETED_WITH_ERRORS']
+        && request.resource.data.created_count is int
+        && request.resource.data.updated_count is int
+        && request.resource.data.skipped_count is int
+        && request.resource.data.failed_count is int;
     }
 
-    // Qualquer coleção futura fica protegida por padrão, mas continua
-    // compatível com documentos que carreguem userId/organizationId.
-    match /{collection}/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
+    // Não há regra curinga permissiva: coleções novas devem receber
+    // regras explícitas antes de serem usadas pelo frontend.
   }
 }

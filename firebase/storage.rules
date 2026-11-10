@@ -3,23 +3,25 @@ service firebase.storage {
   match /b/{bucket}/o {
     function signedIn() { return request.auth != null; }
     function isOwner(clientId) {
-      return signedIn() && (
-        firestore.get(/databases/(default)/documents/clients/$(clientId)).data.userId == request.auth.uid ||
-        firestore.get(/databases/(default)/documents/clients/$(clientId)).data.vendedorId == request.auth.uid
-      );
+      return signedIn()
+        && (firestore.get(/databases/(default)/documents/clients/$(clientId)).data.keys().hasAny(['userId'])
+          ? firestore.get(/databases/(default)/documents/clients/$(clientId)).data.userId == request.auth.uid
+          : (firestore.get(/databases/(default)/documents/clients/$(clientId)).data.keys().hasAny(['vendedorId'])
+            ? firestore.get(/databases/(default)/documents/clients/$(clientId)).data.vendedorId == request.auth.uid
+            : firestore.get(/databases/(default)/documents/clients/$(clientId)).data.organizationId == request.auth.uid));
     }
-    function isManager() {
-      return signedIn() && firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role in ['admin','gerente','supervisor'];
+    function isAdmin() {
+      return signedIn() && firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role == 'admin';
     }
     match /clientes/{clientId}/anexos/{fileName} {
-      allow read: if isOwner(clientId) || isManager();
-      allow write: if (isOwner(clientId) || isManager())
+      allow read: if isOwner(clientId) || isAdmin();
+      allow write: if (isOwner(clientId) || isAdmin())
         && request.resource.size < 10 * 1024 * 1024
         && request.resource.contentType.matches('application/(pdf|zip|vnd.ms-excel)|image/.*|text/plain|application/msword|application/vnd.openxmlformats-officedocument.*');
-      allow delete: if isOwner(clientId) || isManager();
+      allow delete: if isOwner(clientId) || isAdmin();
     }
     match /backups/{userId}/{fileName} {
-      allow read, write, delete: if signedIn() && (request.auth.uid == userId || isManager());
+      allow read, write, delete: if signedIn() && (request.auth.uid == userId || isAdmin());
     }
     match /usuarios/{userId}/perfil/{fileName} {
       allow read, delete: if signedIn() && request.auth.uid == userId;

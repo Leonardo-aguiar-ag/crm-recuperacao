@@ -19,6 +19,14 @@
 - Limpeza agendada de notificações antigas.
 - Timer de notificações do navegador sem duplicação após recarregamentos.
 
+## Endurecimento das regras do Firestore
+
+As regras agora limitam o autocadastro a perfis `vendedor`, permitem ao usuário alterar apenas campos comuns do próprio perfil e reservam a atribuição de `role` e `organizationId` a um administrador que esteja alterando outra conta. Vendedores, gerentes e supervisores só acessam registros associados à própria conta; somente administradores têm leitura e escrita administrativa global. O mesmo isolamento vale para anexos de clientes, backups, notificações, auditoria e histórico de importação. Os eventos de auditoria não podem ser alterados nem excluídos pelo cliente, e os jobs de importação preservam o proprietário e aceitam somente campos de conclusão.
+
+Não implante antes de conferir a coleção `usuarios`: regras novas não corrigem papéis privilegiados que possam ter sido atribuídos enquanto regras antigas estavam ativas. Verifique cada conta `admin`, `gerente` e `supervisor` por um canal confiável e mantenha pelo menos uma conta administradora legítima acessível.
+
+**Modelo escolhido:** isolamento individual. Os filtros do frontend devem consultar os registros do UID atual para todos os papéis não administradores; regras do Firestore e Storage aplicam o mesmo limite no servidor. Uma conta administrativa legítima continua podendo acessar todas as contas e registros.
+
 ## Implantação
 
 1. Faça backup dos arquivos originais e dos dados do Firebase.
@@ -51,8 +59,9 @@ firebase deploy --only hosting
 
 ## Atenção
 
-- As regras foram escritas para preservar o modelo atual baseado em `userId` e usar o UID como fallback de `organizationId`. Se houver uma organização Hapvida centralizada, ajuste `organizationId` no perfil do usuário antes de liberar acesso coletivo.
+- A propriedade individual é definida por `userId`; somente documentos legados sem `userId` usam `organizationId == UID` como fallback. Registros com `userId` de outra conta não ficam acessíveis só porque compartilham `organizationId` ou `vendedorId`.
+- Antes do deploy, confirme que existe pelo menos uma conta `admin` legítima e revise os papéis atuais; regras novas não revogam privilégios gravados anteriormente.
 - O front-end ainda mantém campos ISO antigos para compatibilidade. As funções passam a preencher também campos `createdAtTs` e `updatedAtTs` do tipo Timestamp.
-- Regras devem ser testadas no Firebase Emulator Suite com pelo menos vendedor, gerente e administrador.
+- Execute a suíte do repositório antes do deploy: `cd tests/security && npm install && npm test`. Ela testa Firestore e Storage localmente com vendedor, gerente, supervisor e admin, inclusive acesso a anexos e backups; usa o projeto fictício `demo-crm-security`.
 - A validação de acesso nas regras é obrigatória; não confie somente nos filtros do JavaScript.
 - Antes de dados reais, defina retenção, base legal, atendimento a solicitações do titular e procedimento de exclusão.

@@ -8,7 +8,10 @@
 ## Estrutura do código
 
 - `index.html`: aplicação web principal e compatibilidade com o código legado.
-- `modules/`: módulos JavaScript do frontend.
+- `scripts/app/`: partes do JavaScript legado, separadas por responsabilidade e carregadas na ordem documentada em [`scripts/README.md`](../scripts/README.md).
+- `scripts/analytics.js`: inicialização do Vercel Web Analytics.
+- `styles/`: CSS principal do frontend.
+- `modules/`: módulos independentes de melhorias do frontend.
 - `api/`: endpoints serverless da Vercel para upload e download de anexos.
 - `lib/`: autenticação compartilhada pelas funções da Vercel.
 - `functions/`: Cloud Functions do Firebase.
