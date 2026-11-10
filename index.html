@@ -147,6 +147,8 @@ body.modo-apresentacao .sidebar{display:none}body.modo-apresentacao .main-conten
     <div id="recaptcha-container" class="mb-3 d-flex justify-content-center"></div>
     <button class="btn btn-primary w-100 mb-2" onclick="login()">Entrar</button>
     <button class="btn btn-danger w-100 mb-2" onclick="googleLogin()"><i class="bi bi-google"></i> Entrar com Google</button>
+    <button class="btn btn-primary w-100 mb-2" onclick="facebookLogin()"><i class="bi bi-facebook"></i> Entrar com Facebook</button>
+    <button class="btn btn-dark w-100 mb-2" onclick="microsoftLogin()"><i class="bi bi-microsoft"></i> Entrar com Microsoft</button>
     <button class="btn btn-outline-primary w-100 mb-2" onclick="register()">Criar Conta</button>
     <button class="btn btn-link w-100" onclick="recoverPassword()">Esqueci minha senha</button>
     <div id="loginError" class="text-danger text-center mt-3 small"></div>
@@ -969,7 +971,20 @@ auth.onAuthStateChanged(async user=>{
 
 function initCaptcha(){ if(!document.getElementById('recaptcha-container')) return; if(recaptchaVerifier) return; recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {'size': 'normal'}); }
 async function login(){const e=document.getElementById('loginEmail').value,p=document.getElementById('loginPassword').value;try{await auth.signInWithEmailAndPassword(e,p);}catch(x){try{if(x.code==='auth/multi-factor-auth-required'){await concluirLoginComMfa(x);}else throw x;}catch(e2){document.getElementById('loginError').innerText=erroMfa(e2);}}}
-async function googleLogin(){const p=new firebase.auth.GoogleAuthProvider();try{await auth.signInWithPopup(p);}catch(x){try{if(x.code==='auth/multi-factor-auth-required')await concluirLoginComMfa(x);else throw x;}catch(e){document.getElementById('loginError').innerText=erroMfa(e);}}}
+async function loginWithProvider(provider, providerName) {
+  try {
+    await auth.signInWithPopup(provider);
+  } catch(x) {
+    try {
+      if(x.code==='auth/multi-factor-auth-required') await concluirLoginComMfa(x);
+      else if(x.code==='auth/account-exists-with-different-credential') throw new Error('Este email já está vinculado a outro provedor. Entre pelo provedor original e vincule '+providerName+' nas configurações da conta.');
+      else throw x;
+    } catch(e) { document.getElementById('loginError').innerText=erroMfa(e); }
+  }
+}
+async function googleLogin(){await loginWithProvider(new firebase.auth.GoogleAuthProvider(),'Google');}
+async function facebookLogin(){const p=new firebase.auth.FacebookAuthProvider();p.addScope('email');await loginWithProvider(p,'Facebook');}
+async function microsoftLogin(){await loginWithProvider(new firebase.auth.OAuthProvider('microsoft.com'),'Microsoft');}
 function register(){const e=document.getElementById('loginEmail').value,p=document.getElementById('loginPassword').value;auth.createUserWithEmailAndPassword(e,p).then(async r=>{await db.collection('usuarios').doc(r.user.uid).set({nome:r.user.displayName||'Usuário',email:r.user.email,role:'vendedor',servico:"Amel's Conceito",createdAt:new Date().toISOString()});}).catch(x=>document.getElementById('loginError').innerText=x.message);}
 function recoverPassword(){const e=document.getElementById('loginEmail').value;if(e)auth.sendPasswordResetEmail(e).then(()=>showToast('Email enviado!','success')).catch(x=>showToast(x.message,'danger'));else showToast('Digite seu email','warning');}
 function togglePassword(){const i=document.getElementById('loginPassword');i.type=i.type==='password'?'text':'password';}

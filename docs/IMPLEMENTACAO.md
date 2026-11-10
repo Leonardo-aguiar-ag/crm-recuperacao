@@ -68,6 +68,17 @@ As regras do Firestore verificam `request.auth.token.firebase.sign_in_second_fac
 
 Para testes locais, use o token de debug documentado pelo Firebase; nunca publique esse token em produção.
 
+## Login com Facebook e Microsoft
+
+O login agora oferece Google, Facebook e Microsoft pelo Firebase Authentication. Para ativá-los no projeto:
+
+1. Abra **Authentication > Sign-in method** no Firebase Console.
+2. Ative **Facebook** e informe o App ID e o App Secret criados no Meta for Developers. No Meta, cadastre o OAuth redirect URI exibido pelo Firebase, normalmente `https://crm-recuperacao.firebaseapp.com/__/auth/handler`.
+3. Ative **Microsoft** e informe o Client ID e o Client Secret de um App Registration no Microsoft Entra ID. Cadastre também o redirect URI `https://crm-recuperacao.firebaseapp.com/__/auth/handler` como plataforma Web.
+4. Confirme que `crm-recuperacao.firebaseapp.com` e o domínio de produção estão em **Authentication > Settings > Authorized domains**.
+
+As credenciais de Facebook e Microsoft devem ser configuradas apenas no Firebase Console; não devem ser colocadas no código ou no GitHub. Se o mesmo e-mail já existir em outro provedor, o usuário deve entrar pelo provedor original e fazer a vinculação de credenciais conforme a política definida no Firebase.
+
 ## CI no GitHub
 
 O workflow roda em cada push e pull request para `main`. Localmente, os mesmos comandos podem ser executados com:

@@ -23,6 +23,13 @@ test('administração usa TOTP MFA real do Firebase', () => {
   assert.match(index, /userRole === 'admin' && !isAdminMfaEnabled/);
 });
 
+test('login oferece Facebook e Microsoft via Firebase Auth', () => {
+  assert.match(index, /FacebookAuthProvider/);
+  assert.match(index, /facebookLogin/);
+  assert.match(index, /OAuthProvider\('microsoft\.com'\)/);
+  assert.match(index, /microsoftLogin/);
+});
+
 test('regras exigem segundo fator para administradores', () => {
   assert.match(rules, /hasSecondFactor\(\)/);
   assert.match(rules, /function isAdmin\(\)[\s\S]*hasSecondFactor/);
