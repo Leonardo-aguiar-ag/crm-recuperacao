@@ -30,7 +30,9 @@ service cloud.firestore {
     }
 
     function isManager() {
-      return signedIn() && role() in ['admin', 'gerente', 'supervisor'];
+      return signedIn()
+        && (role() in ['gerente', 'supervisor']
+          || (role() == 'admin' && hasSecondFactor()));
     }
 
     function isAdmin() {

@@ -25,6 +25,7 @@ test('administração usa TOTP MFA real do Firebase', () => {
 test('regras exigem segundo fator para administradores', () => {
   assert.match(rules, /hasSecondFactor\(\)/);
   assert.match(rules, /function isAdmin\(\)[\s\S]*hasSecondFactor/);
+  assert.match(rules, /function isManager\(\)[\s\S]*role\(\) == 'admin' && hasSecondFactor/);
 });
 
 test('CI executa testes, lint e valida Functions', () => {
