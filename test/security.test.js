@@ -39,6 +39,8 @@ test('cadastro solicita nome, e-mail, senha e confirmação da senha', () => {
   assert.match(index, /function fecharCadastro/);
   assert.match(index, /modal\.style\.display='block'/);
   assert.match(index, /#modalCadastro\{z-index:10000/);
+  assert.match(index, /function alternarSenhaCadastro/);
+  assert.match(index, /alternarSenhaCadastro\('cadastroSenhaConfirmacao'/);
 });
 
 test('regras exigem segundo fator para administradores', () => {

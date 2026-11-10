@@ -170,9 +170,15 @@ body.modo-apresentacao .sidebar{display:none}body.modo-apresentacao .main-conten
         <label for="cadastroEmail">E-mail</label>
         <input type="email" id="cadastroEmail" class="form-control mb-3" autocomplete="email" placeholder="seuemail@exemplo.com" required />
         <label for="cadastroSenha">Senha</label>
-        <input type="password" id="cadastroSenha" class="form-control" autocomplete="new-password" minlength="6" placeholder="Mínimo de 6 caracteres" required />
+        <div class="input-group">
+          <input type="password" id="cadastroSenha" class="form-control" autocomplete="new-password" minlength="6" placeholder="Mínimo de 6 caracteres" required />
+          <button type="button" class="btn btn-outline-secondary" onclick="alternarSenhaCadastro('cadastroSenha',this)">Mostrar</button>
+        </div>
         <label for="cadastroSenhaConfirmacao" class="mt-3">Confirmação da senha</label>
-        <input type="password" id="cadastroSenhaConfirmacao" class="form-control" autocomplete="new-password" minlength="6" placeholder="Digite a senha novamente" required />
+        <div class="input-group">
+          <input type="password" id="cadastroSenhaConfirmacao" class="form-control" autocomplete="new-password" minlength="6" placeholder="Digite a senha novamente" required />
+          <button type="button" class="btn btn-outline-secondary" onclick="alternarSenhaCadastro('cadastroSenhaConfirmacao',this)">Mostrar</button>
+        </div>
         <div id="cadastroError" class="text-danger small mt-3"></div>
       </div>
       <div class="modal-footer">
@@ -1026,6 +1032,12 @@ function fecharCadastro(){
   const modal=document.getElementById('modalCadastro');
   if(window.bootstrap?.Modal) bootstrap.Modal.getInstance(modal)?.hide();
   modal.style.display='none'; modal.classList.remove('show','d-block'); modal.setAttribute('aria-hidden','true');
+}
+function alternarSenhaCadastro(id,botao){
+  const input=document.getElementById(id); if(!input)return;
+  const visivel=input.type==='text'; input.type=visivel?'password':'text';
+  botao.textContent=visivel?'Mostrar':'Ocultar';
+  botao.setAttribute('aria-label',visivel?'Mostrar senha':'Ocultar senha');
 }
 async function register(){
   const nome=document.getElementById('cadastroNome').value.trim(), e=document.getElementById('cadastroEmail').value.trim().toLowerCase(), p=document.getElementById('cadastroSenha').value, confirmacao=document.getElementById('cadastroSenhaConfirmacao').value;
