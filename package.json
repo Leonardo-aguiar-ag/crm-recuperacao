@@ -1,0 +1,10 @@
+{
+  "name": "crm-recuperacao",
+  "private": true,
+  "version": "1.0.0",
+  "description": "CRM Recupera AI",
+  "dependencies": {
+    "@vercel/blob": "^1.1.1",
+    "jose": "^6.1.0"
+  }
+}
