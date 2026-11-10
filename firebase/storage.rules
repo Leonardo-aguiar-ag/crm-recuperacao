@@ -21,6 +21,18 @@ service firebase.storage {
     match /backups/{userId}/{fileName} {
       allow read, write, delete: if signedIn() && (request.auth.uid == userId || isManager());
     }
+    match /usuarios/{userId}/perfil/{fileName} {
+      allow read, delete: if signedIn() && request.auth.uid == userId;
+      allow write: if signedIn() && request.auth.uid == userId
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+    match /usuarios/{userId}/testes/{fileName} {
+      allow read, delete: if signedIn() && request.auth.uid == userId;
+      allow write: if signedIn() && request.auth.uid == userId
+        && request.resource.size < 64 * 1024
+        && request.resource.contentType == 'text/plain';
+    }
     match /{allPaths=**} { allow read, write: if false; }
   }
 }
