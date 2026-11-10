@@ -14,6 +14,13 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/usuarios/$(uid())).data;
     }
 
+    // O Firebase Auth adiciona este claim somente após um login concluído
+    // com segundo fator. A matrícula do fator, sozinha, não libera acesso.
+    function hasSecondFactor() {
+      return signedIn()
+        && request.auth.token.firebase.keys().hasAny(['sign_in_second_factor']);
+    }
+
     function role() {
       return signedIn()
         && exists(/databases/$(database)/documents/usuarios/$(uid()))
@@ -27,7 +34,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return signedIn() && role() == 'admin';
+      return signedIn() && role() == 'admin' && hasSecondFactor();
     }
 
     // Os registros antigos usam userId; alguns registros administrativos

@@ -18,6 +18,10 @@
 - Alerta de inatividade com chave idempotente por cliente/dia, sem dados sensíveis no texto.
 - Limpeza agendada de notificações antigas.
 - Timer de notificações do navegador sem duplicação após recarregamentos.
+- MFA TOTP nativo do Firebase para administradores, com desafio no login e matrícula por aplicativo autenticador.
+- Regras do Firestore exigindo o claim de segundo fator para operações administrativas.
+- Inicialização do Firebase App Check com reCAPTCHA v3 e renovação automática de token.
+- Workflow GitHub Actions em `.github/workflows/ci.yml` executando testes, validação de sintaxe e validação das Functions.
 
 ## Implantação
 
@@ -47,6 +51,32 @@ firebase deploy --only functions
 
 ```bash
 firebase deploy --only hosting
+```
+
+## MFA de administradores
+
+No Firebase Console, habilite **Authentication > Sign-in method > Multi-factor authentication > TOTP**. Cada usuário com `role: admin` deve abrir o perfil, escanear o QR Code com um aplicativo autenticador e confirmar um código de seis dígitos. Depois da matrícula, saia e entre novamente: o login passa a exigir o código TOTP.
+
+As regras do Firestore verificam `request.auth.token.firebase.sign_in_second_factor`; portanto, mudar apenas o campo `role` não contorna o MFA. A primeira matrícula precisa ocorrer em uma sessão autenticada e, em seguida, o administrador deve fazer novo login para receber o claim de segundo fator.
+
+## Firebase App Check
+
+1. No Firebase Console, registre o app Web em **App Check** usando reCAPTCHA v3 e copie a chave pública do site.
+2. Substitua o conteúdo do meta tag `firebase-app-check-site-key` em `index.html` pela chave pública (ela não é um segredo).
+3. Faça um deploy e confirme no painel do App Check que os tokens estão chegando.
+4. Só depois ative a aplicação para Firestore e Storage em **Enforcement**. O enforcement é uma configuração do projeto Firebase e não é aplicado pelo `firebase.json`.
+
+Para testes locais, use o token de debug documentado pelo Firebase; nunca publique esse token em produção.
+
+## CI no GitHub
+
+O workflow roda em cada push e pull request para `main`. Localmente, os mesmos comandos podem ser executados com:
+
+```bash
+npm ci
+npm test
+npm run lint
+cd functions && npm ci && node --check index.js
 ```
 
 ## Atenção

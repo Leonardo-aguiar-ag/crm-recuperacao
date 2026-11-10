@@ -2,7 +2,8 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CRM Recupera AI</title>
+<meta name="firebase-app-check-site-key" content="">
+  <title>CRM Recupera AI</title>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
@@ -20,6 +21,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
@@ -642,6 +644,20 @@ body.modo-apresentacao .sidebar{display:none}body.modo-apresentacao .main-conten
             <div id="listaUsuariosRBAC"></div>
           </div>
         </div>
+        <div class="perfil-section" id="adminMfaSection" style="display:none;">
+          <h6>🛡️ MFA do administrador</h6>
+          <p class="small text-muted">Administradores precisam de um código TOTP (Google Authenticator, 1Password, Authy ou similar) para acessar dados administrativos.</p>
+          <div id="mfaStatus" class="alert alert-secondary py-2">Verificando segundo fator...</div>
+          <div id="mfaEnrollment" style="display:none;">
+            <button class="btn btn-outline-primary btn-sm" onclick="iniciarMfaAdmin()">Configurar aplicativo autenticador</button>
+            <div id="mfaEnrollmentInstructions" class="small mt-3"></div>
+            <div class="input-group mt-2" style="max-width:360px;">
+              <input id="mfaEnrollmentCode" class="form-control" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Código de 6 dígitos">
+              <button class="btn btn-primary" onclick="confirmarMfaAdmin()">Ativar MFA</button>
+            </div>
+          </div>
+          <div id="mfaLogoutHint" class="small text-warning mt-2" style="display:none;">MFA ativado. Saia e entre novamente para validar o segundo fator nesta sessão.</div>
+        </div>
         <div class="perfil-section">
           <h6>ℹ️ Sistema</h6>
           <div class="row g-3">
@@ -783,6 +799,14 @@ body.modo-apresentacao .sidebar{display:none}body.modo-apresentacao .main-conten
 // === FIREBASE INIT ===
 const firebaseConfig = {apiKey:"AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",authDomain:"crm-recuperacao.firebaseapp.com",projectId:"crm-recuperacao",storageBucket:"crm-recuperacao.firebasestorage.app",messagingSenderId:"347011763386",appId:"1:347011763386:web:158c1ca6f512a1cde1c683"};
 firebase.initializeApp(firebaseConfig);
+// App Check usa uma chave pública reCAPTCHA v3 configurada no meta tag acima.
+const appCheckSiteKey = document.querySelector('meta[name="firebase-app-check-site-key"]')?.content?.trim() || '';
+let appCheck = null;
+if (appCheckSiteKey && firebase.appCheck) {
+  appCheck = firebase.appCheck(firebase.app(), { provider: new firebase.appCheck.ReCaptchaV3Provider(appCheckSiteKey), isTokenAutoRefreshEnabled: true });
+} else {
+  console.warn('Firebase App Check não inicializado: defina a meta firebase-app-check-site-key.');
+}
 const auth = firebase.auth(); const db = firebase.firestore(); const storage = firebase.storage();
 
 // Ativar Persistência Offline (mantém API compatível; warning de deprecation é inofensivo)
@@ -880,6 +904,44 @@ function carregarPreferencias(){setTheme(localStorage.getItem('theme')||'light')
 
 /* === AUTH & CAPTCHA === */
 let recaptchaVerifier;
+let pendingMfaEnrollmentSecret = null;
+function isAdminMfaEnabled(user=currentUser) { return !!user?.multiFactor?.enrolledFactors?.length; }
+function mostrarMfaAdminStatus() {
+  const section=document.getElementById('adminMfaSection'), status=document.getElementById('mfaStatus'), enrollment=document.getElementById('mfaEnrollment'), logoutHint=document.getElementById('mfaLogoutHint');
+  if (!section || userRole !== 'admin') return;
+  section.style.display='block';
+  const enabled=isAdminMfaEnabled();
+  status.className=enabled?'alert alert-success py-2':'alert alert-warning py-2';
+  status.textContent=enabled?'MFA TOTP ativo neste administrador.':'MFA obrigatório: configure um aplicativo autenticador antes de continuar.';
+  enrollment.style.display=enabled?'none':'block'; logoutHint.style.display=enabled?'none':'block';
+}
+function erroMfa(e) { return e?.code==='auth/invalid-verification-code'?'Código MFA inválido.':e?.code==='auth/multi-factor-auth-required'?'Este login exige o segundo fator.':'Não foi possível concluir o MFA: '+(e?.message||e); }
+async function concluirLoginComMfa(error) {
+  const resolver=firebase.auth.getMultiFactorResolver(auth,error), hint=resolver.hints?.[0];
+  if (!hint || !firebase.auth.TotpMultiFactorGenerator) throw new Error('Configure o autenticador TOTP antes de entrar.');
+  const code=window.prompt('Digite o código de 6 dígitos do seu aplicativo autenticador:');
+  if (!code) throw new Error('Código MFA não informado.');
+  const assertion=firebase.auth.TotpMultiFactorGenerator.assertionForSignIn(hint.uid, code.trim());
+  await resolver.resolveSignIn(assertion);
+}
+async function iniciarMfaAdmin() {
+  try {
+    const session=await currentUser.multiFactor.getSession();
+    pendingMfaEnrollmentSecret=await firebase.auth.TotpMultiFactorGenerator.generateSecret(session);
+    const uri=pendingMfaEnrollmentSecret.generateQrCodeUrl(currentUser.email||'admin','CRM Recuperação');
+    document.getElementById('mfaEnrollmentInstructions').innerHTML='<p>Escaneie o QR Code ou adicione manualmente esta chave no aplicativo autenticador:</p><img alt="QR Code para configurar MFA" width="180" height="180" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='+encodeURIComponent(uri)+'"><p class="font-monospace text-break mt-2">'+uri+'</p>';
+  } catch(e) { showToast(erroMfa(e),'danger',7000); }
+}
+async function confirmarMfaAdmin() {
+  if (!pendingMfaEnrollmentSecret) return showToast('Clique primeiro em configurar aplicativo autenticador.','warning');
+  const code=document.getElementById('mfaEnrollmentCode').value.trim();
+  if (!/^\d{6}$/.test(code)) return showToast('Informe o código de 6 dígitos.','warning');
+  try {
+    const assertion=firebase.auth.TotpMultiFactorGenerator.assertionForEnrollment(pendingMfaEnrollmentSecret,code);
+    await currentUser.multiFactor.enroll(assertion,'Aplicativo autenticador');
+    pendingMfaEnrollmentSecret=null; mostrarMfaAdminStatus(); showToast('MFA ativado. Saia e entre novamente para validar.','success',7000);
+  } catch(e) { showToast(erroMfa(e),'danger',7000); }
+}
 auth.onAuthStateChanged(async user=>{
   if(user){
     currentUser=user;document.getElementById('loginScreen').style.display='none';
@@ -896,6 +958,8 @@ auth.onAuthStateChanged(async user=>{
       document.getElementById('perfilNome').value=nome;document.getElementById('perfilTelefone').value=d.telefone||'';document.getElementById('perfilCidade').value=d.cidade||'';document.getElementById('perfilInstagram').value=d.instagram||'';document.getElementById('perfilEmailAtual').value=email;document.getElementById('sistemaEmail').innerText=email;document.getElementById('sistemaMembro').innerText=membro;document.getElementById('sistemaServico').value=d.servico||"Amel's Conceito";
       
       document.getElementById('adminRBACSection').style.display = userRole === 'admin' ? 'block' : 'none';
+      mostrarMfaAdminStatus();
+      if(userRole === 'admin' && !isAdminMfaEnabled(user)){ showToast('MFA obrigatório para administradores. Configure-o no seu perfil antes de continuar.','warning',10000); return; }
       if(userRole === 'admin') carregarUsuariosRBAC();
       
     }catch(e){console.warn(e);}
@@ -904,8 +968,8 @@ auth.onAuthStateChanged(async user=>{
 });
 
 function initCaptcha(){ if(!document.getElementById('recaptcha-container')) return; if(recaptchaVerifier) return; recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {'size': 'normal'}); }
-function login(){const e=document.getElementById('loginEmail').value,p=document.getElementById('loginPassword').value;auth.signInWithEmailAndPassword(e,p).catch(x=>document.getElementById('loginError').innerText=x.message);}
-function googleLogin(){const p=new firebase.auth.GoogleAuthProvider();auth.signInWithPopup(p).catch(e=>document.getElementById('loginError').innerText=e.message);}
+async function login(){const e=document.getElementById('loginEmail').value,p=document.getElementById('loginPassword').value;try{await auth.signInWithEmailAndPassword(e,p);}catch(x){try{if(x.code==='auth/multi-factor-auth-required'){await concluirLoginComMfa(x);}else throw x;}catch(e2){document.getElementById('loginError').innerText=erroMfa(e2);}}}
+async function googleLogin(){const p=new firebase.auth.GoogleAuthProvider();try{await auth.signInWithPopup(p);}catch(x){try{if(x.code==='auth/multi-factor-auth-required')await concluirLoginComMfa(x);else throw x;}catch(e){document.getElementById('loginError').innerText=erroMfa(e);}}}
 function register(){const e=document.getElementById('loginEmail').value,p=document.getElementById('loginPassword').value;auth.createUserWithEmailAndPassword(e,p).then(async r=>{await db.collection('usuarios').doc(r.user.uid).set({nome:r.user.displayName||'Usuário',email:r.user.email,role:'vendedor',servico:"Amel's Conceito",createdAt:new Date().toISOString()});}).catch(x=>document.getElementById('loginError').innerText=x.message);}
 function recoverPassword(){const e=document.getElementById('loginEmail').value;if(e)auth.sendPasswordResetEmail(e).then(()=>showToast('Email enviado!','success')).catch(x=>showToast(x.message,'danger'));else showToast('Digite seu email','warning');}
 function togglePassword(){const i=document.getElementById('loginPassword');i.type=i.type==='password'?'text':'password';}
@@ -1398,7 +1462,7 @@ async function carregarUsuariosRBAC(){
   }).join('');
 }
 async function mudarRole(uid, role){ await db.collection('usuarios').doc(uid).update({role}); showToast('Permissão atualizada!', 'success'); }
-function ativar2FA(){ showToast('Um SMS de verificação seria enviado (Requer configuração do Firebase Phone Auth).', 'info'); }
+function ativar2FA(){ iniciarMfaAdmin(); }
 
 async function salvarPerfil(ev){if(!currentUser)return showToast('Não logado','danger');const btn=ev?.target||document.querySelector('button[onclick="salvarPerfil(event)"]');const orig=btn?btn.innerHTML:'';if(btn){btn.disabled=true;btn.innerHTML='<span class="loading-spinner"></span> Salvando...';}try{const nome=document.getElementById('perfilNome').value.trim(),tel=document.getElementById('perfilTelefone').value.trim(),cid=document.getElementById('perfilCidade').value.trim(),insta=document.getElementById('perfilInstagram').value.trim(),serv=document.getElementById('sistemaServico').value.trim(),novoEmail=document.getElementById('perfilNovoEmail').value.trim(),senhaAtual=document.getElementById('perfilSenhaAtual').value,novaSenha=document.getElementById('perfilNovaSenha').value;await db.collection('usuarios').doc(currentUser.uid).set({nome,telefone:tel,cidade:cid,instagram:insta,servico:serv,updatedAt:new Date().toISOString()},{merge:true});const uName=document.getElementById('userName');if(uName)uName.innerText=nome;const uTxt=document.getElementById('userAvatarTexto');if(uTxt)uTxt.innerText=(nome[0]||'U').toUpperCase();if(novoEmail&&novoEmail!==currentUser.email){if(!senhaAtual)throw new Error('Informe senha atual.');const cred=firebase.auth.EmailAuthProvider.credential(currentUser.email,senhaAtual);await currentUser.reauthenticateWithCredential(cred);await currentUser.updateEmail(novoEmail);await db.collection('usuarios').doc(currentUser.uid).update({email:novoEmail});document.getElementById('perfilEmailAtual').value=novoEmail;document.getElementById('perfilNovoEmail').value='';document.getElementById('sistemaEmail').innerText=novoEmail;}if(novaSenha){if(!senhaAtual)throw new Error('Informe senha atual.');if(novaSenha.length<6)throw new Error('Mínimo 6 caracteres.');const cred=firebase.auth.EmailAuthProvider.credential(currentUser.email,senhaAtual);await currentUser.reauthenticateWithCredential(cred);await currentUser.updatePassword(novaSenha);document.getElementById('perfilSenhaAtual').value='';document.getElementById('perfilNovaSenha').value='';}showToast('Perfil salvo!','success');}catch(e){showToast('Erro: '+e.message,'danger',6000);}finally{if(btn){btn.disabled=false;btn.innerHTML=orig||'<i class="bi bi-save"></i> Salvar Alterações';}}}
 function encerrarConta(){if(!confirm('Encerrar conta? Isso apaga TODOS os dados. Irreversível.'))return;solicitarExclusaoDados();}

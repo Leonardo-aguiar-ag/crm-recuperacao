@@ -2,6 +2,10 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     function signedIn() { return request.auth != null; }
+    function hasSecondFactor() {
+      return signedIn()
+        && request.auth.token.firebase.keys().hasAny(['sign_in_second_factor']);
+    }
     function isOwner(clientId) {
       return signedIn() && (
         firestore.get(/databases/(default)/documents/clients/$(clientId)).data.userId == request.auth.uid ||
@@ -9,7 +13,10 @@ service firebase.storage {
       );
     }
     function isManager() {
-      return signedIn() && firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role in ['admin','gerente','supervisor'];
+      return signedIn() && (
+        firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role in ['gerente','supervisor']
+        || (firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role == 'admin' && hasSecondFactor())
+      );
     }
     match /clientes/{clientId}/anexos/{fileName} {
       allow read: if isOwner(clientId) || isManager();
