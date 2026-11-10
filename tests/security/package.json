@@ -1,0 +1,13 @@
+{
+  "name": "crm-security-rules-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "firebase emulators:exec --config ../../firebase.test.json --only firestore,storage --project demo-crm-security \"node firestore.rules.test.mjs && node storage.rules.test.mjs\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "firebase": "^12.19.0",
+    "firebase-tools": "^15.35.0"
+  }
+}

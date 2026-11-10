@@ -22,31 +22,30 @@ service cloud.firestore {
         : 'vendedor';
     }
 
-    function isManager() {
-      return signedIn() && role() in ['admin', 'gerente', 'supervisor'];
-    }
-
     function isAdmin() {
       return signedIn() && role() == 'admin';
     }
 
-    // Os registros antigos usam userId; alguns registros administrativos
-    // também usam organizationId. Ambos permanecem suportados.
+    // Se houver userId, ele é a fonte de propriedade. organizationId só
+    // funciona como fallback em registros legados sem userId.
     function belongsToUser(data) {
       return signedIn()
-        && ((data.keys().hasAny(['userId']) && data.userId == uid())
-          || (data.keys().hasAny(['organizationId']) && data.organizationId == uid()));
+        && (data.keys().hasAny(['userId'])
+          ? data.userId == uid()
+          : (data.keys().hasAny(['organizationId']) && data.organizationId == uid()));
     }
 
     function canRead(data) {
-      return isManager() || belongsToUser(data);
+      return isAdmin() || belongsToUser(data);
     }
 
     function canCreate(data) {
       return signedIn()
         && (isAdmin()
           || (data.keys().hasAny(['userId']) && data.userId == uid())
-          || (data.keys().hasAny(['organizationId']) && data.organizationId == uid()));
+          || (!data.keys().hasAny(['userId'])
+            && data.keys().hasAny(['organizationId'])
+            && data.organizationId == uid()));
     }
 
     function preservesOwner(existing, incoming) {
@@ -59,7 +58,7 @@ service cloud.firestore {
     }
 
     function canUpdate(existing, incoming) {
-      return isManager()
+      return isAdmin()
         || (belongsToUser(existing)
           && preservesOwner(existing, incoming)
           && ((incoming.keys().hasAny(['userId']) && incoming.userId == uid())
@@ -111,15 +110,15 @@ service cloud.firestore {
     match /audit_events/{eventId} {
       allow create: if safeAudit();
       allow read: if signedIn()
-        && (resource.data.userId == uid() || isManager());
+        && (resource.data.userId == uid() || isAdmin());
       allow update, delete: if false;
     }
 
     match /notificacoes/{id} {
       allow read, update, delete: if signedIn()
-        && (resource.data.userId == uid() || isManager());
+        && (resource.data.userId == uid() || isAdmin());
       allow create: if signedIn()
-        && (request.resource.data.userId == uid() || isManager());
+        && (request.resource.data.userId == uid() || isAdmin());
     }
 
     match /clients/{id} {
@@ -237,7 +236,7 @@ service cloud.firestore {
 
     match /import_jobs/{id} {
       allow read: if signedIn()
-        && (resource.data.user_id == uid() || isManager());
+        && (resource.data.user_id == uid() || isAdmin());
       allow create: if signedIn()
         && request.resource.data.user_id == uid()
         && request.resource.data.organization_id == uid()

@@ -21,11 +21,11 @@
 
 ## Endurecimento das regras do Firestore
 
-As regras agora limitam o autocadastro a perfis `vendedor`, permitem ao usuário alterar apenas campos comuns do próprio perfil e reservam a atribuição de `role` e `organizationId` a um administrador que esteja alterando outra conta. A leitura de perfis de terceiros também fica restrita a administradores. Os eventos de auditoria não podem ser alterados nem excluídos pelo cliente, e os jobs de importação preservam o proprietário e aceitam somente campos de conclusão.
+As regras agora limitam o autocadastro a perfis `vendedor`, permitem ao usuário alterar apenas campos comuns do próprio perfil e reservam a atribuição de `role` e `organizationId` a um administrador que esteja alterando outra conta. Vendedores, gerentes e supervisores só acessam registros associados à própria conta; somente administradores têm leitura e escrita administrativa global. O mesmo isolamento vale para anexos de clientes, backups, notificações, auditoria e histórico de importação. Os eventos de auditoria não podem ser alterados nem excluídos pelo cliente, e os jobs de importação preservam o proprietário e aceitam somente campos de conclusão.
 
 Não implante antes de conferir a coleção `usuarios`: regras novas não corrigem papéis privilegiados que possam ter sido atribuídos enquanto regras antigas estavam ativas. Verifique cada conta `admin`, `gerente` e `supervisor` por um canal confiável e mantenha pelo menos uma conta administradora legítima acessível.
 
-**Importante:** a regra de acesso atual ainda permite que `gerente`, `supervisor` e `admin` acessem registros de todas as organizações. O CRM hoje cria `organizationId` com o UID como fallback e não carrega uma organização compartilhada para os registros de autenticação do cliente. Não use esta configuração para separar dados entre empresas/equipes; antes, defina o ID compartilhado de cada organização, migre perfis e registros e teste as consultas e regras por organização.
+**Modelo escolhido:** isolamento individual. Os filtros do frontend devem consultar os registros do UID atual para todos os papéis não administradores; regras do Firestore e Storage aplicam o mesmo limite no servidor. Uma conta administrativa legítima continua podendo acessar todas as contas e registros.
 
 ## Implantação
 
@@ -59,8 +59,9 @@ firebase deploy --only hosting
 
 ## Atenção
 
-- As regras foram escritas para preservar o modelo atual baseado em `userId` e usar o UID como fallback de `organizationId`. Se houver uma organização Hapvida centralizada, ajuste `organizationId` no perfil do usuário antes de liberar acesso coletivo.
+- A propriedade individual é definida por `userId`; somente documentos legados sem `userId` usam `organizationId == UID` como fallback. Registros com `userId` de outra conta não ficam acessíveis só porque compartilham `organizationId` ou `vendedorId`.
+- Antes do deploy, confirme que existe pelo menos uma conta `admin` legítima e revise os papéis atuais; regras novas não revogam privilégios gravados anteriormente.
 - O front-end ainda mantém campos ISO antigos para compatibilidade. As funções passam a preencher também campos `createdAtTs` e `updatedAtTs` do tipo Timestamp.
-- Regras devem ser testadas no Firebase Emulator Suite com pelo menos vendedor, gerente e administrador, incluindo cadastro de perfil, tentativa de mudar o próprio papel/organização, leitura entre contas e coleção nova sem regra explícita.
+- Execute a suíte do repositório antes do deploy: `cd tests/security && npm install && npm test`. Ela testa Firestore e Storage localmente com vendedor, gerente, supervisor e admin, inclusive acesso a anexos e backups; usa o projeto fictício `demo-crm-security`.
 - A validação de acesso nas regras é obrigatória; não confie somente nos filtros do JavaScript.
 - Antes de dados reais, defina retenção, base legal, atendimento a solicitações do titular e procedimento de exclusão.
