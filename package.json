@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "CRM Recupera AI",
   "dependencies": {
+    "@vercel/analytics": "^1.6.1",
     "@vercel/blob": "^2.9.0",
     "jose": "^6.1.0"
   }
