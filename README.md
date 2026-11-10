@@ -28,3 +28,7 @@ Os anexos de clientes são enviados pelas funções `api/blob-upload.js` e `api/
 No projeto Vercel, conecte o Blob Store `crm-recuperacao-blob` ao projeto e confirme a variável `BLOB_READ_WRITE_TOKEN` nos ambientes **Production** e **Preview**. Não coloque o valor dessa variável no GitHub ou no `index.html`.
 
 O upload atual aceita PDF, imagens, Word e Excel até **4,5 MB por arquivo**, limite do upload pelo servidor da Vercel. Anexos antigos que ainda tenham apenas `url` continuam sendo abertos normalmente pelo CRM.
+
+## Vercel Web Analytics
+
+O `index.html` inclui o script oficial do Vercel Web Analytics para registrar visitantes e visualizações de página. No painel da Vercel, abra **Analytics** do projeto e clique em **Enable**; depois de um novo deploy, os dados podem levar alguns segundos para aparecer.
