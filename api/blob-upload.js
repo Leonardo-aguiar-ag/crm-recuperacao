@@ -1,5 +1,5 @@
 const { put } = require('@vercel/blob');
-const { requireFirebaseUser, sendJson } = require('./_firebase-auth');
+const { requireFirebaseUser, sendJson } = require('../lib/firebase-auth');
 
 const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
 const ALLOWED_TYPES = new Set([

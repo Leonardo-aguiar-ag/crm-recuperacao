@@ -1,5 +1,5 @@
 const { get } = require('@vercel/blob');
-const { requireFirebaseUser, sendJson } = require('./_firebase-auth');
+const { requireFirebaseUser, sendJson } = require('../lib/firebase-auth');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return sendJson(res, 405, { error: 'Método não permitido.' });
@@ -12,7 +12,9 @@ module.exports = async function handler(req, res) {
     }
 
     const result = await get(pathname, { access: 'private' });
-    if (result === null) return sendJson(res, 404, { error: 'Arquivo não encontrado.' });
+    if (!result || result.statusCode === 404 || !result.stream || !result.blob) {
+      return sendJson(res, 404, { error: 'Arquivo não encontrado.' });
+    }
 
     res.statusCode = 200;
     res.setHeader('Cache-Control', 'private, no-cache');
@@ -22,6 +24,6 @@ module.exports = async function handler(req, res) {
     return result.stream.pipe(res);
   } catch (error) {
     console.error('blob-download:', error);
-    return sendJson(res, error.statusCode || 404, { error: error.message || 'Falha ao abrir o arquivo.' });
+    return sendJson(res, error.statusCode || 500, { error: error.message || 'Falha ao abrir o arquivo.' });
   }
 };
