@@ -12,9 +12,10 @@ module.exports = async function handler(req, res) {
     }
 
     const result = await get(pathname, { access: 'private' });
-    if (!result || result.statusCode !== 200) return sendJson(res, 404, { error: 'Arquivo não encontrado.' });
+    if (result === null) return sendJson(res, 404, { error: 'Arquivo não encontrado.' });
 
     res.statusCode = 200;
+    res.setHeader('Cache-Control', 'private, no-cache');
     res.setHeader('Content-Type', result.blob.contentType || 'application/octet-stream');
     res.setHeader('Content-Disposition', 'inline');
     res.setHeader('X-Content-Type-Options', 'nosniff');
