@@ -17,6 +17,7 @@ service cloud.firestore {
     function role() {
       return signedIn()
         && exists(/databases/$(database)/documents/usuarios/$(uid()))
+        && userDoc().keys().hasAny(['role'])
         ? userDoc().role
         : 'vendedor';
     }
@@ -33,7 +34,8 @@ service cloud.firestore {
     // também usam organizationId. Ambos permanecem suportados.
     function belongsToUser(data) {
       return signedIn()
-        && (data.userId == uid() || data.organizationId == uid());
+        && ((data.keys().hasAny(['userId']) && data.userId == uid())
+          || (data.keys().hasAny(['organizationId']) && data.organizationId == uid()));
     }
 
     function canRead(data) {
@@ -42,11 +44,14 @@ service cloud.firestore {
 
     function canCreate(data) {
       return signedIn()
-        && (isAdmin() || data.userId == uid() || data.organizationId == uid());
+        && (isAdmin()
+          || (data.keys().hasAny(['userId']) && data.userId == uid())
+          || (data.keys().hasAny(['organizationId']) && data.organizationId == uid()));
     }
 
     function preservesOwner(existing, incoming) {
-      return incoming.userId == existing.userId
+      return incoming.keys().hasAny(['userId'])
+        && incoming.userId == existing.userId
         && (!existing.keys().hasAny(['organizationId'])
           || incoming.organizationId == existing.organizationId)
         && (!existing.keys().hasAny(['createdBy'])
@@ -57,7 +62,8 @@ service cloud.firestore {
       return isManager()
         || (belongsToUser(existing)
           && preservesOwner(existing, incoming)
-          && (incoming.userId == uid() || incoming.organizationId == uid()));
+          && ((incoming.keys().hasAny(['userId']) && incoming.userId == uid())
+            || (incoming.keys().hasAny(['organizationId']) && incoming.organizationId == uid())));
     }
 
     function safeAudit() {
