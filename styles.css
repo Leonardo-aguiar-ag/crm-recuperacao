@@ -103,3 +103,16 @@ body.modo-apresentacao .sidebar{display:none}body.modo-apresentacao .main-conten
 .cadencia-badge{display:inline-block;background:#fdcb6e;color:#2d3436;padding:2px 8px;border-radius:8px;font-size:0.65rem;font-weight:700}
 .pivot-container{overflow:auto;background:var(--card);padding:10px;border-radius:var(--radius-sm)}.pvtUi select{background:var(--bg);color:var(--text);border:1px solid var(--border)}
 #modalCadastro{z-index:10000!important}.modal-backdrop{z-index:9998!important}
+
+
+/* Printable report styles. Kept here so all application CSS lives in one file. */
+.report-page{font-family:Arial,sans-serif;padding:30px;color:#222}
+.report-page h1{color:#6c5ce7;border-bottom:3px solid #6c5ce7;padding-bottom:8px}
+.report-page table{width:100%;border-collapse:collapse;margin:16px 0}
+.report-page th,.report-page td{border:1px solid #ddd;padding:8px;text-align:left;font-size:13px}
+.report-page th{background:#6c5ce7;color:#fff}
+.report-page tr:nth-child(even){background:#f4f6fc}
+.report-page .kpi{display:flex;gap:16px;flex-wrap:wrap;margin:20px 0}
+.report-page .kpi div{flex:1;min-width:140px;padding:12px;background:#ede9fe;border-radius:8px}
+.report-page .kpi strong{display:block;font-size:22px;color:#6c5ce7}
+.report-page .footer{margin-top:40px;font-size:11px;color:#888;text-align:center}
