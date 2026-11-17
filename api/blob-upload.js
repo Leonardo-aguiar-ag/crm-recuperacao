@@ -1,5 +1,6 @@
 const { put } = require('@vercel/blob');
 const { requireFirebaseUser, sendJson } = require('../lib/firebase-auth');
+const { requireHuman } = require('../lib/botid');
 
 const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
 const ALLOWED_TYPES = new Set([
@@ -25,6 +26,7 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { error: 'Método não permitido.' });
 
   try {
+    if (!(await requireHuman(req, res, sendJson))) return;
     const user = await requireFirebaseUser(req);
     const filename = safeName(req.query.filename);
     const contentType = String(req.headers['content-type'] || 'application/octet-stream').split(';')[0];

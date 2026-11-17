@@ -6,6 +6,9 @@ const index = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const rules = await readFile(new URL('../firebase/firestore.rules', import.meta.url), 'utf8');
 const indexes = await readFile(new URL('../firebase/firestore.indexes.json', import.meta.url), 'utf8');
 const workflow = await readFile(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
+const uploadApi = await readFile(new URL('../api/blob-upload.js', import.meta.url), 'utf8');
+const downloadApi = await readFile(new URL('../api/blob-download.js', import.meta.url), 'utf8');
+const botIdClient = await readFile(new URL('../botid-client.js', import.meta.url), 'utf8');
 
  test('configura Firebase App Check com reCAPTCHA v3 e renovação automática', () => {
   assert.match(index, /firebase-app-check-compat\.js/);
@@ -60,4 +63,13 @@ test('CI executa testes, lint e valida Functions', () => {
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm run lint/);
   assert.match(workflow, /node --check index\.js/);
+});
+
+test('endpoints de anexos exigem classificação BotID e frontend protege as mesmas rotas', () => {
+  assert.match(uploadApi, /requireHuman/);
+  assert.match(downloadApi, /requireHuman/);
+  assert.match(botIdClient, /\/api\/blob-upload/);
+  assert.match(botIdClient, /\/api\/blob-download/);
+  assert.match(botIdClient, /method: 'POST'/);
+  assert.match(botIdClient, /method: 'GET'/);
 });

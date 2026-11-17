@@ -33,3 +33,9 @@ O upload atual aceita PDF, imagens, Word e Excel até **4,5 MB por arquivo**, li
 ## Vercel Web Analytics
 
 O `index.html` inclui o script oficial do Vercel Web Analytics para registrar visitantes e visualizações de página. No painel da Vercel, abra **Analytics** do projeto e clique em **Enable**; depois de um novo deploy, os dados podem levar alguns segundos para aparecer.
+
+## Proteção BotID
+
+Os endpoints Vercel de anexos (`/api/blob-upload` e `/api/blob-download`) usam o BotID para classificar requisições automatizadas antes de validar o usuário Firebase. O frontend estático carrega `botid-client.js`, que inicializa o cliente BotID e anexa os headers necessários às chamadas protegidas.
+
+Para ativar a proteção em produção, publique a aplicação em um projeto Vercel com o BotID habilitado. Em desenvolvimento local, o BotID retorna `isBot: false` por padrão, conforme o comportamento documentado pelo pacote. Não remova a inicialização do cliente: sem ela, as chamadas legítimas não terão os headers de classificação.

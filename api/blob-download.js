@@ -1,10 +1,12 @@
 const { get } = require('@vercel/blob');
 const { requireFirebaseUser, sendJson } = require('../lib/firebase-auth');
+const { requireHuman } = require('../lib/botid');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return sendJson(res, 405, { error: 'Método não permitido.' });
 
   try {
+    if (!(await requireHuman(req, res, sendJson))) return;
     const user = await requireFirebaseUser(req);
     const pathname = String(req.query.pathname || '');
     if (!pathname || pathname.includes('..') || !pathname.startsWith(`clientes/${user.uid}/`)) {

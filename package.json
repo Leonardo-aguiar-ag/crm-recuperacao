@@ -6,10 +6,11 @@
   "type": "module",
   "dependencies": {
     "@vercel/blob": "^2.9.0",
+    "botid": "^1.5.13",
     "jose": "^6.1.0"
   },
   "scripts": {
     "test": "node --test",
-    "lint": "node --check test/security.test.js && node --check functions/index.js"
+    "lint": "node --check test/security.test.js && node --check functions/index.js && node --check api/blob-upload.js && node --check api/blob-download.js && node --check lib/botid.js && node --check botid-client.js && node --check vendor/botid-client-core.mjs"
   }
 }
