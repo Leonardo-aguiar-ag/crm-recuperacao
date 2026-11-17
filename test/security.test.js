@@ -9,6 +9,7 @@ const workflow = await readFile(new URL('../.github/workflows/ci.yml', import.me
 const uploadApi = await readFile(new URL('../api/blob-upload.js', import.meta.url), 'utf8');
 const downloadApi = await readFile(new URL('../api/blob-download.js', import.meta.url), 'utf8');
 const botIdClient = await readFile(new URL('../botid-client.js', import.meta.url), 'utf8');
+const styles = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
 
  test('configura Firebase App Check com reCAPTCHA v3 e renovação automática', () => {
   assert.match(index, /firebase-app-check-compat\.js/);
@@ -72,4 +73,11 @@ test('endpoints de anexos exigem classificação BotID e frontend protege as mes
   assert.match(botIdClient, /\/api\/blob-download/);
   assert.match(botIdClient, /method: 'POST'/);
   assert.match(botIdClient, /method: 'GET'/);
+});
+
+test('CSS principal fica separado do HTML', () => {
+  assert.match(index, /<link rel="stylesheet" href="styles\.css" \/>/);
+  assert.doesNotMatch(index, /<style>\s*:root/);
+  assert.match(styles, /:root\{/);
+  assert.match(styles, /\.login-screen\{/);
 });

@@ -4,7 +4,7 @@
 
 | Pasta / arquivo | O que é |
 |---|---|
-| `index.html`, `sw.js`, `manifest.json`, `logo.png`, `.nojekyll` | Site do CRM (precisam ficar na raiz para o GitHub Pages) |
+| `index.html`, `styles.css`, `sw.js`, `manifest.json`, `logo.png`, `.nojekyll` | Site e estilos do CRM (precisam ficar na raiz para o GitHub Pages) |
 | `modules/` | Módulos JavaScript com as melhorias do CRM |
 | `functions/` | Cloud Functions do Firebase |
 | `firebase/` | Regras do Firestore e do Storage e índices |
