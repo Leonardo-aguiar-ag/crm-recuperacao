@@ -992,7 +992,7 @@ function switchInternalTab(id){document.querySelectorAll('#clientesTab .tab-pane
 async function loadPaged(query,pageSize=500){const docs=[];let last=null;while(true){let q=query.limit(pageSize);if(last)q=q.startAfter(last);const snap=await q.get();docs.push(...snap.docs);if(snap.size<pageSize)break;last=snap.docs[snap.docs.length-1];}return docs;}
 /** Consulta uma única página. O cursor é um DocumentSnapshot, nunca um offset. */
 async function loadPage(query,pageSize=25,cursor=null){let q=query.limit(pageSize);if(cursor)q=q.startAfter(cursor);const snap=await q.get();return {docs:snap.docs,nextCursor:snap.size===pageSize?snap.docs[snap.docs.length-1]:null,hasMore:snap.size===pageSize};}
-function queryClientesOrganizacional(){if(!currentUser)throw new Error('Sessão não autenticada.');let q=db.collection('clients');if(userRole==='vendedor')q=q.where('userId','==',currentUser.uid);else q=q.where('organizationId','==',_organizationId());return q.orderBy('updatedAt','desc').orderBy(firebase.firestore.FieldPath.documentId());}
+function queryClientesOrganizacional({ordered=true}={}){if(!currentUser)throw new Error('Sessão não autenticada.');let q=db.collection('clients');if(userRole==='vendedor')q=q.where('userId','==',currentUser.uid);else q=q.where('organizationId','==',_organizationId());return ordered?q.orderBy('updatedAt','desc').orderBy(firebase.firestore.FieldPath.documentId()):q.orderBy(firebase.firestore.FieldPath.documentId());}
 async function carregarPaginaClientesFirestore({cursor=null,pageSize=25}={}){const page=await loadPage(queryClientesOrganizacional(),pageSize,cursor);return {...page,items:page.docs.map(d=>({id:d.id,...d.data()}))};}
 window.crmPagination={loadPage,queryClientesOrganizacional,carregarPaginaClientesFirestore};
 function descricaoErroFirestore(e){const c=e?.code||'unknown';if(c==='permission-denied')return 'permissão negada (publique as regras e confirme o usuário)';if(c==='failed-precondition')return 'índice/configuração pendente';if(c==='unavailable')return 'Firestore indisponível ou sem conexão';if(c==='not-found')return 'banco ou documento não encontrado';if(c==='unauthenticated')return 'sessão não autenticada';return `${c}: ${e?.message||'erro desconhecido'}`;}
@@ -1082,10 +1082,20 @@ async function carregarPaginaClientesVisual({cursor=null,reset=false}={}){
   const bp=document.getElementById('btnClientPrev'),bn=document.getElementById('btnClientNext');if(bp)bp.disabled=true;if(bn)bn.disabled=true;
   try{
     if(reset){clientesPaginacao.cursorStack=[];paginaClientes=1;}
-    const page=await carregarPaginaClientesFirestore({cursor,pageSize:clientesPorPagina});
+    let page,usedFallback=false;
+    try{page=await carregarPaginaClientesFirestore({cursor,pageSize:clientesPorPagina});}
+    catch(error){
+      if(error?.code!=='failed-precondition')throw error;
+      // Enquanto o índice composto não foi publicado, mantém a tabela utilizável
+      // com ordenação determinística por ID. A ordenação principal volta após o deploy.
+      clientesPaginacao.cursorStack=[];paginaClientes=1;
+      page=await loadPage(queryClientesOrganizacional({ordered:false}),clientesPorPagina,null);
+      page={...page,items:page.docs.map(d=>({id:d.id,...d.data()}))};
+      usedFallback=true;
+    }
     clientesPaginacao.currentDocs=page.items;clientesPaginacao.nextCursor=page.nextCursor;clientesPaginacao.hasMore=page.hasMore;clientesPaginacao.error=null;
     renderTable();
-    mostrarStatusPaginaClientes(`Página ${paginaClientes} carregada do Firestore · 25 registros por página`);
+    mostrarStatusPaginaClientes(usedFallback?'Índice pendente: exibindo clientes em modo temporário. Publique firestore.indexes.json.':`Página ${paginaClientes} carregada do Firestore · 25 registros por página`);
   }catch(error){clientesPaginacao.error=error;mostrarErroPaginaClientes(error);mostrarStatusPaginaClientes('Falha ao carregar clientes.');renderTable();}
   finally{clientesPaginacao.loading=false;const prev=document.getElementById('btnClientPrev'),next=document.getElementById('btnClientNext');if(prev)prev.disabled=paginaClientes<=1;if(next)next.disabled=!clientesPaginacao.hasMore;}
 }

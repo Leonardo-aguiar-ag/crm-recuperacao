@@ -99,7 +99,7 @@ test('layout mobile reduz overflow de topbar, notificações, tarefas e pipeline
 test('paginação Firestore usa cursor, tenant e ordenação determinística', () => {
   assert.match(index, /async function loadPage\(query,pageSize=25,cursor=null\)/);
   assert.match(index, /q\.startAfter\(cursor\)/);
-  assert.match(index, /function queryClientesOrganizacional\(\)[\s\S]*where\('organizationId','==',_organizationId\(\)\)/);
+  assert.match(index, /function queryClientesOrganizacional\(\{ordered=true\}=\{\}\)[\s\S]*where\('organizationId','==',_organizationId\(\)\)/);
   assert.match(index, /orderBy\('updatedAt','desc'\)\.orderBy\(firebase\.firestore\.FieldPath\.documentId\(\)\)/);
   const config = JSON.parse(indexes);
   assert.ok(config.indexes.some((item) => item.collectionGroup === 'clients'
@@ -115,6 +115,7 @@ test('tabela de clientes conecta paginação visual, carregamento, retry e reset
   assert.match(index, /function clientesTemFiltros\(\)/);
   assert.match(index, /Página \$\{paginaClientes\} carregada do Firestore/);
   assert.match(index, /clientesPaginacao\.currentDocs/);
+  assert.match(index, /Índice pendente: exibindo clientes em modo temporário/);
 });
 
 test('índice de inatividade cobre status e updatedAt dos clientes', () => {
