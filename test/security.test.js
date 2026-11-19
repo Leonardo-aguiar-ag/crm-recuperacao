@@ -95,6 +95,17 @@ test('layout mobile reduz overflow de topbar, notificações, tarefas e pipeline
   assert.match(styles, /\.pipeline-column\{min-width:calc\(100vw - 48px\)!important\}/);
 });
 
+test('paginação Firestore usa cursor, tenant e ordenação determinística', () => {
+  assert.match(index, /async function loadPage\(query,pageSize=25,cursor=null\)/);
+  assert.match(index, /q\.startAfter\(cursor\)/);
+  assert.match(index, /function queryClientesOrganizacional\(\)[\s\S]*where\('organizationId','==',_organizationId\(\)\)/);
+  assert.match(index, /orderBy\('updatedAt','desc'\)\.orderBy\(firebase\.firestore\.FieldPath\.documentId\(\)\)/);
+  const config = JSON.parse(indexes);
+  assert.ok(config.indexes.some((item) => item.collectionGroup === 'clients'
+    && item.fields.some((field) => field.fieldPath === 'organizationId')
+    && item.fields.some((field) => field.fieldPath === 'updatedAt')));
+});
+
 test('índice de inatividade cobre status e updatedAt dos clientes', () => {
   const config = JSON.parse(indexes);
   assert.ok(config.indexes.some((item) => item.collectionGroup === 'clients'
