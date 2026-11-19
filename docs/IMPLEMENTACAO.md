@@ -22,7 +22,9 @@
 - Regras do Firestore exigindo o claim de segundo fator para operações administrativas.
 - Inicialização do Firebase App Check com reCAPTCHA v3 e renovação automática de token.
 - Busca global classificada por relevância, com consultas remotas limitadas e por tenant, deduplicação, cursor de continuação, atalhos de teclado e combobox/listbox ARIA.
-- Projeção comercial em três cenários, incluindo propostas abertas, implantação, vidas, probabilidade ponderada, média mensal e acompanhamento das metas.
+- Busca remota em campos normalizados de nome, telefone e e-mail para clientes/leads, e título para tarefas; consultas escolhem o campo pelo tipo do termo.
+- Projeção comercial em três cenários editáveis por usuário/navegador, com probabilidades por etapa, propostas abertas, implantação, vidas, média mensal e metas.
+- Calibração de pipeline usa snapshots de probabilidade no fechamento, conversão real por faixa e suavização; exige 8 casos por faixa antes de alterar a previsão.
 - Workflow GitHub Actions em `.github/workflows/ci.yml` executando testes, validação de sintaxe e validação das Functions.
 - Suíte de segurança executada no Firestore e Storage Emulator, cobrindo App Check obrigatório, isolamento entre organizações, tenant imutável, auditoria append-only e bloqueio de uploads inválidos.
 
@@ -84,6 +86,25 @@ O frontend inicia Firebase App Check com reCAPTCHA v3, renova tokens automaticam
 6. O projeto não exporta Functions HTTP ou callable consumidas pelo navegador; as Functions atuais são gatilhos Firestore/Auth ou agendados. Enforcement App Check de Functions aplica-se a endpoints suportados (por exemplo, callable com `functions.runWith({enforceAppCheck:true})`), não aos gatilhos de backend. Não há endpoint cliente para colocar em enforcement hoje; se um callable/HTTP for adicionado, exija App Check nele e valide a invocação com token válido.
 
 Para testes locais, use o token de debug documentado pelo Firebase; nunca publique esse token em produção.
+
+## Busca remota normalizada
+
+As Cloud Functions normalizam os campos de busca em qualquer escrita de cliente, lead ou tarefa. O frontend também grava esses campos em propostas e tarefas; os índices compostos usam o escopo de vendedor ou organização. Para registros legados, o script administrativo pode fazer a atualização gradualmente. Ele usa Application Default Credentials e é **somente leitura por padrão**:
+
+```bash
+cd functions && npm ci
+node scripts/backfill-search-index.js --collection=clients --limit=250
+```
+
+Confira a contagem do dry-run, faça backup e, se estiver aprovado, repita com `--apply`. `--limit` é o total máximo de documentos percorridos naquela execução (não apenas o tamanho da página); use o `--after=<nextAfter>` retornado para a próxima execução. `--all` percorre o restante da coleção e deve ser usado apenas após revisar o impacto de leituras e gravações. Repita para `leads` e `tarefas`. Não execute o backfill contra produção sem autorização operacional e janela apropriada.
+
+Publique `firestore:indexes` e as Cloud Functions antes de habilitar as novas consultas remotas. O deploy de regras/índices não é executado por este script.
+
+## Projeção configurável e calibração
+
+As premissas conservadora e otimista e as probabilidades padrão por etapa podem ser alteradas na seção **Ajustar premissas**. A configuração é guardada no `localStorage`, separada por UID do usuário neste navegador, e não altera automaticamente as probabilidades salvas nas propostas. Restaurar padrão remove apenas essa preferência local. A calibração usa todo o histórico disponível do vendedor/praça selecionados, sem depender da data de criação da proposta atualmente filtrada.
+
+Quando uma proposta muda para `Implantado`, `Vendido`, `Perdido` ou `Desistiu`, a gravação registra a probabilidade e o resultado no histórico. A tabela compara probabilidades com resultados fechados em faixas de 20 pontos. Faixas com menos de oito casos não recalibram as previsões; acima desse mínimo aplica-se suavização com peso prévio de cinco casos, ancorada na conversão geral observada. Registros antigos entram na calibração apenas se tiverem uma probabilidade explícita confiável no fechamento ou no campo atual.
 
 ## Login com Facebook e Microsoft
 

@@ -155,7 +155,35 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "nomeTitular",
+          "fieldPath": "searchNome",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "clients",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTelefone",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "clients",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchEmail",
           "order": "ASCENDING"
         }
       ]
@@ -169,7 +197,35 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "nomeTitular",
+          "fieldPath": "searchNome",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "clients",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizationId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTelefone",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "clients",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizationId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchEmail",
           "order": "ASCENDING"
         }
       ]
@@ -183,7 +239,35 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "nome",
+          "fieldPath": "searchNome",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTelefone",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchEmail",
           "order": "ASCENDING"
         }
       ]
@@ -197,7 +281,35 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "nome",
+          "fieldPath": "searchNome",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizationId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTelefone",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizationId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchEmail",
           "order": "ASCENDING"
         }
       ]
@@ -211,7 +323,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "titulo",
+          "fieldPath": "searchTitulo",
           "order": "ASCENDING"
         }
       ]
@@ -225,7 +337,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "titulo",
+          "fieldPath": "searchTitulo",
           "order": "ASCENDING"
         }
       ]

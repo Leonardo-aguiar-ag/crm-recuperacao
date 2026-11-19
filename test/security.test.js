@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { runInNewContext } from 'node:vm';
 
 const index = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const rules = await readFile(new URL('../firebase/firestore.rules', import.meta.url), 'utf8');
@@ -13,6 +14,31 @@ const botIdClient = await readFile(new URL('../botid-client.js', import.meta.url
 const styles = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
 const globalSearch = await readFile(new URL('../modules/crm-global-search.js', import.meta.url), 'utf8');
 const enhancements = await readFile(new URL('../modules/crm-enhancements.js', import.meta.url), 'utf8');
+const functionsSource = await readFile(new URL('../functions/index.js', import.meta.url), 'utf8');
+const backfillSource = await readFile(new URL('../functions/scripts/backfill-search-index.js', import.meta.url), 'utf8');
+
+function loadGlobalSearch() {
+  const window = {};
+  const document = { getElementById: () => null };
+  runInNewContext(globalSearch, { window, document, setTimeout: () => 0, clearTimeout() {} });
+  return window.crmGlobalSearch;
+}
+
+function loadEnhancements(storage = {}, clients = []) {
+  const window = {
+    currentUser: { uid: 'test-user' },
+    clients,
+    pessoas: [],
+    localStorage: {
+      getItem: key => storage[key] || null,
+      setItem: (key, value) => { storage[key] = value; },
+      removeItem: key => { delete storage[key]; }
+    }
+  };
+  const document = { readyState: 'loading', getElementById: () => null, addEventListener() {} };
+  runInNewContext(enhancements, { window, document });
+  return window.crmEnhancements;
+}
 
 test('configura Firebase App Check com reCAPTCHA v3 e renovação automática', () => {
   assert.match(index, /firebase-app-check-compat\.js/);
@@ -26,8 +52,12 @@ test('configura Firebase App Check com reCAPTCHA v3 e renovação automática', 
 test('busca global pontua e deduplica resultados locais e remotos com paginação por cursor', () => {
   assert.match(globalSearch, /let score = exact \? 100/);
   assert.match(globalSearch, /const key = `\$\{spec\.type\}:\$\{doc\.id\}`/);
-  assert.match(globalSearch, /query\.startAt\(term\)\.endAt\(`\$\{term\}\\uf8ff`\)\.limit\(PAGE_SIZE\)/);
-  assert.match(globalSearch, /query\.startAfter\(cursor\)/);
+  assert.match(globalSearch, /buildPrefixQuery/);
+  assert.match(globalSearch, /cursor \? query\.startAfter\(cursor\) : query\.startAt\(term\)/);
+  assert.match(globalSearch, /searchNome/);
+  assert.match(globalSearch, /searchTelefone/);
+  assert.match(globalSearch, /searchEmail/);
+  assert.match(globalSearch, /searchTitulo/);
   assert.match(globalSearch, /Carregar mais resultados/);
   assert.match(globalSearch, /Promise\.allSettled/);
   assert.match(globalSearch, /escapeHtml/);
@@ -45,8 +75,9 @@ test('busca global oferece teclado e semântica ARIA de combobox/listbox', () =>
 });
 
 test('projeção comercial exibe cenários, probabilidades, vidas, média mensal e metas', () => {
-  assert.match(enhancements, /probability \* 0\.75/);
-  assert.match(enhancements, /probability \+ \(100 - probability\) \* 0\.25/);
+  assert.match(enhancements, /conservativePercent/);
+  assert.match(enhancements, /optimisticUplift/);
+  assert.match(enhancements, /data-projection-stage/);
   assert.match(enhancements, /configuredProbability !== null && configuredProbability !== undefined/);
   assert.match(enhancements, /projectedLives/);
   assert.match(enhancements, /monthlyValue/);
@@ -55,12 +86,79 @@ test('projeção comercial exibe cenários, probabilidades, vidas, média mensal
   assert.match(enhancements, /Projeção comercial avançada/);
 });
 
+test('busca remota normaliza acentos, diferencia e-mail/telefone e pagina sem limites incompatíveis', () => {
+  const search = loadGlobalSearch();
+  assert.equal(search.classifyRemoteTerm('João de Sá'), 'nome');
+  assert.equal(search.normalizeRemoteTerm('João de Sá', 'nome'), 'joao de sa');
+  assert.equal(search.normalizeRemoteTerm('Ana  Maria', 'nome'), 'ana maria');
+  assert.equal(search.classifyRemoteTerm('(11) 98765-4321'), 'telefone');
+  assert.equal(search.normalizeRemoteTerm('(11) 98765-4321', 'telefone'), '11987654321');
+  assert.equal(search.classifyRemoteTerm('LEO@EXAMPLE.COM'), 'email');
+  assert.equal(search.normalizeRemoteTerm('LEO@EXAMPLE.COM', 'email'), 'leo@example.com');
+  const calls = [];
+  const query = {
+    startAfter(cursor) { calls.push(['startAfter', cursor]); return this; },
+    startAt(term) { calls.push(['startAt', term]); return this; },
+    endAt(term) { calls.push(['endAt', term]); return this; },
+    limit(size) { calls.push(['limit', size]); return this; }
+  };
+  const cursor = { id: 'last' };
+  search.buildPrefixQuery(query, 'joao', cursor);
+  assert.deepEqual(calls, [['startAfter', cursor], ['endAt', `joao\uf8ff`], ['limit', 8]]);
+});
+
+test('projeção usa configurações locais por usuário e recalibra apenas faixas com amostra suficiente', () => {
+  const storage = { 'crm-projection-settings:test-user': JSON.stringify({ conservativePercent: 50, optimisticUplift: 10, stageProbabilities: { Novo: 30 } }) };
+  const api = loadEnhancements(storage);
+  assert.equal(api.forecastFor({ status: 'Novo', probabilidadeFechamento: null }), 30);
+  assert.equal(api.forecastFor({ status: 'Vendido', probabilidadeFechamento: 15 }), 100);
+  assert.equal(api.forecastFor({ status: 'Perdido', probabilidadeFechamento: 65 }), 0);
+  const closed = Array.from({ length: 8 }, (_, index) => ({
+    status: index < 5 ? 'Vendido' : 'Perdido', probabilidadeFechamento: 65, valorComDesconto: 100,
+    historico: [{ acao: 'STATUS_DECISION', status: index < 5 ? 'Vendido' : 'Perdido', probabilidadeFechamento: 65 }]
+  }));
+  const open = { status: 'Em análise', probabilidadeFechamento: 65, valorComDesconto: 1000, qtdVidas: 10 };
+  const data = [...closed, open];
+  const calibration = api.buildProbabilityCalibration(data);
+  assert.equal(calibration.samples, 8);
+  assert.equal(calibration.buckets[3].count, 8);
+  assert.equal(api.calibratedProbability(65, calibration), 62.5);
+  assert.equal(api.calibratedForecastFor({ status: 'Vendido', probabilidadeFechamento: 65 }, calibration), 100);
+  assert.equal(api.calibratedForecastFor({ status: 'Perdido', probabilidadeFechamento: 65 }, calibration), 0);
+  const filters = { start: '2026-01-01', end: '2026-02-28' };
+  assert.equal(api.projectionFor([open], 'provável', filters, calibration).probability, 62.5);
+  assert.equal(api.projectionFor([open], 'conservador', filters, calibration).probability, 31.25);
+  assert.equal(api.projectionFor([open], 'otimista', filters, calibration).probability, 66.25);
+  const tooFew = api.buildProbabilityCalibration(closed.slice(0, 7));
+  assert.equal(api.calibratedProbability(65, tooFew), 65);
+  const oldClosures = closed.map(client => ({ ...client, data: '2020-02-01', praca: 'Sul', vendedorId: 'seller-1' }));
+  const historyApi = loadEnhancements({}, oldClosures);
+  assert.equal(historyApi.calibrationUniverse({ start: '2026-01-01', end: '2026-02-28', praca: 'Sul', vendedor: 'seller-1' }).length, 8);
+});
+
+test('funções e script administrativo preenchem chaves normalizadas sem executar backfill automaticamente', () => {
+  assert.match(functionsSource, /searchNome/);
+  assert.match(functionsSource, /searchTelefone/);
+  assert.match(functionsSource, /searchEmail/);
+  assert.match(functionsSource, /normalizarTarefa/);
+  assert.match(functionsSource, /before\.status!==after\.status/);
+  assert.match(functionsSource, /alreadyRecorded/);
+  assert.match(backfillSource, /--apply/);
+  assert.match(backfillSource, /--all/);
+  assert.match(backfillSource, /mode: options\.apply \? 'apply' : 'dry-run'/);
+  assert.match(backfillSource, /if \(options\.apply && pageChanges\) await batch\.commit\(\)/);
+  assert.doesNotMatch(backfillSource, /if\s*\(!options\.all\)\s*break/);
+  assert.match(index, /function crmStatusDecisionEvent/);
+  assert.match(index, /evento=crmStatusDecisionEvent\(existing,upd\.status/);
+  assert.match(index, /STATUS_DECISION/);
+});
+
 test('busca remota declara índices para vendedores e organizações nas três coleções', () => {
   const config = JSON.parse(indexes);
   for (const [collection, owner, field] of [
-    ['clients', 'userId', 'nomeTitular'], ['clients', 'organizationId', 'nomeTitular'],
-    ['leads', 'userId', 'nome'], ['leads', 'organizationId', 'nome'],
-    ['tarefas', 'userId', 'titulo'], ['tarefas', 'organizationId', 'titulo']
+    ...['userId', 'organizationId'].flatMap(owner => ['searchNome', 'searchTelefone', 'searchEmail'].map(field => ['clients', owner, field])),
+    ...['userId', 'organizationId'].flatMap(owner => ['searchNome', 'searchTelefone', 'searchEmail'].map(field => ['leads', owner, field])),
+    ['tarefas', 'userId', 'searchTitulo'], ['tarefas', 'organizationId', 'searchTitulo']
   ]) {
     assert.ok(config.indexes.some(item => item.collectionGroup === collection
       && item.fields.some(value => value.fieldPath === owner)

@@ -21,7 +21,7 @@
   };
 
   const normalize = value => String(value == null ? '' : value)
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR').trim();
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR').trim().replace(/\s+/g, ' ');
   const escapeHtml = value => String(value == null ? '' : value).replace(/[&<>"']/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[char]));
@@ -172,6 +172,23 @@
     return candidates;
   }
 
+  function remoteSearchMode(term) {
+    const value = String(term || '').trim();
+    if (value.includes('@')) return 'email';
+    if (/^\+?[\d\s().-]+$/.test(value) && digits(value).length >= 4) return 'telefone';
+    return 'nome';
+  }
+
+  function normalizedRemoteTerm(term, mode) {
+    if (mode === 'telefone') return digits(term);
+    return normalize(term);
+  }
+
+  function buildPrefixQuery(query, term, cursor) {
+    const pageQuery = cursor ? query.startAfter(cursor) : query.startAt(term);
+    return pageQuery.endAt(`${term}\uf8ff`).limit(PAGE_SIZE);
+  }
+
   function queryFor(collection, field, term) {
     const db = window.db;
     const user = window.currentUser;
@@ -183,17 +200,19 @@
       query = query.where('organizationId', '==', organizationId);
     }
     query = query.orderBy(field);
-    const cursor = state.cursors.get(collection);
-    if (cursor) query = query.startAfter(cursor);
-    return query.startAt(term).endAt(`${term}\uf8ff`).limit(PAGE_SIZE);
+    query = buildPrefixQuery(query, term, state.cursors.get(collection));
+    return query;
   }
 
-  function remoteSpecs() {
-    return [
-      { collection: 'clients', field: 'nomeTitular', type: 'Proposta/Cliente', icon: 'bi-person-badge', color: 'primary', title: data => data.nomeTitular || 'Cliente', subtitle: data => textValues([data.numeroProposta, data.telefoneTitular, data.status]).join(' · '), open: item => window.editarCliente?.(item.id) },
-      { collection: 'leads', field: 'nome', type: 'Lead', icon: 'bi-funnel', color: 'info', title: data => data.nome || 'Lead', subtitle: data => textValues([data.telefone, data.email, data.status]).join(' · '), open: item => window.editarLead?.(item.id) },
-      { collection: 'tarefas', field: 'titulo', type: 'Tarefa', icon: 'bi-check2-square', color: 'warning', title: data => data.titulo || 'Tarefa', subtitle: data => textValues([data.leadNome, data.data, data.status]).join(' · '), open: item => window.editarTarefa?.(item.id) }
+  function remoteSpecs(term) {
+    const mode = remoteSearchMode(term);
+    const field = mode === 'telefone' ? 'searchTelefone' : mode === 'email' ? 'searchEmail' : 'searchNome';
+    const specs = [
+      { collection: 'clients', field, mode, type: 'Proposta/Cliente', icon: 'bi-person-badge', color: 'primary', title: data => data.nomeTitular || 'Cliente', subtitle: data => textValues([data.numeroProposta, data.telefoneTitular, data.status]).join(' · '), open: item => window.editarCliente?.(item.id) },
+      { collection: 'leads', field, mode, type: 'Lead', icon: 'bi-funnel', color: 'info', title: data => data.nome || 'Lead', subtitle: data => textValues([data.telefone, data.email, data.status]).join(' · '), open: item => window.editarLead?.(item.id) }
     ];
+    if (mode === 'nome') specs.push({ collection: 'tarefas', field: 'searchTitulo', mode, type: 'Tarefa', icon: 'bi-check2-square', color: 'warning', title: data => data.titulo || 'Tarefa', subtitle: data => textValues([data.leadNome, data.data, data.status]).join(' · '), open: item => window.editarTarefa?.(item.id) });
+    return specs;
   }
 
   async function loadRemotePage(term, sequence) {
@@ -201,9 +220,10 @@
     state.loading = true;
     state.remoteFailed = false;
     render();
-    const specs = remoteSpecs();
+    const specs = remoteSpecs(term);
     const outcomes = await Promise.allSettled(specs.map(async spec => {
-      const query = queryFor(spec.collection, spec.field, term);
+      const queryTerm = normalizedRemoteTerm(term, spec.mode);
+      const query = queryFor(spec.collection, spec.field, queryTerm);
       if (!query) return { spec, docs: [] };
       const snapshot = await query.get();
       return { spec, docs: snapshot.docs, hasMore: snapshot.size === PAGE_SIZE,
@@ -222,18 +242,15 @@
       if (cursor) state.cursors.set(spec.collection, cursor);
       docs.forEach(doc => {
         const data = doc.data();
-        const fields = textValues(Object.values(data).filter(value => typeof value === 'string'));
-        const queryTerms = normalize(term).split(/\s+/).filter(Boolean);
-        if (!queryTerms.every(part => fields.map(normalize).join(' ').includes(part))) return;
-        const normalizedTerm = normalize(term);
-        const searchable = fields.map(normalize);
-        const exact = searchable.some(value => value === normalizedTerm);
-        const starts = searchable.some(value => value.startsWith(normalizedTerm));
+        const normalizedTerm = normalizedRemoteTerm(term, spec.mode);
+        const searchable = String(data[spec.field] || '');
+        if (!searchable.startsWith(normalizedTerm)) return;
+        const exact = searchable === normalizedTerm;
         const key = `${spec.type}:${doc.id}`;
         const candidate = {
           key, type: spec.type, icon: spec.icon, color: spec.color,
           title: spec.title(data), subtitle: spec.subtitle(data),
-          score: (exact ? 100 : starts ? 82 : 45) + 4,
+          score: exact ? 100 : 82,
           open: () => spec.open({ id: doc.id, ...data })
         };
         const existing = state.results.findIndex(result => result.key === key);
@@ -379,6 +396,9 @@
     search,
     close,
     getResults: () => state.results.map(({ key, type, title, subtitle, score }) => ({ key, type, title, subtitle, score })),
-    loadMore
+    loadMore,
+    classifyRemoteTerm: remoteSearchMode,
+    normalizeRemoteTerm: normalizedRemoteTerm,
+    buildPrefixQuery
   };
 })(window, document);

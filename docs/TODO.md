@@ -51,10 +51,15 @@
 
 ## Fase 10 — Busca global avançada — concluída
 - A busca global deve oferecer ranking por relevância, busca remota no Firestore, deduplicação de resultados, paginação por cursor, atalhos, navegação por teclado e acessibilidade ARIA.
+- As buscas remotas devem usar campos normalizados específicos para nome, telefone, e-mail e título, com escopo por vendedor/organização e limites corretos de prefixo/cursor.
+- Cloud Functions atualizam chaves em novas escritas; backfill de registros legados é paginado e somente leitura por padrão.
 
 ## Fase 11 — Projeção comercial avançada — concluída
 - A projeção deve exibir cenários conservador, provável e otimista.
 - Deve exibir propostas abertas, propostas implantadas, vidas projetadas, probabilidade de fechamento, média mensal e comparação com metas.
+- Premissas por cenário e probabilidades por etapa são configuráveis e locais por usuário/navegador.
+- A previsão usa resultados reais encerrados com probabilidade capturada na mudança de status, sem aplicar correção estatística antes da amostra mínima.
+- A calibração usa o histórico disponível do vendedor/praça selecionados, sem restringir pela data de criação da proposta; estados terminais continuam 100% para sucesso e 0% para perda.
 
 ## Fase 12 — App Check em produção — implementação preparada; configuração externa pendente
 - Configurar reCAPTCHA v3.

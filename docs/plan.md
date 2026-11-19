@@ -13,8 +13,8 @@ A aplicação atual é um frontend estático concentrado em `index.html`, com Fi
 5. Adicionar exportações CSV compatíveis com Excel e relatórios PDF imprimíveis, sem introduzir dependência pesada no frontend.
 6. Mover backup agendado e limpeza/recuperação crítica para Cloud Functions quando possível; manter exportação manual no frontend.
 7. Validar sintaxe, regras, funções e integração entre módulos antes de cada publicação.
-8. Manter a busca global em módulo próprio: combinar ranking local e consultas remotas por prefixo com limite, escopo por tenant, cursores e resultados deduplicados; fornecer navegação ARIA/teclado sem substituir o carregamento legado.
-9. Projetar os cenários comerciais a partir dos campos de probabilidade atuais e das etapas do pipeline, exibir as premissas e comparar métricas mensais com as metas existentes. App Check usa a chave reCAPTCHA pública do app Web e requer confirmar domínio e métricas válidas antes do enforcement de produção.
+8. Manter a busca global em módulo próprio: combinar ranking local e consultas remotas por prefixo normalizado (nome, telefone, e-mail ou título), com consulta limitada, escopo por tenant, cursor composto com o limite superior do prefixo, deduplicação e backfill administrativo paginado; fornecer navegação ARIA/teclado sem substituir o carregamento legado.
+9. Projetar os cenários comerciais com premissas editáveis e específicas do usuário, e comparar métricas mensais com metas. Calibrar probabilidades com snapshots capturados no fechamento e resultados reais por faixa (todo o histórico disponível do vendedor/praça, independente da data de criação), sem alterar propostas; exigir amostra mínima antes de corrigir previsões e preservar estados terminais em 100%/0%. App Check usa a chave reCAPTCHA pública do app Web e requer confirmar domínio e métricas válidas antes do enforcement de produção.
 
 ## Design e experiência
 - **Alternativas consideradas:** painel operacional de alta densidade (0,06), cockpit executivo com cartões compactos (0,08), fluxo assistido por próximas ações (0,07).

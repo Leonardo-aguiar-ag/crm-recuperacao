@@ -11,6 +11,45 @@
   const valueOf = client => typeof window._getValorEfetivo === 'function' ? Number(window._getValorEfetivo(client) || 0) : Number(client?.valorComDesconto || 0);
   const today = () => new Date().toISOString().slice(0, 10);
   const monthKey = date => String(date || '').slice(0, 7);
+  const DEFAULT_STAGE_PROBABILITIES = Object.freeze({ 'Novo': 10, 'Em contato': 25, 'Proposta enviada': 45, 'Em análise': 60, 'Documentação pendente': 75, 'Em Cadência': 30, 'Outras etapas': 20 });
+  const safePercent = (value, fallback) => value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value)) ? Math.max(0, Math.min(100, Number(value))) : fallback;
+  const projectionStorageKey = () => `crm-projection-settings:${window.currentUser?.uid || 'anon'}`;
+  function projectionSettings() {
+    const defaults = { conservativePercent: 75, optimisticUplift: 25, stageProbabilities: { ...DEFAULT_STAGE_PROBABILITIES } };
+    try {
+      const saved = JSON.parse(window.localStorage?.getItem(projectionStorageKey()) || '{}');
+      defaults.conservativePercent = safePercent(saved.conservativePercent, defaults.conservativePercent);
+      defaults.optimisticUplift = safePercent(saved.optimisticUplift, defaults.optimisticUplift);
+      Object.keys(defaults.stageProbabilities).forEach(stage => {
+        defaults.stageProbabilities[stage] = safePercent(saved.stageProbabilities?.[stage], defaults.stageProbabilities[stage]);
+      });
+    } catch (_) {}
+    return defaults;
+  }
+  function saveProjectionSettings() {
+    const card = document.getElementById('crmProjecaoAvancada');
+    if (!card) return;
+    const settings = projectionSettings();
+    const conservative = card.querySelector('#crmProjectionConservative');
+    const optimistic = card.querySelector('#crmProjectionOptimistic');
+    if (conservative) settings.conservativePercent = safePercent(conservative.value, settings.conservativePercent);
+    if (optimistic) settings.optimisticUplift = safePercent(optimistic.value, settings.optimisticUplift);
+    card.querySelectorAll('[data-projection-stage]').forEach(input => {
+      settings.stageProbabilities[input.dataset.projectionStage] = safePercent(input.value, settings.stageProbabilities[input.dataset.projectionStage] ?? 20);
+    });
+    try {
+      window.localStorage?.setItem(projectionStorageKey(), JSON.stringify(settings));
+      window.showToast?.('Premissas de projeção salvas neste navegador.', 'success');
+      refreshEnhancements();
+    } catch (_) {
+      window.showToast?.('Não foi possível salvar as premissas neste navegador.', 'warning');
+    }
+  }
+  function resetProjectionSettings() {
+    try { window.localStorage?.removeItem(projectionStorageKey()); } catch (_) {}
+    window.showToast?.('Premissas padrão restauradas.', 'info');
+    refreshEnhancements();
+  }
   const selectedPeriod = () => {
     const period = document.getElementById('anPeriodo')?.value || '90';
     let start = document.getElementById('anDataInicio')?.value || '';
@@ -143,12 +182,65 @@
   }
 
   function forecastFor(client) {
+    if (client?.status === 'Implantado' || client?.status === 'Vendido') return 100;
+    if (client?.status === 'Perdido' || client?.status === 'Desistiu') return 0;
     const configuredProbability = client?.probabilidadeFechamento;
     if (configuredProbability !== null && configuredProbability !== undefined && configuredProbability !== '' && Number.isFinite(Number(configuredProbability))) return Math.max(0, Math.min(100, Number(configuredProbability)));
-    return ({'Novo': 10, 'Em contato': 25, 'Proposta enviada': 45, 'Em análise': 60, 'Documentação pendente': 75, 'Em Cadência': 30, 'Implantado': 100, 'Vendido': 100, 'Perdido': 0, 'Desistiu': 0}[client.status] ?? 20);
+    const settings = projectionSettings();
+    return settings.stageProbabilities[client?.status] ?? settings.stageProbabilities['Outras etapas'] ?? 20;
   }
 
-  function projectionFor(data, scenario, filters = getFilters()) {
+  function buildProbabilityCalibration(data) {
+    const wonStatuses = new Set(['Implantado', 'Vendido']);
+    const lostStatuses = new Set(['Perdido', 'Desistiu']);
+    const samples = [];
+    for (const client of data || []) {
+      if (!wonStatuses.has(client.status) && !lostStatuses.has(client.status)) continue;
+      const snapshots = Array.isArray(client.historico) ? client.historico : [];
+      const terminalSnapshot = [...snapshots].reverse().find(item => item?.acao === 'STATUS_DECISION'
+        && (wonStatuses.has(item.status) || lostStatuses.has(item.status)));
+      const rawProbability = terminalSnapshot ? terminalSnapshot.probabilidadeFechamento : client.probabilidadeFechamento;
+      if (rawProbability === null || rawProbability === undefined || rawProbability === '' || !Number.isFinite(Number(rawProbability))) continue;
+      const predicted = Math.max(0, Math.min(100, Number(rawProbability)));
+      samples.push({ predicted, won: wonStatuses.has(client.status) });
+    }
+    const buckets = Array.from({ length: 5 }, (_, index) => ({ min: index * 20, max: index === 4 ? 100 : index * 20 + 19, count: 0, wins: 0, predictedTotal: 0 }));
+    samples.forEach(sample => {
+      const index = Math.min(4, Math.floor(sample.predicted / 20));
+      buckets[index].count++;
+      buckets[index].wins += sample.won ? 1 : 0;
+      buckets[index].predictedTotal += sample.predicted;
+    });
+    const totalWins = samples.reduce((sum, sample) => sum + (sample.won ? 1 : 0), 0);
+    return { samples: samples.length, globalRate: samples.length ? totalWins / samples.length : 0, buckets };
+  }
+
+  function calibrationUniverse(filters) {
+    return (window.clients || []).filter(client => {
+      if (filters.praca && client.praca !== filters.praca) return false;
+      if (filters.vendedor) {
+        const person = (window.pessoas || []).find(item => item.id === filters.vendedor);
+        if (client.vendedorId !== filters.vendedor && client.codigo !== person?.codigo) return false;
+      }
+      return true;
+    });
+  }
+
+  function calibratedProbability(probability, calibration) {
+    const raw = Math.max(0, Math.min(100, Number(probability) || 0));
+    const bucket = calibration?.buckets?.[Math.min(4, Math.floor(raw / 20))];
+    if (!bucket || bucket.count < 8 || !calibration.samples) return raw;
+    const priorWeight = 5;
+    return (bucket.wins + calibration.globalRate * priorWeight) / (bucket.count + priorWeight) * 100;
+  }
+
+  function calibratedForecastFor(client, calibration) {
+    if (client?.status === 'Implantado' || client?.status === 'Vendido') return 100;
+    if (client?.status === 'Perdido' || client?.status === 'Desistiu') return 0;
+    return calibratedProbability(forecastFor(client), calibration);
+  }
+
+  function projectionFor(data, scenario, filters = getFilters(), calibration = buildProbabilityCalibration(calibrationUniverse(filters))) {
     const closedStatuses = new Set(['Implantado', 'Vendido', 'Perdido', 'Desistiu']);
     const closed = data.filter(client => ['Implantado', 'Vendido'].includes(client.status));
     const deployed = data.filter(client => client.status === 'Implantado');
@@ -156,11 +248,12 @@
     const monthStart = filters.start ? new Date(`${filters.start}T12:00:00`) : new Date();
     const monthEnd = filters.end ? new Date(`${filters.end}T12:00:00`) : new Date();
     const months = Math.max(1, (monthEnd.getFullYear() - monthStart.getFullYear()) * 12 + monthEnd.getMonth() - monthStart.getMonth() + 1);
+    const settings = projectionSettings();
     const probabilityFor = client => {
-      const probability = forecastFor(client);
-      if (scenario === 'conservador') return probability * 0.75;
-      if (scenario === 'otimista') return probability + (100 - probability) * 0.25;
-      return probability;
+      const calibrated = calibratedProbability(forecastFor(client), calibration);
+      if (scenario === 'conservador') return calibrated * settings.conservativePercent / 100;
+      if (scenario === 'otimista') return calibrated + (100 - calibrated) * settings.optimisticUplift / 100;
+      return calibrated;
     };
     const weightedOpenValue = open.reduce((sum, client) => sum + valueOf(client) * probabilityFor(client) / 100, 0);
     const weightedOpenLives = open.reduce((sum, client) => sum + Math.max(0, Number(client.qtdVidas) || 0) * probabilityFor(client) / 100, 0);
@@ -192,10 +285,18 @@
     if (!document.getElementById('analisesTab')) return;
     const filters = getFilters();
     const data = filters.valid ? filteredClients() : [];
-    const scenarios = ['conservador', 'provável', 'otimista'].map(name => projectionFor(data, name, filters));
+    const settings = projectionSettings();
+    const calibration = buildProbabilityCalibration(calibrationUniverse(filters));
+    const scenarios = ['conservador', 'provável', 'otimista'].map(name => projectionFor(data, name, filters, calibration));
     const body = scenarios.map(result => `<tr><th scope="row" class="text-capitalize">${esc(result.name)}</th><td>${result.openCount}</td><td>${result.deployedCount}<span class="text-muted small"> · ${Math.round(result.deployedLives)} vidas</span></td><td>${Math.round(result.projectedLives)}</td><td>${result.probability.toFixed(1)}%</td><td><strong>${money(result.monthlyValue)}</strong></td><td>${result.valueGoalProgress === null ? 'Meta não definida' : `${result.valueGoalProgress.toFixed(0)}%`}</td><td>${result.proposalGoalProgress === null ? 'Meta não definida' : `${result.proposalGoalProgress.toFixed(0)}%`}</td></tr>`).join('');
+    const stageInputs = Object.entries(settings.stageProbabilities).map(([stage, probability]) => `<div class="col-6 col-md-3"><label class="form-label small" for="crmProjectionStage${esc(stage)}">${esc(stage)} (%)</label><input class="form-control form-control-sm" type="number" min="0" max="100" step="1" id="crmProjectionStage${esc(stage)}" data-projection-stage="${esc(stage)}" value="${probability}"></div>`).join('');
+    const bucketRows = calibration.buckets.map(bucket => `<tr><th scope="row">${bucket.min}–${bucket.max}%</th><td>${bucket.count}</td><td>${bucket.count ? `${(bucket.predictedTotal / bucket.count).toFixed(1)}%` : '—'}</td><td>${bucket.count ? `${(bucket.wins / bucket.count * 100).toFixed(1)}%` : '—'}</td><td>${bucket.count >= 8 ? 'Aplicada' : 'Amostra insuficiente'}</td></tr>`).join('');
     const period = filters.valid ? `${esc(filters.start || '—')} a ${esc(filters.end || today())}` : 'Intervalo personalizado inválido';
-    installCard('crmProjecaoAvancada', 'Projeção comercial avançada', `<p class="small text-muted">Período: ${period}. Média mensal calculada sobre os meses do período e comparada às metas mensais cadastradas. Probabilidades: conservador = 75% da probabilidade atual; provável = probabilidade informada ou estimada pela etapa; otimista = probabilidade atual mais 25% do espaço até 100%.</p><div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th scope="col">Cenário</th><th scope="col">Propostas abertas</th><th scope="col">Implantadas</th><th scope="col">Vidas projetadas</th><th scope="col">Prob. média ponderada</th><th scope="col">Média mensal</th><th scope="col">Meta R$</th><th scope="col">Meta propostas</th></tr></thead><tbody>${body}</tbody></table></div>`);
+    const note = calibration.samples ? `${calibration.samples} fechamento(s) históricos com probabilidade registrada (vendedor/praça selecionados; sem restringir pela data da proposta). A calibração é aplicada por faixa somente a partir de 8 casos; usa suavização com a taxa geral para reduzir oscilações.` : 'Sem histórico suficiente com probabilidade registrada no fechamento; projeções usam as premissas editáveis por etapa.';
+    const html = `<p class="small text-muted">Período: ${period}. Média mensal comparada às metas mensais. ${note}</p><details class="mb-3"><summary class="fw-semibold">Ajustar premissas e probabilidades por etapa</summary><div class="row g-2 mt-1"><div class="col-6 col-md-3"><label class="form-label small" for="crmProjectionConservative">Conservador: % da probabilidade calibrada</label><input class="form-control form-control-sm" type="number" min="0" max="100" step="1" id="crmProjectionConservative" value="${settings.conservativePercent}"></div><div class="col-6 col-md-3"><label class="form-label small" for="crmProjectionOptimistic">Otimista: % do espaço até 100%</label><input class="form-control form-control-sm" type="number" min="0" max="100" step="1" id="crmProjectionOptimistic" value="${settings.optimisticUplift}"></div>${stageInputs}<div class="col-12 d-flex flex-wrap gap-2"><button type="button" class="btn btn-sm btn-primary" id="crmProjectionSave">Salvar premissas</button><button type="button" class="btn btn-sm btn-outline-secondary" id="crmProjectionReset">Restaurar padrão</button><span class="small text-muted align-self-center">Configuração local deste usuário e navegador.</span></div></div></details><div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th scope="col">Cenário</th><th scope="col">Propostas abertas</th><th scope="col">Implantadas</th><th scope="col">Vidas projetadas</th><th scope="col">Prob. ponderada</th><th scope="col">Média mensal</th><th scope="col">Meta R$</th><th scope="col">Meta propostas</th></tr></thead><tbody>${body}</tbody></table></div><details><summary class="fw-semibold">Calibração com fechamentos reais (${calibration.samples})</summary><div class="table-responsive mt-2"><table class="table table-sm"><thead><tr><th scope="col">Probabilidade prevista</th><th scope="col">Casos</th><th scope="col">Média prevista</th><th scope="col">Fechamento real</th><th scope="col">Uso</th></tr></thead><tbody>${bucketRows}</tbody></table><p class="small text-muted mb-0">Amostra usa todos os fechamentos disponíveis para vendedor/praça selecionados, independentemente da data da proposta. Considera apenas probabilidade explícita no último evento de fechamento ou no campo atual. Implantado/Vendido contam como sucesso; Perdido/Desistiu como não conversão.</p></div></details>`;
+    installCard('crmProjecaoAvancada', 'Projeção comercial avançada', html);
+    document.getElementById('crmProjectionSave')?.addEventListener('click', saveProjectionSettings);
+    document.getElementById('crmProjectionReset')?.addEventListener('click', resetProjectionSettings);
   }
 
   function enhancePipeline() {
@@ -206,9 +307,10 @@
       const container = document.getElementById('pipelinePropostasContainer');
       if (!container) return;
       const rows = {};
-      (window.clients || []).forEach(c => { const key = c.status || 'Sem status'; rows[key] ||= { count: 0, value: 0, forecast: 0 }; rows[key].count++; rows[key].value += valueOf(c); rows[key].forecast += valueOf(c) * forecastFor(c) / 100; });
+      const calibration = buildProbabilityCalibration(window.clients || []);
+      (window.clients || []).forEach(c => { const key = c.status || 'Sem status'; rows[key] ||= { count: 0, value: 0, forecast: 0 }; rows[key].count++; rows[key].value += valueOf(c); rows[key].forecast += valueOf(c) * calibratedForecastFor(c, calibration) / 100; });
       container.querySelectorAll('.pipeline-column').forEach(col => { const status = col.querySelector('h6')?.textContent?.trim(); const x = rows[status]; if (!x || col.querySelector('.crm-forecast')) return; const details = document.createElement('div'); details.className = 'crm-forecast small text-muted px-2 pb-2'; details.innerHTML = `${x.count} proposta(s) · ${money(x.value)}<br><strong>Previsão: ${money(x.forecast)}</strong>`; col.querySelector('.pipeline-column-header')?.after(details); });
-      const total = Object.values(rows).reduce((a, x) => a + x.forecast, 0); let summary = document.getElementById('crmForecastSummary'); if (!summary) { summary = document.createElement('div'); summary.id = 'crmForecastSummary'; summary.className = 'alert alert-info py-2 mb-3'; container.parentNode?.insertBefore(summary, container); } summary.innerHTML = `<strong>Previsão ponderada do pipeline:</strong> ${money(total)} <span class="small">(baseada na etapa e na probabilidade individual)</span>`;
+      const total = Object.values(rows).reduce((a, x) => a + x.forecast, 0); let summary = document.getElementById('crmForecastSummary'); if (!summary) { summary = document.createElement('div'); summary.id = 'crmForecastSummary'; summary.className = 'alert alert-info py-2 mb-3'; container.parentNode?.insertBefore(summary, container); } summary.innerHTML = `<strong>Previsão ponderada do pipeline:</strong> ${money(total)} <span class="small">(probabilidades calibradas com ${calibration.samples} fechamento(s) explícitos; faixas com menos de 8 casos mantêm a probabilidade original)</span>`;
     };
     wrapped.__crmEnhanced = true;
     window.renderPipelinePropostas = wrapped;
@@ -244,7 +346,7 @@
     if (typeof window.initPivotTable === 'function' && !window.initPivotTable.__crmEnhanced) { window.initPivotTable = function () { renderFilteredPivot(); }; window.initPivotTable.__crmEnhanced = true; }
   }
 
-  window.crmEnhancements = { getFilters, filteredClients, filteredLeads, refresh: refreshEnhancements, exportExcel, exportPdf, forecastFor, projectionFor };
+  window.crmEnhancements = { getFilters, filteredClients, refresh: refreshEnhancements, exportExcel, exportPdf, forecastFor, projectionFor, buildProbabilityCalibration, calibrationUniverse, calibratedProbability, calibratedForecastFor, projectionSettings };
   const originalSwitch = window.switchTab;
   if (typeof originalSwitch === 'function' && !originalSwitch.__crmEnhanced) { window.switchTab = function (id) { const result = originalSwitch.apply(this, arguments); if (id === 'analisesTab') setTimeout(refreshEnhancements, 80); if (id === 'dashboardTab') setTimeout(renderPostSaleAndFinance, 80); return result; }; window.switchTab.__crmEnhanced = true; }
   const originalRenderAnalysis = window.renderAnalises;
