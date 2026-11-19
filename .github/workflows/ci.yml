@@ -29,6 +29,9 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Run Firebase Emulator security tests
+        run: npm run test:emulator
+
       - name: Validate JavaScript syntax
         run: npm run lint
 

@@ -1,5 +1,10 @@
 # Entregas da evolução do CRM
 
+## Fase 5 — Testes reais do Firebase Emulator — concluída
+- A suíte `test/emulator-security.test.js` executa Firestore e Storage Emulator de verdade.
+- São verificados App Check obrigatório, isolamento entre organizações, tenant imutável, auditoria append-only e rejeição de uploads com metadata ou tipo inválidos.
+- O workflow do GitHub Actions executa `npm run test:emulator` junto com os testes unitários.
+
 ## 1. Padronizar filtros da aba Análises
 - Ao selecionar período relativo ou intervalo personalizado, todas as métricas, gráficos, tabelas, pivot, comissões, fluxo de caixa, metas e origem devem usar o mesmo conjunto filtrado.
 - O intervalo personalizado deve exigir data inicial e final, aceitar as duas extremidades e bloquear ordem inválida.

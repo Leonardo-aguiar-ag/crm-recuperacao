@@ -140,8 +140,8 @@ service cloud.firestore {
       allow create: if safeAudit();
       allow read: if verifiedApp() && signedIn() && (resource.data.userId == uid()
         || (isManager() && resource.data.organizationId == organizationId()));
-      allow update, delete: if verifiedApp() && isAdmin()
-        && resource.data.organizationId == organizationId();
+      // Eventos de auditoria são append-only; nem administradores podem alterá-los.
+      allow update, delete: if false;
     }
 
     match /notificacoes/{id} {

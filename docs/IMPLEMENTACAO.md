@@ -22,6 +22,7 @@
 - Regras do Firestore exigindo o claim de segundo fator para operações administrativas.
 - Inicialização do Firebase App Check com reCAPTCHA v3 e renovação automática de token.
 - Workflow GitHub Actions em `.github/workflows/ci.yml` executando testes, validação de sintaxe e validação das Functions.
+- Suíte de segurança executada no Firestore e Storage Emulator, cobrindo App Check obrigatório, isolamento entre organizações, tenant imutável, auditoria append-only e bloqueio de uploads inválidos.
 
 ## Implantação
 
@@ -52,6 +53,16 @@ firebase deploy --only functions
 ```bash
 firebase deploy --only hosting
 ```
+
+### Testes reais do Firebase Emulator
+
+Execute localmente com Java instalado:
+
+```bash
+npm run test:emulator
+```
+
+O comando inicia Firestore e Storage Emulator, executa `test/emulator-security.test.js` e encerra os serviços ao final. A biblioteca oficial de testes não injeta um App Check positivo no Emulator; por isso a suíte valida diretamente que toda requisição sem App Check é rejeitada e executa os demais cenários de negação contra os emuladores reais. A aceitação de tokens App Check deve ser verificada após o deploy, no ambiente Firebase com reCAPTCHA v3 configurado.
 
 ## MFA de administradores
 

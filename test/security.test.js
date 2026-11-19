@@ -60,6 +60,7 @@ test('regras exigem App Check e isolam dados por organização', () => {
   assert.match(rules, /data\.organizationId == organizationId\(\)/);
   assert.match(rules, /preservesTenant\(existing, incoming\)/);
   assert.doesNotMatch(rules, /allow read: if isManager\(\);/);
+  assert.match(rules, /allow update, delete: if false;/);
 });
 
 test('Storage valida tenant, conteúdo e tamanho dos anexos', () => {
@@ -125,6 +126,7 @@ test('índice de inatividade cobre status e updatedAt dos clientes', () => {
 
 test('CI executa testes, lint e valida Functions', () => {
   assert.match(workflow, /npm test/);
+  assert.match(workflow, /npm run test:emulator/);
   assert.match(workflow, /npm run lint/);
   assert.match(workflow, /node --check index\.js/);
 });
