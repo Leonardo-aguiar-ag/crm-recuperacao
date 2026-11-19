@@ -370,11 +370,13 @@
           <div class="pagination-bar">
             <span id="clientCountInfo" class="text-muted small"></span>
             <div class="pagination-controls">
-              <button id="btnClientPrev" onclick="mudarPaginaCliente(-1)" disabled><i class="bi bi-chevron-left"></i></button>
+              <button id="btnClientPrev" onclick="mudarPaginaCliente(-1)" disabled aria-label="Página anterior"><i class="bi bi-chevron-left"></i></button>
               <span id="clientPaginaInfo" class="mx-2 small fw-bold">Página 1</span>
-              <button id="btnClientNext" onclick="mudarPaginaCliente(1)"><i class="bi bi-chevron-right"></i></button>
+              <button id="btnClientNext" onclick="mudarPaginaCliente(1)" aria-label="Próxima página"><i class="bi bi-chevron-right"></i></button>
             </div>
           </div>
+          <div id="clientTableStatus" class="small text-muted mt-2" role="status" aria-live="polite"></div>
+          <div id="clientTableError" class="alert alert-danger d-none mt-2 mb-0" role="alert"><span>Não foi possível carregar esta página de clientes.</span><button class="btn btn-sm btn-outline-danger ms-2" onclick="retryPaginaClientes()">Tentar novamente</button></div>
         </div>
         <div id="pesqPipelineView" style="display:none;"><div class="pipeline-container" id="pipelinePropostasContainer"></div></div>
       </div>
@@ -755,6 +757,7 @@ try {
 }
 
 let notificationTimer=null, currentUser=null, currentProfile=null, userRole='vendedor', clients=[],tarefas=[],leadsData=[],pessoas=[],dependentesTemp=[],pagamentosTemp=[],anexosTemp=[],interacoesTemp=[],statuses=[],leadStatuses=[],pracas=[],administradoras=[],acomodacoes=[],coparticipacoes=[],modalidades=[],fontesVenda=[],charts={},calendarioMesTarefa=new Date().getMonth(),calendarioAnoTarefa=new Date().getFullYear(),diaSelecionadoTarefa=new Date().toISOString().split('T')[0],selectedIds=new Set(),sortColumn='numeroProposta',sortDir='asc',paginaLead=1,leadsPorPagina=10,leadView='lista',isLoading=false,backupIntervalId=null,backupRunning=false,lastBackupTime=null,nextBackupTime=null,filtrosSalvos=[],tarefaView='lista',mapaBrasilInstance=null,notificacoesCache=[],buscaGlobalTimeout=null,paginaClientes=1,clientesPorPagina=25,paginaTarefas=1,tarefasPorPagina=20;
+const clientesPaginacao={cursorStack:[],currentDocs:[],nextCursor:null,hasMore:false,loading:false,error:null,queryKey:''};
 const AUTOSAVE_KEY='rascunhoFichaCliente';let autosaveInterval=null;
 Object.defineProperties(window,{db:{configurable:true,get:()=>db},currentProfile:{configurable:true,get:()=>currentProfile},storage:{configurable:true,get:()=>storage},auth:{configurable:true,get:()=>auth},currentUser:{configurable:true,get:()=>currentUser},userRole:{configurable:true,get:()=>userRole},clients:{configurable:true,get:()=>clients},tarefas:{configurable:true,get:()=>tarefas},leadsData:{configurable:true,get:()=>leadsData},pessoas:{configurable:true,get:()=>pessoas},statuses:{configurable:true,get:()=>statuses},pracas:{configurable:true,get:()=>pracas},administradoras:{configurable:true,get:()=>administradoras},acomodacoes:{configurable:true,get:()=>acomodacoes},coparticipacoes:{configurable:true,get:()=>coparticipacoes},modalidades:{configurable:true,get:()=>modalidades},fontesVenda:{configurable:true,get:()=>fontesVenda},charts:{configurable:true,get:()=>charts},notificacoesCache:{configurable:true,get:()=>notificacoesCache}});
 /* ===== HELPERS GLOBAIS ===== */
@@ -881,7 +884,7 @@ async function confirmarMfaAdmin() {
 }
 auth.onAuthStateChanged(async user=>{
   if(user){
-    currentUser=user;currentProfile=null;document.getElementById('loginScreen').style.display='none';
+    currentUser=user;currentProfile=null;clientesPaginacao.cursorStack=[];clientesPaginacao.currentDocs=[];clientesPaginacao.nextCursor=null;clientesPaginacao.hasMore=false;clientesPaginacao.queryKey='';document.getElementById('loginScreen').style.display='none';
     try{
       const doc=await db.collection('usuarios').doc(user.uid).get();
       const d=doc.exists?doc.data():{};
@@ -1068,12 +1071,41 @@ function filtrarLeadsPorSla(dias){switchTab('leadsTab');setTimeout(()=>{const ho
 function renderRanking(){const cont=document.getElementById('rankingVendedores');if(!cont)return;const met=document.getElementById('rankingMetrica')?.value||'vendas',hoje=new Date(),im=new Date(hoje.getFullYear(),hoje.getMonth(),1).toISOString().split('T')[0],ma=clients.filter(c=>c.data>=im),base={};ma.forEach(c=>{const id=c.vendedorId||c.codigo||'(sem)';if(!base[id])base[id]={propostas:0,implantadas:0,vidas:0,valor:0};base[id].propostas++;if(c.status==='Implantado')base[id].implantadas++;base[id].vidas+=parseInt(c.qtdVidas)||0;base[id].valor+=_getValorEfetivo(c);});const arr=Object.entries(base).map(([id,d])=>{const p=pessoas.find(x=>x.id===id)||pessoas.find(x=>x.codigo===id),nome=p?.nome||id,conv=d.propostas?Math.round(d.implantadas/d.propostas*100):0,metric=met==='valor'?d.valor:met==='vidas'?d.vidas:met==='conversao'?conv:d.propostas;return{nome,...d,conv,metric,meta:p?.metaVendas||0};}).sort((a,b)=>b.metric-a.metric).slice(0,5);if(!arr.length){cont.innerHTML='<p class="small text-center my-3" style="opacity:.7">Sem produção este mês</p>';return;}const medals=['🥇','🥈','🥉','4️⃣','5️⃣'];cont.innerHTML=arr.map((v,i)=>`<div class="rank-item"><span class="medal">${medals[i]}</span><div class="info"><div class="name">${_esc(v.nome)}</div><div class="progress"><div class="bar" style="width:${Math.min(100,v.meta?Math.round(v.propostas/v.meta*100):v.conv)}%"></div></div></div><div class="val">${met==='valor'?formatarMoeda(v.valor):met==='vidas'?v.vidas:met==='conversao'?v.conv+'%':v.propostas}<small>${formatarMoeda(v.valor)} · ${v.conv}%</small></div></div>`).join('');}
 /* === TABELA CLIENTES === */
 
-function buscaDebounce(){clearTimeout(window._buscaTimer);window._buscaTimer=setTimeout(()=>{paginaClientes=1;renderTable();},300);}
-function mudarPaginaCliente(delta){paginaClientes+=delta;if(paginaClientes<1)paginaClientes=1;renderTable();}
+function clientesTemFiltros(){return ['search','filterCodigo','filterStatus','filterModalidade','filterPraca','filterAdministradora','filterTipo','filterValorMin','filterValorMax','filterDataIni','filterDataFim','filterMes','filterFonte','filterEtiqueta','filterUltimoContatoDias','filterDesconto'].some(id=>{const v=document.getElementById(id)?.value;return v&&v!=='ALL';})||sortColumn!=='numeroProposta';}
+function mostrarStatusPaginaClientes(msg=''){const el=document.getElementById('clientTableStatus');if(el)el.textContent=msg;}
+function mostrarErroPaginaClientes(error){const el=document.getElementById('clientTableError');if(!el)return;el.querySelector('span').textContent=`Não foi possível carregar esta página: ${descricaoErroFirestore(error)}.`;el.classList.remove('d-none');}
+function limparErroPaginaClientes(){document.getElementById('clientTableError')?.classList.add('d-none');}
+async function carregarPaginaClientesVisual({cursor=null,reset=false}={}){
+  if(!currentUser||clientesTemFiltros())return;
+  if(clientesPaginacao.loading)return;
+  clientesPaginacao.loading=true;limparErroPaginaClientes();mostrarStatusPaginaClientes('Carregando clientes...');
+  const bp=document.getElementById('btnClientPrev'),bn=document.getElementById('btnClientNext');if(bp)bp.disabled=true;if(bn)bn.disabled=true;
+  try{
+    if(reset){clientesPaginacao.cursorStack=[];paginaClientes=1;}
+    const page=await carregarPaginaClientesFirestore({cursor,pageSize:clientesPorPagina});
+    clientesPaginacao.currentDocs=page.items;clientesPaginacao.nextCursor=page.nextCursor;clientesPaginacao.hasMore=page.hasMore;clientesPaginacao.error=null;
+    renderTable();
+    mostrarStatusPaginaClientes(`Página ${paginaClientes} carregada do Firestore · 25 registros por página`);
+  }catch(error){clientesPaginacao.error=error;mostrarErroPaginaClientes(error);mostrarStatusPaginaClientes('Falha ao carregar clientes.');renderTable();}
+  finally{clientesPaginacao.loading=false;const prev=document.getElementById('btnClientPrev'),next=document.getElementById('btnClientNext');if(prev)prev.disabled=paginaClientes<=1;if(next)next.disabled=!clientesPaginacao.hasMore;}
+}
+function retryPaginaClientes(){const cursor=clientesPaginacao.cursorStack[paginaClientes-1]||null;carregarPaginaClientesVisual({cursor});}
+function buscaDebounce(){clearTimeout(window._buscaTimer);window._buscaTimer=setTimeout(()=>{paginaClientes=1;clientesPaginacao.cursorStack=[];renderTable();},300);}
+function mudarPaginaCliente(delta){
+  if(clientesTemFiltros()){paginaClientes+=delta;if(paginaClientes<1)paginaClientes=1;renderTable();return;}
+  if(clientesPaginacao.loading)return;
+  if(delta>0&&clientesPaginacao.hasMore){clientesPaginacao.cursorStack[paginaClientes]=clientesPaginacao.nextCursor;paginaClientes++;carregarPaginaClientesVisual({cursor:clientesPaginacao.nextCursor});}
+  else if(delta<0&&paginaClientes>1){paginaClientes--;clientesPaginacao.cursorStack.length=paginaClientes;carregarPaginaClientesVisual({cursor:clientesPaginacao.cursorStack[paginaClientes-1]||null});}
+}
 function renderTable(){
   const s=document.getElementById('search')?.value.toLowerCase()||'',cod=document.getElementById('filterCodigo')?.value||'',st=document.getElementById('filterStatus')?.value||'ALL',mod=document.getElementById('filterModalidade')?.value||'ALL',praca=document.getElementById('filterPraca')?.value||'ALL',adm=document.getElementById('filterAdministradora')?.value||'ALL',tipo=document.getElementById('filterTipo')?.value||'ALL',vMin=parseFloat(document.getElementById('filterValorMin')?.value||0)||0,vMax=parseFloat(document.getElementById('filterValorMax')?.value||Infinity)||Infinity,dIni=document.getElementById('filterDataIni')?.value||'',dFim=document.getElementById('filterDataFim')?.value||'',mes=document.getElementById('filterMes')?.value||'',fonte=document.getElementById('filterFonte')?.value||'ALL',etiqueta=document.getElementById('filterEtiqueta')?.value||'ALL',uCont=parseInt(document.getElementById('filterUltimoContatoDias')?.value)||0,descFilter=document.getElementById('filterDesconto')?.value||'ALL';
   const tb=document.getElementById('tableBody');if(!tb)return;
-  let f=clients.filter(c=>{
+  const filtroKey=[s,cod,st,mod,praca,adm,tipo,vMin,vMax,dIni,dFim,mes,fonte,etiqueta,uCont,descFilter,sortColumn,sortDir].join('|');
+  if(clientesPaginacao.queryKey&&clientesPaginacao.queryKey!==filtroKey){paginaClientes=1;clientesPaginacao.cursorStack=[];clientesPaginacao.currentDocs=[];clientesPaginacao.nextCursor=null;clientesPaginacao.hasMore=false;}
+  clientesPaginacao.queryKey=filtroKey;
+  if(!clientesTemFiltros()&&!clientesPaginacao.currentDocs.length&&!clientesPaginacao.loading){carregarPaginaClientesVisual({reset:true});}
+  const fonteClientes=clientesTemFiltros()?clients:clientesPaginacao.currentDocs;
+  let f=fonteClientes.filter(c=>{
     const ms=(c.nomeTitular||'').toLowerCase().includes(s)||(c.numeroProposta||'').toLowerCase().includes(s)||(c.cpfTitular||'').includes(s)||(c.telefoneTitular||'').includes(s);
     const mc=cod===''||(c.codigo||'')===cod,mst=st==='ALL'||c.status===st,mm=mod==='ALL'||c.modalidadePlano===mod,mp=praca==='ALL'||c.praca===praca,ma=adm==='ALL'||c.administradora===adm,mt=tipo==='ALL'||c.tipoCliente===tipo,mf=fonte==='ALL'||c.fonteVenda===fonte;
     const v=_getValorEfetivo(c);const mv=v>=vMin&&v<=vMax;
@@ -1088,9 +1120,9 @@ function renderTable(){
     return ms&&mc&&mst&&mm&&mp&&ma&&mt&&mv&&md&&mf&&mct&&mdesc&&(!window.crmMatchesTag||window.crmMatchesTag(c,etiqueta));
   });
   f.sort((a,b)=>{let va=a[sortColumn]||'',vb=b[sortColumn]||'';if(sortColumn==='valorComDesconto'){va=_getValorEfetivo(a);vb=_getValorEfetivo(b);}else if(sortColumn==='qtdVidas'){va=parseInt(va)||0;vb=parseInt(vb)||0;}else{va=va.toString().toLowerCase();vb=vb.toString().toLowerCase();}if(va<vb)return sortDir==='asc'?-1:1;if(va>vb)return sortDir==='asc'?1:-1;return 0;});
-  const total=f.length,tp=Math.ceil(total/clientesPorPagina);if(paginaClientes>tp)paginaClientes=tp||1;const ini=(paginaClientes-1)*clientesPorPagina;const pg=f.slice(ini,ini+clientesPorPagina);
+  const total=f.length,tp=Math.ceil(total/clientesPorPagina);if(clientesTemFiltros()&&paginaClientes>tp)paginaClientes=tp||1;const ini=(paginaClientes-1)*clientesPorPagina;const pg=clientesTemFiltros()?f.slice(ini,ini+clientesPorPagina):f;
   if(!total){tb.innerHTML='<tr><td colspan="13" class="text-center text-muted py-3">Nenhum cliente.</td></tr>';}else{tb.innerHTML=pg.map(c=>{const ck=selectedIds.has(c.id)?'checked':'';return `<tr><td><input type="checkbox" class="row-checkbox" data-id="${_esc(c.id)}" ${ck} onchange="toggleRow('${_esc(c.id)}')"></td><td>${_esc(c.numeroProposta||'-')}</td><td>${_esc(c.nomeTitular||'-')}</td><td>${_esc(c.cpfTitular||'-')}</td><td>${_esc(c.modalidadePlano||'-')}</td><td>${_esc(c.status||'-')}</td><td>${formatarMoeda(_getValorEfetivo(c))}</td><td>${c.qtdVidas||'0'}</td><td>${_esc(c.praca||'-')}</td><td>${_esc(c.administradora||'-')}</td><td>${_esc(c.codigo||'-')}</td><td>${window.crmGetTagBadges?window.crmGetTagBadges(c):'-'}</td><td><button class="btn btn-sm btn-outline-primary" onclick="editarCliente('${_esc(c.id)}')"><i class="bi bi-pencil"></i></button> <button class="btn btn-sm btn-danger" onclick="excluirCliente('${_esc(c.id)}')"><i class="bi bi-trash"></i></button></td></tr>`;}).join('');}
-  document.getElementById('clientCountInfo')&&(document.getElementById('clientCountInfo').innerText=`${total} cliente(s) · Mostrando ${total?ini+1:0}-${Math.min(ini+clientesPorPagina,total)}`);const pi=document.getElementById('clientPaginaInfo');if(pi)pi.innerText=`Página ${paginaClientes} de ${tp||1}`;const bp=document.getElementById('btnClientPrev');if(bp)bp.disabled=paginaClientes<=1;const bn=document.getElementById('btnClientNext');if(bn)bn.disabled=paginaClientes>=tp;
+  document.getElementById('clientCountInfo')&&(document.getElementById('clientCountInfo').innerText=clientesTemFiltros()?`${total} cliente(s) · Mostrando ${total?ini+1:0}-${Math.min(ini+clientesPorPagina,total)}`:`${total} cliente(s) nesta página · Página ${paginaClientes}`);const pi=document.getElementById('clientPaginaInfo');if(pi)pi.innerText=clientesTemFiltros()?`Página ${paginaClientes} de ${tp||1}`:`Página ${paginaClientes}`;const bp=document.getElementById('btnClientPrev');if(bp)bp.disabled=clientesPaginacao.loading||paginaClientes<=1;const bn=document.getElementById('btnClientNext');if(bn)bn.disabled=clientesPaginacao.loading||(clientesTemFiltros()?paginaClientes>=tp:!clientesPaginacao.hasMore);
   updateLoteButton();
 }
 function updateLoteButton(){const n=selectedIds.size;document.getElementById('selecionadosCount').innerText=n?`${n} selecionado(s)`:'';const b=document.getElementById('btnAcaoLote');if(b)b.disabled=n===0;}

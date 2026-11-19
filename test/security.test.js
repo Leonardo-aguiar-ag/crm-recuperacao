@@ -106,6 +106,16 @@ test('paginação Firestore usa cursor, tenant e ordenação determinística', (
     && item.fields.some((field) => field.fieldPath === 'updatedAt')));
 });
 
+test('tabela de clientes conecta paginação visual, carregamento, retry e reset de filtros', () => {
+  assert.match(index, /async function carregarPaginaClientesVisual/);
+  assert.match(index, /clientesPaginacao\.cursorStack/);
+  assert.match(index, /id="clientTableStatus"[^>]*aria-live="polite"/);
+  assert.match(index, /function retryPaginaClientes\(\)/);
+  assert.match(index, /function clientesTemFiltros\(\)/);
+  assert.match(index, /Página \$\{paginaClientes\} carregada do Firestore/);
+  assert.match(index, /clientesPaginacao\.currentDocs/);
+});
+
 test('índice de inatividade cobre status e updatedAt dos clientes', () => {
   const config = JSON.parse(indexes);
   assert.ok(config.indexes.some((item) => item.collectionGroup === 'clients'
