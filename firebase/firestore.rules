@@ -6,26 +6,38 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function verifiedApp() {
+      return request.appCheck != null;
+    }
+
     function uid() {
       return request.auth.uid;
     }
 
-    function userDoc() {
-      return get(/databases/$(database)/documents/usuarios/$(uid())).data;
+    function profile(userId) {
+      return get(/databases/$(database)/documents/usuarios/$(userId)).data;
     }
 
-    // O Firebase Auth adiciona este claim somente após um login concluído
-    // com segundo fator. A matrícula do fator, sozinha, não libera acesso.
+    function hasProfile(userId) {
+      return exists(/databases/$(database)/documents/usuarios/$(userId));
+    }
+
+    function organizationId() {
+      return signedIn() && hasProfile(uid())
+        && profile(uid()).keys().hasAny(['organizationId'])
+        ? profile(uid()).organizationId
+        : uid();
+    }
+
     function hasSecondFactor() {
       return signedIn()
         && request.auth.token.firebase.keys().hasAny(['sign_in_second_factor']);
     }
 
     function role() {
-      return signedIn()
-        && exists(/databases/$(database)/documents/usuarios/$(uid()))
-        && userDoc().keys().hasAny(['role'])
-        ? userDoc().role
+      return signedIn() && hasProfile(uid())
+        && profile(uid()).keys().hasAny(['role'])
+        ? profile(uid()).role
         : 'vendedor';
     }
 
@@ -39,190 +51,110 @@ service cloud.firestore {
       return signedIn() && role() == 'admin' && hasSecondFactor();
     }
 
-    // Os registros antigos usam userId; alguns registros administrativos
-    // também usam organizationId. Ambos permanecem suportados.
+    // Um documento pertence à organização do usuário quando declara o tenant
+    // explicitamente ou quando é um registro legado cujo dono pertence ao tenant.
+    function sameOrganization(data) {
+      return signedIn()
+        && data.keys().hasAny(['organizationId'])
+        && data.organizationId == organizationId();
+    }
+
+    function legacyOwnedBySameOrganization(data) {
+      return signedIn()
+        && data.keys().hasAny(['userId'])
+        && hasProfile(data.userId)
+        && profile(data.userId).keys().hasAny(['organizationId'])
+        && profile(data.userId).organizationId == organizationId();
+    }
+
     function belongsToUser(data) {
       return signedIn()
-        && ((data.keys().hasAny(['userId']) && data.userId == uid())
-          || (data.keys().hasAny(['organizationId']) && data.organizationId == uid()));
+        && data.keys().hasAny(['userId'])
+        && data.userId == uid()
+        && (!data.keys().hasAny(['organizationId']) || data.organizationId == organizationId());
     }
 
     function canRead(data) {
-      return isManager() || belongsToUser(data);
+      return verifiedApp()
+        && (belongsToUser(data) || (isManager() && (sameOrganization(data) || legacyOwnedBySameOrganization(data))));
     }
 
     function canCreate(data) {
-      return signedIn()
-        && (isAdmin()
-          || (data.keys().hasAny(['userId']) && data.userId == uid())
-          || (data.keys().hasAny(['organizationId']) && data.organizationId == uid()));
+      return verifiedApp() && signedIn()
+        && ((data.keys().hasAny(['organizationId'])
+          && data.organizationId == organizationId())
+          || (!data.keys().hasAny(['organizationId'])
+            && data.keys().hasAny(['userId']) && data.userId == uid()))
+        && (isAdmin() || (data.keys().hasAny(['userId']) && data.userId == uid()));
+    }
+
+    function preservesTenant(existing, incoming) {
+      return (existing.keys().hasAny(['organizationId'])
+        && incoming.keys().hasAny(['organizationId'])
+        && incoming.organizationId == existing.organizationId
+        && incoming.organizationId == organizationId())
+        || (!existing.keys().hasAny(['organizationId'])
+          && !incoming.keys().hasAny(['organizationId'])
+          && legacyOwnedBySameOrganization(existing));
     }
 
     function preservesOwner(existing, incoming) {
       return incoming.keys().hasAny(['userId'])
+        && existing.keys().hasAny(['userId'])
         && incoming.userId == existing.userId
-        && (!existing.keys().hasAny(['organizationId'])
-          || incoming.organizationId == existing.organizationId)
         && (!existing.keys().hasAny(['createdBy'])
-          || incoming.createdBy == existing.createdBy);
+          || (incoming.keys().hasAny(['createdBy']) && incoming.createdBy == existing.createdBy));
     }
 
     function canUpdate(existing, incoming) {
-      return isManager()
-        || (belongsToUser(existing)
-          && preservesOwner(existing, incoming)
-          && ((incoming.keys().hasAny(['userId']) && incoming.userId == uid())
-            || (incoming.keys().hasAny(['organizationId']) && incoming.organizationId == uid())));
+      return verifiedApp() && canRead(existing)
+        && preservesTenant(existing, incoming)
+        && (isManager() || (belongsToUser(existing) && preservesOwner(existing, incoming)));
     }
 
     function safeAudit() {
-      return signedIn()
+      return verifiedApp() && signedIn()
         && request.resource.data.keys().hasOnly([
           'userId', 'userEmail', 'acao', 'detalhes', 'timestamp',
           'userAgent', 'organizationId', 'createdAt'
         ])
-        && request.resource.data.userId == uid();
+        && request.resource.data.userId == uid()
+        && request.resource.data.organizationId == organizationId();
     }
 
     match /usuarios/{userId} {
-      allow read: if signedIn() && (uid() == userId || isManager());
-      allow create: if signedIn() && uid() == userId;
-      allow update: if signedIn()
-        && (isAdmin() || (uid() == userId
+      allow read: if verifiedApp() && signedIn() && (uid() == userId
+        || (isManager() && resource.data.organizationId == organizationId()));
+      allow create: if verifiedApp() && signedIn() && uid() == userId
+        && (!request.resource.data.keys().hasAny(['organizationId'])
+          || request.resource.data.organizationId == organizationId());
+      allow update: if verifiedApp() && signedIn() && (isAdmin()
+        || (uid() == userId
+          && request.resource.data.organizationId == resource.data.organizationId
           && request.resource.data.role == resource.data.role));
-      allow delete: if isAdmin() && userId != uid();
+      allow delete: if verifiedApp() && isAdmin() && userId != uid()
+        && resource.data.organizationId == organizationId();
     }
 
     match /audit_events/{eventId} {
       allow create: if safeAudit();
-      allow read: if signedIn()
-        && (resource.data.userId == uid() || isManager());
-      allow update, delete: if isAdmin();
+      allow read: if verifiedApp() && signedIn() && (resource.data.userId == uid()
+        || (isManager() && resource.data.organizationId == organizationId()));
+      allow update, delete: if verifiedApp() && isAdmin()
+        && resource.data.organizationId == organizationId();
     }
 
     match /notificacoes/{id} {
-      allow read, update, delete: if signedIn()
-        && (resource.data.userId == uid() || isManager());
-      allow create: if signedIn()
-        && (request.resource.data.userId == uid() || isManager());
-    }
-
-    match /clients/{id} {
-      allow read: if canRead(resource.data);
+      allow read, update, delete: if canRead(resource.data);
       allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /leads/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /tarefas/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    // Coleções de configuração, metas, filtros salvos e etiquetas.
-    match /statuses/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /leadStatuses/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /pracas/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /administradoras/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /acomodacoes/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /coparticipacoes/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /modalidades/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /fontesVenda/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /pessoas/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /filtrosSalvos/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /configuracoes/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
-    }
-
-    match /lixeira/{id} {
-      allow read: if canRead(resource.data);
-      allow create: if canCreate(request.resource.data);
-      allow update: if canUpdate(resource.data, request.resource.data);
-      allow delete: if canRead(resource.data);
     }
 
     match /import_jobs/{id} {
-      allow read: if signedIn()
-        && (resource.data.user_id == uid() || isManager());
-      allow create: if signedIn() && request.resource.data.user_id == uid();
-      allow update: if signedIn()
-        && (resource.data.user_id == uid() || isManager());
+      allow read: if canRead(resource.data);
+      allow create: if canCreate(request.resource.data);
+      allow update: if canUpdate(resource.data, request.resource.data);
     }
 
-    // Qualquer coleção futura fica protegida por padrão, mas continua
-    // compatível com documentos que carreguem userId/organizationId.
     match /{collection}/{id} {
       allow read: if canRead(resource.data);
       allow create: if canCreate(request.resource.data);

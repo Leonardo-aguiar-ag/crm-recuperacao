@@ -1,45 +1,96 @@
 rules_version = '2';
+
 service firebase.storage {
   match /b/{bucket}/o {
-    function signedIn() { return request.auth != null; }
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function verifiedApp() {
+      return request.appCheck != null;
+    }
+
+    function profile(userId) {
+      return firestore.get(/databases/(default)/documents/usuarios/$(userId)).data;
+    }
+
+    function hasProfile(userId) {
+      return firestore.exists(/databases/(default)/documents/usuarios/$(userId));
+    }
+
+    function organizationId() {
+      return signedIn() && hasProfile(request.auth.uid)
+        && profile(request.auth.uid).keys().hasAny(['organizationId'])
+        ? profile(request.auth.uid).organizationId
+        : request.auth.uid;
+    }
+
     function hasSecondFactor() {
       return signedIn()
         && request.auth.token.firebase.keys().hasAny(['sign_in_second_factor']);
     }
-    function isOwner(clientId) {
-      return signedIn() && (
-        firestore.get(/databases/(default)/documents/clients/$(clientId)).data.userId == request.auth.uid ||
-        firestore.get(/databases/(default)/documents/clients/$(clientId)).data.vendedorId == request.auth.uid
-      );
-    }
+
     function isManager() {
-      return signedIn() && (
-        firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role in ['gerente','supervisor']
-        || (firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role == 'admin' && hasSecondFactor())
-      );
+      return signedIn() && hasProfile(request.auth.uid)
+        && (profile(request.auth.uid).role in ['gerente', 'supervisor']
+          || (profile(request.auth.uid).role == 'admin' && hasSecondFactor()));
     }
+
+    function sameOrganization(clientId) {
+      return signedIn()
+        && firestore.exists(/databases/(default)/documents/clients/$(clientId))
+        && firestore.get(/databases/(default)/documents/clients/$(clientId)).data.organizationId == organizationId();
+    }
+
+    function isClientOwner(clientId) {
+      return signedIn() && sameOrganization(clientId)
+        && (firestore.get(/databases/(default)/documents/clients/$(clientId)).data.userId == request.auth.uid
+          || firestore.get(/databases/(default)/documents/clients/$(clientId)).data.vendedorId == request.auth.uid
+          || clientId == request.auth.uid);
+    }
+
+    function canAccessClient(clientId) {
+      return isClientOwner(clientId) || (isManager() && sameOrganization(clientId));
+    }
+
+    function validAttachment() {
+      return request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches(
+          'application/pdf|application/zip|application/msword|application/vnd.ms-excel|application/vnd.openxmlformats-officedocument.*|image/(jpeg|png|webp)|text/plain');
+    }
+
     match /clientes/{clientId}/anexos/{fileName} {
-      allow read: if isOwner(clientId) || isManager();
-      allow write: if (isOwner(clientId) || isManager())
-        && request.resource.size < 10 * 1024 * 1024
-        && request.resource.contentType.matches('application/(pdf|zip|vnd.ms-excel)|image/.*|text/plain|application/msword|application/vnd.openxmlformats-officedocument.*');
-      allow delete: if isOwner(clientId) || isManager();
+      allow read, delete: if verifiedApp() && canAccessClient(clientId);
+      allow write: if verifiedApp() && canAccessClient(clientId)
+        && validAttachment()
+        && request.resource.metadata.organizationId == organizationId()
+        && request.resource.metadata.clientId == clientId;
     }
+
     match /backups/{userId}/{fileName} {
-      allow read, write, delete: if signedIn() && (request.auth.uid == userId || isManager());
+      allow read, delete: if verifiedApp() && signedIn() && request.auth.uid == userId;
+      allow write: if verifiedApp() && signedIn() && request.auth.uid == userId
+        && request.resource.size < 50 * 1024 * 1024
+        && request.resource.contentType == 'application/json'
+        && request.resource.metadata.organizationId == organizationId();
     }
+
     match /usuarios/{userId}/perfil/{fileName} {
-      allow read, delete: if signedIn() && request.auth.uid == userId;
-      allow write: if signedIn() && request.auth.uid == userId
+      allow read, delete: if verifiedApp() && signedIn() && request.auth.uid == userId;
+      allow write: if verifiedApp() && signedIn() && request.auth.uid == userId
         && request.resource.size < 5 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
     }
+
     match /usuarios/{userId}/testes/{fileName} {
-      allow read, delete: if signedIn() && request.auth.uid == userId;
-      allow write: if signedIn() && request.auth.uid == userId
+      allow read, delete: if verifiedApp() && signedIn() && request.auth.uid == userId;
+      allow write: if verifiedApp() && signedIn() && request.auth.uid == userId
         && request.resource.size < 64 * 1024
         && request.resource.contentType == 'text/plain';
     }
-    match /{allPaths=**} { allow read, write: if false; }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
   }
 }

@@ -90,7 +90,7 @@
     try {
       const ref = window.storage.ref(`usuarios/${uid()}/testes/storage-check-${Date.now()}.txt`);
       const blob = new Blob(['CRM Storage check ' + new Date().toISOString()], { type: 'text/plain' });
-      const snap = await ref.put(blob, { contentType: 'text/plain', customMetadata: { purpose: 'storage-check', userId: uid() } });
+      const snap = await ref.put(blob, { contentType: 'text/plain', customMetadata: { purpose: 'storage-check', userId: uid(), organizationId: window.crmOrganizationId?.() || uid() } });
       const url = await snap.ref.getDownloadURL();
       if (!url) throw new Error('O Firebase não retornou a URL do arquivo.');
       await snap.ref.delete();

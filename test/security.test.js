@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const index = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const rules = await readFile(new URL('../firebase/firestore.rules', import.meta.url), 'utf8');
+const storageRules = await readFile(new URL('../firebase/storage.rules', import.meta.url), 'utf8');
 const indexes = await readFile(new URL('../firebase/firestore.indexes.json', import.meta.url), 'utf8');
 const workflow = await readFile(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
 const uploadApi = await readFile(new URL('../api/blob-upload.js', import.meta.url), 'utf8');
@@ -51,6 +52,30 @@ test('regras exigem segundo fator para administradores', () => {
   assert.match(rules, /hasSecondFactor\(\)/);
   assert.match(rules, /function isAdmin\(\)[\s\S]*hasSecondFactor/);
   assert.match(rules, /function isManager\(\)[\s\S]*role\(\) == 'admin' && hasSecondFactor/);
+});
+
+test('regras exigem App Check e isolam dados por organização', () => {
+  assert.match(rules, /function verifiedApp\(\)[\s\S]*request\.appCheck != null/);
+  assert.match(rules, /function organizationId\(\)/);
+  assert.match(rules, /data\.organizationId == organizationId\(\)/);
+  assert.match(rules, /preservesTenant\(existing, incoming\)/);
+  assert.doesNotMatch(rules, /allow read: if isManager\(\);/);
+});
+
+test('Storage valida tenant, conteúdo e tamanho dos anexos', () => {
+  assert.match(storageRules, /function verifiedApp\(\)/);
+  assert.match(storageRules, /request\.resource\.metadata\.organizationId == organizationId\(\)/);
+  assert.match(storageRules, /request\.resource\.metadata\.clientId == clientId/);
+  assert.match(storageRules, /request\.resource\.size < 10 \* 1024 \* 1024/);
+  assert.match(storageRules, /allow read, write: if false/);
+});
+
+test('renders dinâmicos críticos escapam texto e uploads propagam o tenant', () => {
+  assert.match(index, /function _esc\(s\)/);
+  assert.match(index, /_esc\(p\.nome\)/);
+  assert.match(index, /_esc\(n\)/);
+  assert.match(index, /customMetadata:\{userId:currentUser\.uid,organizationId:_organizationId\(\)\}/);
+  assert.match(index, /app-check-required/);
 });
 
 test('índice de inatividade cobre status e updatedAt dos clientes', () => {
