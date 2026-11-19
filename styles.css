@@ -116,3 +116,22 @@ body.modo-apresentacao .sidebar{display:none}body.modo-apresentacao .main-conten
 .report-page .kpi div{flex:1;min-width:140px;padding:12px;background:#ede9fe;border-radius:8px}
 .report-page .kpi strong{display:block;font-size:22px;color:#6c5ce7}
 .report-page .footer{margin-top:40px;font-size:11px;color:#888;text-align:center}
+
+/* Mobile hardening: keep controls usable without horizontal overflow. */
+@media (max-width: 576px){
+  .topbar{padding:10px 12px;gap:8px;flex-wrap:wrap}
+  .topbar .search-global{order:3;flex:1 1 100%;max-width:none!important;min-width:0}
+  .topbar .nav-actions{gap:4px}
+  .topbar .nav-actions .btn{padding:.35rem .45rem}
+  #notificacoesDropdown{width:min(380px,calc(100vw - 16px))!important;right:-8px!important}
+  #toastContainer{left:8px;right:8px;top:8px}
+  #toastContainer>div{min-width:0!important;max-width:none!important;width:100%}
+  .tarefa-card{align-items:flex-start;gap:8px;flex-wrap:wrap;padding:.65rem .75rem}
+  .tarefa-card>div:first-child{min-width:0;flex:1 1 180px;overflow-wrap:anywhere}
+  .tarefa-card>div:last-child{width:100%;display:flex;justify-content:flex-end;gap:4px;flex-wrap:wrap}
+  .pipeline-column{min-width:calc(100vw - 48px)!important}
+  .table-responsive{font-size:.78rem}
+  .modal-dialog{margin:.5rem}
+  .modal-body{overflow-x:auto}
+  .btn{min-height:38px}
+}

@@ -78,6 +78,23 @@ test('renders dinâmicos críticos escapam texto e uploads propagam o tenant', (
   assert.match(index, /app-check-required/);
 });
 
+test('sinks XSS prioritários usam texto seguro, URL allowlist e mensagens escapadas', () => {
+  assert.match(index, /function showToast\([\s\S]*text\.textContent=String\(msg\?\?''\)/);
+  assert.doesNotMatch(index, /t\.innerHTML=`<i class=/);
+  assert.match(index, /function _safeHttpUrl\(value\)/);
+  assert.match(index, /safeUrl\?`<a class="btn btn-sm btn-outline-primary"/);
+  assert.match(index, /_esc\(r\._errors\.join\('; '\)\)/);
+  assert.match(index, /_esc\(l\.nome\|\|'-'\)/);
+  assert.match(index, /_esc\(c\.nomeTitular\|\|'-'\)/);
+});
+
+test('layout mobile reduz overflow de topbar, notificações, tarefas e pipeline', () => {
+  assert.match(styles, /@media \(max-width: 576px\)/);
+  assert.match(styles, /#notificacoesDropdown\{width:min\(380px/);
+  assert.match(styles, /\.tarefa-card>div:last-child/);
+  assert.match(styles, /\.pipeline-column\{min-width:calc\(100vw - 48px\)!important\}/);
+});
+
 test('índice de inatividade cobre status e updatedAt dos clientes', () => {
   const config = JSON.parse(indexes);
   assert.ok(config.indexes.some((item) => item.collectionGroup === 'clients'
