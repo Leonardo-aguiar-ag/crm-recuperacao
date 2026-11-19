@@ -734,15 +734,28 @@ const firebaseConfig = {apiKey:"AIzaSyBif04HjzzagJFkaOQGtrsodkMEpEwPBbs",authDom
 firebase.initializeApp(firebaseConfig);
 // App Check usa uma chave pública reCAPTCHA v3 configurada no meta tag acima.
 const appCheckSiteKey = document.querySelector('meta[name="firebase-app-check-site-key"]')?.content?.trim() || '';
+const appCheckHost = location.hostname.toLowerCase();
+const appCheckLocalHost = ['localhost', '127.0.0.1'].includes(appCheckHost);
+document.documentElement.dataset.appCheckHost = appCheckHost;
 let appCheck = null;
-if (appCheckSiteKey && firebase.appCheck) {
-  appCheck = firebase.appCheck(firebase.app(), { provider: new firebase.appCheck.ReCaptchaV3Provider(appCheckSiteKey), isTokenAutoRefreshEnabled: true });
-} else {
-  const appCheckMessage = 'App Check obrigatório: configure a chave pública reCAPTCHA v3 antes de publicar.';
-  console.error(appCheckMessage);
-  if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
-    document.documentElement.dataset.securityError = 'app-check-missing';
+try {
+  if (appCheckSiteKey && firebase.appCheck && (location.protocol === 'https:' || appCheckLocalHost)) {
+    appCheck = firebase.appCheck(firebase.app(), { provider: new firebase.appCheck.ReCaptchaV3Provider(appCheckSiteKey), isTokenAutoRefreshEnabled: true });
+  } else {
+    const appCheckMessage = 'App Check obrigatório: configure a chave pública reCAPTCHA v3 e autorize este domínio no Firebase antes de publicar.';
+    console.error(appCheckMessage);
+    if (!appCheckLocalHost) {
+      document.documentElement.dataset.securityError = 'app-check-missing-or-insecure-domain';
+      window.__CRM_SECURITY_BLOCKED__ = true;
+      showToast(appCheckMessage, 'danger', 10000);
+    }
+  }
+} catch (error) {
+  console.error('Não foi possível iniciar Firebase App Check.', { code: error?.code || 'unknown', host: appCheckHost });
+  if (!appCheckLocalHost) {
+    document.documentElement.dataset.securityError = 'app-check-initialization-failed';
     window.__CRM_SECURITY_BLOCKED__ = true;
+    showToast('O Firebase App Check não iniciou. Verifique a chave reCAPTCHA v3, o domínio autorizado e tente recarregar a página.', 'danger', 10000);
   }
 }
 const auth = firebase.auth(); const db = firebase.firestore(); const storage = firebase.storage();
@@ -995,7 +1008,10 @@ async function loadPage(query,pageSize=25,cursor=null){let q=query.limit(pageSiz
 function queryClientesOrganizacional({ordered=true}={}){if(!currentUser)throw new Error('Sessão não autenticada.');let q=db.collection('clients');if(userRole==='vendedor')q=q.where('userId','==',currentUser.uid);else q=q.where('organizationId','==',_organizationId());return ordered?q.orderBy('updatedAt','desc').orderBy(firebase.firestore.FieldPath.documentId()):q.orderBy(firebase.firestore.FieldPath.documentId());}
 async function carregarPaginaClientesFirestore({cursor=null,pageSize=25}={}){const page=await loadPage(queryClientesOrganizacional(),pageSize,cursor);return {...page,items:page.docs.map(d=>({id:d.id,...d.data()}))};}
 window.crmPagination={loadPage,queryClientesOrganizacional,carregarPaginaClientesFirestore};
-function descricaoErroFirestore(e){const c=e?.code||'unknown';if(c==='permission-denied')return 'permissão negada (publique as regras e confirme o usuário)';if(c==='failed-precondition')return 'índice/configuração pendente';if(c==='unavailable')return 'Firestore indisponível ou sem conexão';if(c==='not-found')return 'banco ou documento não encontrado';if(c==='unauthenticated')return 'sessão não autenticada';return `${c}: ${e?.message||'erro desconhecido'}`;}
+function ehErroAppCheck(e){const code=String(e?.code||'').toLowerCase(),message=String(e?.message||'').toLowerCase();return code.includes('app-check')||code.includes('appcheck')||message.includes('app check')||message.includes('appcheck');}
+function registrarFalhaAppCheck(e,area){if(!ehErroAppCheck(e))return false;const monitor=window.__CRM_APP_CHECK_MONITORING__||(window.__CRM_APP_CHECK_MONITORING__={rejeicoes:0});monitor.rejeicoes++;monitor.ultimaFalhaEm=new Date().toISOString();monitor.area=String(area||'firebase').slice(0,40);console.warn('Falha explícita de App Check detectada.',{code:String(e?.code||'unknown'),area:monitor.area,rejeicoes:monitor.rejeicoes});return true;}
+function mensagemErroAppCheck(){return 'A verificação de segurança do Firebase não foi concluída. Atualize a página; se o problema continuar, confirme a chave reCAPTCHA v3 e se este domínio está autorizado no Firebase App Check.';}
+function descricaoErroFirestore(e){const c=e?.code||'unknown';if(registrarFalhaAppCheck(e,'firestore'))return mensagemErroAppCheck();if(c==='permission-denied')return 'Acesso recusado pelo Firebase. Atualize a página; se o App Check foi ativado recentemente, confirme a chave reCAPTCHA v3 e o domínio autorizado.';if(c==='failed-precondition')return 'índice/configuração pendente';if(c==='unavailable')return 'Firebase indisponível ou sem conexão';if(c==='not-found')return 'banco ou documento não encontrado';if(c==='unauthenticated')return 'sessão não autenticada';return `${c}: ${e?.message||'erro desconhecido'}`;}
 async function loadAll(){
   if(isLoading)return;isLoading=true;
   try {
@@ -1165,7 +1181,7 @@ async function enviarAnexoCliente(clientId,item,index,total){
   return {nome:String(file.name||nomeSeguroAnexo(file)),url:result.url,pathname:result.pathname,contentType:result.contentType||tipoMimeAnexo(file),size:result.size||file.size,storage:'vercel-blob'};
 }
 async function uploadFotoPerfil(event){const input=event&&event.target;const file=input&&input.files&&input.files[0];if(input)input.value='';if(!file)return;if(!currentUser)return showToast('Faça login para alterar a foto.','warning');if(!String(file.type||'').startsWith('image/'))return showToast('Escolha um arquivo de imagem.','warning');if(file.size>5*1024*1024)return showToast('A foto deve ter no máximo 5 MB.','warning');try{showToast('Enviando foto...','info',1500);const ext=(String(file.name).split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';const ref=storage.ref(`usuarios/${currentUser.uid}/perfil/foto_${Date.now()}.${ext}`);const snap=await aguardarComTimeout(ref.put(file,{contentType:file.type,customMetadata:{userId:currentUser.uid,organizationId:_organizationId()}}),60000,'O envio da foto demorou mais de 60 segundos. Verifique sua conexão e o Firebase Storage.');const url=await aguardarComTimeout(snap.ref.getDownloadURL(),20000,'A foto foi enviada, mas o Firebase não retornou a URL de acesso.');if(!url)throw new Error('O Firebase não retornou a URL da foto.');await db.collection('usuarios').doc(currentUser.uid).set({fotoURL:url},{merge:true});['userAvatarImg','perfilAvatarImg'].forEach(id=>{const el=document.getElementById(id);if(el){el.src=url;el.style.display='block';}});['userAvatarTexto','perfilAvatarTexto'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});showToast('Foto atualizada!','success');}catch(e){console.error('uploadFotoPerfil:',e);showToast(mensagemErroUpload(e),'danger',6000);}}
-function mensagemErroUpload(e){const c=e&&e.code||'';if(c==='storage/unauthorized')return 'Sem permissão. Publique as regras do Firebase Storage e confirme que o cliente pertence ao usuário atual.';if(c==='storage/unauthenticated')return 'Sessão expirada. Entre novamente.';if(c==='storage/quota-exceeded')return 'Cota do Storage excedida no Firebase.';if(c==='storage/retry-limit-exceeded'||c==='storage/canceled')return 'Falha de conexão durante o envio. Tente novamente.';if(c==='storage/bucket-not-found'||c==='storage/project-not-found')return 'Bucket do Firebase Storage não encontrado ou não ativado.';if(c==='crm/timeout')return e.message||'O Storage não respondeu no tempo esperado.';if(c==='storage/unknown')return 'O Firebase Storage recusou o envio. Verifique regras, bucket e conexão.';return 'Erro no envio: '+(e&&e.message||e);}
+function mensagemErroUpload(e){const c=e&&e.code||'';if(registrarFalhaAppCheck(e,'storage'))return mensagemErroAppCheck();if(c==='storage/unauthorized')return 'O Storage recusou este arquivo. Confirme o acesso ao cliente; se o App Check foi ativado recentemente, atualize a página e confira a chave reCAPTCHA v3 e o domínio autorizado.';if(c==='storage/unauthenticated')return 'Sessão expirada. Entre novamente.';if(c==='storage/quota-exceeded')return 'Cota do Storage excedida no Firebase.';if(c==='storage/retry-limit-exceeded'||c==='storage/canceled')return 'Falha de conexão durante o envio. Tente novamente.';if(c==='storage/bucket-not-found'||c==='storage/project-not-found')return 'Bucket do Firebase Storage não encontrado ou não ativado.';if(c==='crm/timeout')return e.message||'O Storage não respondeu no tempo esperado.';if(c==='storage/unknown')return 'O Firebase Storage recusou o envio. Verifique regras, bucket e conexão.';return 'Erro no envio: '+(e&&e.message||e);}
 async function saveClient(){
   if(isLoading)return;
   const btn=document.getElementById('btnSalvarCliente');if(!btn)return;
@@ -1671,5 +1687,6 @@ document.addEventListener('DOMContentLoaded',function(){
 </script>
 <script src="modules/crm-enhancements.js"></script>
 <script src="modules/crm-tags.js"></script>
+<script src="modules/crm-global-search.js"></script>
 </body>
 </html>

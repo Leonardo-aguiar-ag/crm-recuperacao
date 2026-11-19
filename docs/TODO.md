@@ -48,3 +48,18 @@
 
 ## 12. Melhorias menores
 - Preservar filtros, preferências e contexto; adicionar ações rápidas e validações sem alterar o funcionamento legado.
+
+## Fase 10 — Busca global avançada — concluída
+- A busca global deve oferecer ranking por relevância, busca remota no Firestore, deduplicação de resultados, paginação por cursor, atalhos, navegação por teclado e acessibilidade ARIA.
+
+## Fase 11 — Projeção comercial avançada — concluída
+- A projeção deve exibir cenários conservador, provável e otimista.
+- Deve exibir propostas abertas, propostas implantadas, vidas projetadas, probabilidade de fechamento, média mensal e comparação com metas.
+
+## Fase 12 — App Check em produção — implementação preparada; configuração externa pendente
+- Configurar reCAPTCHA v3.
+- Validar domínio de produção.
+- Ativar enforcement no Firestore, Storage e Functions.
+- Monitorar tokens rejeitados e exibir mensagens amigáveis.
+- A ativação de produção requer confirmar a chave pública reCAPTCHA v3 e o domínio efetivamente publicado no Firebase Hosting; confirmar chegada de tokens válidos antes do enforcement.
+- As regras locais de Firestore e Storage já exigem App Check. O repositório não contém Functions callable/HTTP invocadas pelo navegador; enforcement de Functions depende de um endpoint suportado e não se aplica aos gatilhos agendados/Firestore/Auth existentes.

@@ -13,6 +13,8 @@ A aplicação atual é um frontend estático concentrado em `index.html`, com Fi
 5. Adicionar exportações CSV compatíveis com Excel e relatórios PDF imprimíveis, sem introduzir dependência pesada no frontend.
 6. Mover backup agendado e limpeza/recuperação crítica para Cloud Functions quando possível; manter exportação manual no frontend.
 7. Validar sintaxe, regras, funções e integração entre módulos antes de cada publicação.
+8. Manter a busca global em módulo próprio: combinar ranking local e consultas remotas por prefixo com limite, escopo por tenant, cursores e resultados deduplicados; fornecer navegação ARIA/teclado sem substituir o carregamento legado.
+9. Projetar os cenários comerciais a partir dos campos de probabilidade atuais e das etapas do pipeline, exibir as premissas e comparar métricas mensais com as metas existentes. App Check usa a chave reCAPTCHA pública do app Web e requer confirmar domínio e métricas válidas antes do enforcement de produção.
 
 ## Design e experiência
 - **Alternativas consideradas:** painel operacional de alta densidade (0,06), cockpit executivo com cartões compactos (0,08), fluxo assistido por próximas ações (0,07).

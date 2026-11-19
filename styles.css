@@ -135,3 +135,10 @@ body.modo-apresentacao .sidebar{display:none}body.modo-apresentacao .main-conten
   .modal-body{overflow-x:auto}
   .btn{min-height:38px}
 }
+
+#resultadosBuscaGlobal{max-height:min(70vh,420px)!important;overflow-y:auto!important;box-shadow:var(--shadow-hover)}
+.crm-global-search-option{cursor:pointer;white-space:normal;border-bottom:1px solid var(--border);color:var(--text)}
+.crm-global-search-option[aria-selected="true"],.crm-global-search-option:hover{background:var(--primary-light);color:var(--primary)}
+.crm-global-search-subtitle{font-size:.7rem;overflow-wrap:anywhere}
+.crm-search-more{position:sticky;bottom:0;background:var(--card);border-top:1px solid var(--border);border-radius:0;padding:.55rem}
+.crm-search-more:focus-visible,.crm-global-search-option:focus-visible{outline:3px solid var(--info);outline-offset:-3px}

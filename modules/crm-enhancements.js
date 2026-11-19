@@ -143,8 +143,59 @@
   }
 
   function forecastFor(client) {
-    if (Number.isFinite(Number(client.probabilidadeFechamento))) return Math.max(0, Math.min(100, Number(client.probabilidadeFechamento)));
+    const configuredProbability = client?.probabilidadeFechamento;
+    if (configuredProbability !== null && configuredProbability !== undefined && configuredProbability !== '' && Number.isFinite(Number(configuredProbability))) return Math.max(0, Math.min(100, Number(configuredProbability)));
     return ({'Novo': 10, 'Em contato': 25, 'Proposta enviada': 45, 'Em análise': 60, 'Documentação pendente': 75, 'Em Cadência': 30, 'Implantado': 100, 'Vendido': 100, 'Perdido': 0, 'Desistiu': 0}[client.status] ?? 20);
+  }
+
+  function projectionFor(data, scenario, filters = getFilters()) {
+    const closedStatuses = new Set(['Implantado', 'Vendido', 'Perdido', 'Desistiu']);
+    const closed = data.filter(client => ['Implantado', 'Vendido'].includes(client.status));
+    const deployed = data.filter(client => client.status === 'Implantado');
+    const open = data.filter(client => !closedStatuses.has(client.status));
+    const monthStart = filters.start ? new Date(`${filters.start}T12:00:00`) : new Date();
+    const monthEnd = filters.end ? new Date(`${filters.end}T12:00:00`) : new Date();
+    const months = Math.max(1, (monthEnd.getFullYear() - monthStart.getFullYear()) * 12 + monthEnd.getMonth() - monthStart.getMonth() + 1);
+    const probabilityFor = client => {
+      const probability = forecastFor(client);
+      if (scenario === 'conservador') return probability * 0.75;
+      if (scenario === 'otimista') return probability + (100 - probability) * 0.25;
+      return probability;
+    };
+    const weightedOpenValue = open.reduce((sum, client) => sum + valueOf(client) * probabilityFor(client) / 100, 0);
+    const weightedOpenLives = open.reduce((sum, client) => sum + Math.max(0, Number(client.qtdVidas) || 0) * probabilityFor(client) / 100, 0);
+    const closedValue = closed.reduce((sum, client) => sum + valueOf(client), 0);
+    const closedLives = closed.reduce((sum, client) => sum + Math.max(0, Number(client.qtdVidas) || 0), 0);
+    const openValue = open.reduce((sum, client) => sum + valueOf(client), 0);
+    const weightedProbability = openValue ? weightedOpenValue / openValue * 100 : open.length ? open.reduce((sum, client) => sum + probabilityFor(client), 0) / open.length : 0;
+    const projectedValue = closedValue + weightedOpenValue;
+    const monthlyValue = projectedValue / months;
+    const monthlyProposals = (closed.length + open.reduce((sum, client) => sum + probabilityFor(client) / 100, 0)) / months;
+    const goalValue = Number(document.getElementById('anMetaValor')?.value || 0);
+    const goalProposals = Number(document.getElementById('anMetaVendas')?.value || 0);
+    return {
+      name: scenario,
+      openCount: open.length,
+      deployedCount: deployed.length,
+      deployedLives: deployed.reduce((sum, client) => sum + Math.max(0, Number(client.qtdVidas) || 0), 0),
+      projectedLives: closedLives + weightedOpenLives,
+      probability: weightedProbability,
+      monthlyValue,
+      monthlyProposals,
+      valueGoalProgress: goalValue ? monthlyValue / goalValue * 100 : null,
+      proposalGoalProgress: goalProposals ? monthlyProposals / goalProposals * 100 : null,
+      months
+    };
+  }
+
+  function renderCommercialProjection() {
+    if (!document.getElementById('analisesTab')) return;
+    const filters = getFilters();
+    const data = filters.valid ? filteredClients() : [];
+    const scenarios = ['conservador', 'provável', 'otimista'].map(name => projectionFor(data, name, filters));
+    const body = scenarios.map(result => `<tr><th scope="row" class="text-capitalize">${esc(result.name)}</th><td>${result.openCount}</td><td>${result.deployedCount}<span class="text-muted small"> · ${Math.round(result.deployedLives)} vidas</span></td><td>${Math.round(result.projectedLives)}</td><td>${result.probability.toFixed(1)}%</td><td><strong>${money(result.monthlyValue)}</strong></td><td>${result.valueGoalProgress === null ? 'Meta não definida' : `${result.valueGoalProgress.toFixed(0)}%`}</td><td>${result.proposalGoalProgress === null ? 'Meta não definida' : `${result.proposalGoalProgress.toFixed(0)}%`}</td></tr>`).join('');
+    const period = filters.valid ? `${esc(filters.start || '—')} a ${esc(filters.end || today())}` : 'Intervalo personalizado inválido';
+    installCard('crmProjecaoAvancada', 'Projeção comercial avançada', `<p class="small text-muted">Período: ${period}. Média mensal calculada sobre os meses do período e comparada às metas mensais cadastradas. Probabilidades: conservador = 75% da probabilidade atual; provável = probabilidade informada ou estimada pela etapa; otimista = probabilidade atual mais 25% do espaço até 100%.</p><div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th scope="col">Cenário</th><th scope="col">Propostas abertas</th><th scope="col">Implantadas</th><th scope="col">Vidas projetadas</th><th scope="col">Prob. média ponderada</th><th scope="col">Média mensal</th><th scope="col">Meta R$</th><th scope="col">Meta propostas</th></tr></thead><tbody>${body}</tbody></table></div>`);
   }
 
   function enhancePipeline() {
@@ -182,7 +233,7 @@
 
   function refreshEnhancements() {
     if (!document.getElementById('analisesTab')) return;
-    getFilters(); addReportActions(); renderSourceDashboard(); renderSalesGoals(); renderPostSaleAndFinance();
+    getFilters(); addReportActions(); renderSourceDashboard(); renderSalesGoals(); renderCommercialProjection(); renderPostSaleAndFinance();
   }
 
   function installWrappers() {
@@ -193,7 +244,7 @@
     if (typeof window.initPivotTable === 'function' && !window.initPivotTable.__crmEnhanced) { window.initPivotTable = function () { renderFilteredPivot(); }; window.initPivotTable.__crmEnhanced = true; }
   }
 
-  window.crmEnhancements = { getFilters, filteredClients, filteredLeads, refresh: refreshEnhancements, exportExcel, exportPdf, forecastFor };
+  window.crmEnhancements = { getFilters, filteredClients, filteredLeads, refresh: refreshEnhancements, exportExcel, exportPdf, forecastFor, projectionFor };
   const originalSwitch = window.switchTab;
   if (typeof originalSwitch === 'function' && !originalSwitch.__crmEnhanced) { window.switchTab = function (id) { const result = originalSwitch.apply(this, arguments); if (id === 'analisesTab') setTimeout(refreshEnhancements, 80); if (id === 'dashboardTab') setTimeout(renderPostSaleAndFinance, 80); return result; }; window.switchTab.__crmEnhanced = true; }
   const originalRenderAnalysis = window.renderAnalises;

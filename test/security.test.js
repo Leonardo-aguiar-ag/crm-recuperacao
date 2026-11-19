@@ -11,12 +11,69 @@ const uploadApi = await readFile(new URL('../api/blob-upload.js', import.meta.ur
 const downloadApi = await readFile(new URL('../api/blob-download.js', import.meta.url), 'utf8');
 const botIdClient = await readFile(new URL('../botid-client.js', import.meta.url), 'utf8');
 const styles = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+const globalSearch = await readFile(new URL('../modules/crm-global-search.js', import.meta.url), 'utf8');
+const enhancements = await readFile(new URL('../modules/crm-enhancements.js', import.meta.url), 'utf8');
 
- test('configura Firebase App Check com reCAPTCHA v3 e renovação automática', () => {
+test('configura Firebase App Check com reCAPTCHA v3 e renovação automática', () => {
   assert.match(index, /firebase-app-check-compat\.js/);
   assert.match(index, /firebase\.appCheck\(/);
   assert.match(index, /ReCaptchaV3Provider/);
   assert.match(index, /isTokenAutoRefreshEnabled:\s*true/);
+  assert.match(index, /location\.protocol === 'https:'/);
+  assert.match(index, /dataset\.appCheckHost/);
+});
+
+test('busca global pontua e deduplica resultados locais e remotos com paginação por cursor', () => {
+  assert.match(globalSearch, /let score = exact \? 100/);
+  assert.match(globalSearch, /const key = `\$\{spec\.type\}:\$\{doc\.id\}`/);
+  assert.match(globalSearch, /query\.startAt\(term\)\.endAt\(`\$\{term\}\\uf8ff`\)\.limit\(PAGE_SIZE\)/);
+  assert.match(globalSearch, /query\.startAfter\(cursor\)/);
+  assert.match(globalSearch, /Carregar mais resultados/);
+  assert.match(globalSearch, /Promise\.allSettled/);
+  assert.match(globalSearch, /escapeHtml/);
+});
+
+test('busca global oferece teclado e semântica ARIA de combobox/listbox', () => {
+  assert.match(globalSearch, /setAttribute\('role', 'combobox'\)/);
+  assert.match(globalSearch, /setAttribute\('role', 'listbox'\)/);
+  assert.match(globalSearch, /role="option"/);
+  assert.match(globalSearch, /aria-activedescendant/);
+  assert.match(globalSearch, /event\.key === 'ArrowDown'/);
+  assert.match(globalSearch, /event\.key === 'ArrowUp'/);
+  assert.match(globalSearch, /event\.key === 'Escape'/);
+  assert.match(index, /Atalho: \/\)/);
+});
+
+test('projeção comercial exibe cenários, probabilidades, vidas, média mensal e metas', () => {
+  assert.match(enhancements, /probability \* 0\.75/);
+  assert.match(enhancements, /probability \+ \(100 - probability\) \* 0\.25/);
+  assert.match(enhancements, /configuredProbability !== null && configuredProbability !== undefined/);
+  assert.match(enhancements, /projectedLives/);
+  assert.match(enhancements, /monthlyValue/);
+  assert.match(enhancements, /valueGoalProgress/);
+  assert.match(enhancements, /proposalGoalProgress/);
+  assert.match(enhancements, /Projeção comercial avançada/);
+});
+
+test('busca remota declara índices para vendedores e organizações nas três coleções', () => {
+  const config = JSON.parse(indexes);
+  for (const [collection, owner, field] of [
+    ['clients', 'userId', 'nomeTitular'], ['clients', 'organizationId', 'nomeTitular'],
+    ['leads', 'userId', 'nome'], ['leads', 'organizationId', 'nome'],
+    ['tarefas', 'userId', 'titulo'], ['tarefas', 'organizationId', 'titulo']
+  ]) {
+    assert.ok(config.indexes.some(item => item.collectionGroup === collection
+      && item.fields.some(value => value.fieldPath === owner)
+      && item.fields.some(value => value.fieldPath === field)));
+  }
+});
+
+test('mensagens App Check são amigáveis e o diagnóstico não grava tokens', () => {
+  assert.match(index, /function mensagemErroAppCheck\(\)/);
+  assert.match(index, /function registrarFalhaAppCheck\(e,area\)/);
+  assert.match(index, /rejeicoes\+\+/);
+  assert.match(index, /chave reCAPTCHA v3 e se este domínio está autorizado/);
+  assert.doesNotMatch(index, /console\.log\([^\n]*appCheckToken/);
 });
 
 test('administração usa TOTP MFA real do Firebase', () => {

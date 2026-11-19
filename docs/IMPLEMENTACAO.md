@@ -21,6 +21,8 @@
 - MFA TOTP nativo do Firebase para administradores, com desafio no login e matrícula por aplicativo autenticador.
 - Regras do Firestore exigindo o claim de segundo fator para operações administrativas.
 - Inicialização do Firebase App Check com reCAPTCHA v3 e renovação automática de token.
+- Busca global classificada por relevância, com consultas remotas limitadas e por tenant, deduplicação, cursor de continuação, atalhos de teclado e combobox/listbox ARIA.
+- Projeção comercial em três cenários, incluindo propostas abertas, implantação, vidas, probabilidade ponderada, média mensal e acompanhamento das metas.
 - Workflow GitHub Actions em `.github/workflows/ci.yml` executando testes, validação de sintaxe e validação das Functions.
 - Suíte de segurança executada no Firestore e Storage Emulator, cobrindo App Check obrigatório, isolamento entre organizações, tenant imutável, auditoria append-only e bloqueio de uploads inválidos.
 
@@ -72,10 +74,14 @@ As regras do Firestore verificam `request.auth.token.firebase.sign_in_second_fac
 
 ## Firebase App Check
 
-1. No Firebase Console, registre o app Web em **App Check** usando reCAPTCHA v3 e copie a chave pública do site.
-2. Substitua o conteúdo do meta tag `firebase-app-check-site-key` em `index.html` pela chave pública (ela não é um segredo).
-3. Faça um deploy e confirme no painel do App Check que os tokens estão chegando.
-4. Só depois ative a aplicação para Firestore e Storage em **Enforcement**. O enforcement é uma configuração do projeto Firebase e não é aplicado pelo `firebase.json`.
+O frontend inicia Firebase App Check com reCAPTCHA v3, renova tokens automaticamente, registra o host atual para diagnóstico e exibe um aviso se faltar chave ou a página publicada não usar HTTPS. As regras do Firestore e Storage recusam operações sem App Check. A chave pública ainda deve ser preenchida no meta tag `firebase-app-check-site-key` em `index.html`; ela não é segredo. O repositório não define o domínio de produção, portanto confirme o host real em Firebase Hosting antes de registrá-lo na chave reCAPTCHA e em Authentication > Authorized domains.
+
+1. No Firebase Console, registre o app Web em **App Check** usando reCAPTCHA v3 e permita o domínio exato de produção na configuração do reCAPTCHA.
+2. Preencha o meta tag `firebase-app-check-site-key` em `index.html` com a site key pública correspondente ao app Web e ao domínio confirmado. Não use secret key no frontend.
+3. Publique em homologação e confirme tokens válidos no painel **App Check > Apps / APIs** antes de ativar enforcement. Revise as métricas e solicitações rejeitadas; não habilite enforcement com tráfego legítimo ainda sem token.
+4. Depois de validar tráfego, ative enforcement para Firestore e Storage no Firebase Console. As regras versionadas também exigem `request.appCheck != null`; o console e as regras devem permanecer alinhados.
+5. O código oferece mensagens amigáveis para falhas App Check identificáveis e contagem em memória sem registrar tokens ou dados pessoais. Para o total autoritativo de tokens válidos/rejeitados, use as métricas do Firebase Console; `permission-denied` pode representar outras recusas das regras e não deve ser tratado como confirmação de token inválido.
+6. O projeto não exporta Functions HTTP ou callable consumidas pelo navegador; as Functions atuais são gatilhos Firestore/Auth ou agendados. Enforcement App Check de Functions aplica-se a endpoints suportados (por exemplo, callable com `functions.runWith({enforceAppCheck:true})`), não aos gatilhos de backend. Não há endpoint cliente para colocar em enforcement hoje; se um callable/HTTP for adicionado, exija App Check nele e valide a invocação com token válido.
 
 Para testes locais, use o token de debug documentado pelo Firebase; nunca publique esse token em produção.
 
